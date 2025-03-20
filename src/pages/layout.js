@@ -4,8 +4,10 @@ import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import Sidebar from "@/components/Sidebar";
 import { useMediaQuery } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Scrollbar from "@/components/Scrollbar";
+import { useRouter } from "next/router";
+import { getTabTitle } from "@/utils";
 
 const AppWrapper = styled.div`
   display: flex;
@@ -30,6 +32,8 @@ const RootLayout = ({ children }) => {
     const isMobile = useMediaQuery("(max-width: 768px)");
     const [sidebarVisible, setSidebarVisible] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [title, setTitle] = useState("Tiêu đề");
+    const router = useRouter();
 
     const toggleSidebar = () => {
         setSidebarVisible((prev) => !prev);
@@ -40,6 +44,12 @@ const RootLayout = ({ children }) => {
         height: "100vh",
         overflowY: "auto",
     };
+    
+
+    useEffect(() => {
+        const handledTitle = getTabTitle(router.pathname);
+        setTitle(handledTitle);
+    }, [router]);
 
     return (
         <>
@@ -53,7 +63,7 @@ const RootLayout = ({ children }) => {
                 />
                 <ComponentWrapper $isCollapsed={isCollapsed}>
                     <Scrollbar style={scrollbarStyle}>
-                        <Header />
+                        <Header title={title}/>
                         {children}
                     </Scrollbar>
                 </ComponentWrapper>
