@@ -192,13 +192,18 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
   const [openPrediction, setOpenPrediction] = useState(false);
 
   const handleToggleStatistic = () => {
-    if (!collapsed)
-      setOpenStatistic((prev) => !prev);
+    if (collapsed)
+      toggleSidebar();
+
+    setOpenStatistic((prev) => !prev);
+
   };
 
   const handleTogglePredictiion = () => {
-    if (!collapsed)
-      setOpenPrediction((prev) => !prev);
+    if (collapsed)
+      toggleSidebar();
+
+    setOpenPrediction((prev) => !prev);
   }
 
   const toggleSidebar = () => {
