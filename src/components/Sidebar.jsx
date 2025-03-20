@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import styled from "styled-components";
 import {
   Home,
@@ -14,13 +14,15 @@ import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import BatchPredictionIcon from '@mui/icons-material/BatchPrediction';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import { Collapse } from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import Link from "next/link";
 
 // Styled Components
 const SidebarWrapper = styled.div`
   z-index: 1100;
   width: ${({ $isMobile, $collapsed }) =>
-    $isMobile ? `100%` : `${$collapsed ? "80px" : "250px"}`};
+    $isMobile ? `100%` : `${$collapsed ? "80px" : "260px"}`};
   transition: all 0.3s ease-in-out;
   background-color: var(--white);
   height: 100vh;
@@ -158,16 +160,54 @@ const UserName = styled.span`
   margin-top: 2px;
 `;
 
+const SubNavItem = styled(NavItem)`
+  padding-left: 40px; 
+  font-size: 14px; 
+`
+
+const DropdownItem = styled.div`
+  position: absolute;
+  right: 20px;
+`
+
+const ExpandableContainer = styled.div`
+  width: 100%;
+  border-radius: 5px;
+  margin: 4px 0;
+
+  /* Màu nền thay đổi dựa trên props $open */
+  background-color: ${({ $open }) =>
+    $open ? "rgba(0,0,0,0.05)" : "transparent"};
+  /* Bạn có thể dùng màu khác, ví dụ: #f2f2f2, #e8e8e8, v.v. */
+  transition: background-color 0.3s ease;
+`;
+
 const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps }) => {
   const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { isFetch } = useSelector((state) => state.sidebar);
+  const [openStatistic, setOpenStatistic] = useState(false);
+  const [openPrediction, setOpenPrediction] = useState(false);
+
+  const handleToggleStatistic = () => {
+    if (!collapsed)
+      setOpenStatistic((prev) => !prev);
+  };
+
+  const handleTogglePredictiion = () => {
+    if (!collapsed)
+      setOpenPrediction((prev) => !prev);
+  }
 
   const toggleSidebar = () => {
     setCollapsed((prev) => !prev);
     dispatch(toggleGlobalSidebar(!collapsed));
+    if (!collapsed) {
+      setOpenStatistic(false);
+      setOpenPrediction(false);
+    }
   };
 
   return (
@@ -205,37 +245,109 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
         </NavItem>
       </Link>
 
-      <Link href="/analytics" passHref style={{ width: "100%" }}>
+      <ExpandableContainer $open={openStatistic}>
+        {/* Analytics Tab */}
         <NavItem
           $collapsed={collapsed}
-          $active={router.pathname === "/analytics"}
+          $active={router.pathname.startsWith("/analytics")}
           $isMobile={isMobile}
-          onClick={toggleProps}
+          onClick={handleToggleStatistic}
         >
           <NavIcon>
             <AutoGraphIcon />
           </NavIcon>
-          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname === "/analytics"}>
+          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname.startsWith("/analytics")}>
             THỐNG KÊ
           </NavText>
+          {!collapsed && <DropdownItem>{openStatistic ? <ExpandLess /> : <ExpandMore />}</DropdownItem>}
         </NavItem>
-      </Link>
+        {/* Analytics Collapsed */}
+        <Collapse in={openStatistic} timeout="auto" unmountOnExit>
+          <Link href="/analytics/charts" passHref style={{ width: "100%" }}>
+            <SubNavItem
+              $collapsed={collapsed}
+              $active={router.pathname === "/analytics/charts"}
+              $isMobile={isMobile}
+            // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
+            >
+              <NavText
+                $collapsed={collapsed}
+                $isMobile={isMobile}
+                $active={router.pathname === "/analytics/charts"}
+              >
+                BIỂU ĐỒ VÀ BÁO CÁO
+              </NavText>
+            </SubNavItem>
+          </Link>
+          <Link href="/analytics/details" passHref style={{ width: "100%" }}>
+            <SubNavItem
+              $collapsed={collapsed}
+              $active={router.pathname === "/analytics/details"}
+              $isMobile={isMobile}
+            >
+              <NavText
+                $collapsed={collapsed}
+                $isMobile={isMobile}
+                $active={router.pathname === "/analytics/details"}
+              >
+                KẾT QUẢ CHI TIẾT
+              </NavText>
+            </SubNavItem>
+          </Link>
+        </Collapse>
+      </ExpandableContainer>
 
-      <Link href="/predictions" passHref style={{ width: "100%" }}>
+      <ExpandableContainer $open={openPrediction}>
+        {/* Predictions Tab */}
         <NavItem
           $collapsed={collapsed}
-          $active={router.pathname === "/predictions"}
+          $active={router.pathname.startsWith("/predictons")}
           $isMobile={isMobile}
-          onClick={toggleProps}
+          onClick={handleTogglePredictiion}
         >
           <NavIcon>
             <BatchPredictionIcon />
           </NavIcon>
-          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname === "/predictions"}>
+          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname.startsWith("/predictons")}>
             DỰ ĐOÁN
           </NavText>
+          {!collapsed && <DropdownItem>{openPrediction ? <ExpandLess /> : <ExpandMore />}</DropdownItem>}
         </NavItem>
-      </Link>
+        {/* Predictions Collapsed */}
+        <Collapse in={openPrediction} timeout="auto" unmountOnExit>
+          <Link href="/predictons/fraud-detection" passHref style={{ width: "100%" }}>
+            <SubNavItem
+              $collapsed={collapsed}
+              $active={router.pathname === "/predictons/fraud-detection"}
+              $isMobile={isMobile}
+            // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
+            >
+              <NavText
+                $collapsed={collapsed}
+                $isMobile={isMobile}
+                $active={router.pathname === "/predictons/fraud-detection"}
+              >
+                PHÁT HIỆN GIAN LẬN
+              </NavText>
+            </SubNavItem>
+          </Link>
+          <Link href="/predictons/predict-achievements" passHref style={{ width: "100%" }}>
+            <SubNavItem
+              $collapsed={collapsed}
+              $active={router.pathname === "/predictons/predict-achievements"}
+              $isMobile={isMobile}
+            >
+              <NavText
+                $collapsed={collapsed}
+                $isMobile={isMobile}
+                $active={router.pathname === "/predictons/predict-achievements"}
+              >
+                DỰ ĐOÁN THÀNH TÍCH
+              </NavText>
+            </SubNavItem>
+          </Link>
+        </Collapse>
+      </ExpandableContainer>
 
       <Link href="/alerts" passHref style={{ width: "100%" }}>
         <NavItem

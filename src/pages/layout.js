@@ -17,7 +17,7 @@ const ComponentWrapper = styled.div`
   flex-direction: column;
   flex: 1;
   width: ${({ $isCollapsed }) =>
-        $isCollapsed ? "calc(100% - 80px)" : "calc(100% - 250px)"};
+        $isCollapsed ? "calc(100% - 80px)" : "calc(100% - 260px)"};
   height: 100vh;
   transition: width 0.3s;
   background-color: transparent;
