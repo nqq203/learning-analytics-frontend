@@ -30,7 +30,7 @@ class Mydocument extends Document {
     render() {
         return <Html lang='en'>
             <Head>
-                <link rel="icon" href="../../../icons/logo.svg" sizes='any' />
+                <link rel="icon" href="/images/logo.png" sizes='any' />
             </Head>
             <body>
                 <Main />
