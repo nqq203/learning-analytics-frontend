@@ -7,7 +7,7 @@ import "../styles/global.css";
 
 export default function App({ Component, pageProps }) {
     const router = useRouter();
-
+    
     return (
         <Provider store={store}>
             {Component.unauthorized ? (
