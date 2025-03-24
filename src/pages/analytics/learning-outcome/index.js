@@ -3,9 +3,10 @@ import '../../../styles/LearningOutCome.css'
 import { IoEyeSharp } from "react-icons/io5";
 import FilterBoard from "@/components/FilterBoard";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import ClassListLNO from "@/components/ClassListLNO";
 import SubjectListLNO from "@/components/SubjectListLNO";
-import { useRouter } from "next/router";
+
 const LearningOutcomesContainer = styled.div`
     margin: auto;
     width: 97%;
@@ -65,7 +66,8 @@ const LearningOutComeTabButtons = styled.div`
 
 
 const LineDivider = styled.div`
-  border:0.1px solid gray;
+  background-color: var(--grey-600);
+  height:1px;
   width:100%;
 `
 
@@ -195,7 +197,7 @@ const LearningOutcome = () => {
       if(subjectID!="" && classID!="")
       {
         console.log(`Chuyển sang trang mới truyền subjectID và classID ${subjectID}`);  
-        router.push(`/analytics/learning-outcome/student/${classID}/${subjectID}`);
+        router.push(`/analytics/learning-outcome/student-list/${classID}/${subjectID}`);
       }
     }, [subjectID,router]);
 

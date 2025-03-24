@@ -206,6 +206,9 @@ const StudentContainerLNO = () => {
 
     useEffect(() => {
       console.log(`Chuyển sang Students ${studentID}`);
+      if(studentID!=""){
+        router.push(`/analytics/learning-outcome/student/${classID}/${subjectID}/${studentID}`);
+      }
     }, [studentID]);
 
 
@@ -222,8 +225,6 @@ const StudentContainerLNO = () => {
             </LearningOutComeTabButtons>
           </LearningOutComeItemsContainer>
 
-
-        <AnalyticsBtn>Thống Kê</AnalyticsBtn>
 
         </LearningOutComeHeader>
 
