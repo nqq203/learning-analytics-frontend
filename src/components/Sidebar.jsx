@@ -299,6 +299,24 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
               </NavText>
             </SubNavItem>
           </Link>
+          <Link href="/analytics/compare" passHref style={{ width: "100%" }}>
+            <SubNavItem
+              $collapsed={collapsed}
+              $active={router.pathname === "/analytics/compare"}
+              $isMobile={isMobile}
+            >
+              <NavText
+                $collapsed={collapsed}
+                $isMobile={isMobile}
+                $active={router.pathname === "/analytics/compare"}
+              >
+                SO SÁNH KQ HỌC TẬP
+              </NavText>
+            </SubNavItem>
+          </Link>
+
+
+
         </Collapse>
       </ExpandableContainer>
 
