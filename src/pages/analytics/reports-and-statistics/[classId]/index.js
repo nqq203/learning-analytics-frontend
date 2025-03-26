@@ -74,7 +74,7 @@ const StudentsList = () => {
   };
 
   const handleViewClass = (studentId) => {
-    router.push(`/analytics/${classId}/${btoa(studentId)}`);
+    router.push(`/analytics/reports-and-statistics/${classId}/${btoa(studentId)}`);
   };
 
   useEffect(() => {
@@ -110,7 +110,7 @@ const StudentsList = () => {
   };
 
   const handleClickAnalytics = () => {
-    router.push(`/analytics/${classId}/charts`);
+    router.push(`/analytics/reports-and-statistics/${classId}/charts`);
   }
 
   return (

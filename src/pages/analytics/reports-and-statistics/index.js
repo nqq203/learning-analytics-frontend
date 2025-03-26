@@ -43,7 +43,7 @@ const ClassesList = () => {
   };
 
   const handleViewClass = (classId) => {
-    router.push(`/analytics/${btoa(classId)}`);
+    router.push(`/analytics/reports-and-statistics/${btoa(classId)}`);
   };
 
   const filteredRows = rows.filter((row) => {

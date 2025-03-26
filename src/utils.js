@@ -3,7 +3,7 @@ export const getTabTitle = (pathname) => {
     const pathSegments = pathname.split('/').filter(Boolean);  // filter(Boolean) removes empty segments
 
     // Check if the pathname starts with "/analytics"
-    if (pathname.startsWith("/analytics")) {
+    if (pathname.startsWith("/analytics/reports-and-statistics")) {
         // If there's only one segment after "/analytics", return "DANH SÁCH SINH VIÊN"
         if (pathSegments.length === 2) {
             return "DANH SÁCH SINH VIÊN";
@@ -14,7 +14,7 @@ export const getTabTitle = (pathname) => {
         }
     }
 
-    if (pathname === "/analytics") {
+    if (pathname === "/analytics/reports-and-statistics") {
         return "BIỂU ĐỒ VÀ BÁO CÁO";
     } else if (pathname.startsWith("/analytics/learning-outcome")) {
         return "KẾT QUẢ HỌC TẬP";
