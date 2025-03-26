@@ -3,6 +3,8 @@ export const getTabTitle = (pathname) => {
       return "BIỂU ĐỒ VÀ BÁO CÁO";
   } else if (pathname.startsWith("/analytics/learning-outcome")) {
       return "KẾT QUẢ HỌC TẬP";
+  } else if (pathname.startsWith("/analytics/compare")) {
+    return "SO SÁNH KQ HỌC TẬP";
   } else if (pathname.startsWith("/")) {
       return "TRANG CHỦ";
   } else if (pathname.startsWith("/predictions/fraud-detection")) {
@@ -10,5 +12,6 @@ export const getTabTitle = (pathname) => {
   } else if (pathname.startsWith("/predictions/predict-achievements")) {
       return "DỰ ĐOÁN THÀNH TÍCH";
   }
+  
   return "TIÊU ĐỀ";
 }
