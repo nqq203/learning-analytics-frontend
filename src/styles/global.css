@@ -9,7 +9,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-color: white;
 }
 
 a {
@@ -49,6 +49,26 @@ a {
     /* Makes scrollbar thinner */
     scrollbar-color: #1769aa white;
     /* Thumb and track colors */
+}
+
+/* Custom scroll for the Table container */
+.TableContainer::-webkit-scrollbar {
+    width: 8px;
+}
+
+.TableContainer::-webkit-scrollbar-thumb {
+    background-color: #1769aa;
+    border-radius: 10px;
+}
+
+.TableContainer::-webkit-scrollbar-thumb:hover {
+    background-color: #3f51b5;
+}
+
+/* Firefox custom scrollbar */
+.TableContainer {
+    scrollbar-width: thin;
+    scrollbar-color: #1769aa white;
 }
 
 :root {
