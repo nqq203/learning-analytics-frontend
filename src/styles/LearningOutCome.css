@@ -1,0 +1,43 @@
+
+.tableLNO {
+    width: 100%;
+    background-color: white;
+    font-size: 1.1rem;
+}
+
+.tableLNO .thTable{
+    position: sticky;
+    top:0;
+}
+
+.thTable, .tdTable {
+    padding: 1.4rem;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.thTable {
+    background-color: white;
+}
+
+.tbodyTable .trTable:hover {
+    background-color: #f1f1f1;
+}
+#eye-icon{
+    width: 35px;
+    height:25px;
+    color:var(--blue-500);
+    cursor: pointer;
+}
+
+#eye-icon:hover{
+
+
+    color:var(--blue-600);
+}
+
+#eye-icon:active{
+
+    color:var(--blue-700);
+    
+}
