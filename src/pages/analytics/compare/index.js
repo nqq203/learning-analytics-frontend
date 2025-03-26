@@ -58,6 +58,14 @@ import CompareResult from "./CompareResul";
             : [...prevSelected, mssv] // Thêm vào danh sách nếu chưa chọn
         );
     };
+    const handleSelectAll = () => {
+        if (selectedStudents.length === studentData.length) {
+            setSelectedStudents([]); // Bỏ chọn tất cả
+        } else {
+            setSelectedStudents(studentData.map(student => student.studentID)); // Chọn tất cả
+        }
+    };
+    
     const handleCompare = () => {
         if (selectedStudents.length > 0) {
             setShowResults(true);
@@ -150,36 +158,44 @@ import CompareResult from "./CompareResul";
                 <Card>
                     <h3 style={{ margin: "20px" }}>DANH SÁCH SINH VIÊN</h3>
                     <CardContent>
-                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                        <thead>
-                        <tr style={{ borderBottom: "1px solid #ccc" }}>
-                            <th style={{ textAlign: "center", padding: "8px" }}>MSSV</th>
-                            <th style={{ textAlign: "center", padding: "8px" }}>Họ và tên</th>
-                            <th style={{ textAlign: "center", padding: "8px" }}>Lớp</th>
-                            <th style={{ textAlign: "center", padding: "8px" }}>Môn</th>
-                            <th style={{ textAlign: "center", padding: "8px" }}>Khóa</th>
-                            <th style={{ textAlign: "center", padding: "8px" }}>Hành động</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {studentData.map((student, index) => (
-                            <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
-                            <td style={{ textAlign: "center",padding: "8px" }}>{student.studentID}</td>
-                            <td style={{ textAlign: "center", padding: "8px" }}>{student.name}</td>
-                            <td style={{ textAlign: "center", padding: "8px" }}>{student.class}</td>
-                            <td style={{ textAlign: "center", padding: "8px" }}>{student.subject}</td>
-                            <td style={{ textAlign: "center", padding: "8px" }}>{student.course}</td>
-                            <td style={{ textAlign: "center", padding: "8px" }}>
-                                <Checkbox 
-                                checked={selectedStudents.includes(student.studentID)}
-                                onChange={() => handleSelectStudent(student.studentID)}
-                                />
-                            </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                    </CardContent>
+                        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                            <thead>
+                                <tr style={{ borderBottom: "1px solid #ccc" }}>
+                                    <th style={{ textAlign: "center", padding: "8px" }}>MSSV</th>
+                                    <th style={{ textAlign: "center", padding: "8px" }}>Họ và tên</th>
+                                    <th style={{ textAlign: "center", padding: "8px" }}>Lớp</th>
+                                    <th style={{ textAlign: "center", padding: "8px" }}>Môn</th>
+                                    <th style={{ textAlign: "center", padding: "8px" }}>Khóa</th>
+                                    <th style={{ textAlign: "center", padding: "8px" }}>
+                                        <Checkbox
+                                            checked={selectedStudents.length === studentData.length}
+                                            indeterminate={selectedStudents.length > 0 && selectedStudents.length < studentData.length}
+                                            onChange={handleSelectAll}
+                                        />
+                                        
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {studentData.map((student, index) => (
+                                    <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
+                                        <td style={{ textAlign: "center", padding: "8px" }}>{student.studentID}</td>
+                                        <td style={{ textAlign: "center", padding: "8px" }}>{student.name}</td>
+                                        <td style={{ textAlign: "center", padding: "8px" }}>{student.class}</td>
+                                        <td style={{ textAlign: "center", padding: "8px" }}>{student.subject}</td>
+                                        <td style={{ textAlign: "center", padding: "8px" }}>{student.course}</td>
+                                        <td style={{ textAlign: "center", padding: "8px" }}>
+                                            <Checkbox
+                                                checked={selectedStudents.includes(student.studentID)}
+                                                onChange={() => handleSelectStudent(student.studentID)}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+</CardContent>
+
                 </Card>
                 )
         )}
@@ -188,7 +204,7 @@ import CompareResult from "./CompareResul";
             <CompareResult onBack={() => setShowResults(false)}/>
         )}
 
-            </div>
+        </div>
        
 
          
