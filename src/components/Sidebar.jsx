@@ -268,32 +268,32 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
         </NavItem>
         {/* Analytics Collapsed */}
         <Collapse in={openStatistic} timeout="auto" unmountOnExit>
-          <Link href="/analytics/charts" passHref style={{ width: "100%" }}>
+          <Link href="/analytics/reports-and-statistics" passHref style={{ width: "100%" }}>
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname === "/analytics/charts"}
+              $active={router.pathname.startsWith("/analytics/reports-and-statistics")}
               $isMobile={isMobile}
             // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname === "/analytics/charts"}
+                $active={router.pathname.startsWith("/analytics/reports-and-statistics")}
               >
                 BIỂU ĐỒ VÀ BÁO CÁO
               </NavText>
             </SubNavItem>
           </Link>
-          <Link href="/analytics/details" passHref style={{ width: "100%" }}>
+          <Link href="/analytics/learning-outcome" passHref style={{ width: "100%" }}>
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname === "/analytics/details"}
+              $active={router.pathname === "/analytics/learning-outcome"}
               $isMobile={isMobile}
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname === "/analytics/details"}
+                $active={router.pathname === "/analytics/learning-outcome"}
               >
                 KẾT QUẢ CHI TIẾT
               </NavText>
