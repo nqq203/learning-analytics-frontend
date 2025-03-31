@@ -56,9 +56,6 @@
     cursor: pointer;
   }
 
-  :global(.sidebar) {
-    display: none;
-  }
   
   
   
