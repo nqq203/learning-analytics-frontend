@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import '../../../styles/LearningOutCome.css'
 import { IoEyeSharp } from "react-icons/io5";
 import FilterBoard from "@/components/FilterBoard";
 import { useState, useEffect } from "react";

@@ -1,5 +1,4 @@
 "use client";
-import "../styles/LearningOutCome.css"
 import FilterBoard from "./FilterBoard";
 import { IoEyeSharp } from "react-icons/io5";
 import styled from "styled-components";
