@@ -56,6 +56,14 @@ const ClassesList = () => {
   return (
     <Container>
       <Header>
+        <TextField
+          variant="outlined"
+          label="Tìm kiếm"
+          value={search}
+          onChange={handleSearchChange}
+          style={{ width: "90%" }}
+        />
+        <ActionButton variant="contained" style={{ fontWeight: "700", fontSize: "14px" }}>Tìm kiếm</ActionButton>
         <FormControl style={{ width: '20%' }}>
           <InputLabel>Môn học</InputLabel>
           <Select
@@ -78,14 +86,7 @@ const ClassesList = () => {
             <MenuItem value="fullName">Lớp</MenuItem>
           </Select>
         </FormControl>
-        <TextField
-          variant="outlined"
-          label="Tìm kiếm"
-          value={search}
-          onChange={handleSearchChange}
-          style={{ width: "90%" }}
-        />
-        <ActionButton variant="contained" style={{ fontWeight: "700", fontSize: "14px" }}>Tìm kiếm</ActionButton>
+        <ActionButton variant="contained" style={{ fontWeight: "700", fontSize: "14px" }}>Lọc</ActionButton>
       </Header>
       <div style={{
         display: "flex",
