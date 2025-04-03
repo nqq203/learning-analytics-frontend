@@ -10,7 +10,7 @@ import SubjectListLNO from "@/components/SubjectListLNO";
 const LearningOutcomesContainer = styled.div`
     margin: auto;
     width: 97%;
-    padding-block:20px;
+    padding-top:1.5rem;
     
     
     
@@ -37,14 +37,12 @@ const LearningOutComeItemsContainer = styled.div`
 const LearningOutComeTabButtons = styled.div`
   display:flex;
   flex-direction:row;
-  padding:1rem;
+  padding:0.7rem;
+  padding-inline:2rem;
   font-weight:bold;
-
-  // color:gray;
-  // border: 2px solid gray;
-
-  color: ${({ active }) => (active ? "var(--blue-800)" : "gray")};
-  border: 2px solid ${({ active }) => (active ? "var(--blue-800)" : "gray")};
+  
+  color: ${({ active }) => (active ? "var(--blue-800)" : "var(--grey-600)")};
+  border: 1px solid ${({ active }) => (active ? "var(--blue-800)" : "var(--grey-600)")};
 
 
   border-left:none;
@@ -181,7 +179,7 @@ const TableContent = [{
 
 const LearningOutcome = () => {
     const [MiniTab,setMiniTab] = useState(1);
-    const userId = "12456";
+    const userId = 1;
     const [classID,setClassID] = useState("");
     const [subjectID,setsubjectID] = useState("");
 
@@ -207,9 +205,11 @@ const LearningOutcome = () => {
 
 
       <LearningOutComeContainerBody>
+        
         <LearningOutComeHeader>
 
           <LearningOutComeItemsContainer>
+
             <LearningOutComeTabButtons active={MiniTab === 1} onClick={()=>{setMiniTab(1)}}>
               DANH SÁCH LỚP
             </LearningOutComeTabButtons>
@@ -218,6 +218,7 @@ const LearningOutcome = () => {
             <LearningOutComeTabButtons active={MiniTab === 2} onClick={()=>{setMiniTab(2)}}>
               DANH SÁCH MÔN
             </LearningOutComeTabButtons>
+
           </LearningOutComeItemsContainer>
 
 
