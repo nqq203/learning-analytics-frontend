@@ -1,10 +1,8 @@
 "use client";
 import styled from "styled-components";
-import { IoEyeSharp } from "react-icons/io5";
-import FilterBoard from "@/components/FilterBoard";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import StudentResultLNO from "@/components/StudentResultLNO";
+import StudentResultLNO from "@/components/LearningOutcome/StudentResultLNO";
 const LearningOutcomesContainer = styled.div`
     margin: auto;
     width: 97%;

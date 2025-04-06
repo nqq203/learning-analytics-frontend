@@ -1,5 +1,5 @@
 import { useState } from "react";
-import FilterItem from "./FilterItem";
+import FilterItem from "./FilterItem.jsx";
 import styled from "styled-components";
 import { MdAdd } from "react-icons/md";
 const FilterBoardContainer = styled.div`
