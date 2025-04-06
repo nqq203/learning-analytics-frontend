@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import '../../../styles/LearningOutCome.css'
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
@@ -167,104 +166,101 @@ const ClassTableContent = [
 
 const SubjectTableHeader = ["STT","Môn","Lớp","Khóa","Tín Chỉ","Học Kỳ","Chương Trình","Khoa","Chuyên ngành","Hành Động"];
 const SubjectTableContent = [
-            // {
-            //     "ID":"1",
-            //     "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 1",
-            //     "ClassName": "21CLC08",
-            //     "ClassOf":2021,
-            //     "Credit":4,
-            //     "Semester":1,
-            //     "Program":"Chất Lượng Cao",
-            //     "Falculity":"Công nghệ thông tin",
-            //     "Specialized":"Hệ Thống Thông Tin"
-            // }
-            // ,
-            // {
-            //     "ID":"2",
-            //     "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 2",
-            //     "ClassName": "21CLC08",
-            //     "ClassOf":2021,
-            //     "Credit":4,
-            //     "Semester":1,
-            //     "Program":"Chất Lượng Cao",
-            //     "Falculity":"Công nghệ thông tin",
-            //     "Specialized":"Hệ Thống Thông Tin"
-            // }
-            // ,
-            // {
-            //     "ID":"3",
-            //     "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 3",
-            //     "ClassName": "21CLC08",
-            //     "ClassOf":2021,
-            //     "Credit":4,
-            //     "Semester":1,
-            //     "Program":"Chất Lượng Cao",
-            //     "Falculity":"Công nghệ thông tin",
-            //     "Specialized":"Hệ Thống Thông Tin"
-            // }
-            // ,
-            // {
-            //     "ID":"4",
-            //     "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 4",
-            //     "ClassName": "21CLC08",
-            //     "ClassOf":2021,
-            //     "Credit":4,
-            //     "Semester":1,
-            //     "Program":"Chất Lượng Cao",
-            //     "Falculity":"Công nghệ thông tin",
-            //     "Specialized":"Hệ Thống Thông Tin"
-            // }
-            // ,
-            // {
-            //     "ID":"5",
-            //     "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 5",
-            //     "ClassName": "21CLC08",
-            //     "ClassOf":2021,
-            //     "Credit":4,
-            //     "Semester":1,
-            //     "Program":"Chất Lượng Cao",
-            //     "Falculity":"Công nghệ thông tin",
-            //     "Specialized":"Hệ Thống Thông Tin"
-            // }
-            // ,
-            // {
-            //     "ID":"6",
-            //     "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 6",
-            //     "ClassName": "21CLC08",
-            //     "ClassOf":2021,
-            //     "Credit":4,
-            //     "Semester":1,
-            //     "Program":"Chất Lượng Cao",
-            //     "Falculity":"Công nghệ thông tin",
-            //     "Specialized":"Hệ Thống Thông Tin"
-            // }
-            // ,
-            // {
-            //     "ID":"7",
-            //     "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 7",
-            //     "ClassName": "21CLC08",
-            //     "ClassOf":2021,
-            //     "Credit":4,
-            //     "Semester":1,
-            //     "Program":"Chất Lượng Cao",
-            //     "Falculity":"Công nghệ thông tin",
-            //     "Specialized":"Hệ Thống Thông Tin"
-            // }
-            // ,
-            // {
-            //     "ID":"8",
-            //     "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 8",
-            //     "ClassName": "21CLC08",
-            //     "ClassOf":2021,
-            //     "Credit":4,
-            //     "Semester":1,
-            //     "Program":"Chất Lượng Cao",
-            //     "Falculity":"Công nghệ thông tin",
-            //     "Specialized":"Hệ Thống Thông Tin"
-            // }
-        
-        
-        
+            {
+                "ID":"1",
+                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 1",
+                "ClassName": "21CLC08",
+                "ClassOf":2021,
+                "Credit":4,
+                "Semester":1,
+                "Program":"Chất Lượng Cao",
+                "Falculity":"Công nghệ thông tin",
+                "Specialized":"Hệ Thống Thông Tin"
+            }
+            ,
+            {
+                "ID":"2",
+                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 2",
+                "ClassName": "21CLC08",
+                "ClassOf":2021,
+                "Credit":4,
+                "Semester":1,
+                "Program":"Chất Lượng Cao",
+                "Falculity":"Công nghệ thông tin",
+                "Specialized":"Hệ Thống Thông Tin"
+            }
+            ,
+            {
+                "ID":"3",
+                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 3",
+                "ClassName": "21CLC08",
+                "ClassOf":2021,
+                "Credit":4,
+                "Semester":1,
+                "Program":"Chất Lượng Cao",
+                "Falculity":"Công nghệ thông tin",
+                "Specialized":"Hệ Thống Thông Tin"
+            }
+            ,
+            {
+                "ID":"4",
+                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 4",
+                "ClassName": "21CLC08",
+                "ClassOf":2021,
+                "Credit":4,
+                "Semester":1,
+                "Program":"Chất Lượng Cao",
+                "Falculity":"Công nghệ thông tin",
+                "Specialized":"Hệ Thống Thông Tin"
+            }
+            ,
+            {
+                "ID":"5",
+                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 5",
+                "ClassName": "21CLC08",
+                "ClassOf":2021,
+                "Credit":4,
+                "Semester":1,
+                "Program":"Chất Lượng Cao",
+                "Falculity":"Công nghệ thông tin",
+                "Specialized":"Hệ Thống Thông Tin"
+            }
+            ,
+            {
+                "ID":"6",
+                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 6",
+                "ClassName": "21CLC08",
+                "ClassOf":2021,
+                "Credit":4,
+                "Semester":1,
+                "Program":"Chất Lượng Cao",
+                "Falculity":"Công nghệ thông tin",
+                "Specialized":"Hệ Thống Thông Tin"
+            }
+            ,
+            {
+                "ID":"7",
+                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 7",
+                "ClassName": "21CLC08",
+                "ClassOf":2021,
+                "Credit":4,
+                "Semester":1,
+                "Program":"Chất Lượng Cao",
+                "Falculity":"Công nghệ thông tin",
+                "Specialized":"Hệ Thống Thông Tin"
+            }
+            ,
+            {
+                "ID":"8",
+                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 8",
+                "ClassName": "21CLC08",
+                "ClassOf":2021,
+                "Credit":4,
+                "Semester":1,
+                "Program":"Chất Lượng Cao",
+                "Falculity":"Công nghệ thông tin",
+                "Specialized":"Hệ Thống Thông Tin"
+            }
         
         ]
 const LearningOutcome = () => {

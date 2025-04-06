@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import "../../../../styles/LearningOutCome.css"
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";

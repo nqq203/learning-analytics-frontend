@@ -1,11 +1,11 @@
 "use client";
-import FilterBoard from "./FilterBoard";
-import { IoEyeSharp } from "react-icons/io5";
+
 import styled from "styled-components";
-import GaugeChart from 'react-gauge-chart';
 import MyGaugeChart from "./GaugeChartLNO";
 import TableChart from "./TableChartLNO";
 import BarChart from "./BarChartLNO";
+
+
 const LearningOutcomeBody = styled.div`
   display:flex;
   flex-direction: column;
