@@ -31,7 +31,7 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
           <TableBody>
             {filteredRows?.length > 0 ?
               <Fragment>{filteredRows?.map((row, index) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.classId}>
                   <TableCell style={{ textAlign: "left" }}>{index + 1}</TableCell>
                   {columns.map((col, idx) => (
                     <TableCell key={idx} style={{ textAlign: col.align || "left" }}>

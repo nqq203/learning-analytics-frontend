@@ -1,37 +1,53 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ActionButton, Container, Header } from "@/components/Analytics/Styles/Styles";
 import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import AnalyticsTable from "@/components/Analytics/Table/Table";
 import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
 
 const ClassesList = () => {
+  const { totalRecords, classes } = useSelector(state => state.analytics);
+  const dispatch = useDispatch();
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
-  const [rows, setRows] = useState([
-    { id: 1, subject: "Cơ sở dữ liệu", class: "21CLC05", department: 21, students: 50, rate: 85 },
-    { id: 2, subject: "Cơ sở dữ liệu", class: "21CLC07", department: 21, students: 45, rate: 70 },
-    { id: 3, subject: "Cơ sở dữ liệu", class: "22CLC01", department: 22, students: 40, rate: 85 },
-    { id: 4, subject: "Cơ sở dữ liệu nâng cao", class: "21HTTT1", department: 21, students: 50, rate: 85 },
-    { id: 5, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-    { id: 6, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-    { id: 7, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-    { id: 8, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-    { id: 9, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-    { id: 10, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-    { id: 11, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-    { id: 12, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-  ]);
+  // const [rows, setRows] = useState([
+  //   { id: 1, subject: "Cơ sở dữ liệu", class: "21CLC05", department: 21, students: 50, rate: 85 },
+  //   { id: 2, subject: "Cơ sở dữ liệu", class: "21CLC07", department: 21, students: 45, rate: 70 },
+  //   { id: 3, subject: "Cơ sở dữ liệu", class: "22CLC01", department: 22, students: 40, rate: 85 },
+  //   { id: 4, subject: "Cơ sở dữ liệu nâng cao", class: "21HTTT1", department: 21, students: 50, rate: 85 },
+  //   { id: 5, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
+  //   { id: 6, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
+  //   { id: 7, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
+  //   { id: 8, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
+  //   { id: 9, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
+  //   { id: 10, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
+  //   { id: 11, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
+  //   { id: 12, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
+  // ]);
+  const rows = useMemo(() => {
+    return classes || [];
+  }, [classes]);
+
   const totalStudents = useMemo(() => {
-    return rows.length;
+    return rows.length || totalRecords;
   }, [rows]);
+
   const router = useRouter();
 
+  useEffect(() => {
+    const fetchClasses = async () => {
+      await dispatch(fetchClassesByLecturer({userId: 1, page: 1, amount: 10}));
+    };
+    fetchClasses();
+  }, []);
+
   const columns = [
-    { id: "subject", label: "Môn học", align: "left" },
-    { id: "class", label: "Lớp", align: "left" },
-    { id: "department", label: "Khóa", align: "center" },
-    { id: "students", label: "Số sinh viên", align: "center" },
-    { id: "rate", label: "Tỷ lệ đậu (%)", align: "center" },
+    { id: "subjectName", label: "Môn học", align: "left" },
+    { id: "className", label: "Lớp", align: "left" },
+    { id: "academicYear", label: "Khóa", align: "center" },
+    { id: "totalStudents", label: "Số sinh viên", align: "center" },
+    { id: "passRate", label: "Tỷ lệ đậu (%)", align: "center" },
   ];
 
   const handleSearchChange = (e) => {
@@ -48,8 +64,8 @@ const ClassesList = () => {
 
   const filteredRows = rows.filter((row) => {
     return (
-      row.subject.toLowerCase().includes(search.toLowerCase()) ||
-      row.class.toLowerCase().includes(search.toLowerCase())
+      row.subjectName.toLowerCase().includes(search.toLowerCase()) ||
+      row.className.toLowerCase().includes(search.toLowerCase())
     );
   });
 
@@ -71,8 +87,8 @@ const ClassesList = () => {
             // onChange={handleSortChange}
             label="Môn học"
           >
-            <MenuItem value="identificationCode">Môn học</MenuItem>
-            <MenuItem value="fullName">Lớp</MenuItem>
+            {/* <MenuItem value="identificationCode">Môn học</MenuItem>
+            <MenuItem value="fullName">Lớp</MenuItem> */}
           </Select>
         </FormControl>
         <FormControl style={{ width: '20%' }}>
@@ -82,8 +98,8 @@ const ClassesList = () => {
             // onChange={handleSortChange}
             label="Lớp"
           >
-            <MenuItem value="identificationCode">Môn học</MenuItem>
-            <MenuItem value="fullName">Lớp</MenuItem>
+            {/* <MenuItem value="identificationCode">Môn học</MenuItem>
+            <MenuItem value="fullName">Lớp</MenuItem> */}
           </Select>
         </FormControl>
         <ActionButton variant="contained" style={{ fontWeight: "700", fontSize: "14px" }}>Lọc</ActionButton>
