@@ -324,46 +324,46 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
         {/* Predictions Tab */}
         <NavItem
           $collapsed={collapsed}
-          $active={router.pathname.startsWith("/predictons")}
+          $active={router.pathname.startsWith("/predictions")}
           $isMobile={isMobile}
           onClick={handleTogglePredictiion}
         >
           <NavIcon>
             <BatchPredictionIcon />
           </NavIcon>
-          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname.startsWith("/predictons")}>
+          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname.startsWith("/predictions")}>
             DỰ ĐOÁN
           </NavText>
           {!collapsed && <DropdownItem>{openPrediction ? <ExpandLess /> : <ExpandMore />}</DropdownItem>}
         </NavItem>
         {/* Predictions Collapsed */}
         <Collapse in={openPrediction} timeout="auto" unmountOnExit>
-          <Link href="/predictons/fraud-detection" passHref style={{ width: "100%" }}>
+          <Link href="/predictions/fraud-detection" passHref style={{ width: "100%" }}>
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname === "/predictons/fraud-detection"}
+              $active={router.pathname === "/predictions/fraud-detection"}
               $isMobile={isMobile}
             // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname === "/predictons/fraud-detection"}
+                $active={router.pathname === "/predictions/fraud-detection"}
               >
                 PHÁT HIỆN GIAN LẬN
               </NavText>
             </SubNavItem>
           </Link>
-          <Link href="/predictons/predict-achievements" passHref style={{ width: "100%" }}>
+          <Link href="/predictions/predict-achievements" passHref style={{ width: "100%" }}>
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname === "/predictons/predict-achievements"}
+              $active={router.pathname === "/predictions/predict-achievements"}
               $isMobile={isMobile}
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname === "/predictons/predict-achievements"}
+                $active={router.pathname === "/predictions/predict-achievements"}
               >
                 DỰ ĐOÁN THÀNH TÍCH
               </NavText>
@@ -372,17 +372,17 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
         </Collapse>
       </ExpandableContainer>
 
-      <Link href="/alerts" passHref style={{ width: "100%" }}>
+      <Link href="/alerts/notification" passHref style={{ width: "100%" }}>
         <NavItem
           $collapsed={collapsed}
-          $active={router.pathname === "/alerts"}
+          $active={router.pathname === "/alerts/notification"}
           $isMobile={isMobile}
           onClick={toggleProps}
         >
           <NavIcon>
             <NotificationsIcon />
           </NavIcon>
-          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname === "/alerts"}>
+          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname === "/alerts/notification"}>
             CẢNH BÁO
           </NavText>
         </NavItem>
