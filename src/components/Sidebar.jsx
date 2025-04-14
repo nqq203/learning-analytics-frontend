@@ -372,17 +372,17 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
         </Collapse>
       </ExpandableContainer>
 
-      <Link href="/alerts" passHref style={{ width: "100%" }}>
+      <Link href="/alerts/notification" passHref style={{ width: "100%" }}>
         <NavItem
           $collapsed={collapsed}
-          $active={router.pathname === "/alerts"}
+          $active={router.pathname === "/alerts/notification"}
           $isMobile={isMobile}
           onClick={toggleProps}
         >
           <NavIcon>
             <NotificationsIcon />
           </NavIcon>
-          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname === "/alerts"}>
+          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname === "/alerts/notification"}>
             CẢNH BÁO
           </NavText>
         </NavItem>
