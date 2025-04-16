@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import ClassListLNO from "@/components/LearningOutcome/ClassListLNO";
-import SubjectListLNO from "@/components/LearningOutcome/SubjectListLNO";
 
 const LearningOutcomesContainer = styled.div`
     margin: auto;
@@ -15,7 +15,7 @@ const LearningOutcomesContainer = styled.div`
 const LearningOutComeContainerBody = styled.div`
   display:flex;
   flex-direction:column;
-  gap:1rem;
+  gap:0.8rem;
 
 `
 const LearningOutComeHeader = styled.div`
@@ -23,6 +23,7 @@ const LearningOutComeHeader = styled.div`
   flex-direction:row;
   justify-content:space-between ;
   padding-bottom:10px;
+  align-items:center;
 `
 
 const LearningOutComeItemsContainer = styled.div`
@@ -38,8 +39,8 @@ const LearningOutComeTabButtons = styled.div`
   padding-inline:2rem;
   font-weight:bold;
   
-  color: ${({ active }) => (active ? "var(--blue-800)" : "var(--grey-600)")};
-  border: 1px solid ${({ active }) => (active ? "var(--blue-800)" : "var(--grey-600)")};
+  color: var(--blue-800);
+  border: 1px solid var(--blue-800);
 
 
   border-left:none;
@@ -277,7 +278,7 @@ const SubjectTableContent = [
 
         
 const LearningOutcome = () => {
-    const [MiniTab,setMiniTab] = useState(1);
+    
     const userId = 1;
     const [classID,setClassID] = useState("");
     const [subjectID,setsubjectID] = useState("");
@@ -285,18 +286,12 @@ const LearningOutcome = () => {
     const router = useRouter();
 
     useEffect(() => {
-            if(classID!=""){
-              setMiniTab(2);
-            }
-          }, [classID]);
-
-    useEffect(() => {
-      if(subjectID!="" && classID!="")
+      if(classID!="")
       {
         console.log(`Chuyển sang trang mới truyền subjectID và classID ${subjectID}`);  
-        router.push(`/analytics/learning-outcome/student-list/${classID}/${subjectID}`);
+        router.push(`/analytics/learning-outcome/student-list/${classID}`);
       }
-    }, [subjectID,router]);
+    }, [classID]);
 
 
     return (
@@ -309,14 +304,35 @@ const LearningOutcome = () => {
 
           <LearningOutComeItemsContainer>
 
-            <LearningOutComeTabButtons active={MiniTab === 1} onClick={()=>{setMiniTab(1)}}>
+            <LearningOutComeTabButtons >
               DANH SÁCH LỚP
             </LearningOutComeTabButtons>
 
 
-            <LearningOutComeTabButtons active={MiniTab === 2} onClick={()=>{setMiniTab(2)}}>
-              DANH SÁCH MÔN
-            </LearningOutComeTabButtons>
+            
+          </LearningOutComeItemsContainer>
+
+
+          <LearningOutComeItemsContainer>
+
+          <FormControl style={{ minWidth: "200px" }} variant="outlined">
+            <InputLabel>Khóa</InputLabel>
+            <Select  label="Chọn khóa">
+                <MenuItem value="class">21</MenuItem>
+                <MenuItem value="course">22</MenuItem>
+                <MenuItem value="subject">23</MenuItem>
+            </Select>
+            </FormControl>
+
+
+            <FormControl style={{ minWidth: "200px" }} variant="outlined">
+            <InputLabel>Lớp</InputLabel>
+            <Select  label="Chọn lớp">
+                <MenuItem value="class">21CLC05</MenuItem>
+                <MenuItem value="course">21CLC06</MenuItem>
+                <MenuItem value="subject">21CLC07</MenuItem>
+            </Select>
+            </FormControl>
 
           </LearningOutComeItemsContainer>
 
@@ -326,11 +342,9 @@ const LearningOutcome = () => {
 
         <LineDivider></LineDivider>
 
-          { MiniTab==1?
-            <ClassListLNO TableHeader={ClassTableHeader} TableContent ={ClassTableContent} setClassID={setClassID} ></ClassListLNO>:
-            <SubjectListLNO TableHeader={SubjectTableHeader} TableContent={SubjectTableContent} setSubjectID={setsubjectID}></SubjectListLNO>
-
-          }
+         
+            <ClassListLNO TableHeader={ClassTableHeader} TableContent ={ClassTableContent} setClassID={setClassID} ></ClassListLNO>
+         
         
 
        </LearningOutComeContainerBody>

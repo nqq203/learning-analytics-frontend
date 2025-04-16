@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import StudentListLNO from "@/components/LearningOutcome/StudentListLNO";
 import { useRouter } from "next/router";
+import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 const LearningOutcomesContainer = styled.div`
     margin: auto;
@@ -20,8 +21,8 @@ const LearningOutComeContainerBody = styled.div`
 const LearningOutComeHeader = styled.div`
   display:flex;
   flex-direction:row;
-  justify-content:space-between ;
-  padding-bottom:10px;
+  justify-content:space-between;
+  
   align-items:center;
 `
 
@@ -31,40 +32,15 @@ const LearningOutComeItemsContainer = styled.div`
   gap:20px;
 `
 
-const LearningOutComeTabButtons = styled.div`
-  display:flex;
-  flex-direction:row;
-  padding:1rem;
-  font-weight:bold;
 
-  // color:gray;
-  // border: 2px solid gray;
-
-  color: var(--blue-800);
-  border: 2px solid var(--blue-800);
-
-
-  border-left:none;
-  border-right:none;
-  border-top:none;
-  cursor:pointer;
-
-  &:hover{
-    color: var(--blue-300);
-    border-color: var(--blue-300);
-  }
-
-  &:active{
-    color: var(--blue-800);
-    border-color: var(--blue-800);
-  }
-`
 
 const AnalyticsBtn = styled.div`
-     padding:0.8rem;
+    cursor:pointer;
+    padding-inline:2rem;
+    padding-block:1rem;
     color:white;
-    font-size:1rem;
-    background-color:var(--blue-300);
+    font-size:1.2rem;
+    background-color:var(--blue-600);
     border:none;
     border-radius:10px;
     font-weight:bold;
@@ -115,12 +91,12 @@ const StudentContainerLNO = () => {
     const userId = "12456";
     const [studentID,setStudentID] = useState("");
     const router = useRouter();
-    const { classID, subjectID } = router.query;
+    const { classID } = router.query;
 
     useEffect(() => {
       console.log(`Chuyển sang Students ${studentID}`);
       if(studentID!=""){
-        router.push(`/analytics/learning-outcome/student/${classID}/${subjectID}/${studentID}`);
+        router.push(`/analytics/learning-outcome/student/${classID}/${studentID}`);
       }
     }, [studentID]);
 
@@ -131,20 +107,38 @@ const StudentContainerLNO = () => {
 
       <LearningOutComeContainerBody>
         <LearningOutComeHeader>
-
-          <LearningOutComeItemsContainer>
-            <LearningOutComeTabButtons >
-              DANH SÁCH SINH VIÊN
-            </LearningOutComeTabButtons>
-          </LearningOutComeItemsContainer>
-
-
-        </LearningOutComeHeader>
+                    <LearningOutComeItemsContainer>
+        
+        
+                        <FormControl style={{ minWidth: "40rem" }} variant="outlined">
+                                <TextField id="outlined-basic" label="Tìm kiếm" variant="outlined" />
+                        </FormControl>
+        
+                        <FormControl style={{ minWidth: "12rem" }} variant="outlined">
+                            <InputLabel>Khóa</InputLabel>
+                            <Select  label="Chọn khóa">
+                                <MenuItem value="class">21</MenuItem>
+                                <MenuItem value="course">22</MenuItem>
+                                <MenuItem value="subject">23</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </LearningOutComeItemsContainer>
+        
+                    <LearningOutComeItemsContainer>
+        
+                        <AnalyticsBtn>Lọc</AnalyticsBtn>
+                        <AnalyticsBtn onClick= {()=>handleNav()}>Dự đoán</AnalyticsBtn>
+        
+        
+                    </LearningOutComeItemsContainer>
+        
+        
+                </LearningOutComeHeader>
 
 
         <LineDivider></LineDivider>
 
-          <StudentListLNO TableContent={TableContent} TableHeader={TableHeader} subjectID={subjectID} setStudentID={setStudentID}> </StudentListLNO>
+          <StudentListLNO TableContent={TableContent} TableHeader={TableHeader} setStudentID={setStudentID}> </StudentListLNO>
         
 
        </LearningOutComeContainerBody>

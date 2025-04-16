@@ -1,4 +1,3 @@
-import FilterBoard from "./FilterBoard";
 import { Card, CardContent, IconButton, Checkbox, Button, Tab } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import styled from "styled-components";
@@ -33,17 +32,12 @@ const NoContent = styled.div`
 
 
 
-export default function StudentListLNO({TableContent,TableHeader,subjectID,setStudentID}){
+export default function StudentListLNO({TableContent,TableHeader,setStudentID}){
 
 
     return(
         <>
             <LearningOutcomeBody>
-            
-            
-                      <div className="LearningOutComeTabFilterBody-Container">
-                        <FilterBoard></FilterBoard>
-                      </div>
             
                       <TableContainer style={{
                 maxHeight: "650px",

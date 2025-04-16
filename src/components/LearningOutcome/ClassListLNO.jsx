@@ -37,7 +37,7 @@ export default function ClassListLNO({TableHeader,TableContent,setClassID}){
             
             
                       
-              <FilterBoard></FilterBoard>
+              {/* <FilterBoard></FilterBoard> */}
                       
               <TableContainer style={{
                 maxHeight: "650px",

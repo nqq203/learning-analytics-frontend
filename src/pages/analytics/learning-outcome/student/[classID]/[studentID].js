@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import StudentResultLNO from "@/components/LearningOutcome/StudentResultLNO";
+
 const LearningOutcomesContainer = styled.div`
     margin: auto;
     width: 97%;
