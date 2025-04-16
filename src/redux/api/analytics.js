@@ -27,10 +27,10 @@ const analyticsApi = {
     userId,
     page,
     amount
-  }) => axios.get(`${API_URL}/analytics/class?user_id=${userId}&page=${page}&amount=${amount}`),
+  }) => axios.get(`${API_URL}/analytics/classes?user_id=${userId}&page=${page}&amount=${amount}`),
   fetchSubjectsByLecturer: ({
     userId
-  }) => axios.get(`${API_URL}/analytics/subjects?user_id=${userId}`),
+  }) => axios.get(`${API_URL}/analytics/course?user_id=${userId}`),
   fetchStudentsDetails: ({
     classId,
     details = true,
@@ -49,7 +49,7 @@ const analyticsApi = {
     page,
     amount,
     search,
-  }) => axios.get(`${API_URL}/analytics/class?user_id=${userId}&page=${page}&amount=${amount}&search=${search}`),
+  }) => axios.get(`${API_URL}/analytics/classes?user_id=${userId}&page=${page}&amount=${amount}&search=${search}`),
 };
 
 export { analyticsApi, handleAnalyticsApiError };
