@@ -1,8 +1,10 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import ClassListLNO from "@/components/LearningOutcome/ClassListLNO";
+import { FetchAcademicYearClass,fetchFilteredClasses } from "@/redux/thunk/learningoutcomeThunk";
 
 const LearningOutcomesContainer = styled.div`
     margin: auto;
@@ -69,221 +71,52 @@ const LineDivider = styled.div`
 
 
 
-const ClassTableHeader = ["STT","Lớp","Khóa","Chương trình","Khoa","Chuyên ngành","Hành Động"];
-const ClassTableContent = [{
-  "ID":"1",
-  "ClassName": "21CLC08",
-  "ClassOf":2021,
-  "Program":"Chất Lượng Cao",
-  "Falculity":"Công nghệ thông tin",
-  "Specialized":"Không"
-},
-{
-  "ID":"2",
-  "ClassName": "21HTTT1",
-  "ClassOf":2021,
-  "Program":"Chất Lượng Cao",
-  "Falculity":"Công nghệ thông tin",
-  "Specialized":"Hệ thống thông tin"
-},
-{
-  "ID":"3",
-  "ClassName": "21HTTT2",
-  "ClassOf":2021,
-  "Program":"Chất Lượng Cao",
-  "Falculity":"Công nghệ thông tin",
-  "Specialized":"Hệ thống thông tin"
-},
-
-{
-  "ID":"4",
-  "ClassName": "21HTTT3",
-  "ClassOf":2021,
-  "Program":"Chất Lượng Cao",
-  "Falculity":"Công nghệ thông tin",
-  "Specialized":"Hệ thống thông tin"
-},
-
-{
-  "ID":"5",
-  "ClassName": "21HTTT4",
-  "ClassOf":2021,
-  "Program":"Chất Lượng Cao",
-  "Falculity":"Công nghệ thông tin",
-  "Specialized":"Hệ thống thông tin"
-},
-
-{
-  "ID":"6",
-  "ClassName": "21HTTT5",
-  "ClassOf":2021,
-  "Program":"Chất Lượng Cao",
-  "Falculity":"Công nghệ thông tin",
-  "Specialized":"Hệ thống thông tin"
-}
-,{
-  "ID":"7",
-  "ClassName": "21HTTT1",
-  "ClassOf":2021,
-  "Program":"Chất Lượng Cao",
-  "Falculity":"Công nghệ thông tin",
-  "Specialized":"Hệ thống thông tin"
-},
-{
-  "ID":"8",
-  "ClassName": "21HTTT2",
-  "ClassOf":2021,
-  "Program":"Chất Lượng Cao",
-  "Falculity":"Công nghệ thông tin",
-  "Specialized":"Hệ thống thông tin"
-},
-
-{
-  "ID":"9",
-  "ClassName": "21HTTT3",
-  "ClassOf":2021,
-  "Program":"Chất Lượng Cao",
-  "Falculity":"Công nghệ thông tin",
-  "Specialized":"Hệ thống thông tin"
-},
-
-{
-  "ID":"10",
-  "ClassName": "21HTTT4",
-  "ClassOf":2021,
-  "Program":"Chất Lượng Cao",
-  "Falculity":"Công nghệ thông tin",
-  "Specialized":"Hệ thống thông tin"
-},
-
-{
-  "ID":"11",
-  "ClassName": "21HTTT5",
-  "ClassOf":2021,
-  "Program":"Chất Lượng Cao",
-  "Falculity":"Công nghệ thông tin",
-  "Specialized":"Hệ thống thông tin"
-},
-
-{
-  "ID":"12",
-  "ClassName": "21HTTT1",
-  "ClassOf":2021,
-  "Program":"Chất Lượng Cao",
-  "Falculity":"Công nghệ thông tin",
-  "Specialized":"Hệ thống thông tin"
-}
-]
-
-
-const SubjectTableHeader = ["STT","Môn","Lớp","Khóa","Tín Chỉ","Học Kỳ","Chương Trình","Khoa","Chuyên ngành","Hành Động"];
-const SubjectTableContent = [
-            {
-                "ID":"1",
-                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 1",
-                "ClassName": "21CLC08",
-                "ClassOf":2021,
-                "Credit":4,
-                "Semester":1,
-                "Program":"Chất Lượng Cao",
-                "Falculity":"Công nghệ thông tin",
-                "Specialized":"Hệ Thống Thông Tin"
-            }
-            ,
-            {
-                "ID":"2",
-                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 2",
-                "ClassName": "21CLC08",
-                "ClassOf":2021,
-                "Credit":4,
-                "Semester":1,
-                "Program":"Chất Lượng Cao",
-                "Falculity":"Công nghệ thông tin",
-                "Specialized":"Hệ Thống Thông Tin"
-            }
-            ,
-            {
-                "ID":"3",
-                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 3",
-                "ClassName": "21CLC08",
-                "ClassOf":2021,
-                "Credit":4,
-                "Semester":1,
-                "Program":"Chất Lượng Cao",
-                "Falculity":"Công nghệ thông tin",
-                "Specialized":"Hệ Thống Thông Tin"
-            }
-            ,
-            {
-                "ID":"4",
-                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 4",
-                "ClassName": "21CLC08",
-                "ClassOf":2021,
-                "Credit":4,
-                "Semester":1,
-                "Program":"Chất Lượng Cao",
-                "Falculity":"Công nghệ thông tin",
-                "Specialized":"Hệ Thống Thông Tin"
-            }
-            ,
-            {
-                "ID":"5",
-                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 5",
-                "ClassName": "21CLC08",
-                "ClassOf":2021,
-                "Credit":4,
-                "Semester":1,
-                "Program":"Chất Lượng Cao",
-                "Falculity":"Công nghệ thông tin",
-                "Specialized":"Hệ Thống Thông Tin"
-            }
-            ,
-            {
-                "ID":"6",
-                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 6",
-                "ClassName": "21CLC08",
-                "ClassOf":2021,
-                "Credit":4,
-                "Semester":1,
-                "Program":"Chất Lượng Cao",
-                "Falculity":"Công nghệ thông tin",
-                "Specialized":"Hệ Thống Thông Tin"
-            }
-            ,
-            {
-                "ID":"7",
-                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 7",
-                "ClassName": "21CLC08",
-                "ClassOf":2021,
-                "Credit":4,
-                "Semester":1,
-                "Program":"Chất Lượng Cao",
-                "Falculity":"Công nghệ thông tin",
-                "Specialized":"Hệ Thống Thông Tin"
-            }
-            ,
-            {
-                "ID":"8",
-                "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 8",
-                "ClassName": "21CLC08",
-                "ClassOf":2021,
-                "Credit":4,
-                "Semester":1,
-                "Program":"Chất Lượng Cao",
-                "Falculity":"Công nghệ thông tin",
-                "Specialized":"Hệ Thống Thông Tin"
-            }
-        
-        ]
-
+const ClassTableHeader = ["STT","Lớp","Khóa","Môn","Học Kỳ","Tín chỉ","Hành Động"];
+const semester =  [1,2,3]
         
 const LearningOutcome = () => {
-    
-    const userId = 1;
+    const {classes,academicYear} = useSelector(state=>state.learningoutcome);
+    const dispatch = useDispatch();
+    // const userId = 1;
     const [classID,setClassID] = useState("");
     const [subjectID,setsubjectID] = useState("");
-
     const router = useRouter();
+
+    // const [semester,setSemester] = useState([])
+    const [chosenAcademicYear,setChosenAcademicYear] = useState("");
+    const [chosenSemester,setChosenSemester] = useState("");
+
+    const handleChangeSemester = (value) =>{
+      setChosenSemester(value)
+    }
+
+    const handleChangeAcedemicYear = (value)=>{
+      setChosenAcademicYear(value) 
+    }
+    
+    useEffect( () =>{
+      const fetchClasses = async() =>{
+          
+          await dispatch(fetchFilteredClasses ({userId: "I1132", page: 1, amount: 10,semester:chosenSemester,academicYear:chosenAcademicYear}))
+      }
+      fetchClasses();
+      
+
+    },[chosenAcademicYear,chosenSemester])
+
+    const rows = useMemo(() => {
+      
+      return classes || [];
+    }, [classes]);
+
+    useEffect(() => {
+      const fetchAcademicYearClass = async() =>{
+        await dispatch(FetchAcademicYearClass ({userId: "I1132"}))
+      }
+      fetchAcademicYearClass();
+    }, []);
+
+
 
     useEffect(() => {
       if(classID!="")
@@ -317,20 +150,28 @@ const LearningOutcome = () => {
 
           <FormControl style={{ minWidth: "200px" }} variant="outlined">
             <InputLabel>Khóa</InputLabel>
-            <Select  label="Chọn khóa">
-                <MenuItem value="class">21</MenuItem>
-                <MenuItem value="course">22</MenuItem>
-                <MenuItem value="subject">23</MenuItem>
+            <Select label="Chọn khóa" onChange={(e)=>handleChangeAcedemicYear(e.target.value)}>
+                <MenuItem value="">Tất cả</MenuItem>
+                {
+                  academicYear.map((item,index)=>{
+                    return (<MenuItem value={item} key={index}>{item}</MenuItem>)
+                  })
+                }
+                
             </Select>
             </FormControl>
 
 
             <FormControl style={{ minWidth: "200px" }} variant="outlined">
-            <InputLabel>Lớp</InputLabel>
-            <Select  label="Chọn lớp">
-                <MenuItem value="class">21CLC05</MenuItem>
-                <MenuItem value="course">21CLC06</MenuItem>
-                <MenuItem value="subject">21CLC07</MenuItem>
+            <InputLabel>Kỳ</InputLabel>
+            <Select label="Chọn kỳ" onChange={(e)=>handleChangeSemester(e.target.value)}>
+                <MenuItem value="">Tất cả</MenuItem>
+                {
+                  semester.map((item,index)=>{
+                    return (<MenuItem value={item} key={index}>{item}</MenuItem>)
+                  })
+                }
+
             </Select>
             </FormControl>
 
@@ -343,7 +184,7 @@ const LearningOutcome = () => {
         <LineDivider></LineDivider>
 
          
-            <ClassListLNO TableHeader={ClassTableHeader} TableContent ={ClassTableContent} setClassID={setClassID} ></ClassListLNO>
+            <ClassListLNO TableHeader={ClassTableHeader} TableContent ={rows} setClassID={setClassID} ></ClassListLNO>
          
         
 

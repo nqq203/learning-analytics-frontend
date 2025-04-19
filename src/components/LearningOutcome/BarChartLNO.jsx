@@ -8,16 +8,16 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 const Bar = dynamic(() => import("react-chartjs-2").then((mod) => mod.Bar), { ssr: false });
 
-const scores = [
-  { name: "Quizz 1", score: 9.7 },
-  { name: "Quizz 2", score: 5.7 },
-  { name: "Quizz 3", score: 6.7 },
-  { name: "Giữa kỳ", score: 7.7 },
-  { name: "Thành phần", score: 8.7 },
-  { name: "Cuối Kỳ", score: 9.7 },
-];
 
-const BarChart = () => {
+
+const BarChart = ({studentGrade}) => {
+  const scores = [
+    { name: "Điểm đồ án",score: studentGrade.projectGrade},
+    { name: "Điểm thực hành",score: studentGrade.practiceGrade },
+    { name: "Điểm giữa kỳ",score: studentGrade.midtermGrade },
+    { name: "Điểm cuối kỳ",score: studentGrade.finalGrade },
+    { name: "Điểm tổng kết",score: studentGrade.totalGrade }
+  ];
   const data = {
     labels: scores.map((item) => item.name),
     datasets: [

@@ -1,8 +1,10 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import StudentListLNO from "@/components/LearningOutcome/StudentListLNO";
 import { useRouter } from "next/router";
 import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { fetchStudent,fetchStudentSearch } from "@/redux/thunk/learningoutcomeThunk";
 
 const LearningOutcomesContainer = styled.div`
     margin: auto;
@@ -21,7 +23,7 @@ const LearningOutComeContainerBody = styled.div`
 const LearningOutComeHeader = styled.div`
   display:flex;
   flex-direction:row;
-  justify-content:space-between;
+  gap:2rem;
   
   align-items:center;
 `
@@ -29,6 +31,7 @@ const LearningOutComeHeader = styled.div`
 const LearningOutComeItemsContainer = styled.div`
   display:flex;
   flex-direction:row;
+
   gap:20px;
 `
 
@@ -65,7 +68,7 @@ const LineDivider = styled.div`
 
 
 
-const TableHeader =  ["MSSV","Họ tên","Lớp","Môn","Khóa","Thành tích dự đoán" ,"Hành Động"];
+const TableHeader =  ["MSSV","Họ tên","Lớp","Môn","Khóa","Chuyên ngành","Kết Quả" ,"Hành Động"];
 
 const TableContent = [
   {
@@ -88,11 +91,52 @@ const TableContent = [
 ]
 
 const StudentContainerLNO = () => {
-    const userId = "12456";
+    const {studentsOverview} = useSelector(state=>state.learningoutcome);
+    const dispatch = useDispatch();
     const [studentID,setStudentID] = useState("");
     const router = useRouter();
     const { classID } = router.query;
+    const [amount,setAmount] = useState(10);
+    const [page,setPage] = useState(1);
+    const [searchKeyword,setSearchKeyword] = useState("");
+    const [searchResult,setSearchResult] = useState("");
 
+    const handleSearch = (value) =>{
+      setSearchKeyword(value)
+
+    }
+    const handleSearchResult = (value) =>{
+      setSearchResult(value);
+
+    }
+    useEffect( () =>{
+        
+        
+          const fetchStudentRow = async() =>{
+              await dispatch(fetchStudentSearch({userId: "I1132",classId:classID, page: 1, amount: amount,search:searchResult}))
+          }
+          fetchStudentRow();
+        
+          
+    
+        },[router])
+    
+    const rows = useMemo(() => {
+      return studentsOverview || [];
+    }, [studentsOverview]);
+
+    useEffect( () =>{
+        
+        
+      const fetchStudentRow = async() =>{
+          await dispatch(fetchStudentSearch({userId: "I1132",classId:classID, page: 1, amount: 10,search:searchResult}))
+      }
+      fetchStudentRow();
+    
+      
+
+    },[searchResult])
+    
     useEffect(() => {
       console.log(`Chuyển sang Students ${studentID}`);
       if(studentID!=""){
@@ -107,27 +151,19 @@ const StudentContainerLNO = () => {
 
       <LearningOutComeContainerBody>
         <LearningOutComeHeader>
-                    <LearningOutComeItemsContainer>
+                    <LearningOutComeItemsContainer style={{ width: "100%" }}>
         
         
-                        <FormControl style={{ minWidth: "40rem" }} variant="outlined">
-                                <TextField id="outlined-basic" label="Tìm kiếm" variant="outlined" />
+                        <FormControl style={{ width: "100%" }} variant="outlined">
+                                <TextField id="outlined-basic" label="Tìm kiếm" variant="outlined" onChange={(e)=>handleSearch(e.target.value)} />
                         </FormControl>
         
-                        <FormControl style={{ minWidth: "12rem" }} variant="outlined">
-                            <InputLabel>Khóa</InputLabel>
-                            <Select  label="Chọn khóa">
-                                <MenuItem value="class">21</MenuItem>
-                                <MenuItem value="course">22</MenuItem>
-                                <MenuItem value="subject">23</MenuItem>
-                            </Select>
-                        </FormControl>
                     </LearningOutComeItemsContainer>
         
-                    <LearningOutComeItemsContainer>
+                    <LearningOutComeItemsContainer style={{ width: "6%" }}>
         
-                        <AnalyticsBtn>Lọc</AnalyticsBtn>
-                        <AnalyticsBtn onClick= {()=>handleNav()}>Dự đoán</AnalyticsBtn>
+                        <AnalyticsBtn onClick={()=>handleSearchResult(searchKeyword)}>Lọc</AnalyticsBtn>
+                        
         
         
                     </LearningOutComeItemsContainer>
@@ -138,7 +174,7 @@ const StudentContainerLNO = () => {
 
         <LineDivider></LineDivider>
 
-          <StudentListLNO TableContent={TableContent} TableHeader={TableHeader} setStudentID={setStudentID}> </StudentListLNO>
+          <StudentListLNO TableContent={rows} TableHeader={TableHeader} setStudentID={setStudentID}> </StudentListLNO>
         
 
        </LearningOutComeContainerBody>
