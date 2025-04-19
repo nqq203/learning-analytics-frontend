@@ -125,7 +125,7 @@ const learningoutcomeSlice = createSlice({
               .addCase(fetchStudentSearch.fulfilled, (state, action) => {
                 state.loading = false;
                 state.studentsOverview = action.payload.data.studentsList;
-                
+                state.totalRecords = action.payload.data.totalRecords;
                 state.code = action.payload.code;
                 state.message = action.payload.message;
                 state.success = action.payload.success;

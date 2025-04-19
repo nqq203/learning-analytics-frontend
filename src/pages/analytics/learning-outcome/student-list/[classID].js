@@ -70,72 +70,60 @@ const LineDivider = styled.div`
 
 const TableHeader =  ["MSSV","Họ tên","Lớp","Môn","Khóa","Chuyên ngành","Kết Quả" ,"Hành Động"];
 
-const TableContent = [
-  {
-      "ID":"1", "MSSV":"21125434", "Name": "Nguyễn Văn A", "Class":"21CLC08", "Subject":"Cơ sở dữ liệu nâng cao", "ClassOf":"2021","PredictAchivement":"Giỏi"
-  },
-  {
-    "ID":"2", "MSSV":"21125435","Name": "Nguyễn Văn B","Class":"21CLC09","Subject":"Cơ sở dữ liệu nâng cao","ClassOf":"2021","PredictAchivement":"Khá"
-  },
-  {
-    "ID":"3","MSSV":"21125435","Name": "Nguyễn Văn C","Class":"21CLC10","Subject":"Cơ sở dữ liệu nâng cao","ClassOf":"2021","PredictAchivement":"Trung bình"
-  }
-  ,
-  {
-    "ID":"4","MSSV":"21125435","Name": "Nguyễn Văn C","Class":"21CLC10","Subject":"Cơ sở dữ liệu nâng cao","ClassOf":"2021","PredictAchivement":"Yếu"
-  }
-  ,
-  {
-    "ID":"5","MSSV":"21125435","Name": "Nguyễn Văn C","Class":"21CLC10","Subject":"Cơ sở dữ liệu nâng cao","ClassOf":"2021","PredictAchivement":"Khá"
-  }
-]
+
 
 const StudentContainerLNO = () => {
-    const {studentsOverview} = useSelector(state=>state.learningoutcome);
+    const {studentsOverview,totalRecords} = useSelector(state=>state.learningoutcome);
+
     const dispatch = useDispatch();
-    const [studentID,setStudentID] = useState("");
     const router = useRouter();
     const { classID } = router.query;
+    const [studentID,setStudentID] = useState("");
+
     const [amount,setAmount] = useState(10);
     const [page,setPage] = useState(1);
+    
     const [searchKeyword,setSearchKeyword] = useState("");
     const [searchResult,setSearchResult] = useState("");
-
-    const handleSearch = (value) =>{
-      setSearchKeyword(value)
-
-    }
-    const handleSearchResult = (value) =>{
-      setSearchResult(value);
-
-    }
-    useEffect( () =>{
-        
-        
-          const fetchStudentRow = async() =>{
-              await dispatch(fetchStudentSearch({userId: "I1132",classId:classID, page: 1, amount: amount,search:searchResult}))
-          }
-          fetchStudentRow();
-        
-          
     
-        },[router])
-    
-    const rows = useMemo(() => {
-      return studentsOverview || [];
-    }, [studentsOverview]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [rows,setRows] = useState([])
 
-    useEffect( () =>{
-        
-        
-      const fetchStudentRow = async() =>{
-          await dispatch(fetchStudentSearch({userId: "I1132",classId:classID, page: 1, amount: 10,search:searchResult}))
+    
+
+    const handleSearch = (value) =>{ setSearchKeyword(value) }
+
+    const handleSearchResult = (value) =>
+      {
+        setSearchResult(value); 
+        setPage(1); // reset page
+        setRows([]); // reset data
       }
-      fetchStudentRow();
     
-      
+    const fetchStudentRow = async() =>{
+        setIsLoading(true)
+        await dispatch(fetchStudentSearch({userId: "I1132",classId:classID, page:page , amount: amount,search:searchResult}))
+        setIsLoading(false);
+    }
 
-    },[searchResult])
+    const handleScrollEnd = () => {
+      if (!isLoading && rows.length < totalRecords) {
+        setPage(prev => prev + 1);
+      }
+    };
+
+    useEffect( () =>{
+          fetchStudentRow();
+        },[searchResult, page])
+    
+    useEffect( ()=>{
+      if(page===1){
+        setRows(studentsOverview)
+      }
+      else{
+        setRows(prev =>[...prev, ...studentsOverview])
+      }
+    },[studentsOverview]) 
     
     useEffect(() => {
       console.log(`Chuyển sang Students ${studentID}`);
@@ -174,7 +162,7 @@ const StudentContainerLNO = () => {
 
         <LineDivider></LineDivider>
 
-          <StudentListLNO TableContent={rows} TableHeader={TableHeader} setStudentID={setStudentID}> </StudentListLNO>
+          <StudentListLNO TableContent={rows} TableHeader={TableHeader} setStudentID={setStudentID} onScrollEnd={handleScrollEnd}> </StudentListLNO>
         
 
        </LearningOutComeContainerBody>

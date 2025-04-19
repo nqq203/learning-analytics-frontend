@@ -11,11 +11,11 @@ const TableChart = ({ studentGrade }) => {
     { name: "Điểm tổng kết",score: studentGrade.totalGrade }
   ];
   return (
-    <>
+    <>  
        <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
                     <tr style={{ borderBottom: "2px solid #ddd" }}>
-                        <th style={{ padding: "8px" }}>Cột điểm</th>
+                        <th style={{ padding: "8px", textAlign: "center" }}>Cột điểm</th>
                         <th style={{ padding: "8px", textAlign: "center" }}>Điểm</th>
 
                     </tr>

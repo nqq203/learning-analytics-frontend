@@ -58,11 +58,10 @@ const ChartBox = styled.div`
     box-shadow:0 1px 5px rgba(0, 0, 0, 0.25);
     background-color:white;
     width:50%;
-    display:flex;
-    flex-direction:column;
+    
     padding:2rem;
     text-align:center;
-    align-items:center;
+    
     
     border-radius:10px;
 
@@ -87,10 +86,12 @@ const BarChartBox=styled.div`
 
 `
 
-const titleChart = styled.div`
-    font-size:1.5rem;
-    font-weight:bold;
+const TitleChart = styled.div`
+    
     text-align:left;
+    margin-bottom:1rem;
+    font-weight:bold;
+    font-size:1.2rem;
 
 
 `
@@ -124,7 +125,10 @@ export default function StudentResultLNO({userId,studentID,classID,studentInfo,s
                 <ChartContainer>
                     <ChartContainer1>
                         <ChartBox>
-                        <h2 style={{textAlign:"left",marginBottom:"1rem"}}>Loại xếp hạng của sinh viên</h2>
+                        
+                            <TitleChart >Loại xếp hạng của sinh viên:<span style={{fontWeight:500}}> {studentGrade.classification}</span></TitleChart>
+
+                        
                             <MyGaugeChart value={studentGrade.finalGrade} >
 
 
@@ -136,7 +140,7 @@ export default function StudentResultLNO({userId,studentID,classID,studentInfo,s
 
 
                         <ChartBox>
-                        <h2 style={{textAlign:"left",marginBottom:"1rem"}}>Điểm của sinh viên</h2>
+                        <TitleChart>Điểm của sinh viên</TitleChart>
                             <TableChart studentGrade={studentGrade}>
 
                             </TableChart>

@@ -32,8 +32,15 @@ const NoContent = styled.div`
 
 
 
-export default function StudentListLNO({TableContent,TableHeader,setStudentID}){
+export default function StudentListLNO({TableContent,TableHeader,setStudentID,onScrollEnd }){
+    const handleScroll = (e) => {
+        const { scrollTop, scrollHeight, clientHeight } = e.target;
+        if (scrollTop + clientHeight >= scrollHeight - 50) {
+          onScrollEnd(); // Gọi hàm callback khi gần chạm đáy
+        }
+      };
 
+    
 
     return(
         <>
@@ -41,8 +48,12 @@ export default function StudentListLNO({TableContent,TableHeader,setStudentID}){
             
                       <TableContainer style={{
                 maxHeight: "650px",
-                overflow: "auto"}}>
-                    <table style={{ width: "100%", borderCollapse: "collapse",backgroundColor: "white" }}>
+                overflow: "auto"}}
+                onScroll={handleScroll}>
+                    <table 
+                    style={{ width: "100%", borderCollapse: "collapse",backgroundColor: "white" }}
+                    
+                    >
                         <thead  style={{
                             position: "sticky", 
                             top:0,

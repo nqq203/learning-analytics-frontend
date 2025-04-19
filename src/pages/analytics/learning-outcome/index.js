@@ -82,32 +82,61 @@ const LearningOutcome = () => {
     const [subjectID,setsubjectID] = useState("");
     const router = useRouter();
 
-    // const [semester,setSemester] = useState([])
+    const [amount,setAmount] = useState(10);
+    const [page,setPage] = useState(1);
+
     const [chosenAcademicYear,setChosenAcademicYear] = useState("");
     const [chosenSemester,setChosenSemester] = useState("");
 
-    const handleChangeSemester = (value) =>{
-      setChosenSemester(value)
-    }
+    const [searchKeyword,setSearchKeyword] = useState("");
+    const [searchResult,setSearchResult] = useState("");
+        
+    const [isLoading, setIsLoading] = useState(false);
+    const [rows,setRows] = useState([])
+
+
+    const handleChangeSemester = (value) =>
+      {
+        setChosenSemester(value)
+        setPage(1); // reset page
+        setRows([]); // reset data
+      }
 
     const handleChangeAcedemicYear = (value)=>{
-      setChosenAcademicYear(value) 
-    }
-    
-    useEffect( () =>{
-      const fetchClasses = async() =>{
-          
-          await dispatch(fetchFilteredClasses ({userId: "I1132", page: 1, amount: 10,semester:chosenSemester,academicYear:chosenAcademicYear}))
+        setChosenAcademicYear(value) 
+        setPage(1); // reset page
+        setRows([]); // reset data
       }
+
+    const fetchClasses = async() =>{
+      setIsLoading(true)
+      await dispatch(fetchFilteredClasses ({userId: "I1132", page: page, amount: amount,semester:chosenSemester,academicYear:chosenAcademicYear}))
+      setIsLoading(false)
+    }
+
+    const handleScrollEnd = () => {
+      if (!isLoading && rows.length < totalRecords) {
+        setPage(prev => prev + 1);
+      }
+    };
+
+    useEffect( () =>{
       fetchClasses();
-      
+    },[chosenAcademicYear,chosenSemester,page])
 
-    },[chosenAcademicYear,chosenSemester])
 
-    const rows = useMemo(() => {
+    useEffect( ()=>{
+          if(page===1){
+            setRows(classes)
+          }
+          else{
+            setRows(prev =>[...prev, ...classes])
+          }
+        },[classes]) 
+    // const rows = useMemo(() => {
       
-      return classes || [];
-    }, [classes]);
+    //   return classes || [];
+    // }, [classes]);
 
     useEffect(() => {
       const fetchAcademicYearClass = async() =>{
@@ -184,7 +213,7 @@ const LearningOutcome = () => {
         <LineDivider></LineDivider>
 
          
-            <ClassListLNO TableHeader={ClassTableHeader} TableContent ={rows} setClassID={setClassID} ></ClassListLNO>
+            <ClassListLNO TableHeader={ClassTableHeader} TableContent ={rows} setClassID={setClassID} onScrollEnd={handleScrollEnd}></ClassListLNO>
          
         
 

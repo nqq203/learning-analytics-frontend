@@ -22,8 +22,13 @@ const TableContainer = styled.div`
 
 
 
-export default function ClassListLNO({TableHeader,TableContent,setClassID}){
-
+export default function ClassListLNO({TableHeader,TableContent,setClassID,onScrollEnd}){
+    const handleScroll = (e) => {
+        const { scrollTop, scrollHeight, clientHeight } = e.target;
+        if (scrollTop + clientHeight >= scrollHeight - 50) {
+          onScrollEnd(); // Gọi hàm callback khi gần chạm đáy
+        }
+      };
     
     const handleClick=(Classid)=>{
         setClassID(Classid);
@@ -41,7 +46,9 @@ export default function ClassListLNO({TableHeader,TableContent,setClassID}){
                       
               <TableContainer style={{
                 maxHeight: "650px",
-                overflow: "auto"}}>
+                overflow: "auto"}}
+                onScroll={handleScroll}
+                >
                     <table style={{ width: "100%", borderCollapse: "collapse",backgroundColor: "white" }}>
                         <thead  style={{
                             position: "sticky", 
