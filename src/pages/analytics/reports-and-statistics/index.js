@@ -1,30 +1,31 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { ActionButton, Container, Header } from "@/components/Analytics/Styles/Styles";
-import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
+import {
+  TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import AnalyticsTable from "@/components/Analytics/Table/Table";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
+import {
+  fetchClassesByLecturer,
+  searchClasses,
+  searchStudents,
+} from "@/redux/thunk/analyticsThunk";
 
 const ClassesList = () => {
-  const { totalRecords, classes } = useSelector(state => state.analytics);
+  const { totalRecords, classes } = useSelector((state) => state.analytics);
+  console.log(classes);
   const dispatch = useDispatch();
-  const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
-  // const [rows, setRows] = useState([
-  //   { id: 1, subject: "Cơ sở dữ liệu", class: "21CLC05", department: 21, students: 50, rate: 85 },
-  //   { id: 2, subject: "Cơ sở dữ liệu", class: "21CLC07", department: 21, students: 45, rate: 70 },
-  //   { id: 3, subject: "Cơ sở dữ liệu", class: "22CLC01", department: 22, students: 40, rate: 85 },
-  //   { id: 4, subject: "Cơ sở dữ liệu nâng cao", class: "21HTTT1", department: 21, students: 50, rate: 85 },
-  //   { id: 5, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-  //   { id: 6, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-  //   { id: 7, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-  //   { id: 8, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-  //   { id: 9, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-  //   { id: 10, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-  //   { id: 11, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-  //   { id: 12, subject: "Cơ sở dữ liệu nâng cao", class: "22HTTT1", department: 22, students: 50, rate: 85 },
-  // ]);
+
   const rows = useMemo(() => {
     return classes || [];
   }, [classes]);
@@ -37,13 +38,21 @@ const ClassesList = () => {
 
   useEffect(() => {
     const fetchClasses = async () => {
-      await dispatch(fetchClassesByLecturer({userId: 1, page: 1, amount: 10}));
+      await dispatch(
+        fetchClassesByLecturer({ userId: 83, page: 1, amount: 10 })
+      );
     };
     fetchClasses();
   }, []);
 
+  const handleSearch = () => {
+    dispatch(
+      searchClasses({ search: search, userId: 83, page: 1, amount: 10 })
+    );
+  };
+
   const columns = [
-    { id: "subjectName", label: "Môn học", align: "left" },
+    { id: "courseName", label: "Môn học", align: "left" },
     { id: "className", label: "Lớp", align: "left" },
     { id: "academicYear", label: "Khóa", align: "center" },
     { id: "totalStudents", label: "Số sinh viên", align: "center" },
@@ -54,70 +63,50 @@ const ClassesList = () => {
     setSearch(e.target.value);
   };
 
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-  };
-
   const handleViewClass = (classId) => {
     router.push(`/analytics/reports-and-statistics/${btoa(classId)}`);
   };
-
-  const filteredRows = rows.filter((row) => {
-    return (
-      row.subjectName.toLowerCase().includes(search.toLowerCase()) ||
-      row.className.toLowerCase().includes(search.toLowerCase())
-    );
-  });
 
   return (
     <Container>
       <Header>
         <TextField
+          placeholder="Môn học, Lớp, Khóa"
           variant="outlined"
           label="Tìm kiếm"
           value={search}
           onChange={handleSearchChange}
           style={{ width: "90%" }}
         />
-        <ActionButton variant="contained" style={{ fontWeight: "700", fontSize: "14px" }}>Tìm kiếm</ActionButton>
-        <FormControl style={{ width: '20%' }}>
-          <InputLabel>Môn học</InputLabel>
-          <Select
-            // value={sortOption}
-            // onChange={handleSortChange}
-            label="Môn học"
-          >
-            {/* <MenuItem value="identificationCode">Môn học</MenuItem>
-            <MenuItem value="fullName">Lớp</MenuItem> */}
-          </Select>
-        </FormControl>
-        <FormControl style={{ width: '20%' }}>
-          <InputLabel>Lớp</InputLabel>
-          <Select
-            // value={sortOption}
-            // onChange={handleSortChange}
-            label="Lớp"
-          >
-            {/* <MenuItem value="identificationCode">Môn học</MenuItem>
-            <MenuItem value="fullName">Lớp</MenuItem> */}
-          </Select>
-        </FormControl>
-        <ActionButton variant="contained" style={{ fontWeight: "700", fontSize: "14px" }}>Lọc</ActionButton>
+        <ActionButton
+          variant="contained"
+          style={{ fontWeight: "700", fontSize: "14px" }}
+          onClick={() => handleSearch()}
+        >
+          Tìm kiếm
+        </ActionButton>
       </Header>
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-      }}>
-        <span style={{
-          paddingLeft: "20px",
-          paddingTop: "20px",
-          fontSize: "20px",
-          fontWeight: "700",
-        }}>Tổng số lớp hiển thị: {totalStudents}</span>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <span
+          style={{
+            paddingLeft: "20px",
+            paddingTop: "20px",
+            fontSize: "20px",
+            fontWeight: "700",
+          }}
+        >
+          Tổng số lớp hiển thị: {totalStudents}
+        </span>
         <AnalyticsTable
-          filteredRows={filteredRows}
+          filteredRows={rows}
           columns={columns}
-          handleActions={handleViewClass} />
+          handleActions={handleViewClass}
+        />
       </div>
     </Container>
   );

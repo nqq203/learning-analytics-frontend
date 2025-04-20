@@ -6,7 +6,7 @@ export const getTabTitle = (pathname) => {
     if (pathname.startsWith("/analytics/reports-and-statistics")) {
         // If there's only one segment after "/analytics", return "DANH SÁCH SINH VIÊN"
         if (pathSegments.length === 2) {
-            return "DANH SÁCH SINH VIÊN";
+            return "DANH SÁCH LỚP/MÔN";
         }
         // If there are more than one segment after "/analytics", return "THỐNG KÊ KẾT QUẢ HỌC TẬP"
         else if (pathSegments.length > 2) {
