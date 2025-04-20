@@ -1,8 +1,11 @@
 "use client";
 import styled from "styled-components";
-import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import StudentResultLNO from "@/components/LearningOutcome/StudentResultLNO";
+import React, { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchStudentDetail } from "@/redux/thunk/learningoutcomeThunk";
+
 const LearningOutcomesContainer = styled.div`
     margin: auto;
     width: 97%;
@@ -85,10 +88,36 @@ const NextBtn = styled.div`
 `
 
 export default function StudentAnalytics() {
+    const {courseInfo,grades,studentInfo} = useSelector(state=>state.learningoutcome);
+    const dispatch = useDispatch();
     const [userID,setUserID] = useState("123")
     const router = useRouter();
-    const { classID, subjectID, studentID } = router.query;
+    const { classID, studentID } = router.query;
+    useEffect( () =>{
+            
+            
+              const fetchStudentRow = async() =>{
+                  console.log("classID ne",classID)
+                  await dispatch(fetchStudentDetail({userId: "I1132",classId:classID,studentId:studentID}))
+              }
+              fetchStudentRow();
+            },[router])
 
+    const courseInfo_Student = useMemo(() => {
+          
+          return courseInfo || [];
+        }, [courseInfo]);
+
+    const grades_Student = useMemo(() => {
+
+          return grades || [];
+        }, [grades]);
+    
+    const studentInfo_Student = useMemo(() => {
+          
+          return studentInfo || [];
+        }, [studentInfo]);
+    
 
     return (
       < LearningOutcomesContainer >
@@ -106,7 +135,7 @@ export default function StudentAnalytics() {
                     </DropdownTitle>
 
                     <DropdownTitleSelect disabled>
-                        <option>Cơ Sở Dữ Liệu Nâng Cao 1</option>
+                        <option>{courseInfo.courseName}</option>
                     </DropdownTitleSelect>
 
 
@@ -119,7 +148,7 @@ export default function StudentAnalytics() {
                     </DropdownTitle>
 
                     <DropdownTitleSelect disabled>
-                        <option>21HTTT01</option>
+                        <option>{courseInfo.className}</option>
                     </DropdownTitleSelect>
                   
                   </DropdownTitleContainer>
@@ -135,7 +164,7 @@ export default function StudentAnalytics() {
       
               <LineDivider></LineDivider>
 
-                <StudentResultLNO userId={userID} studentID={studentID} classID={classID} subjectID={subjectID}></StudentResultLNO>
+                <StudentResultLNO userId={userID} studentID={studentID} classID={classID} studentInfo={studentInfo_Student} studentGrade={grades_Student}></StudentResultLNO>
                 
               
       

@@ -57,11 +57,12 @@ const ChartContainer1 = styled.div`
 const ChartBox = styled.div`
     box-shadow:0 1px 5px rgba(0, 0, 0, 0.25);
     background-color:white;
-    width:100%;
+    width:50%;
+    
     padding:2rem;
     text-align:center;
-    align-items:center;
-    justify-content:center;
+    
+    
     border-radius:10px;
 
 `
@@ -85,15 +86,17 @@ const BarChartBox=styled.div`
 
 `
 
-const titleChart = styled.div`
-    font-size:1.5rem;
-    font-weight:bold;
+const TitleChart = styled.div`
+    
     text-align:left;
+    margin-bottom:1rem;
+    font-weight:bold;
+    font-size:1.2rem;
 
 
 `
 
-export default function StudentResultLNO({userId,studentID,classID,subjectID}){
+export default function StudentResultLNO({userId,studentID,classID,studentInfo,studentGrade}){
 
 
     const studentScore = 6.5;
@@ -110,7 +113,7 @@ export default function StudentResultLNO({userId,studentID,classID,subjectID}){
                     </DropdownTitle>
 
                     <DropdownTitleSelect disabled>
-                        <option>21127638 - To Khanh Linh</option>
+                        <option>{`${studentInfo.studentId} - ${studentInfo.fullName}`}</option>
                     </DropdownTitleSelect>
 
 
@@ -122,8 +125,11 @@ export default function StudentResultLNO({userId,studentID,classID,subjectID}){
                 <ChartContainer>
                     <ChartContainer1>
                         <ChartBox>
-                        <h2 style={{textAlign:"left",marginBottom:"1rem"}}>Loại xếp hạng của sinh viên</h2>
-                            <MyGaugeChart value={studentScore} >
+                        
+                            <TitleChart >Loại xếp hạng của sinh viên:<span style={{fontWeight:500}}> {studentGrade.classification}</span></TitleChart>
+
+                        
+                            <MyGaugeChart value={studentGrade.finalGrade} >
 
 
 
@@ -134,8 +140,8 @@ export default function StudentResultLNO({userId,studentID,classID,subjectID}){
 
 
                         <ChartBox>
-                        <h2 style={{textAlign:"left",marginBottom:"1rem"}}>Điểm của sinh viên</h2>
-                            <TableChart studentID={studentID} classID={classID} subjectID={subjectID}>
+                        <TitleChart>Điểm của sinh viên</TitleChart>
+                            <TableChart studentGrade={studentGrade}>
 
                             </TableChart>
                         </ChartBox>
@@ -154,7 +160,7 @@ export default function StudentResultLNO({userId,studentID,classID,subjectID}){
                     
                         <BarChartBox>
                         <h2 style={{textAlign:"left",marginBottom:"1rem"}}>Thống kê điểm</h2>
-                            <BarChart></BarChart>
+                            <BarChart studentGrade={studentGrade}></BarChart>
                         </BarChartBox>
                     
                 </BarChartContainer1>

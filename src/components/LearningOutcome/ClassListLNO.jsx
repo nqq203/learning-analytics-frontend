@@ -22,8 +22,13 @@ const TableContainer = styled.div`
 
 
 
-export default function ClassListLNO({TableHeader,TableContent,setClassID}){
-
+export default function ClassListLNO({TableHeader,TableContent,setClassID,onScrollEnd}){
+    const handleScroll = (e) => {
+        const { scrollTop, scrollHeight, clientHeight } = e.target;
+        if (scrollTop + clientHeight >= scrollHeight - 50) {
+          onScrollEnd(); // Gọi hàm callback khi gần chạm đáy
+        }
+      };
     
     const handleClick=(Classid)=>{
         setClassID(Classid);
@@ -37,11 +42,13 @@ export default function ClassListLNO({TableHeader,TableContent,setClassID}){
             
             
                       
-              <FilterBoard></FilterBoard>
+              {/* <FilterBoard></FilterBoard> */}
                       
               <TableContainer style={{
                 maxHeight: "650px",
-                overflow: "auto"}}>
+                overflow: "auto"}}
+                onScroll={handleScroll}
+                >
                     <table style={{ width: "100%", borderCollapse: "collapse",backgroundColor: "white" }}>
                         <thead  style={{
                             position: "sticky", 
@@ -75,15 +82,18 @@ export default function ClassListLNO({TableHeader,TableContent,setClassID}){
                                 TableContent.map((item, index) => (
                                 <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
                                     <td style={{ textAlign: "center",padding: "1rem" }}>{index+1}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.ClassName}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.ClassOf}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Program}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Falculity}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Specialized}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.className}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.academicYear}</td>
+
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.courseName}</td>
+
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.semester}</td>
+
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.credit}</td>
                                     
                                     
                                     <td style={{ textAlign: "center",padding: "1rem" }}>
-                                        <IconButton onClick={()=>handleClick(item.ID) }
+                                        <IconButton onClick={()=>handleClick(item.id) }
                                         style={{zIndex: 10 }}>
                                             <VisibilityIcon style={{zIndex: 10 }} color="primary" />
                                         </IconButton>
