@@ -69,16 +69,34 @@ const NotificationsPage = () => {
   };
 
   return (
-    <Container maxWidth="lg" style={{ marginTop: '40px' }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
+    <Container
+      maxWidth={false}
+      sx={{
+        p: 0,
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Typography
+        variant="h4"
+        fontWeight="bold"
+        gutterBottom
+        sx={{
+          fontSize: '2.5vw',
+          '@media (max-width:600px)': { fontSize: '6vw' },
+          marginBottom: '2vh',
+          marginTop: '2vh',
+        }}
+      >
         Thông báo
       </Typography>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} sx={{ flexGrow: 1 }}>
         {/* Sidebar danh sách thông báo */}
         <Grid item xs={12} md={4}>
           <Box
             sx={{
-              height: '500px',
+              height: 'calc(100vh - 120px)', 
               overflowY: 'auto',
               pr: 1,
               border: '1px solid #ddd',
@@ -91,18 +109,36 @@ const NotificationsPage = () => {
                 onClick={() => setSelectedId(n.id)}
                 elevation={3}
                 sx={{
-                  padding: 2,
-                  marginBottom: 2,
+                  p: '1.5vw',
+                  mb: '2vh',
                   cursor: 'pointer',
-                  border: n.id === selectedId ? '2px solid #2e7d32' : '1px solid #ccc',
-                  backgroundColor: n.id === selectedId ? '#c8e6c9' : '#fff',
+                  border: n.id === selectedId ? '2px solid #1976D2' : '1px solid #ccc',
+                  backgroundColor: n.id === selectedId ? '#BBDEFB' : '#fff',
                   '&:hover': {
                     backgroundColor: '#f1f8ff',
                   },
                 }}
               >
-                <Typography variant="subtitle1" fontWeight="bold">{n.title}</Typography>
-                <Typography variant="caption" color="textSecondary">{n.time}</Typography>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  sx={{
+                    fontSize: '16px',
+                    '@media (max-width:600px)': { fontSize: '11px' },
+                  }}
+                >
+                  {n.title}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="textSecondary"
+                  sx={{
+                    fontSize: '12px',
+                    '@media (max-width:600px)': { fontSize: '8px' },
+                  }}
+                >
+                  {n.time}
+                </Typography>
               </Paper>
             ))}
           </Box>
@@ -114,28 +150,74 @@ const NotificationsPage = () => {
             <Paper
               elevation={3}
               sx={{
-                padding: 3,
+                p: '2vw',
                 border: '2px solid #1976d2',
                 borderRadius: 2,
                 backgroundColor: '#f9fafb',
+                height: 'calc(100vh - 120px)', 
+                overflowY: 'auto',
               }}
             >
-              <Typography variant="h6" fontWeight="bold">{selected.title}</Typography>
-              <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{
+                  fontSize: '22px',
+                  '@media (max-width:600px)': { fontSize: '15px' },
+                }}
+              >
+                {selected.title}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                sx={{
+                  mb: '2vh',
+                  fontSize: '14px',
+                  '@media (max-width:600px)': { fontSize: '11px' },
+                }}
+              >
                 by System - {selected.time}
               </Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  mb: 1,
+                  fontSize: '16px',
+                  '@media (max-width:600px)': { fontSize: '11px' },
+                }}
+              >
                 Môn: <b>{selected.subject}</b>
               </Typography>
-              <Typography variant="body1" sx={{ mb: 1 }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  mb: 1,
+                  fontSize: '16px',
+                  '@media (max-width:600px)': { fontSize: '11px' },
+                }}
+              >
                 Lớp: <b>{selected.class}</b>
               </Typography>
-              <Typography variant="body1" sx={{ mb: 2 }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  mb: '2vh',
+                  fontSize: '16px',
+                  '@media (max-width:600px)': { fontSize: '11px' },
+                }}
+              >
                 {selected.content}
               </Typography>
               <Typography
                 variant="body1"
-                sx={{ fontStyle: 'italic', textDecoration: 'underline', cursor: 'pointer' }}
+                sx={{
+                  fontStyle: 'italic',
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  '@media (max-width:600px)': { fontSize: '11px' },
+                }}
                 onClick={handleNavigateToAlerts}
               >
                 Danh sách sinh viên
