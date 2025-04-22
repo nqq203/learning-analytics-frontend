@@ -39,7 +39,7 @@ const ClassesList = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       await dispatch(
-        fetchClassesByLecturer({ userId: 83, page: 1, amount: 10 })
+        fetchClassesByLecturer({ userId: "I1266" , page: 1, amount: 10 })
       );
     };
     fetchClasses();
@@ -47,7 +47,7 @@ const ClassesList = () => {
 
   const handleSearch = () => {
     dispatch(
-      searchClasses({ search: search, userId: 83, page: 1, amount: 10 })
+      searchClasses({ search: search, userId: "I1266" , page: 1, amount: 10 })
     );
   };
 
@@ -103,7 +103,7 @@ const ClassesList = () => {
           Tổng số lớp hiển thị: {totalStudents}
         </span>
         <AnalyticsTable
-          filteredRows={rows}
+          filteredRows={rows}y
           columns={columns}
           handleActions={handleViewClass}
         />
