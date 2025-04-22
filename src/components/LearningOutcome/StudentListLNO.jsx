@@ -1,4 +1,3 @@
-import FilterBoard from "./FilterBoard";
 import { Card, CardContent, IconButton, Checkbox, Button, Tab } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import styled from "styled-components";
@@ -33,22 +32,28 @@ const NoContent = styled.div`
 
 
 
-export default function StudentListLNO({TableContent,TableHeader,subjectID,setStudentID}){
+export default function StudentListLNO({TableContent,TableHeader,setStudentID,onScrollEnd }){
+    const handleScroll = (e) => {
+        const { scrollTop, scrollHeight, clientHeight } = e.target;
+        if (scrollTop + clientHeight >= scrollHeight - 50) {
+          onScrollEnd(); // Gọi hàm callback khi gần chạm đáy
+        }
+      };
 
+    
 
     return(
         <>
             <LearningOutcomeBody>
             
-            
-                      <div className="LearningOutComeTabFilterBody-Container">
-                        <FilterBoard></FilterBoard>
-                      </div>
-            
                       <TableContainer style={{
                 maxHeight: "650px",
-                overflow: "auto"}}>
-                    <table style={{ width: "100%", borderCollapse: "collapse",backgroundColor: "white" }}>
+                overflow: "auto"}}
+                onScroll={handleScroll}>
+                    <table 
+                    style={{ width: "100%", borderCollapse: "collapse",backgroundColor: "white" }}
+                    
+                    >
                         <thead  style={{
                             position: "sticky", 
                             top:0,
@@ -80,17 +85,17 @@ export default function StudentListLNO({TableContent,TableHeader,subjectID,setSt
                                 TableContent.length>0?
                                 TableContent.map((item, index) => (
                                 <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{index+1}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.MSSV}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Name}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Class}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Subject}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.ClassOf}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.PredictAchivement}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.studentId}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.fullName}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.className}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.courseName}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.academicYear}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.majorName}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.totalGrade}</td>
                                     
                                     
                                     <td style={{ textAlign: "center",padding: "1rem" }}>
-                                        <IconButton onClick={()=>setStudentID(item.ID) }
+                                        <IconButton onClick={()=>setStudentID(item.studentId) }
                                         style={{zIndex: 10 }}>
                                             <VisibilityIcon style={{zIndex: 10 }} color="primary" />
                                         </IconButton>

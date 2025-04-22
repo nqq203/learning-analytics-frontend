@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
+import { TokenProvider } from "@/context/TokenProvider";  
 import "../styles/global.css";
 
 export default function App({ Component, pageProps }) {
@@ -10,13 +11,15 @@ export default function App({ Component, pageProps }) {
     
     return (
         <Provider store={store}>
-            {Component.unauthorized ? (
-                <Component {...pageProps} />
-            ) : (
-                <RootLayout>
+            <TokenProvider>  
+                {Component.unauthorized ? (
                     <Component {...pageProps} />
-                </RootLayout>
-            )}
+                ) : (
+                    <RootLayout>
+                        <Component {...pageProps} />
+                    </RootLayout>
+                )}
+            </TokenProvider>
         </Provider>
-    )
+    );
 }

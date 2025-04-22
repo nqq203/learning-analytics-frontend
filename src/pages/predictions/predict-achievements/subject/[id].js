@@ -35,6 +35,7 @@ const LearningOutComeItemsContainer = styled.div`
 
 
 const AnalyticsBtn = styled.div`
+    cursor:pointer;
     padding-inline:2rem;
     padding-block:1rem;
     color:white;

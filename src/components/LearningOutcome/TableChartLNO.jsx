@@ -1,21 +1,21 @@
 "use client";
 
-const scores = [
-    { name: "Quizz 1", score: 9.7 },
-    { name: "Quizz 2", score: 9.7 },
-    { name: "Quizz 3", score: 9.7 },
-    { name: "Giữa kỳ", score: 9.7 },
-    { name: "Thành phần", score: 9.7 },
-    { name: "Cuối Kỳ", score: 9.7 },
-  ];
 
-const TableChart = ({ studentID,classID,subjectID }) => {
+
+const TableChart = ({ studentGrade }) => {
+  const scores = [
+    { name: "Điểm đồ án",score: studentGrade.projectGrade},
+    { name: "Điểm thực hành",score: studentGrade.practiceGrade },
+    { name: "Điểm giữa kỳ",score: studentGrade.midtermGrade },
+    { name: "Điểm cuối kỳ",score: studentGrade.finalGrade },
+    { name: "Điểm tổng kết",score: studentGrade.totalGrade }
+  ];
   return (
-    <>
+    <>  
        <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
                     <tr style={{ borderBottom: "2px solid #ddd" }}>
-                        <th style={{ padding: "8px" }}>Cột điểm</th>
+                        <th style={{ padding: "8px", textAlign: "center" }}>Cột điểm</th>
                         <th style={{ padding: "8px", textAlign: "center" }}>Điểm</th>
 
                     </tr>

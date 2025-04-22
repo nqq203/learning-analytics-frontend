@@ -41,9 +41,9 @@ export default function SubjectListLNO({TableHeader,TableContent,setSubjectID}){
             <LearningOutcomeBody>
             
             
-                      <div className="LearningOutComeTabFilterBody-Container">
+                      {/* <div className="LearningOutComeTabFilterBody-Container">
                         <FilterBoard></FilterBoard>
-                      </div>
+                      </div> */}
             
                       <TableContainer style={{
                 maxHeight: "650px",

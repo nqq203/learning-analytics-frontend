@@ -92,7 +92,7 @@ const MyGaugeChart = ({ value }) => {
       ],
     }
   }}
-  value={6.5}
+  value={value}
   minValue={0}
   maxValue={10.0}
 />

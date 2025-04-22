@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+<<<<<<< HEAD
 import { ActionButton, Container, Header } from "@/components/Analytics/Styles/Styles";
 import { TextField, FormControl, InputLabel, MenuItem, Select, IconButton } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search'; 
@@ -8,13 +9,36 @@ import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
 import InputAdornment from '@mui/material/InputAdornment';
+=======
+import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
+import {
+  TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import AnalyticsTable from "@/components/Analytics/Table/Table";
+import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchClassesByLecturer,
+  searchClasses,
+  searchStudents,
+} from "@/redux/thunk/analyticsThunk";
+>>>>>>> main
 
 const ClassesList = () => {
-  const { totalRecords, classes } = useSelector(state => state.analytics);
+  const { totalRecords, classes } = useSelector((state) => state.analytics);
+  console.log(classes);
   const dispatch = useDispatch();
-  const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
 
+<<<<<<< HEAD
   const [filterSubject, setFilterSubject] = useState("");
   const [filterClass, setFilterClass] = useState("");
 
@@ -28,6 +52,8 @@ const ClassesList = () => {
   const handleFilter = () => {
     console.log("Lọc với Môn học:", filterSubject, "và Lớp:", filterClass);
   };
+=======
+>>>>>>> main
   const rows = useMemo(() => {
     return classes || [];
   }, [classes]);
@@ -44,13 +70,25 @@ const ClassesList = () => {
 
   useEffect(() => {
     const fetchClasses = async () => {
+<<<<<<< HEAD
       await dispatch(fetchClassesByLecturer({ userId: 1, page: 1, amount: 10 }));
+=======
+      await dispatch(
+        fetchClassesByLecturer({ userId: 83, page: 1, amount: 10 })
+      );
+>>>>>>> main
     };
     fetchClasses();
   }, []);
 
+  const handleSearch = () => {
+    dispatch(
+      searchClasses({ search: search, userId: 83, page: 1, amount: 10 })
+    );
+  };
+
   const columns = [
-    { id: "subjectName", label: "Môn học", align: "left" },
+    { id: "courseName", label: "Môn học", align: "left" },
     { id: "className", label: "Lớp", align: "left" },
     { id: "academicYear", label: "Khóa", align: "center" },
     { id: "totalStudents", label: "Số sinh viên", align: "center" },
@@ -61,23 +99,13 @@ const ClassesList = () => {
     setSearch(e.target.value);
   };
 
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-  };
-
   const handleViewClass = (classId) => {
     router.push(`/analytics/reports-and-statistics/${btoa(classId)}`);
   };
 
-  const filteredRows = rows.filter((row) => {
-    return (
-      row.subjectName.toLowerCase().includes(search.toLowerCase()) ||
-      row.className.toLowerCase().includes(search.toLowerCase())
-    );
-  });
-
   return (
     <Container>
+<<<<<<< HEAD
       <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
           <TextField
@@ -148,10 +176,43 @@ const ClassesList = () => {
 
       <div style={{ display: "flex", flexDirection: "column" }}>
         <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "15px", fontWeight: "540", color: "#1976D2" }}>
+=======
+      <Header>
+        <TextField
+          placeholder="Môn học, Lớp, Khóa"
+          variant="outlined"
+          label="Tìm kiếm"
+          value={search}
+          onChange={handleSearchChange}
+          style={{ width: "90%" }}
+        />
+        <ActionButton
+          variant="contained"
+          style={{ fontWeight: "700", fontSize: "14px" }}
+          onClick={() => handleSearch()}
+        >
+          Tìm kiếm
+        </ActionButton>
+      </Header>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <span
+          style={{
+            paddingLeft: "20px",
+            paddingTop: "20px",
+            fontSize: "20px",
+            fontWeight: "700",
+          }}
+        >
+>>>>>>> main
           Tổng số lớp hiển thị: {totalStudents}
         </span>
         <AnalyticsTable
-          filteredRows={filteredRows}
+          filteredRows={rows}
           columns={columns}
           handleActions={handleViewClass}
         />
