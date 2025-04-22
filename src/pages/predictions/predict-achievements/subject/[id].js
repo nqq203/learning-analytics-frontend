@@ -106,7 +106,9 @@ const SubjectStudentContainer = () => {
       }
       else{
         const encodedData = encodeURIComponent(JSON.stringify(chosenStudent));
-        router.push(`/predictions/predict-achievements/improvement-suggestion?data=${encodedData}`);
+        //router.push(`/predictions/predict-achievements/improvement-suggestion?data=${encodedData}`);
+        //const encodedData = encodeURIComponent(JSON.stringify(chosenStudent));
+        router.push(`/predictions/predict-achievements/send-noti?data=${encodedData}`);
       }
     }
 
