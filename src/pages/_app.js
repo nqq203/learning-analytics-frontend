@@ -5,13 +5,15 @@ import { Provider } from "react-redux";
 import { store } from "@/redux/store";
 import { TokenProvider } from "@/context/TokenProvider";  
 import "../styles/global.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App({ Component, pageProps }) {
     const router = useRouter();
-    
-    return (
+      
+      return (
         <Provider store={store}>
-            <TokenProvider>  
+            <TokenProvider>
                 {Component.unauthorized ? (
                     <Component {...pageProps} />
                 ) : (
@@ -20,6 +22,7 @@ export default function App({ Component, pageProps }) {
                     </RootLayout>
                 )}
             </TokenProvider>
+            <ToastContainer />
         </Provider>
     );
 }
