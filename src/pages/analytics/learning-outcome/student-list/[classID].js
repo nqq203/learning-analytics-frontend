@@ -114,7 +114,7 @@ const StudentContainerLNO = () => {
 
     useEffect( () =>{
           fetchStudentRow();
-        },[searchResult, page])
+        },[router,searchResult, page])
     
     useEffect( ()=>{
       if(page===1){
