@@ -40,12 +40,6 @@ const ClassesList = () => {
 
   const router = useRouter();
 
-  const handleSearch = () => {
-    dispatch(
-      searchClasses({ search: search, userId: 83, page: 1, amount: 10 })
-    );
-  };
-
   const handleSubjectChange = (event) => {
     setFilterSubject(event.target.value);
   };
