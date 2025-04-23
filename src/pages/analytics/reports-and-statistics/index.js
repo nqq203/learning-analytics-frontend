@@ -22,7 +22,6 @@ import {
 
 const ClassesList = () => {
   const { totalRecords, classes } = useSelector((state) => state.analytics);
-  console.log(classes);
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
 
@@ -64,7 +63,7 @@ const ClassesList = () => {
   };
 
   const handleViewClass = (classId) => {
-    router.push(`/analytics/reports-and-statistics/${btoa(classId)}`);
+    router.push(`/analytics/reports-and-statistics/${classId}`);
   };
 
   return (
@@ -103,7 +102,7 @@ const ClassesList = () => {
           Tổng số lớp hiển thị: {totalStudents}
         </span>
         <AnalyticsTable
-          filteredRows={rows}y
+          filteredRows={rows}
           columns={columns}
           handleActions={handleViewClass}
         />

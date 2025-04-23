@@ -42,7 +42,7 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
                     <VisibilityIcon
                       color="primary"
                       style={{ cursor: "pointer" }}
-                      onClick={() => handleActions(row?.id)} />
+                      onClick={() => handleActions(row.classId)} />
                   </TableCell>}
                 </TableRow>
               ))}</Fragment> :
