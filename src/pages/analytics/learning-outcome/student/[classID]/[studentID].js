@@ -94,14 +94,12 @@ export default function StudentAnalytics() {
     const router = useRouter();
     const { classID, studentID } = router.query;
     useEffect( () =>{
-            
-            
+      
               const fetchStudentRow = async() =>{
-                  console.log("classID ne",classID)
                   await dispatch(fetchStudentDetail({userId: "I1132",classId:classID,studentId:studentID}))
               }
               fetchStudentRow();
-            },[router])
+            },[router.query,classID,studentID])
 
     const courseInfo_Student = useMemo(() => {
           
@@ -120,7 +118,7 @@ export default function StudentAnalytics() {
     
 
     return (
-      < LearningOutcomesContainer >
+      < LearningOutcomesContainer key={studentID}>
       
       
             <LearningOutComeContainerBody>
@@ -135,7 +133,7 @@ export default function StudentAnalytics() {
                     </DropdownTitle>
 
                     <DropdownTitleSelect disabled>
-                        <option>{courseInfo.courseName}</option>
+                        <option>{courseInfo_Student.courseName}</option>
                     </DropdownTitleSelect>
 
 
@@ -148,7 +146,7 @@ export default function StudentAnalytics() {
                     </DropdownTitle>
 
                     <DropdownTitleSelect disabled>
-                        <option>{courseInfo.className}</option>
+                        <option>{courseInfo_Student.className}</option>
                     </DropdownTitleSelect>
                   
                   </DropdownTitleContainer>
