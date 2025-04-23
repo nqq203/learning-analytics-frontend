@@ -162,7 +162,7 @@ const StudentContainerLNO = () => {
 
         <LineDivider></LineDivider>
 
-          <StudentListLNO TableContent={rows} TableHeader={TableHeader} setStudentID={setStudentID} onScrollEnd={handleScrollEnd}> </StudentListLNO>
+            <StudentListLNO TableContent={rows} TableHeader={TableHeader} setStudentID={setStudentID} onScrollEnd={handleScrollEnd}> </StudentListLNO>
         
 
        </LearningOutComeContainerBody>
