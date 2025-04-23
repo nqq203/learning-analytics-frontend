@@ -78,7 +78,7 @@ import CompareResult from "./CompareResul";
             <h3 style={{ margin: 0, whiteSpace: "nowrap" }}>TIÊU CHÍ SO SÁNH</h3>
 
             {/* Chọn tiêu chí */}
-            <FormControl style={{ minWidth: "200px" }} variant="outlined">
+            <FormControl style={{ minWidth: "250px" }} variant="outlined">
             <InputLabel>Chọn tiêu chí</InputLabel>
             <Select value={criteria} onChange={handleCriteriaChange} label="Chọn tiêu chí">
                 <MenuItem value="class">THEO LỚP</MenuItem>
@@ -89,7 +89,7 @@ import CompareResult from "./CompareResul";
 
             {/* Chọn môn nếu tiêu chí là LỚP hoặc KHOÁ */}
             {(criteria === "class" || criteria === "course") && (
-            <FormControl style={{ minWidth: "200px", marginLeft: "100px" }} variant="outlined">
+            <FormControl style={{ minWidth: "250px", marginLeft: "20px" }} variant="outlined">
                 <InputLabel>Chọn môn</InputLabel>
                 <Select value={selectedValue} onChange={handleValueChange} label="Chọn môn">
                 {[...new Set(classData.map((item) => item.subject))].map((subject) => (
@@ -101,7 +101,7 @@ import CompareResult from "./CompareResul";
             </FormControl>
             )}
             {criteria === "subject" && (
-            <FormControl style={{ minWidth: "200px", marginLeft: "100px" }} variant="outlined">
+            <FormControl style={{ minWidth: "250px", marginLeft: "20px" }} variant="outlined">
                 <InputLabel>Chọn lớp</InputLabel>
                 <Select value={selectedValue} onChange={handleValueChange} label="Chọn lớp">
                 {[...new Set(classData.map((item) => item.class))].map((cls) => (
@@ -126,23 +126,25 @@ import CompareResult from "./CompareResul";
                  {!showResults &&(
             !criteria || !selectedValue ? (
                 <Card>
-                    <h3 style={{ margin: "20px" }}>DANH SÁCH CÁC MÔN ĐÃ DẠY</h3>
+                    {/* <h3 style={{ margin: "20px" }}>DANH SÁCH CÁC MÔN ĐÃ DẠY</h3> */}
                     <CardContent>
                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
                         <thead>
                         <tr style={{ borderBottom: "1px solid #ccc" }}>
-                            <th style={{ textAlign: "left", padding: "8px" }}>Môn</th>
-                            <th style={{ textAlign: "left", padding: "8px" }}>Lớp</th>
-                            <th style={{ textAlign: "left", padding: "8px" }}>Khóa</th>
+                            {/* <th style={{ textAlign: "center", padding: "8px" }}>STT</th> */}
+                            <th style={{ textAlign: "center", padding: "8px" }}>Môn</th>
+                            <th style={{ textAlign: "center", padding: "8px" }}>Lớp</th>
+                            <th style={{ textAlign: "center", padding: "8px" }}>Khóa</th>
                             <th style={{ textAlign: "center", padding: "8px" }}>Hành động</th>
                         </tr>
                         </thead>
                         <tbody>
                         {classData.map((item, index) => (
                             <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
-                            <td style={{ padding: "8px" }}>{item.subject}</td>
-                            <td style={{ padding: "8px" }}>{item.class}</td>
-                            <td style={{ padding: "8px" }}>{item.course}</td>
+                            {/* <td style={{ textAlign: "center", padding: "8px" }}>{item.subject}</td> */}
+                            <td style={{ textAlign: "center", padding: "8px" }}>{item.subject}</td>
+                            <td style={{ textAlign: "center", padding: "8px" }}>{item.class}</td>
+                            <td style={{ textAlign: "center", padding: "8px" }}>{item.course}</td>
                             <td style={{ textAlign: "center", padding: "8px" }}>
                                 <IconButton>
                                 <VisibilityIcon color="primary"/>
@@ -156,7 +158,7 @@ import CompareResult from "./CompareResul";
                 </Card>
                 ) : (
                 <Card>
-                    <h3 style={{ margin: "20px" }}>DANH SÁCH SINH VIÊN</h3>
+                    {/* <h3 style={{ margin: "20px" }}>DANH SÁCH SINH VIÊN</h3> */}
                     <CardContent>
                         <table style={{ width: "100%", borderCollapse: "collapse" }}>
                             <thead>

@@ -75,7 +75,7 @@ const FilterInput = styled.select`
 `
 
 
-const ClassTableHeader = ["STT","Lớp","Khóa","Chương trình","Khoa","Chuyên ngành","Hành Động"];
+const ClassTableHeader = ["STT","Lớp","Khóa","Chương trình","Khoa","Chuyên ngành","Gợi ý cải thiện"];
 const ClassTableContent = [
         {
           "ID":"1",
@@ -309,24 +309,50 @@ const LearningOutcome = () => {
 
           <LearningOutComeItemsContainer>
 
-          <FormControl style={{ minWidth: "200px" }} variant="outlined">
-            <InputLabel>Khóa</InputLabel>
-            <Select  label="Chọn khóa">
-                <MenuItem value="class">21</MenuItem>
-                <MenuItem value="course">22</MenuItem>
-                <MenuItem value="subject">23</MenuItem>
-            </Select>
-            </FormControl>
+          <FormControl sx={{ minWidth: 200 }} variant="outlined" size="small">
+          <InputLabel id="khoa-label">Khóa</InputLabel>
+          <Select
+            labelId="khoa-label"
+            label="Khóa"
+            sx={{
+              height: 40,
+              '& .MuiSelect-select': {
+                display: 'flex',
+                alignItems: 'center',
+                paddingTop: '10px', // hoặc tùy chỉnh để căn giữa theo mắt nhìn
+                paddingBottom: '10px',
+              },
+            }}
+          >
+            <MenuItem value="21">21</MenuItem>
+            <MenuItem value="22">22</MenuItem>
+            <MenuItem value="23">23</MenuItem>
+          </Select>
+        </FormControl>
 
 
-            <FormControl style={{ minWidth: "200px" }} variant="outlined">
-            <InputLabel>Lớp</InputLabel>
-            <Select  label="Chọn lớp">
-                <MenuItem value="class">21CLC05</MenuItem>
-                <MenuItem value="course">21CLC06</MenuItem>
-                <MenuItem value="subject">21CLC07</MenuItem>
-            </Select>
-            </FormControl>
+
+        <FormControl sx={{ minWidth: 200 }} variant="outlined" size="small">
+          <InputLabel id="khoa-label">Lớp</InputLabel>
+          <Select
+            labelId="khoa-label"
+            label="Khóa"
+            sx={{
+              height: 40,
+              '& .MuiSelect-select': {
+                display: 'flex',
+                alignItems: 'center',
+                paddingTop: '10px', // hoặc tùy chỉnh để căn giữa theo mắt nhìn
+                paddingBottom: '10px',
+              },
+            }}
+          >
+            <MenuItem value="class">21CLC05</MenuItem>
+            <MenuItem value="course">21CLC06</MenuItem>
+            <MenuItem value="subject">21CLC07</MenuItem>
+          </Select>
+        </FormControl>
+
 
           </LearningOutComeItemsContainer>
 
