@@ -39,7 +39,7 @@ export default function DashboardPage() {
   const [showFilters, setShowFilters] = useState(false);
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#f5f5f5" }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "inherit" }}>
       {/* Header */}
       <Box
         sx={{

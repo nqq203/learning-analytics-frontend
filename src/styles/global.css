@@ -9,7 +9,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-color: white;
 }
 
 a {
@@ -49,6 +49,26 @@ a {
     /* Makes scrollbar thinner */
     scrollbar-color: #1769aa white;
     /* Thumb and track colors */
+}
+
+/* Custom scroll for the Table container */
+.TableContainer::-webkit-scrollbar {
+    width: 8px;
+}
+
+.TableContainer::-webkit-scrollbar-thumb {
+    background-color: #1769aa;
+    border-radius: 10px;
+}
+
+.TableContainer::-webkit-scrollbar-thumb:hover {
+    background-color: #3f51b5;
+}
+
+/* Firefox custom scrollbar */
+.TableContainer {
+    scrollbar-width: thin;
+    scrollbar-color: #1769aa white;
 }
 
 :root {
@@ -141,4 +161,48 @@ a {
 
     /* Background color */
     --background: #f5f5f5;
+}
+
+
+.tableLNO {
+    width: 100%;
+    background-color: white;
+    font-size: 1.1rem;
+}
+
+.tableLNO .thTable{
+    position: sticky;
+    top:0;
+}
+
+.thTable, .tdTable {
+    padding: 1.4rem;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.thTable {
+    background-color: white;
+}
+
+.tbodyTable .trTable:hover {
+    background-color: #f1f1f1;
+}
+#eye-icon{
+    width: 35px;
+    height:25px;
+    color:var(--blue-500);
+    cursor: pointer;
+}
+
+#eye-icon:hover{
+
+
+    color:var(--blue-600);
+}
+
+#eye-icon:active{
+
+    color:var(--blue-700);
+    
 }
