@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import SubjectList from "@/components/PredictionAchievements/SubjectList";
 import ClassList from "@/components/PredictionAchievements/ClassList";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFilteredClasses } from "@/redux/thunk/learningoutcomeThunk";
 const LearningOutcomesContainer = styled.div`
     margin: auto;
     width: 97%;
@@ -76,93 +78,6 @@ const FilterInput = styled.select`
 
 
 const ClassTableHeader = ["STT","Lớp","Khóa","Chương trình","Khoa","Chuyên ngành","Hành Động"];
-const ClassTableContent = [
-        {
-          "ID":"1",
-          "ClassName": "21CLC08",
-          "ClassOf":2021,
-          "Program":"Chất Lượng Cao",
-          "Falculity":"Công nghệ thông tin",
-          "Specialized":"Không"
-        },
-        {
-          "ID":"2",
-          "ClassName": "21HTTT1",
-          "ClassOf":2021,
-          "Program":"Chất Lượng Cao",
-          "Falculity":"Công nghệ thông tin",
-          "Specialized":"Hệ thống thông tin"
-        },
-        {
-          "ID":"3",
-          "ClassName": "21HTTT2",
-          "ClassOf":2021,
-          "Program":"Chất Lượng Cao",
-          "Falculity":"Công nghệ thông tin",
-          "Specialized":"Hệ thống thông tin"
-        },
-    
-        {
-          "ID":"4",
-          "ClassName": "21HTTT3",
-          "ClassOf":2021,
-          "Program":"Chất Lượng Cao",
-          "Falculity":"Công nghệ thông tin",
-          "Specialized":"Hệ thống thông tin"
-        },
-    
-        {
-          "ID":"5",
-          "ClassName": "21HTTT4",
-          "ClassOf":2021,
-          "Program":"Chất Lượng Cao",
-          "Falculity":"Công nghệ thông tin",
-          "Specialized":"Hệ thống thông tin"
-        },
-    
-        {
-          "ID":"6",
-          "ClassName": "21HTTT5",
-          "ClassOf":2021,
-          "Program":"Chất Lượng Cao",
-          "Falculity":"Công nghệ thông tin",
-          "Specialized":"Hệ thống thông tin"
-        }
-        ,{
-          "ID":"7",
-          "ClassName": "21HTTT1",
-          "ClassOf":2021,
-          "Program":"Chất Lượng Cao",
-          "Falculity":"Công nghệ thông tin",
-          "Specialized":"Hệ thống thông tin"
-        },
-        {
-          "ID":"8",
-          "ClassName": "21HTTT2",
-          "ClassOf":2021,
-          "Program":"Chất Lượng Cao",
-          "Falculity":"Công nghệ thông tin",
-          "Specialized":"Hệ thống thông tin"
-        },
-    
-        {
-          "ID":"9",
-          "ClassName": "21HTTT3",
-          "ClassOf":2021,
-          "Program":"Chất Lượng Cao",
-          "Falculity":"Công nghệ thông tin",
-          "Specialized":"Hệ thống thông tin"
-        },
-    
-        {
-          "ID":"10",
-          "ClassName": "21HTTT4",
-          "ClassOf":2021,
-          "Program":"Chất Lượng Cao",
-          "Falculity":"Công nghệ thông tin",
-          "Specialized":"Hệ thống thông tin"
-        }
-    ]
 
 const SubjectTableHeader = ["STT","Môn","Lớp","Khóa","Tín Chỉ","Học Kỳ","Chương Trình","Khoa","Chuyên ngành","Hành Động"];
 const SubjectTableContent = [
@@ -264,12 +179,47 @@ const SubjectTableContent = [
         
         ]
 const LearningOutcome = () => {
+    const router = useRouter();
+    const dispatch = useDispatch();
+    const {classes,academicYear, originalClasses} = useSelector(state=>state.learningoutcome);
     const [MiniTab,setMiniTab] = useState(1);
     const userId = 1;
     const [classID,setClassID] = useState("");
     const [subjectID,setsubjectID] = useState("");
+        const [chosenAcademicYear,setChosenAcademicYear] = useState("");
+            const [page,setPage] = useState(1);
+                const [isLoading, setIsLoading] = useState(false);
+                    const [amount,setAmount] = useState(10);
+                        const [chosenSemester,setChosenSemester] = useState("");
+                    
+                
+            
+        
+    
     const [Nav,setNav] =useState(false);
-    const router = useRouter();
+
+    const fetchClasses = async() =>{
+          setIsLoading(true)
+                await dispatch(fetchFilteredClasses ({userId: "I1132", page: page, amount: amount,semester:chosenSemester,academicYear:chosenAcademicYear}))
+          
+          setIsLoading(false)
+        }
+    
+        const handleScrollEnd = () => {
+          if (!isLoading && rows.length < totalRecords) {
+            setPage(prev => prev + 1);
+          }
+        };
+    
+        useEffect( () =>{
+          fetchClasses();
+        },[chosenAcademicYear,page])
+    
+        const handleChangeAcedemicYear = (value)=>{
+          setChosenAcademicYear(value) 
+          setPage(1); // reset page
+          setRows([]); // reset data
+        }
     
 
     useEffect(() => {
@@ -311,11 +261,15 @@ const LearningOutcome = () => {
 
           <FormControl style={{ minWidth: "200px" }} variant="outlined">
             <InputLabel>Khóa</InputLabel>
-            <Select  label="Chọn khóa">
-                <MenuItem value="class">21</MenuItem>
-                <MenuItem value="course">22</MenuItem>
-                <MenuItem value="subject">23</MenuItem>
-            </Select>
+            <Select label="Chọn khóa" onChange={(e)=>handleChangeAcedemicYear(e.target.value)}>
+                            <MenuItem value="">Tất cả</MenuItem>
+                            {
+                              academicYear.map((item,index)=>{
+                                return (<MenuItem value={item} key={index}>{item}</MenuItem>)
+                              })
+                            }
+                            
+                        </Select>
             </FormControl>
 
 
@@ -337,7 +291,7 @@ const LearningOutcome = () => {
         <LineDivider></LineDivider>
 
           { MiniTab==1?
-            <ClassList  TableHeader={ClassTableHeader} TableContent={ClassTableContent} setClassID={setClassID} ></ClassList>:
+            <ClassList  TableHeader={ClassTableHeader} TableContent={classes} setClassID={setClassID} ></ClassList>:
             <SubjectList  TableHeader={SubjectTableHeader} TableContent={SubjectTableContent} setsubjectID = {setsubjectID}></SubjectList>
 
           }
