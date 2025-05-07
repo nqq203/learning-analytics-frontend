@@ -1,0 +1,45 @@
+import {useToken } from "./TokenProvider";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { useState } from "react";
+import RootLayout from "@/pages/layout";
+import "../styles/global.css";
+function AuthWrapper({ Component, pageProps }) {
+    const router = useRouter();
+    const { accessToken,isLoading } = useToken();
+
+    
+    useEffect(() => {
+        
+      if (!accessToken && router.pathname !== "/login" && isLoading==false) {  
+        router.push("/login");
+      }
+  
+      
+      if (accessToken && router.pathname === "/login" && isLoading==false) {
+        router.push("/");
+      }
+
+    }, [accessToken, router,isLoading]);
+    
+    if (isLoading) return null;
+
+    
+    
+
+    if (router.pathname === "/login") {
+        
+      return <Component {...pageProps} />;
+    }
+  
+    
+    return (
+        (router.pathname !== "/login" ) ? (
+          <RootLayout>
+            <Component {...pageProps} />
+          </RootLayout>
+        ) : null
+      );
+  }
+  export default AuthWrapper;
+  
