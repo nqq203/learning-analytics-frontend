@@ -8,7 +8,7 @@ import "../styles/global.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoginPage from "./login";
-import AuthWrapper from "@/context/AuthWrapper";
+import AuthWrapper from "./AuthWrapper";
 export default function App({ Component, pageProps }) {
     const router = useRouter();
       

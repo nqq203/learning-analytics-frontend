@@ -1,4 +1,4 @@
-import {useToken } from "./TokenProvider";
+import { useToken } from "@/context/TokenProvider";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -14,12 +14,7 @@ function AuthWrapper({ Component, pageProps }) {
       if (!accessToken && router.pathname !== "/login" && isLoading==false) {  
         router.push("/login");
       }
-  
       
-      if (accessToken && router.pathname === "/login" && isLoading==false) {
-        router.push("/");
-      }
-
     }, [accessToken, router,isLoading]);
     
     if (isLoading) return null;
@@ -34,7 +29,7 @@ function AuthWrapper({ Component, pageProps }) {
   
     
     return (
-        (router.pathname !== "/login" ) ? (
+        (router.pathname != "/login" & accessToken ) ? (
           <RootLayout>
             <Component {...pageProps} />
           </RootLayout>
