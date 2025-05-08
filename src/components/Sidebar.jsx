@@ -251,6 +251,8 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
       </Link>
 
       <ExpandableContainer $open={openStatistic}>
+
+
         {/* Analytics Tab */}
         <NavItem
           $collapsed={collapsed}
@@ -266,8 +268,12 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
           </NavText>
           {!collapsed && <DropdownItem>{openStatistic ? <ExpandLess /> : <ExpandMore />}</DropdownItem>}
         </NavItem>
+
+
         {/* Analytics Collapsed */}
         <Collapse in={openStatistic} timeout="auto" unmountOnExit>
+
+
           <Link href="/analytics/reports-and-statistics" passHref style={{ width: "100%" }}>
             <SubNavItem
               $collapsed={collapsed}
@@ -284,35 +290,40 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
               </NavText>
             </SubNavItem>
           </Link>
+
+
           <Link href="/analytics/learning-outcome" passHref style={{ width: "100%" }}>
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname === "/analytics/learning-outcome"}
+              $active={router.pathname.startsWith("/analytics/learning-outcome")}
               $isMobile={isMobile}
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname === "/analytics/learning-outcome"}
+                $active={router.pathname.startsWith("/analytics/learning-outcome")}
               >
                 KẾT QUẢ CHI TIẾT
               </NavText>
             </SubNavItem>
           </Link>
+
+
           <Link href="/analytics/compare" passHref style={{ width: "100%" }}>
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname === "/analytics/compare"}
+              $active={router.pathname.startsWith("/analytics/compare")}
               $isMobile={isMobile}
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname === "/analytics/compare"}
+                $active={router.pathname.startsWith("/analytics/compare")}
               >
                 SO SÁNH KQ HỌC TẬP
               </NavText>
             </SubNavItem>
+
           </Link>
 
 
@@ -320,8 +331,12 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
         </Collapse>
       </ExpandableContainer>
 
+
+
+
       <ExpandableContainer $open={openPrediction}>
         {/* Predictions Tab */}
+
         <NavItem
           $collapsed={collapsed}
           $active={router.pathname.startsWith("/predictions")}
@@ -336,43 +351,52 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
           </NavText>
           {!collapsed && <DropdownItem>{openPrediction ? <ExpandLess /> : <ExpandMore />}</DropdownItem>}
         </NavItem>
+
+
         {/* Predictions Collapsed */}
         <Collapse in={openPrediction} timeout="auto" unmountOnExit>
+
           <Link href="/predictions/fraud-detection" passHref style={{ width: "100%" }}>
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname === "/predictions/fraud-detection"}
+              $active={router.pathname.startsWith("/predictions/fraud-detection")}
               $isMobile={isMobile}
             // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname === "/predictions/fraud-detection"}
+                $active={router.pathname.startsWith("/predictions/fraud-detection")}
               >
                 PHÁT HIỆN GIAN LẬN
               </NavText>
             </SubNavItem>
           </Link>
+
+
+
           <Link href="/predictions/predict-achievements" passHref style={{ width: "100%" }}>
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname === "/predictions/predict-achievements"}
+              $active={router.pathname.startsWith("/predictions/predict-achievements")}
               $isMobile={isMobile}
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname === "/predictions/predict-achievements"}
+                $active={router.pathname.startsWith("/predictions/predict-achievements")}
               >
                 DỰ ĐOÁN THÀNH TÍCH
               </NavText>
             </SubNavItem>
           </Link>
+
+          
         </Collapse>
       </ExpandableContainer>
 
       <Link href="/alerts" passHref style={{ width: "100%" }}>
+
         <NavItem
           $collapsed={collapsed}
           $active={router.pathname === "/alerts"}
