@@ -100,7 +100,7 @@ const NavText = styled.span`
   transition: max-width 0.3s ease-in-out, opacity 0.3s ease-in-out;
   font-size: 16px;
   font-weight: ${({ $active }) => ($active ? 700 : 600)};
-  margin-left: 10px; /* Giá trị cố định, không thay đổi */
+  margin-left: 5px; /* Giá trị cố định, không thay đổi */
   margin-top: 2px;
 `;
 
@@ -190,7 +190,7 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
   const { isFetch } = useSelector((state) => state.sidebar);
   const [openStatistic, setOpenStatistic] = useState(false);
   const [openPrediction, setOpenPrediction] = useState(false);
-
+  const [openDataManagement, setOpenDataManagement] = useState(false);
   const handleToggleStatistic = () => {
     if (collapsed)
       toggleSidebar();
@@ -205,7 +205,11 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
 
     setOpenPrediction((prev) => !prev);
   }
-
+  const handleToggleDataManagement = () => {
+    if(collapsed)
+      toggleSidebar();
+    setOpenDataManagement((prev) => !prev);
+  }
   const toggleSidebar = () => {
     setCollapsed((prev) => !prev);
     dispatch(toggleGlobalSidebar(!collapsed));
@@ -411,6 +415,88 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
           </NavText>
         </NavItem>
       </Link>
+      
+      <ExpandableContainer $open={openDataManagement}>
+        {/* Data Management Tab */}
+
+        <NavItem
+          $collapsed={collapsed}
+          $active={router.pathname.startsWith("/data-management")}
+          $isMobile={isMobile}
+          onClick={handleToggleDataManagement}
+        >
+          <NavIcon>
+            <BatchPredictionIcon />
+          </NavIcon>
+
+          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname.startsWith("/data-management")}>
+            QUẢN LÝ DỮ LIỆU
+          </NavText>
+          {!collapsed && <DropdownItem>{openDataManagement ? <ExpandLess /> : <ExpandMore />}</DropdownItem>}
+        </NavItem>
+
+
+        {/* Predictions Collapsed */}
+        <Collapse in={openDataManagement} timeout="auto" unmountOnExit>
+
+          <Link href="/data-management/file-management" passHref style={{ width: "100%" }}>
+            <SubNavItem
+              $collapsed={collapsed}
+              $active={router.pathname.startsWith("/data-management/file-management")}
+              $isMobile={isMobile}
+            // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
+            >
+              <NavText
+                $collapsed={collapsed}
+                $isMobile={isMobile}
+                $active={router.pathname.startsWith("/data-management/file-management")}
+              >
+                QUẢN LÝ TẬP TIN
+              </NavText>
+            </SubNavItem>
+          </Link>
+
+
+
+          <Link href="/data-management/student-management" passHref style={{ width: "100%" }}>
+            <SubNavItem
+              $collapsed={collapsed}
+              $active={router.pathname.startsWith("/data-management/student-management")}
+              $isMobile={isMobile}
+            >
+              <NavText
+                $collapsed={collapsed}
+                $isMobile={isMobile}
+                $active={router.pathname.startsWith("/data-management/student-management")}
+              >
+                QUẢN LÝ SINH VIÊN
+              </NavText>
+            </SubNavItem>
+          </Link>
+
+          <Link href="/data-management/class-management" passHref style={{ width: "100%" }}>
+            <SubNavItem
+              $collapsed={collapsed}
+              $active={router.pathname.startsWith("/data-management/class-management")}
+              $isMobile={isMobile}
+            >
+              <NavText
+                $collapsed={collapsed}
+                $isMobile={isMobile}
+                $active={router.pathname.startsWith("/data-management/class-management")}
+              >
+                QUẢN LÝ LỚP HỌC
+              </NavText>
+            </SubNavItem>
+          </Link>
+
+          
+        </Collapse>
+      </ExpandableContainer>
+
+
+
+
 
       {/* Section Avatar & User Name ở Bottom */}
       <UserProfileSection>
