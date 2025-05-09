@@ -71,7 +71,7 @@ const LineDivider = styled.div`
 
 
 
-const ClassTableHeader = ["STT","Lớp","Khóa","Môn","Học Kỳ","Tín chỉ","Hành Động"];
+const ClassTableHeader = ["STT","Lớp","Khóa","Môn","Học Kỳ","Tín chỉ","Chi tiết"];
 const semester =  [1,2,3]
         
 const LearningOutcome = () => {
