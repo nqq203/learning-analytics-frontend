@@ -78,7 +78,7 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
                   Chưa có dữ liệu để hiển thị
                 </TableCell>
               </TableRow>
-            )}
+            }
           </TableBody>
         </Table>
       </TableContainer>
