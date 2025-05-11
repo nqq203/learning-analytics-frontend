@@ -383,7 +383,7 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
             <NotificationsIcon />
           </NavIcon>
           <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname === "/alerts"}>
-            CẢNH BÁO
+            THÔNG BÁO
           </NavText>
         </NavItem>
       </Link>
