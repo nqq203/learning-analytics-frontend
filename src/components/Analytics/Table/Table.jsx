@@ -52,35 +52,24 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredRows?.length > 0 ? (
-              <Fragment>
-                {filteredRows.map((row, index) => (
-                  <TableRow key={row.classId}>
-                    <TableCell style={cellStyle}>{index + 1}</TableCell>
-                    {columns.map((col, idx) => (
-                      <TableCell
-                        key={idx}
-                        style={{
-                          ...cellStyle,
-                          textAlign: col.align || "center",
-                        }}
-                      >
-                        {row[col.id]}
-                      </TableCell>
-                    ))}
-                    {action && (
-                      <TableCell style={cellStyle}>
-                        <VisibilityIcon
-                          color="primary"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleActions(row?.id)}
-                        />
-                      </TableCell>
-                    )}
-                  </TableRow>
-                ))}
-              </Fragment>
-            ) : (
+            {filteredRows?.length > 0 ?
+              <Fragment>{filteredRows?.map((row, index) => (
+                <TableRow key={row.classId}>
+                  <TableCell style={{ textAlign: "left" }}>{index + 1}</TableCell>
+                  {columns.map((col, idx) => (
+                    <TableCell key={idx} style={{ textAlign: col.align || "left" }}>
+                      {row[col.id]}
+                    </TableCell>
+                  ))}
+                  {action && <TableCell style={{ textAlign: "center" }}>
+                    <VisibilityIcon
+                      color="primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleActions(row.classId)} />
+                  </TableCell>}
+                </TableRow>
+              ))}</Fragment> :
+
               <TableRow>
                 <TableCell
                   colSpan={columns.length + 2}
