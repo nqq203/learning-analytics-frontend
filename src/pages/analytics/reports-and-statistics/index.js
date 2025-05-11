@@ -84,14 +84,6 @@ const ClassesList = () => {
     { id: "passRate", label: "Tỷ lệ đậu (%)", align: "center" },
   ];
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-  };
-
-  const handleViewClass = (classId) => {
-    router.push(`/analytics/reports-and-statistics/${classId}`);
-  };
-
   return (
     <Container>
       <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
