@@ -71,7 +71,7 @@ const LineDivider = styled.div`
 
 
 
-const ClassTableHeader = ["STT","Lớp","Khóa","Môn","Học Kỳ","Tín chỉ","Hành Động"];
+const ClassTableHeader = ["STT","Lớp","Khóa","Môn","Học Kỳ","Tín chỉ","Chi tiết"];
 const semester =  [1,2,3]
         
 const LearningOutcome = () => {
@@ -177,7 +177,7 @@ const LearningOutcome = () => {
 
           <LearningOutComeItemsContainer>
 
-          <FormControl style={{ minWidth: "200px" }} variant="outlined">
+          <FormControl style={{ width: "20%", minWidth: 250 }} size="small">
             <InputLabel>Khóa</InputLabel>
             <Select label="Chọn khóa" onChange={(e)=>handleChangeAcedemicYear(e.target.value)}>
                 <MenuItem value="">Tất cả</MenuItem>
@@ -191,7 +191,7 @@ const LearningOutcome = () => {
             </FormControl>
 
 
-            <FormControl style={{ minWidth: "200px" }} variant="outlined">
+            <FormControl style={{ width: "20%", minWidth: 250 }} size="small">
             <InputLabel>Kỳ</InputLabel>
             <Select label="Chọn kỳ" onChange={(e)=>handleChangeSemester(e.target.value)}>
                 <MenuItem value="">Tất cả</MenuItem>

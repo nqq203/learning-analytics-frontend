@@ -68,7 +68,7 @@ const LineDivider = styled.div`
 
 
 
-const TableHeader =  ["MSSV","Họ tên","Lớp","Môn","Khóa","Chuyên ngành","Kết Quả" ,"Hành Động"];
+const TableHeader =  ["MSSV","Họ tên","Lớp","Môn","Khóa","Chuyên ngành","Kết Quả" ,"Chi tiết"];
 
 
 
@@ -114,7 +114,7 @@ const StudentContainerLNO = () => {
 
     useEffect( () =>{
           fetchStudentRow();
-        },[searchResult, page])
+        },[router,searchResult, page])
     
     useEffect( ()=>{
       if(page===1){
@@ -162,7 +162,7 @@ const StudentContainerLNO = () => {
 
         <LineDivider></LineDivider>
 
-          <StudentListLNO TableContent={rows} TableHeader={TableHeader} setStudentID={setStudentID} onScrollEnd={handleScrollEnd}> </StudentListLNO>
+            <StudentListLNO TableContent={rows} TableHeader={TableHeader} setStudentID={setStudentID} onScrollEnd={handleScrollEnd}> </StudentListLNO>
         
 
        </LearningOutComeContainerBody>

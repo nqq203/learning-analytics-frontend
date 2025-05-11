@@ -160,7 +160,7 @@ const ClassesList = () => {
           Tổng số lớp hiển thị: {totalStudents}
         </span>
         <AnalyticsTable
-          filteredRows={rows}y
+          filteredRows={rows}
           columns={columns}
           handleActions={handleViewClass}
         />
