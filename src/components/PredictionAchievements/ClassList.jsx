@@ -58,15 +58,15 @@ const ClassList = ({TableHeader,TableContent,setClassID})=>{
                                 TableContent.map((item, index) => (
                                 <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
                                     <td style={{ textAlign: "center",padding: "1rem" }}>{index+1}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.ClassName}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.ClassOf}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Program}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Falculity}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Specialized}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.className}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.academicYear}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.programName}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.facultyName}</td>
+                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.majorName}</td>
                                     
                                     
                                     <td style={{ textAlign: "center",padding: "1rem" }}>
-                                        <IconButton onClick={()=>handleClick(item.ID) }
+                                        <IconButton onClick={()=>handleClick(item.id) }
                                         style={{zIndex: 10 }}>
                                             <VisibilityIcon style={{zIndex: 10 }} color="primary" />
                                         </IconButton>
