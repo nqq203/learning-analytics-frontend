@@ -47,7 +47,7 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
                 </TableCell>
               ))}
               {action && (
-                <TableCell style={headerCellStyle}>Hành động</TableCell>
+                <TableCell style={headerCellStyle}>Chi tiết</TableCell>
               )}
             </TableRow>
           </TableHead>

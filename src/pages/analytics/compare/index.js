@@ -98,12 +98,12 @@ const Compare = () => {
 
     return (
         <div style={{ padding: "16px" }}>
-            <Typography variant="h5" gutterBottom>Tiêu chí so sánh</Typography>
+            {/* <Typography variant="h5" gutterBottom>Tiêu chí so sánh</Typography> */}
 
             <Grid container spacing={3} alignItems="center">
                 {/* Chọn tiêu chí */}
                 <Grid item xs={12} sm={4}>
-                    <FormControl fullWidth variant="outlined">
+                    <FormControl style={{ width: "50%", minWidth: 500 }} size="small">
                         <InputLabel>Tiêu chí</InputLabel>
                         <Select
                             label="Tiêu chí"
@@ -118,7 +118,7 @@ const Compare = () => {
 
                 {/* Chọn môn học */}
                 <Grid item xs={12} sm={4}>
-                    <FormControl fullWidth variant="outlined">
+                    <FormControl style={{ width: "50%", minWidth: 500 }} size="small">
                         <InputLabel>Môn học</InputLabel>
                         <Select
                             label="Môn học"
@@ -150,7 +150,7 @@ const Compare = () => {
             {/* Bảng danh sách */}
             <Card style={{ marginTop: "32px" }}>
                 <CardContent>
-                    <Typography variant="h6">Danh sách các lớp đã dạy</Typography>
+                    {/* <Typography variant="h6">Danh sách các lớp đã dạy</Typography> */}
                     <TableContainer component={Paper} style={{ marginTop: "16px" }}>
                         <Table>
                             <TableHead>
