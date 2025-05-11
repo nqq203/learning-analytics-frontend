@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import {
   TextField,
@@ -16,6 +16,7 @@ const LearningOutcomesContainer = styled.div`
   width: 97%;
   padding-block: 20px;
 `;
+
 const LearningOutComeContainerBody = styled.div`
   display: flex;
   flex-direction: column;
@@ -51,6 +52,7 @@ const AnalyticsBtn = styled.div`
   }
   &:active {
     background-color: var(--blue-500);
+
   }
 `;
 
@@ -60,7 +62,6 @@ const LineDivider = styled.div`
 `;
 
 const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa", "Hành Động"];
-
 const ClassStudentContainer = () => {
   const userId = "12456";
   const dispatch = useDispatch();
