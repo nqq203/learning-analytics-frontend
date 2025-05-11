@@ -19,8 +19,14 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  IconButton
+
 } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
+// import { useDispatch, useSelector } from "react-redux";
+// import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import InputAdornment from '@mui/material/InputAdornment';
 
 // Dữ liệu mẫu
 const sampleData = [
@@ -35,7 +41,6 @@ const FraudDetection = () => {
   const [openDialog1, setOpenDialog1] = useState(false);
   const [openDialog2, setOpenDialog2] = useState(false);
   const [openDialog3, setOpenDialog3] = useState(false);
-
 
   const handleOpenDialog1 = () => {
     setOpenDialog1(true);
@@ -59,25 +64,68 @@ const FraudDetection = () => {
     setOpenDialog3(true);
   };
 
-  // Hàm đóng dialog
   const handleCloseDialog3 = () => {
     setOpenDialog3(false);
   };
 
+  const handleSearch = () => {
+    console.log("Searching for:", subject);
+  };
+
   return (
-    <Container>
+    <Container maxWidth={false} sx={{ padding: 2 }}> {/* Set the container to full width */}
       {/* Tiêu đề */}
-      <Typography variant="h5" fontWeight="bold" my={2}>
+      {/* <Typography variant="h5" fontWeight="bold" my={2} textAlign="center">
         Phân tích Phát hiện gian lận
-      </Typography>
+      </Typography> */}
 
       {/* Bộ lọc + Button */}
-      <Grid container spacing={2} alignItems="center" mb={2}>
-        <Grid item xs={4}>
-          <TextField label="Môn học" value={subject} onChange={(e) => setSubject(e.target.value)} fullWidth />
+      <Grid container spacing={2} alignItems="center" mb={3}>
+        <Grid item xs={12} sm={6} md={4}>
+          <TextField
+            variant="outlined"
+            label="Môn học"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            fullWidth
+            size="small"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleSearch}
+                    sx={{
+                      backgroundColor: "#1976D2",
+                      borderRadius: "0 4px 4px 0",
+                      padding: "10px",
+                      height: "100%",
+                      '&:hover': {
+                        backgroundColor: "#1976d2", 
+                      },
+                    }}
+                  >
+                    <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              width: "100%",
+              '& .MuiOutlinedInput-root': {
+                paddingRight: 0,
+              },
+            }}
+          />
         </Grid>
-        <Grid item xs={4}>
-          <Select value={test} onChange={(e) => setTest(e.target.value)} fullWidth displayEmpty>
+
+        <Grid item xs={12} sm={6} md={4}>
+          <Select
+            value={test}
+            onChange={(e) => setTest(e.target.value)}
+            fullWidth
+            displayEmpty
+            size="small"
+          >
             <MenuItem value=""><Typography>Bài kiểm tra</Typography></MenuItem>
             <MenuItem value="Quiz 1">Quiz 1</MenuItem>
             <MenuItem value="Quiz 2">Quiz 2</MenuItem>
@@ -85,25 +133,82 @@ const FraudDetection = () => {
             <MenuItem value="Cuối kỳ">Cuối kỳ</MenuItem>
           </Select>
         </Grid>
-        <Grid item xs={2}>
-          <Button variant="contained" color="primary" fullWidth onClick={handleOpenDialog1}>
+
+        <Grid item xs={6} sm={3} md={2}>
+          <Button
+            variant="contained"
+            onClick={handleOpenDialog1}
+            fullWidth
+            sx={{
+              backgroundColor: '#8E24AA',
+              color: 'white', 
+              '&:hover': {
+                backgroundColor: '#7B1FA2',
+              },
+            }}
+          >
             Thiết lập ngưỡng
           </Button>
         </Grid>
-        <Grid item xs={2}>
-          <Button variant="contained" color="secondary" fullWidth>
+
+        <Grid item xs={6} sm={3} md={2}>
+          <Button
+            variant="contained"
+            fullWidth
+            sx={{
+              backgroundColor: '#1976D2',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#303F9F',
+              },
+            }}
+          >
             Phân tích
           </Button>
         </Grid>
       </Grid>
+      <Box
+          sx={{
+            borderBottom: "1.2px solid #ccc", 
+            marginY: 3, 
+          }}
+        />
+      {/* Bảng dữ liệu */}
+      <TableContainer component={Paper} sx={{ width: "100%", maxWidth: "100%" }}>
+      <Table sx={{ width: "100%", fontSize: "16px", '& td, & th': { textAlign: 'center', fontSize: '16px' } }}>
+          <TableHead>
+            <TableRow>
+              <TableCell><strong>MSSV</strong></TableCell>
+              <TableCell><strong>Tên</strong></TableCell>
+              <TableCell><strong>Điểm</strong></TableCell>
+              <TableCell><strong>Thời gian làm</strong></TableCell>
+              <TableCell><strong>Độ lệch</strong></TableCell>
+              <TableCell><strong>Lý do</strong></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell>{row.mssv}</TableCell>
+                <TableCell>{row.name}</TableCell>
+                <TableCell>{row.score}</TableCell>
+                <TableCell>{row.timeTaken}</TableCell>
+                <TableCell>{row.deviation}</TableCell>
+                <TableCell>{row.reason}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
+      {/* Dialogs */}
       {/* Dialog 1: Thông báo chưa thiết lập ngưỡng */}
       <Dialog open={openDialog1} onClose={handleCloseDialog1} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: "bold", textAlign: "center" }}>
           NGƯỠNG CHƯA ĐƯỢC THIẾT LẬP
         </DialogTitle>
         <DialogContent sx={{ textAlign: "center", p: 3 }}>
-          <NotificationsIcon sx={{ fontSize: 60, color: "#007AFF" }} />
+          <NotificationsIcon sx={{ fontSize: 60, color: "#1976D2" }} />
           <Typography sx={{ mt: 2, color: "gray" }}>
             Bạn chưa thiết lập ngưỡng. Thiết lập ngưỡng của bạn hoặc tiếp tục với ngưỡng mặc định để tiếp tục phân tích.
           </Typography>
@@ -112,10 +217,10 @@ const FraudDetection = () => {
           <Button variant="outlined" color="primary" onClick={handleCloseDialog1}>
             HỦY
           </Button>
-          <Button variant="contained" sx={{ bgcolor: "purple", color: "white" }} onClick={handleOpenDialog3}>
+          <Button variant="contained" sx={{ bgcolor: "#8E24AA", color: "white" }} onClick={handleOpenDialog3}>
             THIẾT LẬP
           </Button>
-          <Button variant="contained" sx={{ bgcolor: "#007AFF", color: "white" }} onClick={handleOpenDialog2}>
+          <Button variant="contained" sx={{ bgcolor: "#1976D2", color: "white" }} onClick={handleOpenDialog2}>
             TIẾP TỤC
           </Button>
         </DialogActions>
@@ -147,7 +252,7 @@ const FraudDetection = () => {
           <Button variant="outlined" color="primary" sx={{ width: "120px" }} onClick={handleCloseDialog2}>
             HỦY
           </Button>
-          <Button variant="contained" sx={{ bgcolor: "#007AFF", color: "white", width: "120px" }} onClick={handleCloseDialog2}>
+          <Button variant="contained" sx={{ bgcolor: "#1976D2", color: "white", width: "120px" }} onClick={handleCloseDialog2}>
             XÁC NHẬN
           </Button>
         </DialogActions>
@@ -159,8 +264,7 @@ const FraudDetection = () => {
           THIẾT LẬP NGƯỠNG
         </DialogTitle>
         <DialogContent sx={{ px: 4, py: 2 }}>
-          
-          {/* Ngưỡng tối thiểu/tối đa */}
+          {/* Các trường ngưỡng */}
           <Typography variant="body1" sx={{ fontWeight: "bold", mt: 2 }}>1. Ngưỡng tối thiểu / tối đa:</Typography>
           <Grid container spacing={2}>
             <Grid item xs={6}>
@@ -170,72 +274,16 @@ const FraudDetection = () => {
               <TextField fullWidth label="Max Time (mm:ss)" variant="outlined" size="small" />
             </Grid>
           </Grid>
-
-          {/* Ngưỡng sai lệch so với trung bình */}
-          <Typography variant="body1" sx={{ fontWeight: "bold", mt: 3 }}>2. Ngưỡng sai lệch so với trung bình:</Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TextField fullWidth label="Standard Deviation" variant="outlined" size="small" />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField fullWidth label="Mean Time" variant="outlined" size="small" />
-            </Grid>
-          </Grid>
-
-          {/* Ngưỡng thời gian làm bài so với điểm số */}
-          <Typography variant="body1" sx={{ fontWeight: "bold", mt: 3 }}>3. Ngưỡng thời gian làm bài so với điểm số:</Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TextField fullWidth label="Mean Time" variant="outlined" size="small" />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField fullWidth label="Score Standard" variant="outlined" size="small" />
-            </Grid>
-          </Grid>
-
-          {/* Ngưỡng điểm bất thường */}
-          <Typography variant="body1" sx={{ fontWeight: "bold", mt: 3 }}>4. Ngưỡng điểm bất thường:</Typography>
-          <TextField fullWidth label="Anomaly Score" variant="outlined" size="small" sx={{ mt: 1 }} />
-
         </DialogContent>
-        
-        {/* HỦY và XÁC NHẬN */}
         <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
           <Button variant="outlined" color="primary" sx={{ width: "120px" }} onClick={handleCloseDialog3}>
             HỦY
           </Button>
-          <Button variant="contained" sx={{ bgcolor: "#007AFF", color: "white", width: "120px" }} onClick={handleCloseDialog3}>
-            XÁC NHẬN
+          <Button variant="contained" sx={{ bgcolor: "#1976D2", color: "white", width: "120px" }} onClick={handleCloseDialog3}>
+            LƯU
           </Button>
         </DialogActions>
       </Dialog>
-      {/* Bảng dữ liệu */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell><Typography fontWeight="bold">MSSV</Typography></TableCell>
-              <TableCell><Typography fontWeight="bold">Họ và Tên</Typography></TableCell>
-              <TableCell><Typography fontWeight="bold">Điểm số</Typography></TableCell>
-              <TableCell><Typography fontWeight="bold">Thời gian làm bài</Typography></TableCell>
-              <TableCell><Typography fontWeight="bold">Chênh lệch</Typography></TableCell>
-              <TableCell><Typography fontWeight="bold">Nguyên nhân</Typography></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell>{row.mssv}</TableCell>
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.score}</TableCell>
-                <TableCell>{row.timeTaken}</TableCell>
-                <TableCell>{row.deviation}</TableCell>
-                <TableCell>{row.reason}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
     </Container>
   );
 };

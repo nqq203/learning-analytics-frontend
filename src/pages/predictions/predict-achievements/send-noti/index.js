@@ -1,193 +1,283 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import PredictionStudentList from "@/components/PredictionAchievements/PredictionStudentList";
 import ModalSuggestion from "@/components/PredictionAchievements/ModalSuggestion";
+
 const LearningOutcomesContainer = styled.div`
-    margin: auto;
-    width: 97%;
-    padding-block:20px;
-    
-    
-    
-`
+  margin: auto;
+  width: 97%;
+  padding-block: 20px;
+`;
+
 const LearningOutComeContainerBody = styled.div`
-  display:flex;
-  flex-direction:column;
-  gap:1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
 
-`
 const LearningOutComeHeader = styled.div`
-  display:flex;
-  flex-direction:row;
-  justify-content:space-between;
-  
-  align-items:center;
-`
-
-const LearningOutComeItemsContainer = styled.div`
-  display:flex;
-  flex-direction:row;
-  gap:20px;
-`
-
-
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+`;
 
 const AnalyticsBtn = styled.div`
-    cursor:pointer;
-    padding-inline:2.5rem;
-    padding-block:1rem;
-    color:white;
-    font-size:1.2rem;
-    background-color:var(--blue-600);
-    border:none;
-    border-radius:10px;
-    font-weight:bold;
+  cursor: pointer;
+  padding-inline: 1.5rem;
+  padding-block: 1rem;
+  height: 40px;
+  color: white;
+  font-size: 1rem;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--blue-700);
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 
-    &:hover{
-        background-color:var(--blue-400);
-    }
-    &:active{
-    
-        background-color:var(--blue-500);
-    }
-
-
-`
-
-
+  &:hover {
+    background-color: var(--blue-900);
+  }
+  &:active {
+    background-color: var(--blue-900);
+  }
+`;
 
 const LineDivider = styled.div`
-  border:0.1px solid gray;
-  width:100%;
-`
+  border: 0.1px solid gray;
+  width: 100%;
+`;
+
+const TableHeader = [
+  "MSSV",
+  "Họ tên",
+  "Lớp",
+  "Môn",
+  "Khóa",
+  "Thành tích dự đoán",
+  "Hành Động",
+];
 
 
 
-const TableHeader = ["MSSV","Họ tên","Lớp","Môn","Khóa","Thành tích dự đoán" ,"Hành Động"];
 
 const SendNoti = () => {
-    const userId = "12456";
-    const [chosenStudent,setChosenStudent]  = useState([])
-    const [studentModal,setStudentModal] = useState({})
-    const router = useRouter();
-    const [TableContent,setTableContent] = useState([])
-    const [modalOpen,setModal] = useState(false)
+  const userId = "12456";
+  const [originalTableContent, setOriginalTableContent] = useState([]);
+  const [chosenStudent, setChosenStudent] = useState([]);
+  const [studentModal, setStudentModal] = useState({});
+  const router = useRouter();
+  const [TableContent, setTableContent] = useState([]);
+  const [modalOpen, setModal] = useState(false);
+  const [selectedAchievement, setSelectedAchievement] = useState("");
 
-    useEffect(() => {
-      const { data } = router.query;
-      const chosenStudents = data ? JSON.parse(decodeURIComponent(data)) : [];
-      setChosenStudent(chosenStudents)
-        if (router.query.data) {
-          // setTableContent(JSON.parse(decodeURIComponent(router.query.data?.toString() || "[]")));
+  const handleFilter = () => {
+    const filtered = originalTableContent.filter((student) => {
+      return selectedAchievement ? student.PredictAchivement === selectedAchievement : true;
+    });
+    setTableContent(filtered);
+  };
 
-          setTableContent([
-              {
-                  "ID":"1", "MSSV":"21125434", "Name": "Nguyễn Văn A", "Class":"21CLC08", "Subject":"Cơ sở dữ liệu nâng cao", "ClassOf":"2021","PredictAchivement":"Giỏi"
-              },
-              {
-                "ID":"2", "MSSV":"21125435","Name": "Nguyễn Văn B","Class":"21CLC09","Subject":"Cơ sở dữ liệu nâng cao","ClassOf":"2021","PredictAchivement":"Khá"
-              },
-              {
-                "ID":"3","MSSV":"21125435","Name": "Nguyễn Văn C","Class":"21CLC10","Subject":"Cơ sở dữ liệu nâng cao","ClassOf":"2021","PredictAchivement":"Trung bình"
-              }
-              ,
-              {
-                "ID":"4","MSSV":"21125435","Name": "Nguyễn Văn C","Class":"21CLC10","Subject":"Cơ sở dữ liệu nâng cao","ClassOf":"2021","PredictAchivement":"Yếu"
-              }
-              ,
-              {
-                "ID":"5","MSSV":"21125435","Name": "Nguyễn Văn C","Class":"21CLC10","Subject":"Cơ sở dữ liệu nâng cao","ClassOf":"2021","PredictAchivement":"Khá"
-              }
-            ]
-        )
+  const handleSearch = () => {
+    console.log("Searching...");
+  };
 
-
-        }
-      }, [router.query.data]);
-
-      
-    useEffect(() => {
-        // setTableContent()
-    }, [TableContent]);
-
-    
-
-    const handleNav = ()=>{
-      ///
+  useEffect(() => {
+    const { data } = router.query;
+    const chosenStudents = data ? JSON.parse(decodeURIComponent(data)) : [];
+    setChosenStudent(chosenStudents);
+    if (router.query.data) {
+      setTableContent([
+        {
+          ID: "1",
+          MSSV: "21125434",
+          Name: "Nguyễn Văn A",
+          Class: "21CLC08",
+          Subject: "Cơ sở dữ liệu nâng cao",
+          ClassOf: "2021",
+          PredictAchivement: "Giỏi",
+        },
+        {
+          ID: "2",
+          MSSV: "21125435",
+          Name: "Nguyễn Văn B",
+          Class: "21CLC09",
+          Subject: "Cơ sở dữ liệu nâng cao",
+          ClassOf: "2021",
+          PredictAchivement: "Khá",
+        },
+        {
+          ID: "3",
+          MSSV: "21125435",
+          Name: "Nguyễn Văn C",
+          Class: "21CLC10",
+          Subject: "Cơ sở dữ liệu nâng cao",
+          ClassOf: "2021",
+          PredictAchivement: "Trung bình",
+        },
+        {
+          ID: "4",
+          MSSV: "21125435",
+          Name: "Nguyễn Văn C",
+          Class: "21CLC10",
+          Subject: "Cơ sở dữ liệu nâng cao",
+          ClassOf: "2021",
+          PredictAchivement: "Yếu",
+        },
+        {
+          ID: "5",
+          MSSV: "21125435",
+          Name: "Nguyễn Văn C",
+          Class: "21CLC10",
+          Subject: "Cơ sở dữ liệu nâng cao",
+          ClassOf: "2021",
+          PredictAchivement: "Khá",
+        },
+      ]);
     }
+  }, [router.query.data]);
 
-    return (
-      < LearningOutcomesContainer >
-
-
-      <LearningOutComeContainerBody>
-        <LearningOutComeHeader>
-            
-
-
-                <FormControl style={{ minWidth: "45rem" }} variant="outlined">
-                        <TextField id="outlined-basic" label="Tìm kiếm" variant="outlined" />
-                </FormControl>
-
-
-                <FormControl style={{ minWidth: "13rem" }} variant="outlined">
-                    <InputLabel>Xếp loại</InputLabel>
-                    <Select  label="Chọn Xếp loại">
-                        
-                        <MenuItem value="course">Xuất sắc</MenuItem>
-                        <MenuItem value="subject">Giỏi</MenuItem>
-                        <MenuItem value="course">Khá</MenuItem>
-                        <MenuItem value="class">Trung bình</MenuItem>
-                        <MenuItem value="course">Yếu</MenuItem>
-                        <MenuItem value="class">Kém</MenuItem>
-                        
-                    </Select>
-                </FormControl>
-
-                <FormControl style={{ minWidth: "13rem" }} variant="outlined">
-                    <InputLabel>Khóa</InputLabel>
-                    <Select  label="Chọn khóa">
-                        <MenuItem value="class">21</MenuItem>
-                        <MenuItem value="course">22</MenuItem>
-                        <MenuItem value="subject">23</MenuItem>
-                    </Select>
-                </FormControl>
-            
-
-            
-
-                <AnalyticsBtn>Lọc</AnalyticsBtn>
-
-                <AnalyticsBtn onClick= {()=>handleNav()}>Gửi Thông Báo</AnalyticsBtn>
-
-
-            
-
-
-        </LearningOutComeHeader>
-
-
-        <LineDivider></LineDivider> 
-
-          <PredictionStudentList TableHeader = {TableHeader} TableContent ={TableContent} setChosenStudentOuter={setChosenStudent} setModal={setModal} setStudentModal={setStudentModal}> </PredictionStudentList>
-
-
-          {modalOpen?
-            <ModalSuggestion 
-                          studentID={"124"} 
-                          setModal={setModal} 
-                          student = {studentModal}
-                      />:
-              <></>
-          }
-
-       </LearningOutComeContainerBody>
-
-
-      </LearningOutcomesContainer>
-    );
+  const handleNav = () => {
+    // Gửi thông báo
   };
   
-  export default SendNoti;
+  return (
+    <LearningOutcomesContainer>
+      <LearningOutComeContainerBody>
+        <LearningOutComeHeader>
+        <FormControl style={{ minWidth: "260px", flex: 1 }} variant="outlined">
+        <TextField
+          placeholder="Tìm kiếm"
+          variant="outlined"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end" sx={{ marginRight: "12px" }}>
+                <IconButton
+                  onClick={handleSearch}
+                  edge="end"
+                  sx={{
+                    backgroundColor: "#1976D2",
+                    borderRadius: "0 4px 4px 0",
+                    height: "40px",
+                    width: "40px",
+                    "&:hover": {
+                      backgroundColor: "#1565C0",
+                    },
+                  }}
+                >
+                  <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: "40px",
+              paddingRight: "0px",
+              borderRadius: "4px",
+            },
+            '& input': {
+              padding: "10px 14px",
+            },
+          }}
+        />
+      </FormControl>
+
+
+          <FormControl sx={{ minWidth: "120px", height: "40px" }} variant="outlined">
+            <InputLabel sx={{ fontSize: "1rem", top: "-6px" }}>Xếp loại</InputLabel>
+            <Select
+              value={selectedAchievement}
+              onChange={(e) => setSelectedAchievement(e.target.value)}
+              label="Chọn Xếp loại"
+              sx={{
+                height: "40px",
+                "& .MuiSelect-select": {
+                  display: "flex",
+                  alignItems: "center",
+                },
+              }}
+            >
+              <MenuItem value="">Tất cả</MenuItem>
+              <MenuItem value="Xuất sắc">Xuất sắc</MenuItem>
+              <MenuItem value="Giỏi">Giỏi</MenuItem>
+              <MenuItem value="Khá">Khá</MenuItem>
+              <MenuItem value="Trung bình">Trung bình</MenuItem>
+              <MenuItem value="Yếu">Yếu</MenuItem>
+              <MenuItem value="Kém">Kém</MenuItem>
+            </Select>
+          </FormControl>
+
+
+          <FormControl sx={{ minWidth: "120px", height: "40px" }} variant="outlined">
+            <InputLabel sx={{ fontSize: "1rem", top: "-6px" }}>Khóa</InputLabel>
+            <Select
+              label="Chọn khóa"
+              sx={{
+                height: "40px",
+                "& .MuiSelect-select": {
+                  display: "flex",
+                  alignItems: "center",
+                },
+              }}
+            >
+              <MenuItem value="21">21</MenuItem>
+              <MenuItem value="22">22</MenuItem>
+              <MenuItem value="23">23</MenuItem>
+            </Select>
+          </FormControl>
+
+          <IconButton
+            onClick={handleFilter}
+            sx={{ padding: "5px", marginLeft: "5px" }}
+          >
+            <FilterAltIcon sx={{ color: "gray" }} />
+          </IconButton>
+
+
+          <AnalyticsBtn onClick={() => handleNav()}>
+            Gửi Thông Báo
+          </AnalyticsBtn>
+        </LearningOutComeHeader>
+
+        <LineDivider />
+
+        <PredictionStudentList
+          TableHeader={TableHeader}
+          TableContent={TableContent}
+          setChosenStudentOuter={setChosenStudent}
+          setModal={setModal}
+          setStudentModal={setStudentModal}
+        />
+
+        {modalOpen ? (
+          <ModalSuggestion
+            studentID={"124"}
+            setModal={setModal}
+            student={studentModal}
+          />
+        ) : null}
+      </LearningOutComeContainerBody>
+    </LearningOutcomesContainer>
+  );
+};
+
+export default SendNoti;

@@ -59,7 +59,7 @@ const ChartBox = styled.div`
     background-color:white;
     width:50%;
     
-    padding:2rem;
+    padding:1rem;
     text-align:center;
     
     
@@ -76,7 +76,7 @@ const BarChartBox=styled.div`
     box-shadow:0 1px 5px rgba(0, 0, 0, 0.25);
     background-color:white;
     width:100%;
-    padding:2rem;
+    padding:1rem;
     padding-inline:5rem;
     text-align:center;
     align-items:center;
@@ -129,7 +129,7 @@ export default function StudentResultLNO({userId,studentID,classID,studentInfo,s
                             <TitleChart >Loại xếp hạng của sinh viên:<span style={{fontWeight:500}}> {studentGrade.classification}</span></TitleChart>
 
                         
-                            <MyGaugeChart value={studentGrade.finalGrade} >
+                            <MyGaugeChart value={studentGrade.totalGrade} >
 
 
 
