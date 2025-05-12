@@ -61,14 +61,39 @@ const LearningOutComeTabButtons = styled.div`
   }
 `
 
-
+const DropdownTitleContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
+`;
 
 const LineDivider = styled.div`
   background-color: var(--grey-600);
   height:1px;
   width:100%;
 `
-
+const NextBtn = styled.div`
+  // padding-block: 0.8rem;
+  padding-inline: 1.5rem;
+  height: 40px;
+  display: flex;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  background-color: var(--blue-700);
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--blue-900);
+  }
+  &:active {
+    background-color: var(--blue-900);
+  }
+`;
 
 
 const ClassTableHeader = ["STT","Lớp","Khóa","Môn","Học Kỳ","Tín chỉ","Hành Động"];
@@ -177,7 +202,7 @@ const LearningOutcome = () => {
 
           <LearningOutComeItemsContainer>
 
-          <FormControl style={{ minWidth: "200px" }} variant="outlined">
+          {/* <FormControl style={{ minWidth: "200px", height: 40 }} variant="outlined">
             <InputLabel>Khóa</InputLabel>
             <Select label="Chọn khóa" onChange={(e)=>handleChangeAcedemicYear(e.target.value)}>
                 <MenuItem value="">Tất cả</MenuItem>
@@ -188,23 +213,65 @@ const LearningOutcome = () => {
                 }
                 
             </Select>
-            </FormControl>
-
-
-            <FormControl style={{ minWidth: "200px" }} variant="outlined">
-            <InputLabel>Kỳ</InputLabel>
-            <Select label="Chọn kỳ" onChange={(e)=>handleChangeSemester(e.target.value)}>
+            </FormControl> */}
+           <FormControl sx={{ minWidth: 200 }} variant="outlined" size="small">
+              <InputLabel id="academic-year-label">Khóa</InputLabel>
+              <Select
+                labelId="academic-year-label"
+                label="Chọn khóa"
+                onChange={(e) => handleChangeAcedemicYear(e.target.value)}
+                sx={{
+                  height: 40,
+                  fontSize: "1rem",
+                  '& .MuiSelect-select': {
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingTop: '10px', 
+                    paddingBottom: '10px',
+                  },
+                }}
+              >
                 <MenuItem value="">Tất cả</MenuItem>
-                {
-                  semester.map((item,index)=>{
-                    return (<MenuItem value={item} key={index}>{item}</MenuItem>)
-                  })
-                }
-
-            </Select>
+                {academicYear.map((item, index) => (
+                  <MenuItem value={item} key={index}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
             </FormControl>
+
+            <FormControl sx={{ minWidth: 200 }} variant="outlined" size="small">
+              <InputLabel id="semester-label">Kỳ</InputLabel>
+              <Select
+                labelId="semester-label"
+                label="Chọn kỳ"
+                onChange={(e) => handleChangeSemester(e.target.value)}
+                sx={{
+                  height: 40,
+                  fontSize: "1rem",
+                  '& .MuiSelect-select': {
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingTop: '10px', 
+                    paddingBottom: '10px',
+                  },
+                }}
+              >
+                <MenuItem value="">Tất cả</MenuItem>
+                {semester.map((item, index) => (
+                  <MenuItem value={item} key={index}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+
+              
+            <NextBtn>Tiếp tục</NextBtn>
 
           </LearningOutComeItemsContainer>
+
 
 
         </LearningOutComeHeader>
