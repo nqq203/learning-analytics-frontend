@@ -157,7 +157,7 @@ const StudentContainerLNO = () => {
                     </LearningOutComeItemsContainer>
         
         
-                </LearningOutComeHeader>
+        </LearningOutComeHeader>
 
 
         <LineDivider></LineDivider>
