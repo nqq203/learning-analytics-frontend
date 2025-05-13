@@ -123,6 +123,7 @@ const Compare = () => {
         Tiêu chí so sánh
       </Typography>
 
+ fixbug/solver-conflict
       <Grid container spacing={3} alignItems="center">
         {/* Chọn tiêu chí */}
         <Grid item xs={12} sm={4}>
@@ -271,6 +272,114 @@ const Compare = () => {
       </Card>
     </div>
   );
+
+    return (
+        <div style={{ padding: "16px" }}>
+            {/* <Typography variant="h5" gutterBottom>Tiêu chí so sánh</Typography> */}
+
+            <Grid container spacing={3} alignItems="center">
+                {/* Chọn tiêu chí */}
+                <Grid item xs={12} sm={4}>
+                    <FormControl style={{ width: "50%", minWidth: 500 }} size="small">
+                        <InputLabel>Tiêu chí</InputLabel>
+                        <Select
+                            label="Tiêu chí"
+                            value={criteria}
+                            onChange={handleCriteriaChange}
+                        >
+                            <MenuItem value="class">Theo Lớp</MenuItem>
+                            <MenuItem value="course">Theo Khóa</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+
+                {/* Chọn môn học */}
+                <Grid item xs={12} sm={4}>
+                    <FormControl style={{ width: "50%", minWidth: 500 }} size="small">
+                        <InputLabel>Môn học</InputLabel>
+                        <Select
+                            label="Môn học"
+                            value={selectedSubject}
+                            onChange={(e) => setSelectedSubject(e.target.value)}
+                        >
+                            {[...new Set(classData.map(item => item.subject))].map((subject) => (
+                                <MenuItem key={subject} value={subject}>{subject}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+
+                {/* Nút So sánh */}
+                <Grid item xs={12} sm={4} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    {criteria && (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={!isCompareEnabled()}
+                            onClick={handleCompareClick}  // gán event
+                        >
+                            So sánh
+                        </Button>
+                    )}
+                </Grid>
+            </Grid>
+
+            {/* Bảng danh sách */}
+            <Card style={{ marginTop: "32px" }}>
+                <CardContent>
+                    {/* <Typography variant="h6">Danh sách các lớp đã dạy</Typography> */}
+                    <TableContainer component={Paper} style={{ marginTop: "16px" }}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell><strong>Môn</strong></TableCell>
+                                    <TableCell><strong>Lớp</strong></TableCell>
+                                    <TableCell><strong>Khóa</strong></TableCell>
+                                    {criteria && <TableCell><strong>Chọn</strong></TableCell>}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {classData
+                                    .filter(item => item.subject === selectedSubject || selectedSubject === "")
+                                    .map((item, index) => (
+                                        <TableRow key={index} style={{ backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#fff" }}>
+                                            <TableCell>{item.subject}</TableCell>
+                                            <TableCell>{item.class}</TableCell>
+                                            <TableCell>{item.course}</TableCell>
+                                            {criteria && (
+                                                <TableCell>
+                                                    {criteria === "class" ? (
+                                                        <FormControlLabel
+                                                            control={
+                                                                <Checkbox
+                                                                    checked={selectedClass.includes(item.class)}
+                                                                    onChange={() => handleSelectClass(item.class)}
+                                                                />
+                                                            }
+                                                            label=""
+                                                        />
+                                                    ) : (
+                                                        <FormControlLabel
+                                                            control={
+                                                                <Checkbox
+                                                                    checked={selectedCourse.includes(item.course)}
+                                                                    onChange={() => handleSelectCourse(item.course)}
+                                                                />
+                                                            }
+                                                            label=""
+                                                        />
+                                                    )}
+                                                </TableCell>
+                                            )}
+                                        </TableRow>
+                                    ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </CardContent>
+            </Card>
+        </div>
+    );
 };
 
 export default Compare;
