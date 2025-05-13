@@ -34,11 +34,11 @@ const analyticsApi = {
   fetchStudentsDetails: ({
     classId,
     details = true,
-  }) => axios.get(`${API_URL}/analytics/student?class_id=${classId}&details=${details}`),
+  }) => axios.get(`${API_URL}/analytics/students?class_id=${classId}&details=${details}`),
   fetchStudents: ({
     classId,
     details = false,
-  }) => axios.get(`${API_URL}/analytics/student?class_id=${classId}&details=${details}`),
+  }) => axios.get(`${API_URL}/analytics/students?class_id=${classId}&details=${details}`),
   searchStudents: ({
     classId,
     details,

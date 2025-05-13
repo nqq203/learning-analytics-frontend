@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import StudentListLNO from "@/components/LearningOutcome/StudentListLNO";
 import { useRouter } from "next/router";
 import { TextField, FormControl, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
-import { fetchStudent, fetchStudentSearch } from "@/redux/thunk/learningoutcomeThunk";
+import { fetchStudentSearch } from "@/redux/thunk/learningoutcomeThunk";
 
 const LearningOutcomesContainer = styled.div`
   margin: auto;
@@ -37,14 +37,13 @@ const LineDivider = styled.div`
   width: 100%;
 `;
 
-const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa", "Chuyên ngành", "Kết Quả", "Hành Động"];
+const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa", "Chuyên ngành", "Kết Quả", "Chi tiết"];
 
 const StudentContainerLNO = () => {
   const { studentsOverview, totalRecords } = useSelector(state => state.learningoutcome);
   const dispatch = useDispatch();
   const router = useRouter();
   const { classID } = router.query;
-
   const [studentID, setStudentID] = useState("");
   const [amount, setAmount] = useState(10);
   const [page, setPage] = useState(1);
@@ -53,7 +52,9 @@ const StudentContainerLNO = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState([]);
 
-  const handleSearch = (value) => setSearchKeyword(value);
+  const handleSearch = (value) => {
+    setSearchKeyword(value);
+  };
 
   const handleSearchResult = (value) => {
     setSearchResult(value);
@@ -63,19 +64,19 @@ const StudentContainerLNO = () => {
 
   const fetchStudentRow = async () => {
     setIsLoading(true);
-    await dispatch(fetchStudentSearch({
-      userId: "I1132",
-      classId: classID,
-      page: page,
-      amount: amount,
-      search: searchResult
-    }));
+    await dispatch(fetchStudentSearch({ userId: "I1132", classId: classID, page: page, amount: amount, search: searchResult }));
     setIsLoading(false);
   };
 
   const handleScrollEnd = () => {
     if (!isLoading && rows.length < totalRecords) {
       setPage(prev => prev + 1);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearchResult(searchKeyword);
     }
   };
 
@@ -92,16 +93,11 @@ const StudentContainerLNO = () => {
   }, [studentsOverview]);
 
   useEffect(() => {
+    console.log(`Chuyển sang Students ${studentID}`);
     if (studentID !== "") {
       router.push(`/analytics/learning-outcome/student/${classID}/${studentID}`);
     }
   }, [studentID]);
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSearchResult(searchKeyword);
-    }
-  };
 
   return (
     <LearningOutcomesContainer>
@@ -120,7 +116,7 @@ const StudentContainerLNO = () => {
                     height: 40,
                     paddingRight: 0,
                     fontSize: "0.9rem",
-                    alignItems: "center", // Căn giữa nội dung nhập
+                    alignItems: "center",
                   },
                   endAdornment: (
                     <InputAdornment position="end">
@@ -143,8 +139,8 @@ const StudentContainerLNO = () => {
                 }}
                 InputLabelProps={{
                   style: {
-                    lineHeight: "40px",     
-                    top: "-15px",              // Đẩy nhãn lên một chút để cân bằng
+                    lineHeight: "40px",
+                    top: "-15px",
                   },
                 }}
               />
