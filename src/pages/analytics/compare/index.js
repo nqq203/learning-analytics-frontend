@@ -141,7 +141,7 @@ const Compare = () => {
 
         {/* Chọn môn học */}
         <Grid item xs={12} sm={4}>
-          <FormControl fullWidth variant="outlined">
+          <FormControl style={{ width: "50%", minWidth: 500 }} size="small">
             <InputLabel>Môn học</InputLabel>
             <Select
               label="Môn học"

@@ -68,7 +68,7 @@ const LineDivider = styled.div`
 
 
 
-const TableHeader =  ["MSSV","Họ tên","Lớp","Môn","Khóa","Chuyên ngành","Kết Quả" ,"Hành Động"];
+const TableHeader =  ["MSSV","Họ tên","Lớp","Môn","Khóa","Chuyên ngành","Kết Quả" ,"Chi tiết"];
 
 
 
