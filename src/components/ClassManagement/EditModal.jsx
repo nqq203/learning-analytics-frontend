@@ -8,6 +8,7 @@ import {
   IconButton,
   Button
 } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 const Backdrop = styled.div`
   position: fixed;
   top: 0;
@@ -23,7 +24,7 @@ const Backdrop = styled.div`
 
 
 const ModalContainer = styled.div`
-  gap:4rem;
+  
   background-color: white;
   width: 50%;
   padding: 1.5rem;
@@ -38,16 +39,24 @@ const HeaderContainer = styled.div`
     width:100%;
     display:flex;
     flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    font-size:2.5rem;
+    gap:1rem;
+    font-size:1.5rem;
     
+
+`
+const HeaderItemContainer = styled.div`
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    
+
 
 `
 
 const LineDivider = styled.div`
-    background-color: var(--grey-600);
-    width:40%;  
+     background-color: var(--grey-500);
+    width:100%;  
     height:1px;
    
 
@@ -57,148 +66,171 @@ const BodyContainer = styled.div`
     display:flex;
     flex-direction:row;
     justify-content:space-between;
-    padding:2rem;
+    padding-inline:2rem;
+    padding-block:3rem;
 
 `
 const BodyItem = styled.div`
     display:flex;
     flex-direction:column;
-    gap:0.5rem;
+    gap:1.5rem;
 `
 const BodyInputItem = styled.div`
     display:flex;
     flex-direction:column;
-    font-size:1.2rem;
+    
     gap:0.2rem;
-    font-weight:bold;   
+      
 `
 
 const ButtonGroup = styled.div`
-    margin:auto;
+    padding-inline:2rem;
+    margin-top:3rem;
     display:flex;
     flex-direction:row;
     align-items:center;
-    gap:1rem;
+    justify-content:space-between;
 
 `
 
+const LabelInput = styled.div`
+    font-weight:550;
+    font-size:1.1rem;
+    font-style:italic;
+    color:var(--grey-800)
+
+`
 export default function EditModal({setModal,classId}){
     const CloseModal=()=>{
         setModal(false);
     }
     return(
         <Backdrop onClick={()=>CloseModal()}>
-            <ModalContainer  onClick={(e) => e.stopPropagation()}>
+            <ModalContainer onClick={(e) => e.stopPropagation()} >
                 <HeaderContainer>
-                        <div>Sửa Lớp Học</div>
+                        <HeaderItemContainer>
+                                <div style={{fontSize:"1.8rem", fontWeight:"570",paddingLeft:"0.5rem", color:"var(--grey-800)"}}> Sửa Lớp Học </div>
+                                <IconButton size="large" onClick={()=>CloseModal()}>
+                                    <CloseIcon size="large"></CloseIcon>
+                                </IconButton>
+                                
+                        
+                        </HeaderItemContainer>
+
+
                         <LineDivider></LineDivider>
                 </HeaderContainer>
+                
 
                 <BodyContainer>
-                                    <BodyItem>
-                                        <BodyInputItem>
-                                           <div> Thông tin A: </div>
-                                             <TextField
-                                                id="outlined-secondary"
-                                                variant="outlined"
-                                                style={{ width: "50%", minWidth: 320 }}
-                                                 size="small"
-                                                
-                                            />
-                                        </BodyInputItem>
-                
-                                        <BodyInputItem>
-                                           <div> Thông tin B: </div>
-                                            <TextField
-                                                id="outlined-secondary"
-                                                variant="outlined"
-                                                 style={{ width: "50%", minWidth: 320 }}
-                                                 size="small"
-                                            />
-                                        </BodyInputItem>
-                
-                                        <BodyInputItem>
-                                           <div> Thông tin C: </div>
-                                           <TextField
-                                                id="outlined-secondary"
-                                                variant="outlined"
-                                                style={{ width: "50%", minWidth: 320 }}
-                                                 size="small"
-                                            />
-                                        </BodyInputItem>
-                
-                                        <BodyInputItem>
-                                           <div> Thông tin D: </div>
-                                            <TextField
-                                                id="outlined-secondary"
-                                                variant="outlined"
-                                                style={{ width: "50%", minWidth: 320 }}
-                                                 size="small"
-                                            />
-                                        </BodyInputItem>
-                                    </BodyItem>
-                
-                
-                                    <BodyItem>
-                                        <BodyInputItem>
-                                           <div> Thông tin A: </div>
-                                             <TextField
-                                                id="outlined-secondary"
-                                                variant="outlined"
-                                                style={{ width: "50%", minWidth: 320 }}
-                                                 size="small"
-                                                
-                                            />
-                                        </BodyInputItem>
-                
-                                        <BodyInputItem>
-                                           <div> Thông tin B: </div>
-                                            <TextField
-                                                id="outlined-secondary"
-                                                variant="outlined"
-                                                 style={{ width: "50%", minWidth: 320 }}
-                                                 size="small"
-                                            />
-                                        </BodyInputItem>
-                
-                                        <BodyInputItem>
-                                           <div> Thông tin C: </div>
-                                           <TextField
-                                                id="outlined-secondary"
-                                                variant="outlined"
-                                                style={{ width: "50%", minWidth: 320 }}
-                                                 size="small"
-                                            />
-                                        </BodyInputItem>
-                
-                                        <BodyInputItem>
-                                           <div> Thông tin D: </div>
-                                            <TextField
-                                                id="outlined-secondary"
-                                                variant="outlined"
-                                                style={{ width: "50%", minWidth: 320 }}
-                                                 size="small"
-                                            />
-                                        </BodyInputItem>
-                                    </BodyItem>
-                                    
-                                    
-                                    
-                                      
-                                    
-                
-                                </BodyContainer>
-                                <ButtonGroup>
-                                        <Button  
-                                        style={{ width: "50%", minWidth: 200 }} variant="outlined" 
-                                        size="large"
-                                        >Hủy Thêm Lớp</Button>
-                                        <Button 
-                                        style={{ width: "50%", minWidth: 200 }} 
-                                        variant="contained" 
-                                        size="large"
-                                        >THÊM LỚP</Button>
-                                    </ButtonGroup>
+                    <BodyItem>
+                        <BodyInputItem>
+                           <LabelInput> Thông tin A </LabelInput>
+                             <TextField
+                                id="outlined-secondary"
+                                variant="outlined"
+                                style={{ width: "50%", minWidth: 380 }}
+                                 size="small"
+                                
+                            />
+                        </BodyInputItem>
+
+                        <BodyInputItem>
+                           <LabelInput> Thông tin B </LabelInput>
+                            <TextField
+                                id="outlined-secondary"
+                                variant="outlined"
+                                 style={{ width: "50%", minWidth: 380 }}
+                                 size="small"
+                            />
+                        </BodyInputItem>
+
+                        <BodyInputItem>
+                           <LabelInput> Thông tin C </LabelInput>
+                           <TextField
+                                id="outlined-secondary"
+                                variant="outlined"
+                                style={{ width: "50%", minWidth: 380 }}
+                                 size="small"
+                            />
+                        </BodyInputItem>
+
+                        <BodyInputItem>
+                           <LabelInput> Thông tin D </LabelInput>
+                            <TextField
+                                id="outlined-secondary"
+                                variant="outlined"
+                                style={{ width: "50%", minWidth: 380 }}
+                                 size="small"
+                            />
+                        </BodyInputItem>
+                    </BodyItem>
+
+
+                    <BodyItem>
+                        <BodyInputItem>
+                           <LabelInput> Thông tin A </LabelInput>
+                             <TextField
+                                id="outlined-secondary"
+                                variant="outlined"
+                                style={{ width: "50%", minWidth: 380 }}
+                                 size="small"
+                                
+                            />
+                        </BodyInputItem>
+
+                        <BodyInputItem>
+                           <LabelInput> Thông tin B </LabelInput>
+                            <TextField
+                                id="outlined-secondary"
+                                variant="outlined"
+                                
+                                 style={{ width: "50%", minWidth: 380
+                                  }}
+                                 size="small"
+                            />
+                        </BodyInputItem>
+
+                        <BodyInputItem>
+                           <LabelInput> Thông tin C </LabelInput>
+                           <TextField
+                                id="outlined-secondary"
+                                variant="outlined"
+                                style={{ width: "50%", minWidth: 380 }}
+                                 size="small"
+                            />
+                        </BodyInputItem>
+
+                        <BodyInputItem>
+                           <LabelInput> Thông tin D </LabelInput>
+                            <TextField
+                                id="outlined-secondary"
+                                variant="outlined"
+                                style={{ width: "50%", minWidth: 380 }}
+                                 size="small"
+                            />
+                        </BodyInputItem>
+                    </BodyItem>
+                    
+                    
+                    
+                      
+                    
+
+                </BodyContainer>
+
+                <ButtonGroup>
+                         <Button  
+                        style={{ width: "45%", minWidth: 220 }} variant="outlined" 
+                        size="large"
+                        onClick={()=>CloseModal()}
+                        >ĐÓNG</Button>
+                        <Button 
+                        style={{ width: "45%", minWidth: 220 }} 
+                        variant="contained" 
+                        size="large"
+                        >Thêm Lớp</Button>
+                </ButtonGroup>
 
             </ModalContainer>
         </Backdrop>

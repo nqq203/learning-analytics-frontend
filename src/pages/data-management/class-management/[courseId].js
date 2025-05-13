@@ -21,6 +21,7 @@ import { useRouter } from "next/router";
 import ClassTable from "@/components/ClassManagement/ClassTable";
 import InsertModal from "@/components/ClassManagement/InsertModal";
 import EditModal from "@/components/ClassManagement/EditModal";
+import ImportFileModal from "@/components/ClassManagement/ImportFileModal";
 const ClassManagementContainer = styled.div`
     margin: auto;
     width: 97%;
@@ -167,6 +168,10 @@ export default function MainClassManagement() {
 
     const [modalUpdate,setModalUpdate] = useState(false);
     const [classEdit,setClassEdit] = useState("");
+    
+    
+    const [importFile,setImportFile] = useState(false);
+
     const handleDelete = (id)=>{
         console.log("DELETE: ",id)
     }
@@ -175,10 +180,11 @@ export default function MainClassManagement() {
 
         setModalUpdate(true)
         setClassEdit(id)
+
     }
 
-    const handleImportFile =(id)=>{
-        console.log("Up file")
+    const handleImportFile =()=>{
+        
     }
 
     const handleChangeSemester = (value) =>
@@ -268,9 +274,12 @@ export default function MainClassManagement() {
                     onClick={()=>setModalInsert(true)}
                     >
                         + Thêm</Button>
+
+                
+
                 <Button 
                     style ={{ fontSize:"1rem", fontWeight:"bold",width: "50%", minWidth: 150}} 
-                    
+                    onClick={()=>setImportFile(true)}
                     variant="contained"
                     >Tải file</Button>
 
@@ -290,7 +299,7 @@ export default function MainClassManagement() {
             handleEdit={handleEdit} 
             
             ></ClassTable>
-        
+            {importFile?<ImportFileModal setModal={setImportFile}></ImportFileModal>:null}
             {modalInsert?<InsertModal setModal={setModalInsert}/> :null}
             {modalUpdate?<EditModal setModal={setModalUpdate} classId={classEdit}></EditModal>: null}
         
