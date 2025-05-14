@@ -6,6 +6,7 @@ import {
   MenuItem,
   Select,
   IconButton,
+  Dialog,
   Button
 } from "@mui/material";
 
@@ -26,12 +27,9 @@ const Backdrop = styled.div`
 
 
 const ModalContainer = styled.div`
-  gap:2rem;
   background-color: white;
-  width: 50%;
-  padding-block: 1.5rem;
-  padding-inline:1.5rem;
-  padding-bottom:3rem;
+  width: 100%;
+  padding: 1.5rem;
   border-radius: 10px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
   
@@ -161,7 +159,7 @@ const LabelInput = styled.div`
 
 
 const typeFile = ["Type 1", "Type 2", "Type 3","Type 4"]
-export default function ImportFileModal({setModal}){
+export default function ImportFileModal({Modal,setModal}){
     const [fileName, setFileName] = useState('Chưa có tệp nào');
     const [typeChosen,setTypeChosen] = useState(-1);
     const CloseModal=()=>{
@@ -179,7 +177,8 @@ export default function ImportFileModal({setModal}){
         setFileName(file ? file.name : 'Chưa có tệp nào');
      };
     return(
-        <Backdrop onClick={()=>CloseModal()}>
+        <Dialog open={Modal} onClose={CloseModal} fullWidth maxWidth="md">
+        
             <ModalContainer onClick={(e) => e.stopPropagation()} >
                 <HeaderContainer>
                         <HeaderItemContainer>
@@ -224,6 +223,8 @@ export default function ImportFileModal({setModal}){
                         </ImportFileContainer>
                 </BodyContainer>
                         
+
+
                  <ButtonGroup>
                     <Button  
                         style={{ width: "45%", minWidth: 220 }} variant="outlined" 
@@ -238,7 +239,8 @@ export default function ImportFileModal({setModal}){
                 </ButtonGroup>
                
             </ModalContainer>
-        </Backdrop>
+            </Dialog>
+        
         
         
     )

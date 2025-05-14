@@ -299,9 +299,9 @@ export default function MainClassManagement() {
             handleEdit={handleEdit} 
             
             ></ClassTable>
-            {importFile?<ImportFileModal setModal={setImportFile}></ImportFileModal>:null}
-            {modalInsert?<InsertModal setModal={setModalInsert}/> :null}
-            {modalUpdate?<EditModal setModal={setModalUpdate} classId={classEdit}></EditModal>: null}
+            {importFile?<ImportFileModal  Modal={importFile}setModal={setImportFile}></ImportFileModal>:null}
+            {modalInsert?<InsertModal Modal= {modalInsert}setModal={setModalInsert}/> :null}
+            {modalUpdate?<EditModal Modal={modalUpdate} setModal={setModalUpdate} classId={classEdit}></EditModal>: null}
         
         </ClassManagementContainerBody>
 

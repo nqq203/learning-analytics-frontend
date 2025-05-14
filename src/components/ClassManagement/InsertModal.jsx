@@ -6,7 +6,8 @@ import {
   MenuItem,
   Select,
   IconButton,
-  Button
+  Button,
+  Dialog
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 const Backdrop = styled.div`
@@ -26,7 +27,7 @@ const Backdrop = styled.div`
 const ModalContainer = styled.div`
   
   background-color: white;
-  width: 50%;
+  width: 100%;
   padding: 1.5rem;
   border-radius: 10px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
@@ -100,12 +101,13 @@ const LabelInput = styled.div`
     color:var(--grey-800)
 
 `
-export default function InsertModal({setModal}){
+export default function InsertModal({Modal,setModal,classId}){
     const CloseModal=()=>{
         setModal(false);
     }
     return(
-        <Backdrop onClick={()=>CloseModal()}>
+        // <Backdrop onClick={()=>CloseModal()}>
+        <Dialog open={Modal} onClose={CloseModal} fullWidth maxWidth="md">
             <ModalContainer onClick={(e) => e.stopPropagation()} >
                 <HeaderContainer>
                         <HeaderItemContainer>
@@ -129,7 +131,7 @@ export default function InsertModal({setModal}){
                              <TextField
                                 id="outlined-secondary"
                                 variant="outlined"
-                                style={{ width: "50%", minWidth: 380 }}
+                                style={{ width: "50%", minWidth: 340 }}
                                  size="small"
                                 
                             />
@@ -140,7 +142,7 @@ export default function InsertModal({setModal}){
                             <TextField
                                 id="outlined-secondary"
                                 variant="outlined"
-                                 style={{ width: "50%", minWidth: 380 }}
+                                 style={{ width: "50%", minWidth: 340 }}
                                  size="small"
                             />
                         </BodyInputItem>
@@ -150,7 +152,7 @@ export default function InsertModal({setModal}){
                            <TextField
                                 id="outlined-secondary"
                                 variant="outlined"
-                                style={{ width: "50%", minWidth: 380 }}
+                                style={{ width: "50%", minWidth: 340 }}
                                  size="small"
                             />
                         </BodyInputItem>
@@ -160,7 +162,7 @@ export default function InsertModal({setModal}){
                             <TextField
                                 id="outlined-secondary"
                                 variant="outlined"
-                                style={{ width: "50%", minWidth: 380 }}
+                                style={{ width: "50%", minWidth: 340 }}
                                  size="small"
                             />
                         </BodyInputItem>
@@ -173,7 +175,7 @@ export default function InsertModal({setModal}){
                              <TextField
                                 id="outlined-secondary"
                                 variant="outlined"
-                                style={{ width: "50%", minWidth: 380 }}
+                                style={{ width: "50%", minWidth: 340 }}
                                  size="small"
                                 
                             />
@@ -184,7 +186,9 @@ export default function InsertModal({setModal}){
                             <TextField
                                 id="outlined-secondary"
                                 variant="outlined"
-                                 style={{ width: "50%", minWidth: 380 }}
+                                
+                                 style={{ width: "50%", minWidth: 340
+                                  }}
                                  size="small"
                             />
                         </BodyInputItem>
@@ -194,7 +198,7 @@ export default function InsertModal({setModal}){
                            <TextField
                                 id="outlined-secondary"
                                 variant="outlined"
-                                style={{ width: "50%", minWidth: 380 }}
+                                style={{ width: "50%", minWidth: 340 }}
                                  size="small"
                             />
                         </BodyInputItem>
@@ -204,7 +208,7 @@ export default function InsertModal({setModal}){
                             <TextField
                                 id="outlined-secondary"
                                 variant="outlined"
-                                style={{ width: "50%", minWidth: 380 }}
+                                style={{ width: "50%", minWidth: 340 }}
                                  size="small"
                             />
                         </BodyInputItem>
@@ -218,7 +222,7 @@ export default function InsertModal({setModal}){
                 </BodyContainer>
 
                 <ButtonGroup>
-                        <Button  
+                         <Button  
                         style={{ width: "45%", minWidth: 220 }} variant="outlined" 
                         size="large"
                         onClick={()=>CloseModal()}
@@ -231,7 +235,8 @@ export default function InsertModal({setModal}){
                 </ButtonGroup>
 
             </ModalContainer>
-        </Backdrop>
+        {/* </Backdrop> */}
+        </Dialog>
         
         
     )
