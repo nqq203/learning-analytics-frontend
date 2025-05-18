@@ -1,4 +1,4 @@
-import ScoreComparisonCharts from "@/components/CompareResults/charts/ScoreComparisonCharts";
+import React from "react";
 import {
   Card,
   CardContent,
@@ -12,6 +12,7 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
+import ScoreComparisonCharts from "@/components/CompareResults/charts/ScoreComparisonCharts";
 
 const CompareResult = ({
   data,
@@ -22,48 +23,11 @@ const CompareResult = ({
   selectedItems,
   chartType = "bar",
 }) => {
-  if (!data) return null;
-
-  return (
-    <Card style={{ marginTop: "32px" }}>
-      <CardContent>
-        <TableContainer
-          component={Paper}
-          style={{ marginTop: "16px" }}
-        ></TableContainer>
-
-        <div style={{ marginTop: "32px" }}>
-          <ScoreComparisonChartsonCharts
-            chartType={chartType}
-            data={Object.values(data)}
-            getDisplayName={(item) => item.class_name}
-            getClassColor={(index) => {
-              const colors = [
-                "#8884d8",
-                "#82ca9d",
-                "#ffc658",
-                "#ff8042",
-                "#8dd1e1",
-              ];
-              return colors[index % colors.length];
-            }}
-          />
-        </div>
-
-
-const CompareResult = ({
-  data,
-  mode,
-  onBack,
-  criteria,
-  course,
-  selectedItems,
-}) => {
   if (!data) {
     return (
       <Card>
         <CardContent>
-          <p>Không có dữ liệu để hiển thị.</p>
+          <Typography>Không có dữ liệu để hiển thị.</Typography>
           <Button
             variant="contained"
             color="secondary"
@@ -83,7 +47,8 @@ const CompareResult = ({
         <Typography variant="h6" style={{ textAlign: "center" }}>
           Kết quả so sánh
         </Typography>
-        {/* Thông tin */}
+
+        {/* Thông tin mô tả */}
         <Typography variant="body1" style={{ marginTop: "8px" }}>
           <strong>Tiêu chí: </strong>
           {criteria === "class" ? "Theo Lớp" : "Theo Khóa"}
@@ -99,36 +64,25 @@ const CompareResult = ({
           {selectedItems?.length ? selectedItems.join(", ") : "Không có"}
         </Typography>
 
+        {/* Bảng dữ liệu */}
         <TableContainer component={Paper} style={{ marginTop: "16px" }}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>
-                  <strong>{mode === "class" ? "Tên lớp" : "Khoá"}</strong>
+                  <strong>{mode === "class" ? "Tên lớp" : "Khóa"}</strong>
                 </TableCell>
                 {mode === "class" && (
                   <TableCell>
                     <strong>Tên môn học</strong>
                   </TableCell>
                 )}
-                <TableCell>
-                  <strong>Điểm giữa kỳ</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Điểm thực hành</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Điểm đồ án</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Điểm cuối kỳ</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Điểm trung bình</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Số lượng SV</strong>
-                </TableCell>
+                <TableCell><strong>Điểm giữa kỳ</strong></TableCell>
+                <TableCell><strong>Điểm thực hành</strong></TableCell>
+                <TableCell><strong>Điểm đồ án</strong></TableCell>
+                <TableCell><strong>Điểm cuối kỳ</strong></TableCell>
+                <TableCell><strong>Điểm trung bình</strong></TableCell>
+                <TableCell><strong>Số lượng SV</strong></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -158,6 +112,25 @@ const CompareResult = ({
             </TableBody>
           </Table>
         </TableContainer>
+
+        {/* Biểu đồ */}
+        <div style={{ marginTop: "32px" }}>
+          <ScoreComparisonCharts
+            chartType={chartType}
+            data={Object.values(data)}
+            getDisplayName={(item) => item.class_name}
+            getClassColor={(index) => {
+              const colors = [
+                "#8884d8",
+                "#82ca9d",
+                "#ffc658",
+                "#ff8042",
+                "#8dd1e1",
+              ];
+              return colors[index % colors.length];
+            }}
+          />
+        </div>
 
         <Button
           variant="contained"
