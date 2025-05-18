@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Container,
   Box,
   Typography,
   Button,
+  FormControl,
   TextField,
   Grid,
   Table,
@@ -15,6 +16,7 @@ import {
   Paper,
   MenuItem,
   Select,
+  InputLabel,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -23,11 +25,16 @@ import {
 
 } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
+import { fetchClassesByLecturer,fetchFraudDetect } from "@/redux/thunk/fraudDetectionThunk";
 // import { useDispatch, useSelector } from "react-redux";
 // import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import InputAdornment from '@mui/material/InputAdornment';
 
+import InputAdornment from '@mui/material/InputAdornment';
+import { TableFraudDetection } from "@/components/FraudDetection/TableFraudDetection";
+import { Dialog1 } from "@/components/FraudDetection/Dialog1";
+import { Dialog2 } from "@/components/FraudDetection/Dialog2";
+import { Dialog3 } from "@/components/FraudDetection/Dialog3";
+import { useDispatch, useSelector } from "react-redux";
 // Dữ liệu mẫu
 const sampleData = [
   { id: 1, mssv: "21127001", name: "Nguyễn Văn A", score: 10, timeTaken: "10m22s", deviation: "24m38s", reason: "Làm quá nhanh so với trung bình" },
@@ -35,12 +42,44 @@ const sampleData = [
 ];
 
 const FraudDetection = () => {
-  const [subject, setSubject] = useState("");
-  const [test, setTest] = useState("");
+  const {classes,students} = useSelector(state=>state.fraudDetection);
+  const dispatch = useDispatch();
+
+  const [disabledTest,SetDisabledTest] = useState(true)
+  const [disabledThreehold,SetDisabledThreehold] = useState(true)
+
+
+  const [classesSelect, setClassesSelect] = useState("");
+  const [quizSelect,setQuizSelect] = useState("");
+
+  const [Quiz,SetQuiz] = useState([]);
+  const userId="I0350";
   const [data, setData] = useState(sampleData);
+
   const [openDialog1, setOpenDialog1] = useState(false);
   const [openDialog2, setOpenDialog2] = useState(false);
   const [openDialog3, setOpenDialog3] = useState(false);
+
+  const [minTime,SetMinTime] = useState()
+  const [maxTime,SetMaxTime] = useState()
+  useEffect(() => {
+    const fetchClasses = async () => {
+      await dispatch(fetchClassesByLecturer({ userId }));
+    }
+    fetchClasses();
+  }, [userId]);
+
+  useEffect(()=>{
+    setData(students);
+    
+  },[students])
+  // useEffect(() => {
+  //   console.log(classesSelect);
+  //   console.log(quizSelect);
+  //   console.log(minTime);
+  //   console.log(maxTime);
+  // }, [classesSelect,quizSelect,minTime,maxTime]);
+
 
   const handleOpenDialog1 = () => {
     setOpenDialog1(true);
@@ -68,74 +107,81 @@ const FraudDetection = () => {
     setOpenDialog3(false);
   };
 
-  const handleSearch = () => {
-    console.log("Searching for:", subject);
+  const handleChosingClass = (classIdChosen) => {
+    setClassesSelect(classIdChosen)
+    if(classIdChosen){
+      const foundClassess = classes.find(cls=>cls.classId == classIdChosen )
+      SetQuiz(foundClassess.quizzes);
+      SetDisabledTest(false)
+    }
+    
+
   };
+
+  const handleChosingQuiz = (QuizIdChosen) =>{
+        SetDisabledThreehold(false);
+        setQuizSelect(QuizIdChosen);
+    
+  }
+
+  const handleDetect = async ()=>{
+      await dispatch(fetchFraudDetect({ userId,quiz_id:quizSelect,min_threshold:minTime,max_threshold:maxTime }));
+  }
+  
+  
 
   return (
     <Container maxWidth={false} sx={{ padding: 2 }}> {/* Set the container to full width */}
-      {/* Tiêu đề */}
-      {/* <Typography variant="h5" fontWeight="bold" my={2} textAlign="center">
-        Phân tích Phát hiện gian lận
-      </Typography> */}
 
       {/* Bộ lọc + Button */}
       <Grid container spacing={2} alignItems="center" mb={3}>
+        
         <Grid item xs={12} sm={6} md={4}>
-          <TextField
-            variant="outlined"
-            label="Môn học"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            fullWidth
-            size="small"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handleSearch}
-                    sx={{
-                      backgroundColor: "#1976D2",
-                      borderRadius: "0 4px 4px 0",
-                      padding: "10px",
-                      height: "100%",
-                      '&:hover': {
-                        backgroundColor: "#1976d2", 
-                      },
-                    }}
-                  >
-                    <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              width: "100%",
-              '& .MuiOutlinedInput-root': {
-                paddingRight: 0,
-              },
-            }}
-          />
+          <FormControl style={{ width: "30%", minWidth: 450 }} size="small">
+            <InputLabel>Lớp</InputLabel>
+          <Select
+            label="Chọn lớp"
+            value={classesSelect}
+            onChange={(e) => handleChosingClass(e.target.value)}
+            
+          >
+           
+            {classes.map((item)=>{
+              return <MenuItem value={item.classId}> {item.className}</MenuItem>
+            })}
+            
+            
+
+          </Select>
+
+          </FormControl>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
-          <Select
-            value={test}
-            onChange={(e) => setTest(e.target.value)}
-            fullWidth
-            displayEmpty
-            size="small"
-          >
-            <MenuItem value=""><Typography>Bài kiểm tra</Typography></MenuItem>
-            <MenuItem value="Quiz 1">Quiz 1</MenuItem>
-            <MenuItem value="Quiz 2">Quiz 2</MenuItem>
-            <MenuItem value="Giữa kỳ">Giữa kỳ</MenuItem>
-            <MenuItem value="Cuối kỳ">Cuối kỳ</MenuItem>
-          </Select>
+        <Grid item xs={12} sm={6} md={4} >
+          <FormControl style={{ width: "30%", minWidth: 450 }} size="small" disabled={disabledTest}>
+              <InputLabel>Bài kiểm tra</InputLabel>
+              <Select
+                label="Chọn bài kiểm tra"
+                value={quizSelect}
+                onChange={(e) => handleChosingQuiz(e.target.value)}
+                
+              >
+                
+
+                {
+                  Quiz.map((item)=>{
+                    return <MenuItem value={item.quizId}>{item.quizName}</MenuItem>
+                  })
+                }
+                
+                
+              </Select>
+          </FormControl>
         </Grid>
 
         <Grid item xs={6} sm={3} md={2}>
           <Button
+            disabled={disabledThreehold}
             variant="contained"
             onClick={handleOpenDialog1}
             fullWidth
@@ -153,6 +199,7 @@ const FraudDetection = () => {
 
         <Grid item xs={6} sm={3} md={2}>
           <Button
+            disabled={disabledThreehold}
             variant="contained"
             fullWidth
             sx={{
@@ -162,11 +209,13 @@ const FraudDetection = () => {
                 backgroundColor: '#303F9F',
               },
             }}
+            onClick={()=>handleDetect()}
           >
             Phân tích
           </Button>
         </Grid>
       </Grid>
+
       <Box
           sx={{
             borderBottom: "1.2px solid #ccc", 
@@ -174,116 +223,37 @@ const FraudDetection = () => {
           }}
         />
       {/* Bảng dữ liệu */}
-      <TableContainer component={Paper} sx={{ width: "100%", maxWidth: "100%" }}>
-      <Table sx={{ width: "100%", fontSize: "16px", '& td, & th': { textAlign: 'center', fontSize: '16px' } }}>
-          <TableHead>
-            <TableRow>
-              <TableCell><strong>MSSV</strong></TableCell>
-              <TableCell><strong>Tên</strong></TableCell>
-              <TableCell><strong>Điểm</strong></TableCell>
-              <TableCell><strong>Thời gian làm</strong></TableCell>
-              <TableCell><strong>Độ lệch</strong></TableCell>
-              <TableCell><strong>Lý do</strong></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell>{row.mssv}</TableCell>
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.score}</TableCell>
-                <TableCell>{row.timeTaken}</TableCell>
-                <TableCell>{row.deviation}</TableCell>
-                <TableCell>{row.reason}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <TableFraudDetection data={data}></TableFraudDetection>
 
       {/* Dialogs */}
-      {/* Dialog 1: Thông báo chưa thiết lập ngưỡng */}
-      <Dialog open={openDialog1} onClose={handleCloseDialog1} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ fontWeight: "bold", textAlign: "center" }}>
-          NGƯỠNG CHƯA ĐƯỢC THIẾT LẬP
-        </DialogTitle>
-        <DialogContent sx={{ textAlign: "center", p: 3 }}>
-          <NotificationsIcon sx={{ fontSize: 60, color: "#1976D2" }} />
-          <Typography sx={{ mt: 2, color: "gray" }}>
-            Bạn chưa thiết lập ngưỡng. Thiết lập ngưỡng của bạn hoặc tiếp tục với ngưỡng mặc định để tiếp tục phân tích.
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
-          <Button variant="outlined" color="primary" onClick={handleCloseDialog1}>
-            HỦY
-          </Button>
-          <Button variant="contained" sx={{ bgcolor: "#8E24AA", color: "white" }} onClick={handleOpenDialog3}>
-            THIẾT LẬP
-          </Button>
-          <Button variant="contained" sx={{ bgcolor: "#1976D2", color: "white" }} onClick={handleOpenDialog2}>
-            TIẾP TỤC
-          </Button>
-        </DialogActions>
-      </Dialog>
+
+      <Dialog1 
+      openDialog1={openDialog1} 
+      handleCloseDialog1={handleCloseDialog1}
+      handleOpenDialog3={handleOpenDialog3}
+      handleOpenDialog2={handleOpenDialog2}
+      ></Dialog1>
 
       {/* Dialog 2: Hiển thị ngưỡng mặc định */}
-      <Dialog open={openDialog2} onClose={handleCloseDialog2} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ fontWeight: "bold", textAlign: "center", fontSize: "1.2rem" }}>
-          THÔNG TIN NGƯỠNG MẶC ĐỊNH
-        </DialogTitle>
-        <DialogContent sx={{ px: 4, py: 2 }}>
-          <Box sx={{ borderBottom: "1px solid #ddd", pb: 1, mb: 1 }}>
-            <Typography variant="body1"><b>1. MIN TIME:</b> 10m <span style={{ float: "right" }}><b>MAX TIME:</b> 40m</span></Typography>
-          </Box>
-          <Box sx={{ borderBottom: "1px solid #ddd", pb: 1, mb: 1 }}>
-            <Typography variant="body1"><b>2. DEVIATION FROM MEAN:</b></Typography>
-            <Typography variant="body2" sx={{ color: "gray" }}>Standard Deviation: 2.5 ・ Mean Time: 35m</Typography>
-          </Box>
-          <Box sx={{ borderBottom: "1px solid #ddd", pb: 1, mb: 1 }}>
-            <Typography variant="body1"><b>3. SCORE-TIME CORRELATION:</b></Typography>
-            <Typography variant="body2" sx={{ color: "gray" }}>Mean Time: 35m</Typography>
-          </Box>
-          <Box>
-            <Typography variant="body1"><b>4. ANOMALY SCORE:</b></Typography>
-            <Typography variant="body2" sx={{ color: "gray" }}>0.8 (0 - 1)</Typography>
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
-          <Button variant="outlined" color="primary" sx={{ width: "120px" }} onClick={handleCloseDialog2}>
-            HỦY
-          </Button>
-          <Button variant="contained" sx={{ bgcolor: "#1976D2", color: "white", width: "120px" }} onClick={handleCloseDialog2}>
-            XÁC NHẬN
-          </Button>
-        </DialogActions>
-      </Dialog>
+
+      
+      <Dialog2 
+        openDialog2={openDialog2} 
+        handleCloseDialog2={handleCloseDialog2}
+      >
+
+      </Dialog2>
+
 
       {/* Dialog 3: THIẾT LẬP NGƯỠNG */}
-      <Dialog open={openDialog3} onClose={handleCloseDialog3} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ fontWeight: "bold", textAlign: "center", fontSize: "1.2rem" }}>
-          THIẾT LẬP NGƯỠNG
-        </DialogTitle>
-        <DialogContent sx={{ px: 4, py: 2 }}>
-          {/* Các trường ngưỡng */}
-          <Typography variant="body1" sx={{ fontWeight: "bold", mt: 2 }}>1. Ngưỡng tối thiểu / tối đa:</Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TextField fullWidth label="Min Time (mm:ss)" variant="outlined" size="small" />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField fullWidth label="Max Time (mm:ss)" variant="outlined" size="small" />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
-          <Button variant="outlined" color="primary" sx={{ width: "120px" }} onClick={handleCloseDialog3}>
-            HỦY
-          </Button>
-          <Button variant="contained" sx={{ bgcolor: "#1976D2", color: "white", width: "120px" }} onClick={handleCloseDialog3}>
-            LƯU
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <Dialog3 
+        openDialog3={openDialog3} 
+        handleCloseDialog3={handleCloseDialog3}
+        minTime={minTime}
+        SetMinTime={SetMinTime}
+        maxTime={maxTime}
+        SetMaxTime={SetMaxTime}
+      ></Dialog3>
     </Container>
   );
 };
