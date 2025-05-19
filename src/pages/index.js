@@ -5,3 +5,20 @@ export default function Home() {
         <DashboardPage></DashboardPage>
     );
 }
+
+// import { useEffect } from "react";
+// import { useRouter } from "next/router";
+// import DashboardPage from "@/components/Dashboard";
+
+// export default function Home() {
+//     const router = useRouter();
+
+//     useEffect(() => {
+//         const isAuthenticated = localStorage.getItem("isAuthenticated");
+//         if (!isAuthenticated) {
+//             router.push("/login"); // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
+//         }
+//     }, []);
+
+//     return <DashboardPage />;
+// }

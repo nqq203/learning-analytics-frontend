@@ -27,18 +27,18 @@ const analyticsApi = {
     userId,
     page,
     amount
-  }) => axios.get(`${API_URL}/analytics/class?user_id=${userId}&page=${page}&amount=${amount}`),
+  }) => axios.get(`${API_URL}/analytics/classes?user_id=${userId}&page=${page}&amount=${amount}`),
   fetchSubjectsByLecturer: ({
     userId
-  }) => axios.get(`${API_URL}/analytics/subjects?user_id=${userId}`),
+  }) => axios.get(`${API_URL}/analytics/course?user_id=${userId}`),
   fetchStudentsDetails: ({
     classId,
     details = true,
-  }) => axios.get(`${API_URL}/analytics/student?class_id=${classId}&details=${details}`),
+  }) => axios.get(`${API_URL}/analytics/students?class_id=${classId}&details=${details}`),
   fetchStudents: ({
     classId,
     details = false,
-  }) => axios.get(`${API_URL}/analytics/student?class_id=${classId}&details=${details}`),
+  }) => axios.get(`${API_URL}/analytics/students?class_id=${classId}&details=${details}`),
   searchStudents: ({
     classId,
     details,
@@ -49,7 +49,7 @@ const analyticsApi = {
     page,
     amount,
     search,
-  }) => axios.get(`${API_URL}/analytics/class?user_id=${userId}&page=${page}&amount=${amount}&search=${search}`),
+  }) => axios.get(`${API_URL}/analytics/classes?user_id=${userId}&page=${page}&amount=${amount}&search=${search}`),
 };
 
 export { analyticsApi, handleAnalyticsApiError };

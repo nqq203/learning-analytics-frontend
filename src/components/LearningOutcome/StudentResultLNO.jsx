@@ -4,165 +4,133 @@ import styled from "styled-components";
 import MyGaugeChart from "./GaugeChartLNO";
 import TableChart from "./TableChartLNO";
 import BarChart from "./BarChartLNO";
-
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 
 const LearningOutcomeBody = styled.div`
-  display:flex;
+  display: flex;
   flex-direction: column;
-  gap:1rem;
-  
-`
+  gap: 1rem;
+`;
+
 const DropdownTitleContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
+`;
 
-    display:flex;
-    flex-direction:row;
-    gap:0.5rem;
-    align-items:center;
-`
 const DropdownTitle = styled.div`
-    font-weight:bold;
-    font-size:1rem;
-`
-const DropdownTitleSelect = styled.select`
-    padding-inline:1rem;
-    padding-block:0.5rem;
-    
-    font-weight:bold;
-    font-size:1rem;
-
-    background-color: var(--grey-200);
-    color: var(--grey-900);
-
-
-    border: 1px solid gray;
-    border-radius:5px;
-`
+  font-weight: bold;
+  font-size: 1rem;
+`;
 
 const ChartContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
 
-    width:100%,
-    display:flex;
-    flex-direction:column;
-    
-
-`
 const ChartContainer1 = styled.div`
-    display:flex;
-    
-    flex-direction:row;
-    gap:1.5rem;
-
-`
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+`;
 
 const ChartBox = styled.div`
-    box-shadow:0 1px 5px rgba(0, 0, 0, 0.25);
-    background-color:white;
-    width:100%;
-    padding:2rem;
-    text-align:center;
-    align-items:center;
-    justify-content:center;
-    border-radius:10px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+  background-color: white;
+  width: 50%;
+  // height: 300px;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 10px;
+`;
 
-`
 const BarChartContainer1 = styled.div`
-    margin:auto;
+  margin: auto;
+`;
 
-`
+const BarChartBox = styled.div`
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+  background-color: white;
+  width: 100%;
+  padding: 1rem;
+  padding-inline: 2rem;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+`;
 
-const BarChartBox=styled.div`
+const TitleChart = styled.div`
+  text-align: left;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  font-size: 1.2rem;
+`;
 
-    box-shadow:0 1px 5px rgba(0, 0, 0, 0.25);
-    background-color:white;
-    width:100%;
-    padding:2rem;
-    padding-inline:5rem;
-    text-align:center;
-    align-items:center;
-    justify-content:center;
-    border-radius:10px;
+export default function StudentResultLNO({
+  userId,
+  studentID,
+  classID,
+  studentInfo,
+  studentGrade,
+}) {
+  const studentScore = 6.5;
 
+  return (
+    <LearningOutcomeBody>
+      {/* <DropdownTitleContainer>
+        <DropdownTitle>MSSV - Họ tên:</DropdownTitle>
 
-`
+        <FormControl sx={{ minWidth: 300 }} disabled>
+          <InputLabel id="student-label">MSSV - Họ tên</InputLabel>
+          <Select
+            labelId="student-label"
+            id="student-select"
+            value={studentInfo?.studentId || ""}
+            label="MSSV - Họ tên"
+          >
+            <MenuItem value={studentInfo?.studentId || ""}>
+              {`${studentInfo?.studentId || ""} - ${studentInfo?.fullName || ""}`}
+            </MenuItem>
+          </Select>
+        </FormControl>
+      </DropdownTitleContainer> */}
 
-const titleChart = styled.div`
-    font-size:1.5rem;
-    font-weight:bold;
-    text-align:left;
+      <ChartContainer>
+        <ChartContainer1>
+          {/* Biểu đồ cột đưa lên trên */}
+          <ChartBox>
+            <TitleChart>Thống kê điểm</TitleChart>
+            <BarChart studentGrade={studentGrade} />
+          </ChartBox>
 
+          <ChartBox>
+            <TitleChart>Điểm của sinh viên</TitleChart>
+            <TableChart studentGrade={studentGrade} />
+          </ChartBox>
+        </ChartContainer1>
+      </ChartContainer>
 
-`
-
-export default function StudentResultLNO({userId,studentID,classID,subjectID}){
-
-
-    const studentScore = 6.5;
-    return(
-
-        <>
-        
-            <LearningOutcomeBody>
-
-                <DropdownTitleContainer>
-                    <DropdownTitle>
-                        MSSV - Họ tên:
-                    
-                    </DropdownTitle>
-
-                    <DropdownTitleSelect disabled>
-                        <option>21127638 - To Khanh Linh</option>
-                    </DropdownTitleSelect>
-
-
-
-                  </DropdownTitleContainer>
-
-
-
-                <ChartContainer>
-                    <ChartContainer1>
-                        <ChartBox>
-                        <h2 style={{textAlign:"left",marginBottom:"1rem"}}>Loại xếp hạng của sinh viên</h2>
-                            <MyGaugeChart value={studentScore} >
-
-
-
-                            </MyGaugeChart>
-
-                        </ChartBox>
-
-
-
-                        <ChartBox>
-                        <h2 style={{textAlign:"left",marginBottom:"1rem"}}>Điểm của sinh viên</h2>
-                            <TableChart studentID={studentID} classID={classID} subjectID={subjectID}>
-
-                            </TableChart>
-                        </ChartBox>
-                    
-                    
-                    </ChartContainer1>
-
-
-                    
-                
-                
-                
-                </ChartContainer>
-
-                <BarChartContainer1>
-                    
-                        <BarChartBox>
-                        <h2 style={{textAlign:"left",marginBottom:"1rem"}}>Thống kê điểm</h2>
-                            <BarChart></BarChart>
-                        </BarChartBox>
-                    
-                </BarChartContainer1>
-
-
-
-            </LearningOutcomeBody>
-        
-        </>
-    )
+      {/* Biểu đồ Gauge đưa xuống dưới */}
+      <BarChartContainer1>
+        <BarChartBox>
+          <h2 style={{ textAlign: "left", marginBottom: "1rem" }}>
+            Loại xếp hạng của sinh viên:
+            <span style={{ fontWeight: 500 }}>
+              {" "}
+              {studentGrade.classification}
+            </span>
+          </h2>
+          <MyGaugeChart value={studentGrade.totalGrade} />
+        </BarChartBox>
+      </BarChartContainer1>
+    </LearningOutcomeBody>
+  );
 }
