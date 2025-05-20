@@ -21,8 +21,15 @@ import {
   IconButton
 
 } from "@mui/material";
-export function Dialog2({openDialog2,handleCloseDialog2}){
-
+export function Dialog2({openDialog2,handleCloseDialog2,SetMinTime,SetMaxTime,setHasThreeHold}){
+    const handleConfirmDefault = ()=>{
+      SetMinTime();
+      SetMaxTime();
+      setHasThreeHold(false);
+      handleCloseDialog2();
+      alert("Lấy ngưỡng mặc định thành công")
+      
+    }
     return(
         <Dialog open={openDialog2} onClose={handleCloseDialog2} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: "bold", textAlign: "center", fontSize: "1.2rem" }}>
@@ -49,7 +56,7 @@ export function Dialog2({openDialog2,handleCloseDialog2}){
           <Button variant="outlined" color="primary" sx={{ width: "120px" }} onClick={handleCloseDialog2}>
             HỦY
           </Button>
-          <Button variant="contained" sx={{ bgcolor: "#1976D2", color: "white", width: "120px" }} onClick={handleCloseDialog2}>
+          <Button variant="contained" sx={{ bgcolor: "#1976D2", color: "white", width: "120px" }} onClick={()=>handleConfirmDefault()}>
             XÁC NHẬN
           </Button>
         </DialogActions>

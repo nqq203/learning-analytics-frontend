@@ -21,17 +21,31 @@ import {
   IconButton
 
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export function Dialog3({openDialog3,handleCloseDialog3,minTime,SetMinTime,maxTime,SetMaxTime}){
-    const [MinTimeInput,SetMinTimeInput] = useState()
-    const [MaxTimeInput,SetMaxTimeInput] = useState()
+export function Dialog3({openDialog3,handleCloseDialog3,SetMinTime,SetMaxTime,minTime,maxTime,setHasThreeHold}){
+    const [MinTimeInput, SetMinTimeInput] = useState(minTime ?? '');
+    const [MaxTimeInput, SetMaxTimeInput] = useState(maxTime ?? '');
+
+    useEffect(
+      ()=>{
+        SetMinTimeInput(minTime ?? '')
+        SetMaxTimeInput(maxTime ?? '')
+      },[minTime,maxTime]
+    )
+
     const handleSave =()=>{
-      SetMinTime(MinTimeInput);
-      SetMaxTime(MaxTimeInput);
-
-      alert("Lưu thành công!");
-      handleCloseDialog3();
+      if(MinTimeInput!=''||MaxTimeInput!=''){
+          SetMinTime(MinTimeInput);
+          SetMaxTime(MaxTimeInput);
+          setHasThreeHold(true);
+          alert("Lưu thành công!");
+          handleCloseDialog3();
+      }
+      else{
+        alert("Vui lòng nhập MinTime hoặc MaxTime")
+      }
+      
     }
     return(
         <Dialog open={openDialog3} onClose={handleCloseDialog3} maxWidth="sm" fullWidth>

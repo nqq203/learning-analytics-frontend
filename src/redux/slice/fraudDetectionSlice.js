@@ -1,15 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchFraudDetect,fetchClassesByLecturer } from "../thunk/fraudDetectionThunk";
+import { fetchFraudDetect,fetchClassesByLecturer,fetchImportQuizFile } from "../thunk/fraudDetectionThunk";
 
 const initialState={
     code: -1,
     message: null,
     success:false,
     loading: false,
+    error: null,
     classes:[],
     students:[],
+    activities:-1,
+    quizImport:null,
 
-    error: null,
+    
    
 }
 
@@ -50,7 +53,7 @@ const fraudDetectionSlice = createSlice({
                 })
 
                 
-                .addCase(fetchFraudDetect.pending, (state, action) => {
+            .addCase(fetchFraudDetect.pending, (state, action) => {
                 state.loading = true;
               })
 
@@ -65,6 +68,32 @@ const fraudDetectionSlice = createSlice({
               })
 
             .addCase(fetchFraudDetect.rejected, (state, action) => 
+                {
+                    state.loading = false;
+
+                    state.error = action?.payload?.error || action?.error?.message;
+
+                    state.message = action?.payload?.message || action?.message || action?.payload;
+
+                    state.code = action?.payload?.code || action?.code;
+                })
+
+
+            .addCase(fetchImportQuizFile.pending, (state, action) => {
+                state.loading = true;
+              })
+
+            .addCase(fetchImportQuizFile.fulfilled, (state, action) => {
+                state.loading = false;
+                
+                state.quizImport = action.payload.data;
+
+                state.code = action.payload.code;
+                state.message = action.payload.message;
+                state.success = action.payload.success;
+              })
+
+            .addCase(fetchImportQuizFile.rejected, (state, action) => 
                 {
                     state.loading = false;
 

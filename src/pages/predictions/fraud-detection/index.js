@@ -1,6 +1,7 @@
-import React, { useState,useEffect } from "react";
+import React, { useRef,useState,useEffect } from "react";
 import {
   Container,
+  
   Box,
   Typography,
   Button,
@@ -24,8 +25,9 @@ import {
   IconButton
 
 } from "@mui/material";
+import Alert from '@mui/material/Alert';
 import SearchIcon from '@mui/icons-material/Search';
-import { fetchClassesByLecturer,fetchFraudDetect } from "@/redux/thunk/fraudDetectionThunk";
+import { fetchClassesByLecturer,fetchFraudDetect,fetchImportQuizFile } from "@/redux/thunk/fraudDetectionThunk";
 // import { useDispatch, useSelector } from "react-redux";
 // import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
 
@@ -42,19 +44,23 @@ const sampleData = [
 ];
 
 const FraudDetection = () => {
-  const {classes,students} = useSelector(state=>state.fraudDetection);
+  const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const {classes,students,quizImport} = useSelector(state=>state.fraudDetection);
   const dispatch = useDispatch();
 
   const [disabledTest,SetDisabledTest] = useState(true)
   const [disabledThreehold,SetDisabledThreehold] = useState(true)
 
+  const [hasThreeHold,setHasThreeHold] = useState(false);
 
   const [classesSelect, setClassesSelect] = useState("");
   const [quizSelect,setQuizSelect] = useState("");
 
   const [Quiz,SetQuiz] = useState([]);
   const userId="I0350";
-  const [data, setData] = useState(sampleData);
+  const [data, setData] = useState([]);
 
   const [openDialog1, setOpenDialog1] = useState(false);
   const [openDialog2, setOpenDialog2] = useState(false);
@@ -62,25 +68,65 @@ const FraudDetection = () => {
 
   const [minTime,SetMinTime] = useState()
   const [maxTime,SetMaxTime] = useState()
+  
+
+  useEffect(() => {
+  const handleBeforeUnload = (e) => {
+    // Kiểm tra nếu minTime và maxTime đã được thiết lập
+    if (minTime && maxTime) {
+      e.preventDefault();
+      e.returnValue = ""; // Một chuỗi rỗng sẽ hiển thị hộp thoại xác nhận mặc định
+      return "";
+    }
+  };
+
+  window.addEventListener("beforeunload", handleBeforeUnload);
+
+  return () => {
+    window.removeEventListener("beforeunload", handleBeforeUnload);
+  };
+}, [minTime, maxTime]);
+
+
+
   useEffect(() => {
     const fetchClasses = async () => {
+      
       await dispatch(fetchClassesByLecturer({ userId }));
     }
     fetchClasses();
   }, [userId]);
 
   useEffect(()=>{
+    
     setData(students);
     
   },[students])
-  // useEffect(() => {
-  //   console.log(classesSelect);
-  //   console.log(quizSelect);
-  //   console.log(minTime);
-  //   console.log(maxTime);
-  // }, [classesSelect,quizSelect,minTime,maxTime]);
+
+  useEffect(()=>{
+    const reFetch = async()=>{
+          if(quizImport!=null){
+                
+                await dispatch(fetchClassesByLecturer({userId}));
+                setClassesSelect(classesSelect)
+          }
+          
+    }
+    reFetch();
+    
+  },[quizImport])
 
 
+  useEffect(()=>{
+    if(classesSelect){
+      const foundClassess = classes.find(cls=>cls.classId == classesSelect )
+      SetQuiz(foundClassess.quizzes);
+      SetDisabledTest(false)
+    }
+    
+  },[classesSelect])
+
+ 
   const handleOpenDialog1 = () => {
     setOpenDialog1(true);
   };
@@ -109,28 +155,48 @@ const FraudDetection = () => {
 
   const handleChosingClass = (classIdChosen) => {
     setClassesSelect(classIdChosen)
-    if(classIdChosen){
-      const foundClassess = classes.find(cls=>cls.classId == classIdChosen )
-      SetQuiz(foundClassess.quizzes);
-      SetDisabledTest(false)
-    }
-    
-
   };
 
   const handleChosingQuiz = (QuizIdChosen) =>{
+    if (QuizIdChosen === 'import') {
+      fileInputRef.current.click(); 
+     
+    }
+    else{
         SetDisabledThreehold(false);
         setQuizSelect(QuizIdChosen);
-    
+    }
   }
 
+  const handleFileChange = async (e) => {
+    setLoading(true);
+
+    const file = e.target.files[0];
+
+    if (file) {
+      await dispatch(fetchImportQuizFile({userId,file,class_id:classesSelect,activity_type:"quiz"}));
+      
+      alert("Nhập file thành công! Vui lòng kiểm tra lại các bài kiểm tra")
+      setLoading(false);
+    }
+  };
+
   const handleDetect = async ()=>{
+      setLoading(true);
+      console.log(`Handle Detect: ${userId} ${quizSelect} ${minTime} ${maxTime}`)
+      
       await dispatch(fetchFraudDetect({ userId,quiz_id:quizSelect,min_threshold:minTime,max_threshold:maxTime }));
+      
+      alert("Phân tích thành công")
+      setLoading(false);
+      
+
   }
   
   
 
   return (
+    <div style={{ cursor: loading ? 'wait' : 'default' }}>
     <Container maxWidth={false} sx={{ padding: 2 }}> {/* Set the container to full width */}
 
       {/* Bộ lọc + Button */}
@@ -156,7 +222,7 @@ const FraudDetection = () => {
 
           </FormControl>
         </Grid>
-
+          
         <Grid item xs={12} sm={6} md={4} >
           <FormControl style={{ width: "30%", minWidth: 450 }} size="small" disabled={disabledTest}>
               <InputLabel>Bài kiểm tra</InputLabel>
@@ -167,7 +233,7 @@ const FraudDetection = () => {
                 
               >
                 
-
+                <MenuItem value="import">📁 Nhập một bài kiểm tra</MenuItem>
                 {
                   Quiz.map((item)=>{
                     return <MenuItem value={item.quizId}>{item.quizName}</MenuItem>
@@ -177,6 +243,14 @@ const FraudDetection = () => {
                 
               </Select>
           </FormControl>
+            {/* Input ẩn */}
+              <input
+            type="file"
+            accept=".csv,.xlsx"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
         </Grid>
 
         <Grid item xs={6} sm={3} md={2}>
@@ -232,6 +306,7 @@ const FraudDetection = () => {
       handleCloseDialog1={handleCloseDialog1}
       handleOpenDialog3={handleOpenDialog3}
       handleOpenDialog2={handleOpenDialog2}
+      hasThreeHold={hasThreeHold}
       ></Dialog1>
 
       {/* Dialog 2: Hiển thị ngưỡng mặc định */}
@@ -240,6 +315,10 @@ const FraudDetection = () => {
       <Dialog2 
         openDialog2={openDialog2} 
         handleCloseDialog2={handleCloseDialog2}
+        hasThreeHold={hasThreeHold}
+        SetMaxTime={SetMaxTime}
+        SetMinTime={SetMinTime}
+        setHasThreeHold={setHasThreeHold}
       >
 
       </Dialog2>
@@ -249,12 +328,14 @@ const FraudDetection = () => {
       <Dialog3 
         openDialog3={openDialog3} 
         handleCloseDialog3={handleCloseDialog3}
-        minTime={minTime}
         SetMinTime={SetMinTime}
-        maxTime={maxTime}
         SetMaxTime={SetMaxTime}
+        setHasThreeHold={setHasThreeHold}
+        minTime={minTime}
+        maxTime={maxTime}
       ></Dialog3>
     </Container>
+    </div>
   );
 };
 

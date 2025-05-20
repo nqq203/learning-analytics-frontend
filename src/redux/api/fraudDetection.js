@@ -40,7 +40,27 @@ const fraudDetectionApi ={
           min_threshold,
           max_threshold
         }
-    )
+    ),
+
+    fetchImportQuizFile:({
+      userId,
+      file,
+      class_id,
+      activity_type
+    })=> {
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("class_id", class_id);
+      formData.append("activity_type", activity_type);
+     
+      return axios.post(`${API_URL}/data/part?instructor_id=${userId}`,formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data"
+            }
+          }
+  )}
 
 }
 
