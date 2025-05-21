@@ -186,7 +186,7 @@ export default function StudentManagement() {
                     align="center"
                     sx={{ fontWeight: "bold", fontSize: "1rem" }}
                   >
-                    Xem chi tiết
+                    Chi tiết
                   </TableCell>
                 </TableRow>
               </TableHead>
