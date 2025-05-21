@@ -116,7 +116,7 @@ const NotificationsPage = () => {
             marginTop: "2vh",
           }}
         >
-          Thông báo
+         
         </Typography>
         <ButtonGroup sx={{ mb: 2 }}>
           <Button

@@ -65,7 +65,7 @@ const LineDivider = styled.div`
 
 
 
-const TableHeader = ["MSSV","Họ tên","Lớp","Môn","Khóa","Thành tích dự đoán" ,"Hành Động"];
+const TableHeader = ["MSSV","Họ tên","Lớp","Môn","Khóa","Thành tích dự đoán" , "Chi tiết"];
 
 const ImprovementSuggestion = () => {
     const userId = "12456";

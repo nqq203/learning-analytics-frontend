@@ -61,7 +61,7 @@ const LineDivider = styled.div`
   width: 100%;
 `;
 
-const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa", "Hành Động"];
+const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa", "Chi tiết"];
 const ClassStudentContainer = () => {
   const userId = "12456";
   const dispatch = useDispatch();
