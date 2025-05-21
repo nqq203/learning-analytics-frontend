@@ -7,11 +7,13 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { TableWrapper } from "../Styles/Styles";
+import { TableWrapper } from "../Analytics/Styles/Styles";
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Fragment } from "react";
 
-const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true }) => {
+const ClassTable = ({ filteredRows, columns, handleDelete,handleEdit, action = true }) => {
   const cellStyle = {
     fontSize: "16px",
     textAlign: "center",
@@ -33,6 +35,7 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
       >
         <Table stickyHeader>
           <TableHead>
+
             <TableRow>
               <TableCell style={headerCellStyle}>STT</TableCell>
               {columns.map((col, index) => (
@@ -40,32 +43,47 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
                   key={index}
                   style={{
                     ...headerCellStyle,
-                    textAlign: col?.align || "center",
+                    textAlign:  "center",
                   }}
                 >
                   {col?.label}
                 </TableCell>
               ))}
               {action && (
-                <TableCell style={headerCellStyle}>Chi tiết</TableCell>
+                <TableCell style={headerCellStyle}>Sửa</TableCell>
               )}
+              {action && (
+                <TableCell style={headerCellStyle}>Xóa</TableCell>
+              )}
+              
             </TableRow>
+
+
           </TableHead>
+
+
           <TableBody>
             {filteredRows?.length > 0 ?
               <Fragment>{filteredRows?.map((row, index) => (
                 <TableRow key={row.classId}>
-                  <TableCell style={{ textAlign: "left" }}>{index + 1}</TableCell>
+                  <TableCell style={{ textAlign: "center" }}>{index + 1}</TableCell>
                   {columns.map((col, idx) => (
-                    <TableCell key={idx} style={{ textAlign: col.align || "left" }}>
+                    <TableCell key={idx} style={{ textAlign: "center" }}>
                       {row[col.id]}
                     </TableCell>
                   ))}
                   {action && <TableCell style={{ textAlign: "center" }}>
-                    <VisibilityIcon
-                      color="primary"
+                    <EditIcon
+                      color="warning"
                       style={{ cursor: "pointer" }}
-                      onClick={() => handleActions(row.classId)} />
+                      onClick={() => handleEdit(row.id)} />
+                  </TableCell>}
+
+                   {action && <TableCell style={{ textAlign: "center" }}>
+                    <DeleteIcon 
+                      color="error"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleDelete(row.id)} />
                   </TableCell>}
                 </TableRow>
               ))}</Fragment> :
@@ -86,4 +104,4 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
   );
 };
 
-export default AnalyticsTable;
+export default ClassTable;

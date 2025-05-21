@@ -9,6 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoginPage from "./login";
 import AuthWrapper from "./AuthWrapper";
+import {FilterContextProvider} from "@/context/FilterContext";
 export default function App({ Component, pageProps }) {
     const router = useRouter();
       
@@ -26,8 +27,18 @@ export default function App({ Component, pageProps }) {
                     </RootLayout>
                 )} */}
 
-                <AuthWrapper Component={Component} pageProps={pageProps}></AuthWrapper>
+                {/* <AuthWrapper Component={Component} pageProps={pageProps}></AuthWrapper> */}
+                <FilterContextProvider>
+                        {Component.unauthorized ? (
+                            <Component {...pageProps} />
+                        ) : (
+                            <RootLayout>
+                                <Component {...pageProps} />
+                            </RootLayout>
+                        )}
+                </FilterContextProvider>
             </TokenProvider>
+            
             <ToastContainer />
         </Provider>
     );

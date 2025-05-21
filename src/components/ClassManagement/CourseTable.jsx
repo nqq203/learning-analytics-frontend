@@ -7,11 +7,11 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { TableWrapper } from "../Styles/Styles";
+import { TableWrapper } from "../Analytics/Styles/Styles";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Fragment } from "react";
 
-const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true }) => {
+const CourseTable = ({ filteredRows, columns, handleActions, action = true }) => {
   const cellStyle = {
     fontSize: "16px",
     textAlign: "center",
@@ -33,6 +33,7 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
       >
         <Table stickyHeader>
           <TableHead>
+
             <TableRow>
               <TableCell style={headerCellStyle}>STT</TableCell>
               {columns.map((col, index) => (
@@ -40,7 +41,7 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
                   key={index}
                   style={{
                     ...headerCellStyle,
-                    textAlign: col?.align || "center",
+                    textAlign:  "center",
                   }}
                 >
                   {col?.label}
@@ -50,14 +51,18 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
                 <TableCell style={headerCellStyle}>Chi tiết</TableCell>
               )}
             </TableRow>
+
+
           </TableHead>
+
+
           <TableBody>
             {filteredRows?.length > 0 ?
               <Fragment>{filteredRows?.map((row, index) => (
                 <TableRow key={row.classId}>
-                  <TableCell style={{ textAlign: "left" }}>{index + 1}</TableCell>
+                  <TableCell style={{ textAlign: "center" }}>{index + 1}</TableCell>
                   {columns.map((col, idx) => (
-                    <TableCell key={idx} style={{ textAlign: col.align || "left" }}>
+                    <TableCell key={idx} style={{ textAlign: "center" }}>
                       {row[col.id]}
                     </TableCell>
                   ))}
@@ -65,7 +70,7 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
                     <VisibilityIcon
                       color="primary"
                       style={{ cursor: "pointer" }}
-                      onClick={() => handleActions(row.classId)} />
+                      onClick={() => handleActions(row.id)} />
                   </TableCell>}
                 </TableRow>
               ))}</Fragment> :
@@ -86,4 +91,4 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
   );
 };
 
-export default AnalyticsTable;
+export default CourseTable;

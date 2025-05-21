@@ -1,11 +1,16 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { TextField, FormControl, InputLabel, MenuItem, Select, InputAdornment, IconButton } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import {
+  TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import StudentList from "@/components/PredictionAchievements/StudentList";
-
+import { useDispatch, useSelector } from "react-redux";
+import { fetchStudentSearch } from "@/redux/thunk/learningoutcomeThunk";
 const LearningOutcomesContainer = styled.div`
   margin: auto;
   width: 97%;
@@ -17,46 +22,37 @@ const LearningOutComeContainerBody = styled.div`
   flex-direction: column;
   gap: 1rem;
 `;
-
 const LearningOutComeHeader = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  flex-direction: row;
+  justify-content: space-between;
 
-  @media(min-width: 768px) {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
+  align-items: center;
 `;
 
 const LearningOutComeItemsContainer = styled.div`
   display: flex;
-  flex-wrap: wrap;
   flex-direction: row;
-  gap: 10px;
-  align-items: center;
+  gap: 20px;
 `;
 
 const AnalyticsBtn = styled.div`
   cursor: pointer;
-  padding-inline: 1.5rem;
-  height: 40px;
-  display: flex;
+  padding-inline: 2rem;
+  padding-block: 1rem;
   color: white;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  background-color: var(--blue-700);
+  font-size: 1.2rem;
+  background-color: var(--blue-600);
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
   font-weight: bold;
 
   &:hover {
-    background-color: var(--blue-900);
+    background-color: var(--blue-400);
   }
   &:active {
-    background-color: var(--blue-900);
+    background-color: var(--blue-500);
+
   }
 `;
 
@@ -65,145 +61,115 @@ const LineDivider = styled.div`
   width: 100%;
 `;
 
-const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa", "Hành Động"];
-const TableContent = [
-  {
-    ID: "1",
-    MSSV: "21125434",
-    Name: "Nguyễn Văn A",
-    Class: "21CLC08",
-    Subject: "Cơ sở dữ liệu nâng cao",
-    ClassOf: "2021",
-  },
-  {
-    ID: "2",
-    MSSV: "21125435",
-    Name: "Nguyễn Văn B",
-    Class: "21CLC09",
-    Subject: "Cơ sở dữ liệu nâng cao",
-    ClassOf: "2021",
-  },
-  {
-    ID: "3",
-    MSSV: "21125435",
-    Name: "Nguyễn Văn C",
-    Class: "21CLC10",
-    Subject: "Cơ sở dữ liệu nâng cao",
-    ClassOf: "2021",
-  },
-  {
-    ID: "4",
-    MSSV: "21125435",
-    Name: "Nguyễn Văn C",
-    Class: "21CLC10",
-    Subject: "Cơ sở dữ liệu nâng cao",
-    ClassOf: "2021",
-  },
-  {
-    ID: "5",
-    MSSV: "21125435",
-    Name: "Nguyễn Văn C",
-    Class: "21CLC10",
-    Subject: "Cơ sở dữ liệu nâng cao",
-    ClassOf: "2021",
-  },
-];
-
+const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa", "Chi tiết"];
 const ClassStudentContainer = () => {
+  const userId = "12456";
+  const dispatch = useDispatch();
+
+  const { studentsOverview, totalRecords, academicYear } = useSelector(
+    (state) => state.learningoutcome
+  );
+  // const [studentID,setStudentID] = useState("");
   const [chosenStudent, setChosenStudent] = useState([]);
   const router = useRouter();
+  const [page, setPage] = useState(1);
+  const [amount, setAmount] = useState(10);
+  const [searchResult, setSearchResult] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [studentList, setStudentList] = useState([]);
+
+  const { id } = router.query;
+
+  useEffect(() => {
+    const fetchStudentRow = async () => {
+      if (!id) return;
+
+      setIsLoading(true);
+      const response = await dispatch(
+        fetchStudentSearch({
+          userId: "I1132",
+          classId: id,
+          page: page,
+          amount: amount,
+          search: searchResult,
+        })
+      );
+      setStudentList(
+        (response?.payload?.data?.studentsList || []).map((item) => {
+          return {
+            ID: item.studentId,
+            MSSV: item.studentId,
+            Name: item.fullName,
+            Class: item.className,
+            Subject: item.courseName,
+            ClassOf: item.academicYear,
+          };
+        })
+      );
+      setIsLoading(false);
+    };
+    fetchStudentRow();
+  }, [searchResult, page, id, dispatch]);
 
   const handleNav = () => {
     if (chosenStudent.length === 0) {
       alert("Chọn ít nhất một sinh viên");
     } else {
       const encodedData = encodeURIComponent(JSON.stringify(chosenStudent));
-      router.push(`/predictions/predict-achievements/send-noti?data=${encodedData}`);
+      router.push(
+        `/predictions/predict-achievements/improvement-suggestion?data=${encodedData}`
+      );
     }
   };
 
-  const handleSearch = () => {
-    console.log("Searching...");
-  };
+  const handleChangeAcedemicYear = (value) => {};
 
   return (
     <LearningOutcomesContainer>
       <LearningOutComeContainerBody>
         <LearningOutComeHeader>
           <LearningOutComeItemsContainer>
-          <FormControl style={{ minWidth: "30rem" }} variant="outlined">
-            <TextField
-              placeholder="Tìm kiếm"
-              variant="outlined"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end" sx={{ marginRight: "12px" }}>
-                    <IconButton
-                      onClick={handleSearch}
-                      edge="end"
-                      sx={{
-                        backgroundColor: "#1976D2",
-                        borderRadius: "0 4px 4px 0",
-                        height: "40px",
-                        width: "40px",
-                        "&:hover": {
-                          backgroundColor: "#1565C0",
-                        },
-                      }}
-                    >
-                      <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  height: "40px",
-                  paddingRight: "0px",
-                  borderRadius: "4px",
-                },
-                '& input': {
-                  padding: "10px 14px",
-                },
-              }}
-            />
-          </FormControl>
-
-            <FormControl sx={{ minWidth: "120px", height: "40px" }} variant="outlined">
-              <InputLabel sx={{ fontSize: "1rem", top: "-6px" }}>Khóa</InputLabel>
-              <Select
-                label="Chọn khóa"
-                sx={{
-                  height: "40px",
-                  "& .MuiSelect-select": {
-                    display: "flex",
-                    alignItems: "center",
-                  },
-                }}
-              >
-                <MenuItem value="21">21</MenuItem>
-                <MenuItem value="22">22</MenuItem>
-                <MenuItem value="23">23</MenuItem>
-              </Select>
+            <FormControl style={{ minWidth: "40rem" }} variant="outlined">
+              <TextField
+                id="outlined-basic"
+                label="Tìm kiếm"
+                variant="outlined"
+              />
             </FormControl>
 
-            <IconButton sx={{ padding: "5px", marginLeft: "5px" }}>
-              <FilterAltIcon sx={{ color: "gray" }} />
-            </IconButton>
+            <FormControl style={{ minWidth: "12rem" }} variant="outlined">
+              <InputLabel>Khóa</InputLabel>
+              <Select
+                label="Chọn khóa"
+                onChange={(e) => handleChangeAcedemicYear(e.target.value)}
+              >
+                <MenuItem value="">Tất cả</MenuItem>
+                {academicYear.map((item, index) => {
+                  return (
+                    <MenuItem value={item} key={index}>
+                      {item}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
           </LearningOutComeItemsContainer>
 
           <LearningOutComeItemsContainer>
-            <AnalyticsBtn onClick={handleNav}>Dự đoán</AnalyticsBtn>
+            <AnalyticsBtn>Lọc</AnalyticsBtn>
+            <AnalyticsBtn onClick={() => handleNav()}>Dự đoán</AnalyticsBtn>
           </LearningOutComeItemsContainer>
         </LearningOutComeHeader>
 
-        <LineDivider />
+        <LineDivider></LineDivider>
 
         <StudentList
           TableHeader={TableHeader}
-          TableContent={TableContent}
+          TableContent={studentList}
           setChosenStudentOuter={setChosenStudent}
-        />
+        >
+          {" "}
+        </StudentList>
       </LearningOutComeContainerBody>
     </LearningOutcomesContainer>
   );

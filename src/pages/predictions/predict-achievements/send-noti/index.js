@@ -73,7 +73,7 @@ const TableHeader = [
   "Môn",
   "Khóa",
   "Thành tích dự đoán",
-  "Hành Động",
+  "Chi tiết",
 ];
 
 

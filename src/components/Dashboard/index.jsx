@@ -34,14 +34,14 @@ import { RiskStudentChart } from "./charts/RiskStudentChart";
 import { SpendingTimeChart } from "./charts/SpendingTimeChart";
 import { AvgScoreChart } from "./charts/AvgScoreChart";
 import { DashboardCards } from "./charts/DashboardCards";
-
+import { useFilter } from "@/context/FilterContext";
 export default function DashboardPage() {
-  const [showFilters, setShowFilters] = useState(false);
-
+  // const [showFilters, setShowFilters] = useState(false);
+  const {showFilters} = useFilter();
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "inherit" }}>
       {/* Header */}
-      <Box
+      {/* <Box
         sx={{
           display: "flex",
           alignItems: "center",
@@ -59,7 +59,8 @@ export default function DashboardPage() {
             <FilterAlt />
           </IconButton>
         </Box>
-      </Box>
+        
+      </Box> */}
 
       <Box sx={{ display: "flex" }}>
         <Box sx={{ flexGrow: 1, p: 3 }}>

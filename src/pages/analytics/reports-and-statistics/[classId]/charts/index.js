@@ -231,7 +231,7 @@ const StudentAnalytics = () => {
 
       {selectedGrades.length === 0 || selectedChartTypes === 0 ?
         <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" mt={20}>
-          <h3>Chưa có dữ liệu hiển thị, vui lòng thiết lập để tiết tục</h3>
+          <h3>Chưa có dữ liệu hiển thị, vui lòng thiết lập để tiếp tục</h3>
         </Box> :
         <Box mt={2}>
           {renderCharts()}

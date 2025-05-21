@@ -159,11 +159,15 @@ const ClassesList = () => {
         <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}>
           Tổng số lớp hiển thị: {totalStudents}
         </span>
+
+
         <AnalyticsTable
-          filteredRows={rows}y
+          filteredRows={rows}
           columns={columns}
           handleActions={handleViewClass}
         />
+
+        
       </div>
     </Container>
   );

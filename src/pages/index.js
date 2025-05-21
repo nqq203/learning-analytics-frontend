@@ -16,6 +16,7 @@ export default function Home() {
 //     useEffect(() => {
 //         const isAuthenticated =true
 //         //  localStorage.getItem("isAuthenticated");
+//         const isAuthenticated = localStorage.getItem("isAuthenticated");
 //         if (!isAuthenticated) {
 //             router.push("/login"); // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
 //         }
