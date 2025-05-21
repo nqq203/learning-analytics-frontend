@@ -35,8 +35,8 @@ const learningoutcomeSlice = createSlice({
             state.message =null;
         }
     },
-    extraReducers: (buider) =>{
-        buider
+    extraReducers: (builder) =>{
+        builder
               .addCase(fetchClassesByLecturer.pending, (state, action) => {
                 state.loading = true;
               })
