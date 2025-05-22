@@ -1,19 +1,15 @@
 import React, { Fragment, useState } from "react";
 import styled from "styled-components";
-import {
-  Home,
-  ChevronLeft,
-  ChevronRight,
-} from "@mui/icons-material";
+import { Home, ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSidebar as toggleGlobalSidebar } from "../redux/slice/sidebarSlice";
 import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
-import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
-import BatchPredictionIcon from '@mui/icons-material/BatchPrediction';
-import AutoGraphIcon from '@mui/icons-material/AutoGraph';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
+import BatchPredictionIcon from "@mui/icons-material/BatchPrediction";
+import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Collapse } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import Link from "next/link";
@@ -28,19 +24,22 @@ const SidebarWrapper = styled.div`
   height: 100vh;
   position: ${({ $isMobile }) => ($isMobile ? "fixed" : "relative")};
   top: 0;
-  left: ${({ $isMobile, $visible }) => ($isMobile && !$visible ? "-100%" : "0")};
+  left: ${({ $isMobile, $visible }) =>
+    $isMobile && !$visible ? "-100%" : "0"};
   display: flex;
   flex-direction: column;
   align-items: ${({ $collapsed }) => ($collapsed ? "center" : "flex-start")};
   padding: 10px;
   box-shadow: ${({ $isMobile }) =>
-    $isMobile ? "0px 0px 15px rgba(0, 0, 0, 0.3)" : "2px 0 5px rgba(0, 0, 0, 0.1)"};
+    $isMobile
+      ? "0px 0px 15px rgba(0, 0, 0, 0.3)"
+      : "2px 0 5px rgba(0, 0, 0, 0.1)"};
   overflow-x: hidden;
 
   &::after {
     content: "";
     display: ${({ $isMobile, $visible }) =>
-    $isMobile && $visible ? "block" : "none"};
+      $isMobile && $visible ? "block" : "none"};
     position: fixed;
     top: 0;
     left: 0;
@@ -73,7 +72,8 @@ const NavItem = styled.div`
   border-radius: 5px;
   cursor: pointer;
   text-decoration: none;
-  background-color: ${({ $active }) => ($active ? "var(--background)" : "transparent")};
+  background-color: ${({ $active }) =>
+    $active ? "var(--background)" : "transparent"};
   transition: background-color 0.2s;
 
   &:hover {
@@ -161,14 +161,14 @@ const UserName = styled.span`
 `;
 
 const SubNavItem = styled(NavItem)`
-  padding-left: 40px; 
-  font-size: 14px; 
-`
+  padding-left: 40px;
+  font-size: 14px;
+`;
 
 const DropdownItem = styled.div`
   position: absolute;
   right: 20px;
-`
+`;
 
 const ExpandableContainer = styled.div`
   width: 100%;
@@ -182,7 +182,12 @@ const ExpandableContainer = styled.div`
   transition: background-color 0.3s ease;
 `;
 
-const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps }) => {
+const Sidebar = ({
+  role,
+  isMobile,
+  sidebarVisible,
+  toggleSidebar: toggleProps,
+}) => {
   const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -192,24 +197,20 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
   const [openPrediction, setOpenPrediction] = useState(false);
   const [openDataManagement, setOpenDataManagement] = useState(false);
   const handleToggleStatistic = () => {
-    if (collapsed)
-      toggleSidebar();
+    if (collapsed) toggleSidebar();
 
     setOpenStatistic((prev) => !prev);
-
   };
 
   const handleTogglePredictiion = () => {
-    if (collapsed)
-      toggleSidebar();
+    if (collapsed) toggleSidebar();
 
     setOpenPrediction((prev) => !prev);
-  }
+  };
   const handleToggleDataManagement = () => {
-    if(collapsed)
-      toggleSidebar();
+    if (collapsed) toggleSidebar();
     setOpenDataManagement((prev) => !prev);
-  }
+  };
   const toggleSidebar = () => {
     setCollapsed((prev) => !prev);
     dispatch(toggleGlobalSidebar(!collapsed));
@@ -220,7 +221,11 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
   };
 
   return (
-    <SidebarWrapper $collapsed={collapsed} $isMobile={isMobile} $visible={sidebarVisible}>
+    <SidebarWrapper
+      $collapsed={collapsed}
+      $isMobile={isMobile}
+      $visible={sidebarVisible}
+    >
       {/* Toggle Button */}
       {!isMobile ? (
         <ToggleButton $collapsed={collapsed} onClick={toggleSidebar}>
@@ -248,15 +253,17 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
           <NavIcon>
             <SpaceDashboardIcon />
           </NavIcon>
-          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname === "/"}>
+          <NavText
+            $collapsed={collapsed}
+            $isMobile={isMobile}
+            $active={router.pathname === "/"}
+          >
             {"TRANG CHỦ"}
           </NavText>
         </NavItem>
       </Link>
 
       <ExpandableContainer $open={openStatistic}>
-
-
         {/* Analytics Tab */}
         <NavItem
           $collapsed={collapsed}
@@ -267,51 +274,70 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
           <NavIcon>
             <AutoGraphIcon />
           </NavIcon>
-          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname.startsWith("/analytics")}>
+          <NavText
+            $collapsed={collapsed}
+            $isMobile={isMobile}
+            $active={router.pathname.startsWith("/analytics")}
+          >
             THỐNG KÊ
           </NavText>
-          {!collapsed && <DropdownItem>{openStatistic ? <ExpandLess /> : <ExpandMore />}</DropdownItem>}
+          {!collapsed && (
+            <DropdownItem>
+              {openStatistic ? <ExpandLess /> : <ExpandMore />}
+            </DropdownItem>
+          )}
         </NavItem>
-
 
         {/* Analytics Collapsed */}
         <Collapse in={openStatistic} timeout="auto" unmountOnExit>
-
-
-          <Link href="/analytics/reports-and-statistics" passHref style={{ width: "100%" }}>
+          <Link
+            href="/analytics/reports-and-statistics"
+            passHref
+            style={{ width: "100%" }}
+          >
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname.startsWith("/analytics/reports-and-statistics")}
+              $active={router.pathname.startsWith(
+                "/analytics/reports-and-statistics"
+              )}
               $isMobile={isMobile}
-            // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
+              // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname.startsWith("/analytics/reports-and-statistics")}
+                $active={router.pathname.startsWith(
+                  "/analytics/reports-and-statistics"
+                )}
               >
                 BIỂU ĐỒ VÀ BÁO CÁO
               </NavText>
             </SubNavItem>
           </Link>
 
-
-          <Link href="/analytics/learning-outcome" passHref style={{ width: "100%" }}>
+          <Link
+            href="/analytics/learning-outcome"
+            passHref
+            style={{ width: "100%" }}
+          >
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname.startsWith("/analytics/learning-outcome")}
+              $active={router.pathname.startsWith(
+                "/analytics/learning-outcome"
+              )}
               $isMobile={isMobile}
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname.startsWith("/analytics/learning-outcome")}
+                $active={router.pathname.startsWith(
+                  "/analytics/learning-outcome"
+                )}
               >
                 KẾT QUẢ CHI TIẾT
               </NavText>
             </SubNavItem>
           </Link>
-
 
           <Link href="/analytics/compare" passHref style={{ width: "100%" }}>
             <SubNavItem
@@ -327,16 +353,9 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
                 SO SÁNH KQ HỌC TẬP
               </NavText>
             </SubNavItem>
-
           </Link>
-
-
-
         </Collapse>
       </ExpandableContainer>
-
-
-
 
       <ExpandableContainer $open={openPrediction}>
         {/* Predictions Tab */}
@@ -350,56 +369,73 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
           <NavIcon>
             <BatchPredictionIcon />
           </NavIcon>
-          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname.startsWith("/predictions")}>
+          <NavText
+            $collapsed={collapsed}
+            $isMobile={isMobile}
+            $active={router.pathname.startsWith("/predictions")}
+          >
             DỰ ĐOÁN
           </NavText>
-          {!collapsed && <DropdownItem>{openPrediction ? <ExpandLess /> : <ExpandMore />}</DropdownItem>}
+          {!collapsed && (
+            <DropdownItem>
+              {openPrediction ? <ExpandLess /> : <ExpandMore />}
+            </DropdownItem>
+          )}
         </NavItem>
-
 
         {/* Predictions Collapsed */}
         <Collapse in={openPrediction} timeout="auto" unmountOnExit>
-
-          <Link href="/predictions/fraud-detection" passHref style={{ width: "100%" }}>
+          <Link
+            href="/predictions/fraud-detection"
+            passHref
+            style={{ width: "100%" }}
+          >
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname.startsWith("/predictions/fraud-detection")}
+              $active={router.pathname.startsWith(
+                "/predictions/fraud-detection"
+              )}
               $isMobile={isMobile}
-            // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
+              // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname.startsWith("/predictions/fraud-detection")}
+                $active={router.pathname.startsWith(
+                  "/predictions/fraud-detection"
+                )}
               >
                 PHÁT HIỆN GIAN LẬN
               </NavText>
             </SubNavItem>
           </Link>
 
-
-
-          <Link href="/predictions/predict-achievements" passHref style={{ width: "100%" }}>
+          <Link
+            href="/predictions/predict-achievements"
+            passHref
+            style={{ width: "100%" }}
+          >
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname.startsWith("/predictions/predict-achievements")}
+              $active={router.pathname.startsWith(
+                "/predictions/predict-achievements"
+              )}
               $isMobile={isMobile}
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname.startsWith("/predictions/predict-achievements")}
+                $active={router.pathname.startsWith(
+                  "/predictions/predict-achievements"
+                )}
               >
                 DỰ ĐOÁN THÀNH TÍCH
               </NavText>
             </SubNavItem>
           </Link>
-
-          
         </Collapse>
       </ExpandableContainer>
-
-      <Link href="/alerts" passHref style={{ width: "100%" }}>
+      {/* <Link href="/alerts" passHref style={{ width: "100%" }}>
 
         <NavItem
           $collapsed={collapsed}
@@ -415,7 +451,8 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
           </NavText>
         </NavItem>
       </Link>
-      
+      */}
+
       <ExpandableContainer $open={openDataManagement}>
         {/* Data Management Tab */}
 
@@ -429,74 +466,96 @@ const Sidebar = ({ role, isMobile, sidebarVisible, toggleSidebar: toggleProps })
             <BatchPredictionIcon />
           </NavIcon>
 
-          <NavText $collapsed={collapsed} $isMobile={isMobile} $active={router.pathname.startsWith("/data-management")}>
+          <NavText
+            $collapsed={collapsed}
+            $isMobile={isMobile}
+            $active={router.pathname.startsWith("/data-management")}
+          >
             QUẢN LÝ DỮ LIỆU
           </NavText>
-          {!collapsed && <DropdownItem>{openDataManagement ? <ExpandLess /> : <ExpandMore />}</DropdownItem>}
+          {!collapsed && (
+            <DropdownItem>
+              {openDataManagement ? <ExpandLess /> : <ExpandMore />}
+            </DropdownItem>
+          )}
         </NavItem>
-
 
         {/* Predictions Collapsed */}
         <Collapse in={openDataManagement} timeout="auto" unmountOnExit>
-
-          <Link href="/data-management/file-management" passHref style={{ width: "100%" }}>
+          <Link
+            href="/data-management/file-management"
+            passHref
+            style={{ width: "100%" }}
+          >
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname.startsWith("/data-management/file-management")}
+              $active={router.pathname.startsWith(
+                "/data-management/file-management"
+              )}
               $isMobile={isMobile}
-            // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
+              // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname.startsWith("/data-management/file-management")}
+                $active={router.pathname.startsWith(
+                  "/data-management/file-management"
+                )}
               >
                 QUẢN LÝ TẬP TIN
               </NavText>
             </SubNavItem>
           </Link>
 
-
-
-          <Link href="/data-management/student-management" passHref style={{ width: "100%" }}>
+          <Link
+            href="/data-management/student-management"
+            passHref
+            style={{ width: "100%" }}
+          >
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname.startsWith("/data-management/student-management")}
+              $active={router.pathname.startsWith(
+                "/data-management/student-management"
+              )}
               $isMobile={isMobile}
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname.startsWith("/data-management/student-management")}
+                $active={router.pathname.startsWith(
+                  "/data-management/student-management"
+                )}
               >
                 QUẢN LÝ SINH VIÊN
               </NavText>
             </SubNavItem>
           </Link>
 
-          <Link href="/data-management/class-management" passHref style={{ width: "100%" }}>
+          <Link
+            href="/data-management/class-management"
+            passHref
+            style={{ width: "100%" }}
+          >
             <SubNavItem
               $collapsed={collapsed}
-              $active={router.pathname.startsWith("/data-management/class-management")}
+              $active={router.pathname.startsWith(
+                "/data-management/class-management"
+              )}
               $isMobile={isMobile}
             >
               <NavText
                 $collapsed={collapsed}
                 $isMobile={isMobile}
-                $active={router.pathname.startsWith("/data-management/class-management")}
+                $active={router.pathname.startsWith(
+                  "/data-management/class-management"
+                )}
               >
                 QUẢN LÝ LỚP HỌC
               </NavText>
             </SubNavItem>
           </Link>
-
-          
         </Collapse>
       </ExpandableContainer>
-
-
-
-
 
       {/* Section Avatar & User Name ở Bottom */}
       <UserProfileSection>
