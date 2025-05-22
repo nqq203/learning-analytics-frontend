@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
-  Button,
   Typography,
   Table,
   TableBody,
@@ -11,6 +10,11 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Tabs,
+  Tab,
+  Box,
+  Link,
+  CircularProgress,
 } from "@mui/material";
 import ScoreComparisonCharts from "@/components/CompareResults/charts/ScoreComparisonCharts";
 
@@ -21,35 +25,76 @@ const CompareResult = ({
   criteria,
   course,
   selectedItems,
-  chartType = "bar",
+  loading,
 }) => {
+  const [chartType, setChartType] = useState("bar");
+  if (loading) {
+    return (
+      <Card
+        sx={{ mt: 4, maxWidth: 800, mx: "auto", py: 5, textAlign: "center" }}
+      >
+        <CircularProgress color="primary" />
+        <Typography sx={{ mt: 2 }}>Đang tải dữ liệu...</Typography>
+      </Card>
+    );
+  }
   if (!data) {
     return (
-      <Card>
+      <Card sx={{ mt: 4, maxWidth: 800, mx: "auto" }}>
         <CardContent>
           <Typography>Không có dữ liệu để hiển thị.</Typography>
-          <Button
-            variant="contained"
-            color="secondary"
+          <Link
+            component="button"
+            variant="body2"
             onClick={onBack}
-            style={{ marginTop: "16px" }}
+            sx={{
+              mt: 2,
+              display: "inline-block",
+              color: "#1976d2",
+              textDecoration: "underline",
+            }}
           >
             Quay lại
-          </Button>
+          </Link>
         </CardContent>
       </Card>
     );
   }
 
-  return (
-    <Card style={{ marginTop: "32px" }}>
-      <CardContent>
-        <Typography variant="h6" style={{ textAlign: "center" }}>
-          Kết quả so sánh
-        </Typography>
+  const handleChangeTab = (event, newValue) => {
+    setChartType(newValue);
+  };
 
-        {/* Thông tin mô tả */}
-        <Typography variant="body1" style={{ marginTop: "8px" }}>
+  return (
+    <Card
+      sx={{ mt: 4, maxWidth: 1400, mx: "auto", borderRadius: 3, boxShadow: 3 }}
+    >
+      <CardContent>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+        >
+          <Link
+            component="button"
+            variant="body2"
+            onClick={onBack}
+            sx={{ color: "#1976d2", textDecoration: "underline" }}
+          >
+            Quay lại
+          </Link>
+          <Typography
+            variant="h6"
+            fontWeight={600}
+            sx={{ flexGrow: 1, textAlign: "center" }}
+          >
+            Kết quả so sánh
+          </Typography>
+          <Box width="64px" />
+        </Box>
+
+        <Typography variant="body1">
           <strong>Tiêu chí: </strong>
           {criteria === "class" ? "Theo Lớp" : "Theo Khóa"}
         </Typography>
@@ -57,18 +102,18 @@ const CompareResult = ({
           <strong>Môn học: </strong>
           {course || "Tất cả"}
         </Typography>
-        <Typography variant="body1">
+        <Typography variant="body1" gutterBottom>
           <strong>
             {criteria === "class" ? "Lớp đã chọn" : "Khóa đã chọn"}:{" "}
           </strong>
           {selectedItems?.length ? selectedItems.join(", ") : "Không có"}
         </Typography>
 
-        {/* Bảng dữ liệu */}
-        <TableContainer component={Paper} style={{ marginTop: "16px" }}>
-          <Table>
+        {/* Table */}
+        <TableContainer component={Paper} sx={{ mt: 2 }}>
+          <Table size="small" aria-label="comparison table">
             <TableHead>
-              <TableRow>
+              <TableRow sx={{ bgcolor: "primary.light" }}>
                 <TableCell>
                   <strong>{mode === "class" ? "Tên lớp" : "Khóa"}</strong>
                 </TableCell>
@@ -77,26 +122,39 @@ const CompareResult = ({
                     <strong>Tên môn học</strong>
                   </TableCell>
                 )}
-                <TableCell><strong>Điểm giữa kỳ</strong></TableCell>
-                <TableCell><strong>Điểm thực hành</strong></TableCell>
-                <TableCell><strong>Điểm đồ án</strong></TableCell>
-                <TableCell><strong>Điểm cuối kỳ</strong></TableCell>
-                <TableCell><strong>Điểm trung bình</strong></TableCell>
-                <TableCell><strong>Số lượng SV</strong></TableCell>
+                <TableCell>
+                  <strong>Điểm giữa kỳ</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Điểm thực hành</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Điểm đồ án</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Điểm cuối kỳ</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Điểm trung bình</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Số lượng SV</strong>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {Object.values(data).map((item, index) => (
                 <TableRow
                   key={index}
-                  style={{
-                    backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#fff",
+                  sx={{
+                    bgcolor: index % 2 === 0 ? "grey.100" : "common.white",
+                    "&:hover": { bgcolor: "#e3f2fd" },
                   }}
                 >
                   <TableCell>
                     {mode === "class"
-                      ? item.class_name
-                      : item.class_name.match(/K\d+/)?.[0] || "N/A"}
+                      ? item.class_name || "N/A"
+                      : item.class_name?.match(/K\d+/)?.[0] || "N/A"}
                   </TableCell>
                   {mode === "class" && (
                     <TableCell>{item.course_name}</TableCell>
@@ -113,33 +171,38 @@ const CompareResult = ({
           </Table>
         </TableContainer>
 
-        {/* Biểu đồ */}
-        <div style={{ marginTop: "32px" }}>
-          <ScoreComparisonCharts
-            chartType={chartType}
-            data={Object.values(data)}
-            getDisplayName={(item) => item.class_name}
-            getClassColor={(index) => {
-              const colors = [
-                "#8884d8",
-                "#82ca9d",
-                "#ffc658",
-                "#ff8042",
-                "#8dd1e1",
-              ];
-              return colors[index % colors.length];
-            }}
-          />
-        </div>
+        {/* Charts*/}
+        <Box sx={{ width: "100%", mt: 4 }}>
+          <Tabs
+            value={chartType}
+            onChange={handleChangeTab}
+            centered
+            indicatorColor="primary"
+            textColor="primary"
+          >
+            <Tab label="Biểu đồ Cột" value="bar" />
+            <Tab label="Biểu đồ Radar" value="radar" />
+            <Tab label="Biểu đồ Tròn" value="pie" />
+          </Tabs>
 
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={onBack}
-          style={{ marginTop: "16px" }}
-        >
-          Quay lại
-        </Button>
+          <Box sx={{ mt: 2 }}>
+            <ScoreComparisonCharts
+              chartType={chartType}
+              data={Object.values(data)}
+              getDisplayName={(item) => item.class_name}
+              getClassColor={(index) => {
+                const colors = [
+                  "#8884d8",
+                  "#82ca9d",
+                  "#ffc658",
+                  "#ff8042",
+                  "#8dd1e1",
+                ];
+                return colors[index % colors.length];
+              }}
+            />
+          </Box>
+        </Box>
       </CardContent>
     </Card>
   );
