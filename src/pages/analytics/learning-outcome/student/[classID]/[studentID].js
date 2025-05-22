@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStudentDetail } from "@/redux/thunk/learningoutcomeThunk";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { jwtDecode } from "jwt-decode";
 
 const LearningOutcomesContainer = styled.div`
   margin: auto;
@@ -56,15 +57,25 @@ export default function StudentAnalytics() {
     (state) => state.learningoutcome
   );
   const dispatch = useDispatch();
-  const [userID] = useState("123");
   const router = useRouter();
   const { classID, studentID } = router.query;
+  const { accessToken } = useSelector(state => state.auth);
+  const userId = useMemo(() => {
+    if (!accessToken) return null;
+    try {
+      const { sub } = jwtDecode(accessToken);
+      console.log(sub);
+      return sub;
+    } catch {
+      return null;
+    }
+  }, [accessToken]);
 
   useEffect(() => {
     const fetchStudentRow = async () => {
       await dispatch(
         fetchStudentDetail({
-          userId: "I1132",
+          userId: userId,
           classId: classID,
           studentId: studentID,
         })

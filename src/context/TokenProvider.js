@@ -6,9 +6,23 @@ const TokenContext = createContext();
 export const TokenProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
-
+  const [isLoading, setIsLoading] = useState(true);
+  
   useEffect(() => {
-    console.log("TokenProvider mounted");
+    
+    setIsLoading(true); 
+    const storedAccessToken = localStorage.getItem("accessToken");
+    const storedRefreshToken = localStorage.getItem("refreshToken");
+    
+    if (storedAccessToken) {
+      setAccessToken(storedAccessToken);
+      setRefreshToken(storedRefreshToken);
+    }
+    // setAccessToken("124352545");
+    setIsLoading(false); 
+    
+    
+    
   }, []);
 
   const login = async (email, password) => {
@@ -24,10 +38,13 @@ export const TokenProvider = ({ children }) => {
   const logout = () => {
     setAccessToken(null);
     setRefreshToken(null);
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    
   };
 
   return (
-    <TokenContext.Provider value={{ accessToken, refreshToken, login, logout }}>
+    <TokenContext.Provider value={{ accessToken, refreshToken,isLoading, login, logout }}>
       {children}
     </TokenContext.Provider>
   );
