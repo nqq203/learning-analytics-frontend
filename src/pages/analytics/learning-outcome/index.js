@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import {
@@ -14,6 +14,7 @@ import {
   FetchAcademicYearClass,
   fetchFilteredClasses,
 } from "@/redux/thunk/learningoutcomeThunk";
+import { jwtDecode } from "jwt-decode";
 
 // Styled Components
 const LearningOutcomesContainer = styled.div`
@@ -105,12 +106,22 @@ const LearningOutcome = () => {
   const [chosenSemester, setChosenSemester] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState([]);
+  const { accessToken } = useSelector(state => state.auth);
+  const userId = useMemo(() => {
+    if (!accessToken) return null;
+    try {
+      const { sub } = jwtDecode(accessToken);
+      return sub;
+    } catch {
+      return null;
+    }
+  }, [accessToken]);
 
   const fetchClasses = async () => {
     setIsLoading(true);
     await dispatch(
       fetchFilteredClasses({
-        userId: "I1132",
+        userId: userId,
         page,
         amount,
         semester: chosenSemester,
@@ -139,7 +150,7 @@ const LearningOutcome = () => {
   };
 
   useEffect(() => {
-    dispatch(FetchAcademicYearClass({ userId: "I1132" }));
+    dispatch(FetchAcademicYearClass({ userId: userId }));
   }, [dispatch]);
 
   useEffect(() => {

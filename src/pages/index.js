@@ -1,23 +1,23 @@
-// import DashboardPage from "@/components/Dashboard";
-
-// export default function Home() {
-//     return (
-//         <DashboardPage></DashboardPage>
-//     );
-// }
-
-import { useRouter } from "next/router";
-import { useEffect } from "react";
+import DashboardPage from "@/components/Dashboard";
 
 export default function Home() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace("/auth/register");
-  }, []);
-
-  return null;
+    return (
+        <DashboardPage></DashboardPage>
+    );
 }
+
+// import { useRouter } from "next/router";
+// import { useEffect } from "react";
+
+// export default function Home() {
+//   const router = useRouter();
+
+//   useEffect(() => {
+//     router.replace("/auth/register");
+//   }, []);
+
+//   return null;
+// }
 
 // import { useEffect } from "react";
 // import { useRouter } from "next/router";

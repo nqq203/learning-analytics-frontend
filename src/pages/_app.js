@@ -10,7 +10,6 @@ import { FilterContextProvider } from "@/context/FilterContext";
 import AuthGuard from "@/components/AuthGuard";
 
 export default function App({ Component, pageProps }) {
-    console.log(Component.unauthorized)
     return (
         <Provider store={store}>
             <FilterContextProvider>
