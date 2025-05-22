@@ -1,9 +1,22 @@
-import DashboardPage from "@/components/Dashboard";
+// import DashboardPage from "@/components/Dashboard";
+
+// export default function Home() {
+//     return (
+//         <DashboardPage></DashboardPage>
+//     );
+// }
+
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 export default function Home() {
-    return (
-        <DashboardPage></DashboardPage>
-    );
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/auth/register");
+  }, []);
+
+  return null;
 }
 
 // import { useEffect } from "react";

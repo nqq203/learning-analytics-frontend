@@ -1,65 +1,48 @@
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import {
-  PolarGrid,
-  Radar,
   RadarChart,
-  ResponsiveContainer,
+  Radar,
+  PolarGrid,
   PolarAngleAxis,
+  PolarRadiusAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
 } from "recharts";
 
-export default function RadarChartComponent({
-  data,
-  getDisplayName,
-  getClassColor,
-}) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {data.map((item, index) => {
-        const radarData = [
-          { subject: "Giữa kỳ", value: item.midterm_avg },
-          { subject: "Thực hành", value: item.practice_avg },
-          { subject: "Đồ án", value: item.project_avg },
-          { subject: "Cuối kỳ", value: item.final_avg },
-          { subject: "Trung bình", value: item.total_avg },
-        ];
+export default function RadarChartComponent({ data, getDisplayName, getClassColor }) {
+  const radarData = [
+    { subject: "Giữa kỳ", key: "midterm_avg" },
+    { subject: "Thực hành", key: "practice_avg" },
+    { subject: "Đồ án", key: "project_avg" },
+    { subject: "Cuối kỳ", key: "final_avg" },
+    { subject: "Tổng", key: "total_avg" },
+  ];
 
-        return (
-          <div key={index} className="h-[300px]">
-            <Card>
-              <CardHeader
-                title={
-                  <Typography variant="body1">
-                    {getDisplayName(item)}
-                  </Typography>
-                }
-                subheader={`Số SV: ${item.total_students}`}
+  return (
+    <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
+      {data.map((item, index) => (
+        <div key={index} style={{ width: "300px", height: "300px" }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <RadarChart outerRadius={90} data={radarData.map((d) => ({
+              subject: d.subject,
+              value: item[d.key],
+            }))}>
+              <PolarGrid />
+              <PolarAngleAxis dataKey="subject" />
+              <PolarRadiusAxis domain={[0, 10]} />
+              <Tooltip />
+              <Radar
+                name={getDisplayName(item)}
+                dataKey="value"
+                stroke={getClassColor(index)}
+                fill={getClassColor(index)}
+                fillOpacity={0.6}
               />
-              <CardContent>
-                <ResponsiveContainer width="100%" height={200}>
-                  <RadarChart data={radarData}>
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="subject" />
-                    <Radar
-                      name={getDisplayName(item)}
-                      dataKey="value"
-                      stroke={getClassColor(index)}
-                      fill={getClassColor(index)}
-                      fillOpacity={0.6}
-                    />
-                    <Tooltip />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-        );
-      })}
+              <Legend />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
+      ))}
     </div>
   );
 }
