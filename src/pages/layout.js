@@ -1,5 +1,4 @@
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import Sidebar from "@/components/Sidebar";
@@ -44,7 +43,7 @@ const RootLayout = ({ children }) => {
         height: "100vh",
         overflowY: "auto",
     };
-    
+
 
     useEffect(() => {
         const handledTitle = getTabTitle(router.pathname);
@@ -52,23 +51,20 @@ const RootLayout = ({ children }) => {
     }, [router]);
 
     return (
-        <>
-            <ToastContainer position="top-right" autoClose={3000} />
-            <AppWrapper>
-                <Sidebar
-                    role={"lecturer"}
-                    isMobile={isMobile}
-                    sidebarVisible={sidebarVisible}
-                    toggleSidebar={toggleSidebar}
-                />
-                <ComponentWrapper $isCollapsed={isCollapsed}>
-                    <Scrollbar style={scrollbarStyle}>
-                        <Header title={title}/>
-                        {children}
-                    </Scrollbar>
-                </ComponentWrapper>
-            </AppWrapper>
-        </>
+        <AppWrapper>
+            <Sidebar
+                role={"lecturer"}
+                isMobile={isMobile}
+                sidebarVisible={sidebarVisible}
+                toggleSidebar={toggleSidebar}
+            />
+            <ComponentWrapper $isCollapsed={isCollapsed}>
+                <Scrollbar style={scrollbarStyle}>
+                    <Header title={title} />
+                    {children}
+                </Scrollbar>
+            </ComponentWrapper>
+        </AppWrapper>
     );
 };
 

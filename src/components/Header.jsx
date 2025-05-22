@@ -6,6 +6,9 @@ import { usePathname } from "next/navigation";
 import { FilterAlt } from "@mui/icons-material";
 import { useFilter } from "@/context/FilterContext";
 import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { logout, refresh } from "@/redux/thunk/authThunk";
+import { toast } from "react-toastify";
 
 // Hoặc bạn có thể dùng <span className="material-icons">settings</span> 
 // nếu bạn thích import từ CDN Material Icons.
@@ -34,6 +37,7 @@ export default function Header({ title }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const { showFilters, setShowFilters } = useFilter();
   const router = useRouter();
+  const dispatch = useDispatch();
 
   // Mở menu (dropdown)
   const handleOpenMenu = (event) => {
@@ -53,10 +57,16 @@ export default function Header({ title }) {
   };
 
   // Xử lý khi chọn "Logout"
-  const handleLogoutClick = () => {
+  const handleLogoutClick = async () => {
     // Ví dụ: Gọi API logout, hoặc xóa token
-    alert("Nhấn Logout");
-    handleCloseMenu();
+    try {
+      await dispatch(logout());
+      handleCloseMenu();
+      router.replace('/login')
+    } catch(error) {
+      console.error(error);
+      toast.error("Logout failed, somnething went wrong");
+    }
   };
 
   return (
@@ -73,22 +83,22 @@ export default function Header({ title }) {
             </IconButton>
 
 
-              {
-                router.pathname =="/"?
-                  (
-                    <IconButton
-                      onClick={() => setShowFilters(!showFilters)}
-                      sx={{ bgcolor: showFilters ? "#f5f5f5" : "transparent" }}
-                    >
-                      <FilterAlt />
-                    </IconButton>
-                  )
+            {
+              router.pathname == "/" ?
+                (
+                  <IconButton
+                    onClick={() => setShowFilters(!showFilters)}
+                    sx={{ bgcolor: showFilters ? "#f5f5f5" : "transparent" }}
+                  >
+                    <FilterAlt />
+                  </IconButton>
+                )
                 : (<></>)
-              
-              } 
 
-          
-          
+            }
+
+
+
           </div>
 
 

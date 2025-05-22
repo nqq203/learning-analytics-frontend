@@ -1,6 +1,12 @@
 import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+console.log(API_URL);
+
+const axiosInstance = axios.create({
+    baseURL: API_URL,
+    withCredentials: true,
+})
 
 const handleAuthApiError = (error) => {
     if (error.message) {
@@ -22,8 +28,10 @@ const handleAuthApiError = (error) => {
 };
 
 const authApi = {
-    register: (data) => axios.post(`${API_URL}/auth/register`, data),
-    login: (data) => axios.post(`${API_URL}/auth/login`, data)
+    register: (data) => axiosInstance.post(`${API_URL}/auth/register`, data),
+    login: (data) => axiosInstance.post(`${API_URL}/auth/login`, data),
+    logout: () => axiosInstance.post(`${API_URL}/auth/logout`),
+    refresh: () => axiosInstance.post(`${API_URL}/auth/refresh`),
 }
 
 export { authApi, handleAuthApiError };

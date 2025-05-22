@@ -2,6 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
     login,
     register,
+    logout,
+    refresh,
 } from '../thunk/authThunk';
 
 const initialState = {
@@ -12,6 +14,7 @@ const initialState = {
     code: -1,
     loading: false,
     success: false,
+    userId: -1,
 }
 
 const authSlice = createSlice({
@@ -36,7 +39,7 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.message = action.payload.message;
                 state.success = action.payload.success;
-                state.code = state.action.payload.code;
+                state.code = action.payload.code;
             })
             .addCase(register.rejected, (state, action) => {
                 state.loading = false;
@@ -49,14 +52,45 @@ const authSlice = createSlice({
             })
             .addCase(login.fulfilled, (state, action) => {
                 state.loading = false;
-                state.accessToken = action.payload.data.accessToken;
-                state.isAuthenticated = true;
-                state.message = action.payload.message;
                 state.code = action.payload.code;
-                state.success = action.payload.success;
-                localStorage.setItem("refreshToken", action.payload.refreshToken);
+                state.message = action.payload.message;
+                state.accessToken = action.payload.data.accessToken;
+                state.userId = action.payload.data.userId;
+                state.isAuthenticated = true;
             })
             .addCase(login.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            .addCase(logout.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(logout.fulfilled, (state, action) => {
+                state.loading = false;
+                state.code = action.payload.code;
+                state.message = action.payload.message;
+                state.isAuthenticated = false;
+                state.accessToken = null;
+            })
+            .addCase(logout.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            .addCase(refresh.pending, (state, action) => {
+                state.loading = true;
+            })
+            .addCase(refresh.fulfilled, (state, action) => {
+                state.loading = false;
+                state.code = action.payload.code;
+                state.message = action.payload.message;
+                state.accessToken = action.payload.data.accessToken;
+                state.isAuthenticated = true;
+            })
+            .addCase(refresh.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action?.payload?.error || action?.error?.message;
                 state.message = action?.payload?.message || action?.message || action?.payload;
