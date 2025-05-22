@@ -66,14 +66,6 @@ const fakeClasses = [
     passRate: 95,
   },
   {
-    no: 19,
-    courseName: "Lập trình Web",
-    className: "K04",
-    academicYear: "2023",
-    totalStudents: 28,
-    passRate: 90,
-  },
-  {
     no: 2,
     courseName: "Lập trình Web",
     className: "K04",
