@@ -77,9 +77,9 @@ const FilterInput = styled.select`
 `
 
 
-const ClassTableHeader = ["STT","Lớp","Khóa","Chương trình","Khoa","Chuyên ngành","Hành Động"];
+const ClassTableHeader = ["STT","Lớp","Khóa","Chương trình","Khoa","Chuyên ngành","Chi tiết"];
 
-const SubjectTableHeader = ["STT","Môn","Lớp","Khóa","Tín Chỉ","Học Kỳ","Chương Trình","Khoa","Chuyên ngành","Hành Động"];
+const SubjectTableHeader = ["STT","Môn","Lớp","Khóa","Tín chỉ","Học kỳ","Chương trình","Khoa","Chuyên ngành","Chi tiết"];
 const SubjectTableContent = [
             {
                 "ID":"1",

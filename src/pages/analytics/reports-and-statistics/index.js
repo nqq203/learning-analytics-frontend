@@ -22,6 +22,7 @@ import {
   searchClasses,
 } from "@/redux/thunk/analyticsThunk";
 import InputAdornment from '@mui/material/InputAdornment';
+import { jwtDecode } from "jwt-decode";
 
 const ClassesList = () => {
   const { totalRecords, classes } = useSelector((state) => state.analytics);
@@ -29,6 +30,16 @@ const ClassesList = () => {
   const [search, setSearch] = useState("");
   const [filterSubject, setFilterSubject] = useState("");
   const [filterClass, setFilterClass] = useState("");
+  const { accessToken } = useSelector(state => state.auth);
+  const userId = useMemo(() => {
+    if (!accessToken) return null;
+    try {
+      const { sub } = jwtDecode(accessToken);
+      return sub;
+    } catch {
+      return null;
+    }
+  }, [accessToken]);
 
   const rows = useMemo(() => {
     return classes || [];
@@ -63,7 +74,7 @@ const ClassesList = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       await dispatch(
-        fetchClassesByLecturer({ userId: "I1266" , page: 1, amount: 10 })
+        fetchClassesByLecturer({ userId: userId, page: 1, amount: 10 })
       );
     };
     fetchClasses();
@@ -72,7 +83,7 @@ const ClassesList = () => {
 
   const handleSearch = () => {
     dispatch(
-      searchClasses({ search: search, userId: "I1266" , page: 1, amount: 10 })
+      searchClasses({ search: search, userId: userId, page: 1, amount: 10 })
     );
   };
 
@@ -106,7 +117,7 @@ const ClassesList = () => {
                       padding: "10px",
                       height: "100%",
                       '&:hover': {
-                        backgroundColor: "#1976d2", 
+                        backgroundColor: "#1976d2",
                       },
                     }}
                   >
@@ -167,7 +178,7 @@ const ClassesList = () => {
           handleActions={handleViewClass}
         />
 
-        
+
       </div>
     </Container>
   );

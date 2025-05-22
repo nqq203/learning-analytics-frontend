@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import {
   TextField,
@@ -11,6 +11,7 @@ import {
 import StudentList from "@/components/PredictionAchievements/StudentList";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStudentSearch } from "@/redux/thunk/learningoutcomeThunk";
+import { jwtDecode } from "jwt-decode";
 const LearningOutcomesContainer = styled.div`
   margin: auto;
   width: 97%;
@@ -61,9 +62,18 @@ const LineDivider = styled.div`
   width: 100%;
 `;
 
-const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa", "Hành Động"];
+const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa", "Chi tiết"];
 const ClassStudentContainer = () => {
-  const userId = "12456";
+  const { accessToken } = useSelector(state => state.auth);
+  const userId = useMemo(() => {
+    if (!accessToken) return null;
+    try {
+      const { sub } = jwtDecode(accessToken);
+      return sub;
+    } catch {
+      return null;
+    }
+  }, [accessToken]);
   const dispatch = useDispatch();
 
   const { studentsOverview, totalRecords, academicYear } = useSelector(
@@ -87,7 +97,7 @@ const ClassStudentContainer = () => {
       setIsLoading(true);
       const response = await dispatch(
         fetchStudentSearch({
-          userId: "I1132",
+          userId: userId,
           classId: id,
           page: page,
           amount: amount,
@@ -122,7 +132,7 @@ const ClassStudentContainer = () => {
     }
   };
 
-  const handleChangeAcedemicYear = (value) => {};
+  const handleChangeAcedemicYear = (value) => { };
 
   return (
     <LearningOutcomesContainer>

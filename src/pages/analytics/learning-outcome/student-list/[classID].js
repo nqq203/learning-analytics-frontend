@@ -1,11 +1,13 @@
+"use client";
 import styled from "styled-components";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import StudentListLNO from "@/components/LearningOutcome/StudentListLNO";
 import { useRouter } from "next/router";
 import { TextField, FormControl, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import { fetchStudentSearch } from "@/redux/thunk/learningoutcomeThunk";
+import { jwtDecode } from "jwt-decode";
 
 const LearningOutcomesContainer = styled.div`
   margin: auto;
@@ -51,6 +53,16 @@ const StudentContainerLNO = () => {
   const [searchResult, setSearchResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState([]);
+  const { accessToken } = useSelector(state => state.auth);
+  const userId = useMemo(() => {
+    if (!accessToken) return null;
+    try {
+      const { sub } = jwtDecode(accessToken);
+      return sub;
+    } catch {
+      return null;
+    }
+  }, [accessToken]);
 
   const handleSearch = (value) => {
     setSearchKeyword(value);
@@ -64,7 +76,7 @@ const StudentContainerLNO = () => {
 
   const fetchStudentRow = async () => {
     setIsLoading(true);
-    await dispatch(fetchStudentSearch({ userId: "I1132", classId: classID, page: page, amount: amount, search: searchResult }));
+    await dispatch(fetchStudentSearch({ userId: userId, classId: classID, page: page, amount: amount, search: searchResult }));
     setIsLoading(false);
   };
 
