@@ -72,15 +72,15 @@ const StudentsList = () => {
   };
 
   const handleViewClass = (studentId) => {
-    router.push(
-      `/analytics/reports-and-statistics/${classId}/${studentId}`
-    );
+    router.push(`/analytics/reports-and-statistics/${classId}/${studentId}`);
   };
 
   const filteredRows = rows.filter((row) => {
+    const name = row.fullName || "";
+    const id = row.studentId || "";
     return (
-      row.fullName.toLowerCase().includes(search.toLowerCase()) ||
-      row.studentId.toLowerCase().includes(search.toLowerCase())
+      name.toLowerCase().includes(search.toLowerCase()) ||
+      id.toLowerCase().includes(search.toLowerCase())
     );
   });
 
