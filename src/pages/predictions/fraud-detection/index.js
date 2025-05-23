@@ -192,7 +192,7 @@ const FraudDetection = () => {
       } else {
         toast.error("Có lỗi xảy ra, hãy thử lại");
       }
-       e.target.value = null;
+      e.target.value = null;
       // setLoading(false);
     }
   };
@@ -323,8 +323,8 @@ const FraudDetection = () => {
           {loading && (
             <Box
               position="absolute"
-              top="30vh"
-              // left="50vw"
+              top={0}
+              left={0}
               width="100%"
               height="100%"
               display="flex"

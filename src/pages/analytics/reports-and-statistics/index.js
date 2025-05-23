@@ -11,6 +11,8 @@ import {
   MenuItem,
   Select,
   IconButton,
+  Box,
+  CircularProgress
 } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -25,13 +27,13 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { jwtDecode } from "jwt-decode";
 
 const ClassesList = () => {
-  const { totalRecords, classes } = useSelector((state) => state.analytics);
+  const { totalRecords, classes, loading } = useSelector((state) => state.analytics);
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
   const [filterSubject, setFilterSubject] = useState("");
   const [filterClass, setFilterClass] = useState("");
   const { accessToken } = useSelector(state => state.auth);
-  
+
   const userId = useMemo(() => {
     if (!accessToken) return null;
     try {
@@ -171,14 +173,30 @@ const ClassesList = () => {
         <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}>
           Tổng số lớp hiển thị: {totalStudents}
         </span>
+        <Box position="relative">
+          <AnalyticsTable
+            filteredRows={rows}
+            columns={columns}
+            handleActions={handleViewClass}
+          />
 
-
-        <AnalyticsTable
-          filteredRows={rows}
-          columns={columns}
-          handleActions={handleViewClass}
-        />
-
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.7)"
+              zIndex={10}
+            >
+              <CircularProgress />
+            </Box>
+          )}
+        </Box>
 
       </div>
     </Container>
