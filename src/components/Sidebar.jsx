@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Home, ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { useRouter } from "next/router";
@@ -219,6 +219,10 @@ const Sidebar = ({
       setOpenPrediction(false);
     }
   };
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
   return (
     <SidebarWrapper

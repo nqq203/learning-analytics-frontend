@@ -8,7 +8,7 @@ import {
   InputLabel,
   MenuItem,
   InputAdornment,
-  IconButton, 
+  IconButton,
   Select,
 } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
@@ -44,6 +44,7 @@ const LearningOutComeItemsContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 20px;
+  width: 100%;
 `;
 
 const LearningOutComeTabButtons = styled.div`
@@ -130,7 +131,7 @@ const LearningOutcome = () => {
         amount,
         semester: chosenSemester,
         academicYear: chosenAcademicYear,
-        search:searchResult
+        search: searchResult
       })
     );
     setIsLoading(false);
@@ -176,7 +177,7 @@ const LearningOutcome = () => {
 
   useEffect(() => {
     fetchClasses();
-  }, [chosenAcademicYear, chosenSemester, page,searchResult]);
+  }, [chosenAcademicYear, chosenSemester, page, searchResult]);
 
   useEffect(() => {
     if (page === 1) {
@@ -198,50 +199,50 @@ const LearningOutcome = () => {
         <LearningOutComeHeader>
 
           <LearningOutComeItemsContainer>
-            <FormControl style={{ width: "550px" }} variant="outlined">
-                          <TextField
-                            id="outlined-basic"
-                            label="Tìm kiếm"
-                            variant="outlined"
-                            onChange={(e) => handleSearch(e.target.value)}
-                            onKeyDown={handleKeyPress}
-                            InputProps={{
-                              style: {
-                                height: 40,
-                                paddingRight: 0,
-                                fontSize: "0.9rem",
-                                alignItems: "center",
-                              },
-                              endAdornment: (
-                                <InputAdornment position="end">
-                                  <IconButton
-                                    sx={{
-                                      backgroundColor: "#1976D2",
-                                      borderRadius: "0 4px 4px 0",
-                                      padding: "10px",
-                                      height: "40px",
-                                      '&:hover': {
-                                        backgroundColor: "#1565C0",
-                                      },
-                                    }}
-                                    onClick={() => handleSearchResult(searchKeyword)}
-                                  >
-                                    <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
-                                  </IconButton>
-                                </InputAdornment>
-                              ),
-                            }}
-                            InputLabelProps={{
-                              style: {
-                                lineHeight: "40px",
-                                top: "-15px",
-                              },
-                            }}
-                          />
-                        </FormControl>
-          </LearningOutComeItemsContainer>
+            <FormControl style={{ width: "100%" }} variant="outlined">
+              <TextField
+                id="outlined-basic"
+                label="Tìm kiếm"
+                variant="outlined"
+                onChange={(e) => handleSearch(e.target.value)}
+                onKeyDown={handleKeyPress}
+                InputProps={{
+                  style: {
+                    height: 40,
+                    paddingRight: 0,
+                    fontSize: "0.9rem",
+                    alignItems: "center",
+                  },
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        sx={{
+                          backgroundColor: "#1976D2",
+                          borderRadius: "0 4px 4px 0",
+                          padding: "10px",
+                          height: "40px",
+                          '&:hover': {
+                            backgroundColor: "#1565C0",
+                          },
+                        }}
+                        onClick={() => handleSearchResult(searchKeyword)}
+                      >
+                        <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                InputLabelProps={{
+                  style: {
+                    lineHeight: "40px",
+                    top: "-15px",
+                  },
+                }}
+              />
+            </FormControl>
+          {/* </LearningOutComeItemsContainer> */}
 
-          <LearningOutComeItemsContainer>
+          {/* <LearningOutComeItemsContainer> */}
             <FormControl sx={{ minWidth: 200 }} variant="outlined" size="small">
               <InputLabel id="academic-year-label">Khóa</InputLabel>
               <Select
@@ -274,7 +275,7 @@ const LearningOutcome = () => {
               </Select>
             </FormControl>
 
-            
+
           </LearningOutComeItemsContainer>
         </LearningOutComeHeader>
 
