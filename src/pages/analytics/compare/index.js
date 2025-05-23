@@ -114,6 +114,16 @@ const Compare = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [isComparing, setIsComparing] = useState(false);
   const { totalRecords, classes } = useSelector((state) => state.analytics);
+  const { accessToken } = useSelector(state => state.auth);
+    const userId = useMemo(() => {
+      if (!accessToken) return null;
+      try {
+        const { sub } = jwtDecode(accessToken);
+        return sub;
+      } catch {
+        return null;
+      }
+    }, [accessToken]);
 
   const rows = useMemo(() => {
     return fakeClasses || [];
@@ -149,7 +159,7 @@ const Compare = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       await dispatch(
-        fetchClassesByLecturer({ userId: "I1266", page: 1, amount: 10 })
+        fetchClassesByLecturer({ userId: userId, page: 1, amount: 10 })
       );
     };
     fetchClasses();

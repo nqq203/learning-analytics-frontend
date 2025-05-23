@@ -22,7 +22,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton
+  IconButton,
+  CircularProgress
 
 } from "@mui/material";
 import Alert from '@mui/material/Alert';
@@ -38,6 +39,7 @@ import { Dialog2 } from "@/components/FraudDetection/Dialog2";
 import { Dialog3 } from "@/components/FraudDetection/Dialog3";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 // Dữ liệu mẫu
 const sampleData = [
   { id: 1, mssv: "21127001", name: "Nguyễn Văn A", score: 10, timeTaken: "10m22s", deviation: "24m38s", reason: "Làm quá nhanh so với trung bình" },
@@ -45,10 +47,10 @@ const sampleData = [
 ];
 
 const FraudDetection = () => {
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
 
-  const { classes, students, quizImport } = useSelector(state => state.fraudDetection);
+  const { classes, students, quizImport, loading } = useSelector(state => state.fraudDetection);
   const dispatch = useDispatch();
 
   const [disabledTest, SetDisabledTest] = useState(true)
@@ -68,6 +70,8 @@ const FraudDetection = () => {
 
   const [minTime, SetMinTime] = useState();
   const [maxTime, SetMaxTime] = useState();
+
+  const isFirstLoad = useRef(true);
 
   const { accessToken } = useSelector(state => state.auth);
   const userId = useMemo(() => {
@@ -113,19 +117,6 @@ const FraudDetection = () => {
     setData(students);
 
   }, [students])
-
-  useEffect(() => {
-    const reFetch = async () => {
-      if (quizImport != null) {
-
-        await dispatch(fetchClassesByLecturer({ userId }));
-        setClassesSelect(classesSelect)
-      }
-
-    }
-    reFetch();
-
-  }, [quizImport])
 
 
   useEffect(() => {
@@ -179,27 +170,43 @@ const FraudDetection = () => {
     }
   }
 
-  const handleFileChange = async (e) => {
-    setLoading(true);
+  useEffect(() => {
+    if (!classesSelect) return;                        // chưa chọn thì thôi
+    const cls = classes.find(c => c.classId === classesSelect);
+    if (cls) {
+      SetQuiz(cls.quizzes);
+      SetDisabledTest(false);
+    } else {
+      // fallback nếu class cũ đã bị xóa
+      SetQuiz([]);
+      SetDisabledTest(true);
+    }
+  }, [classes]);
 
+  const handleFileChange = async (e) => {
+    // setLoading(true);
     const file = e.target.files[0];
 
     if (file) {
-      await dispatch(fetchImportQuizFile({ userId, file, class_id: classesSelect, activity_type: "quiz" }));
-
-      alert("Nhập file thành công! Vui lòng kiểm tra lại các bài kiểm tra")
-      setLoading(false);
+      const res = await dispatch(fetchImportQuizFile({ userId, file, class_id: classesSelect, activity_type: "quiz" }));
+      if (res.payload.success) {
+        toast.success("Nhập file thành công! Vui lòng kiểm tra lại các bài kiểm tra")
+        await dispatch(fetchClassesByLecturer({ userId }));
+      } else {
+        toast.error("Có lỗi xảy ra, hãy thử lại");
+      }
+      // setLoading(false);
     }
   };
 
   const handleDetect = async () => {
-    setLoading(true);
+    // setLoading(true);
     console.log(`Handle Detect: ${userId} ${quizSelect} ${minTime} ${maxTime}`)
 
     await dispatch(fetchFraudDetect({ userId, quiz_id: quizSelect, min_threshold: minTime, max_threshold: maxTime }));
 
-    alert("Phân tích thành công")
-    setLoading(false);
+    toast.success("Phân tích thành công")
+    // setLoading(false);
 
 
   }
@@ -212,49 +219,51 @@ const FraudDetection = () => {
 
         {/* Bộ lọc + Button */}
         <Grid container spacing={2} alignItems="center" mb={3}>
-
+          {/* Lớp */}
           <Grid item xs={12} sm={6} md={4}>
-            <FormControl style={{ width: "30%", minWidth: 450 }} size="small">
+            <FormControl
+              style={{ width: "30%", minWidth: 450 }}
+              size="small"
+              disabled={loading}     // ← disable khi loading
+            >
               <InputLabel>Lớp</InputLabel>
               <Select
                 label="Chọn lớp"
                 value={classesSelect}
                 onChange={(e) => handleChosingClass(e.target.value)}
-
+                disabled={loading}     // ← disable khi loading
               >
-
-                {classes.map((item) => {
-                  return <MenuItem value={item.classId}> {item.className}</MenuItem>
-                })}
-
-
-
+                {classes.map(item => (
+                  <MenuItem key={item.classId} value={item.classId}>
+                    {item.className}
+                  </MenuItem>
+                ))}
               </Select>
-
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={4} >
-            <FormControl style={{ width: "30%", minWidth: 450 }} size="small" disabled={disabledTest}>
+          {/* Quiz */}
+          <Grid item xs={12} sm={6} md={4}>
+            <FormControl
+              style={{ width: "30%", minWidth: 450 }}
+              size="small"
+              disabled={loading || disabledTest}
+            >
               <InputLabel>Bài kiểm tra</InputLabel>
               <Select
                 label="Chọn bài kiểm tra"
                 value={quizSelect}
                 onChange={(e) => handleChosingQuiz(e.target.value)}
-
+                disabled={loading || disabledTest}
               >
-
                 <MenuItem value="import">📁 Nhập một bài kiểm tra</MenuItem>
-                {
-                  Quiz.map((item) => {
-                    return <MenuItem value={item.quizId}>{item.quizName}</MenuItem>
-                  })
-                }
-
-
+                {Quiz.map(item => (
+                  <MenuItem key={item.quizId} value={item.quizId}>
+                    {item.quizName}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
-            {/* Input ẩn */}
             <input
               type="file"
               accept=".csv,.xlsx"
@@ -308,9 +317,28 @@ const FraudDetection = () => {
           }}
         />
         {/* Bảng dữ liệu */}
-        <TableFraudDetection data={data}></TableFraudDetection>
 
-        {/* Dialogs */}
+        {/* Table + Spinner Overlay */}
+        <Box position="relative">
+          <TableFraudDetection data={data} />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top="30vh"
+              // left="50vw"
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
 
         <Dialog1
           openDialog1={openDialog1}
