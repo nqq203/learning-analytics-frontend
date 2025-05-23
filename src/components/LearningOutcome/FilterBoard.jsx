@@ -2,6 +2,7 @@ import { useState } from "react";
 import FilterItem from "./FilterItem.jsx";
 import styled from "styled-components";
 import { MdAdd } from "react-icons/md";
+import { toast } from "react-toastify";
 const FilterBoardContainer = styled.div`
     width:100%;
     display:flex;
@@ -118,10 +119,10 @@ export default function FilterBoard() {
         );
 
         if (invalidFilter) {
-            alert("Có điều kiện bị trống! Vui lòng chọn đầy đủ Math, Field và Value.");
+            toast.warning("Có điều kiện bị trống! Vui lòng chọn đầy đủ Math, Field và Value.");
         } else {
             console.log("Applied Filters:", filters);
-            alert("Bộ lọc đã được áp dụng! Kiểm tra console để xem kết quả.");
+            toast.success("Bộ lọc đã được áp dụng! Kiểm tra console để xem kết quả.");
         }
     };
     return (

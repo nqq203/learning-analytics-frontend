@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import PredictionStudentList from "@/components/PredictionAchievements/PredictionStudentList";
 import ModalSuggestion from "@/components/PredictionAchievements/ModalSuggestion";
+import { toast } from "react-toastify";
 const LearningOutcomesContainer = styled.div`
     margin: auto;
     width: 97%;
@@ -116,7 +117,7 @@ const ImprovementSuggestion = () => {
 
     const handleNav = ()=>{
       if(chosenStudent.length===0){
-        alert("Chọn ít nhất một sinh viên")
+        toast.warning("Chọn ít nhất một sinh viên")
       }
       else{
         const encodedData = encodeURIComponent(JSON.stringify(chosenStudent));
