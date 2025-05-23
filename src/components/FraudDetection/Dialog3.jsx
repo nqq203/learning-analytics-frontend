@@ -22,6 +22,7 @@ import {
 
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export function Dialog3({openDialog3,handleCloseDialog3,SetMinTime,SetMaxTime,minTime,maxTime,setHasThreeHold}){
     const [MinTimeInput, SetMinTimeInput] = useState(minTime ?? '');
@@ -39,11 +40,11 @@ export function Dialog3({openDialog3,handleCloseDialog3,SetMinTime,SetMaxTime,mi
           SetMinTime(MinTimeInput);
           SetMaxTime(MaxTimeInput);
           setHasThreeHold(true);
-          alert("Lưu thành công!");
+          toast.success("Lưu thành công")
           handleCloseDialog3();
       }
       else{
-        alert("Vui lòng nhập MinTime hoặc MaxTime")
+        toast.warning("Vui lòng nhập MinTime hoặc MaxTime");
       }
       
     }

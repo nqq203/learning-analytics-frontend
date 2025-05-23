@@ -12,6 +12,7 @@ import StudentList from "@/components/PredictionAchievements/StudentList";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStudentSearch } from "@/redux/thunk/learningoutcomeThunk";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 const LearningOutcomesContainer = styled.div`
   margin: auto;
   width: 97%;
@@ -123,7 +124,7 @@ const ClassStudentContainer = () => {
 
   const handleNav = () => {
     if (chosenStudent.length === 0) {
-      alert("Chọn ít nhất một sinh viên");
+      toast.warning("Chọn ít nhất một sinh viên");
     } else {
       const encodedData = encodeURIComponent(JSON.stringify(chosenStudent));
       router.push(

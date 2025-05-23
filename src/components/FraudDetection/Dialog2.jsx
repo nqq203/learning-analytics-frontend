@@ -21,14 +21,14 @@ import {
   IconButton
 
 } from "@mui/material";
+import { toast } from "react-toastify";
 export function Dialog2({openDialog2,handleCloseDialog2,SetMinTime,SetMaxTime,setHasThreeHold}){
     const handleConfirmDefault = ()=>{
       SetMinTime();
       SetMaxTime();
       setHasThreeHold(false);
       handleCloseDialog2();
-      alert("Lấy ngưỡng mặc định thành công")
-      
+      toast.success("Lấy ngưỡng mặc định thành công")
     }
     return(
         <Dialog open={openDialog2} onClose={handleCloseDialog2} maxWidth="sm" fullWidth>
