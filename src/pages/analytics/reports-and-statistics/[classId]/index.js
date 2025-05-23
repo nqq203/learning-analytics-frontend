@@ -14,16 +14,19 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Box,
+  CircularProgress,
 } from "@mui/material";
 import AnalyticsTable from "@/components/Analytics/Table/Table";
 import {
   fetchStudents,
   fetchStudentsDetails,
 } from "@/redux/thunk/analyticsThunk";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const StudentsList = () => {
   const router = useRouter();
+  const { loading } = useSelector(state => state.analytics);
   const { classId } = router.query;
   const [search, setSearch] = useState("");
   const [sortOption, setSortOption] = useState("studentId");
@@ -158,17 +161,42 @@ const StudentsList = () => {
       <BodyWrapper>
         <InformationWrapper>
           <InformationItem>Số lượng sinh viên: {studentCount}</InformationItem>
-          <InformationItem>Điểm trung bình: {averageGrade}</InformationItem>
+          <InformationItem>Điểm trung bình: {
+            buttonVariant === "outlined"
+              ? averageGrade
+              : "-"
+          }
+          </InformationItem>
         </InformationWrapper>
-        <AnalyticsTable
-          filteredRows={sortedRows.map(row => ({
-            ...row,
-            fullName: row.fullName ?? "Không có tên"
-          }))}
-          columns={columns}
-          handleActions={handleViewClass}
-          action={false}
-        />
+        {/* Bọc table + loading overlay */}
+        <Box position="relative">
+          <AnalyticsTable
+            filteredRows={rows.map(row => ({
+              ...row,
+              fullName: row.fullName ?? "Không có tên"
+            }))}
+            columns={columns}
+            handleActions={handleViewClass}
+            action={false}
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.7)"
+              zIndex={10}
+            >
+              <CircularProgress />
+            </Box>
+          )}
+        </Box>
       </BodyWrapper>
     </Container>
   );
