@@ -54,6 +54,10 @@ const StudentContainerLNO = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState([]);
   const { accessToken } = useSelector(state => state.auth);
+
+  // useEffect(()=>{
+  //   console.log("Rows: ",rows)
+  // },[rows])
   const userId = useMemo(() => {
     if (!accessToken) return null;
     try {

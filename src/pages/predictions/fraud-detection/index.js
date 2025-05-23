@@ -3,7 +3,7 @@ import {
   Container,
 
   Box,
-  Typography,
+
   Button,
   FormControl,
   TextField,
@@ -40,11 +40,6 @@ import { Dialog3 } from "@/components/FraudDetection/Dialog3";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
-// Dữ liệu mẫu
-const sampleData = [
-  { id: 1, mssv: "21127001", name: "Nguyễn Văn A", score: 10, timeTaken: "10m22s", deviation: "24m38s", reason: "Làm quá nhanh so với trung bình" },
-  { id: 2, mssv: "21127002", name: "Nguyễn Văn B", score: 10, timeTaken: "09m15s", deviation: "25m45s", reason: "Làm quá nhanh so với trung bình" },
-];
 
 const FraudDetection = () => {
   // const [loading, setLoading] = useState(false);
@@ -161,6 +156,7 @@ const FraudDetection = () => {
 
   const handleChosingQuiz = (QuizIdChosen) => {
     if (QuizIdChosen === 'import') {
+      console.log("HELLO")
       fileInputRef.current.click();
 
     }
@@ -185,6 +181,7 @@ const FraudDetection = () => {
 
   const handleFileChange = async (e) => {
     // setLoading(true);
+    console.log("FILE CHANGE")
     const file = e.target.files[0];
 
     if (file) {
@@ -195,6 +192,7 @@ const FraudDetection = () => {
       } else {
         toast.error("Có lỗi xảy ra, hãy thử lại");
       }
+       e.target.value = null;
       // setLoading(false);
     }
   };
