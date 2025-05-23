@@ -8,14 +8,14 @@ import {
   TableRow,
 } from "@mui/material";
 import { TableWrapper } from "../Styles/Styles";
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Fragment } from "react";
 
 const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true }) => {
   const cellStyle = {
     fontSize: "16px",
-    textAlign: "center",
   };
+
   const headerCellStyle = {
     ...cellStyle,
     fontWeight: "700",
@@ -26,59 +26,69 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
       <TableContainer
         component={Paper}
         className="TableContainer"
-        style={{
-          maxHeight: "550px",
-          overflow: "auto",
-        }}
+        style={{ maxHeight: "550px", overflow: "auto" }}
       >
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell style={headerCellStyle}>STT</TableCell>
+              <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>STT</TableCell>
               {columns.map((col, index) => (
                 <TableCell
                   key={index}
                   style={{
                     ...headerCellStyle,
-                    textAlign: col?.align || "center",
+                    textAlign: col.align || "center",
                   }}
                 >
-                  {col?.label}
+                  {col.label}
                 </TableCell>
               ))}
               {action && (
-                <TableCell style={headerCellStyle}>Chi tiết</TableCell>
+                <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
+                  Chi tiết
+                </TableCell>
               )}
             </TableRow>
           </TableHead>
+
           <TableBody>
-            {filteredRows?.length > 0 ?
-              <Fragment>{filteredRows?.map((row, index) => (
-                <TableRow key={row.classId}>
-                  <TableCell style={{ textAlign: "left" }}>{index + 1}</TableCell>
+            {filteredRows?.length > 0 ? (
+              filteredRows.map((row, index) => (
+                <TableRow key={row.studentId || index}>
+                  <TableCell style={{ ...cellStyle, textAlign: "center" }}>
+                    {index + 1}
+                  </TableCell>
+
                   {columns.map((col, idx) => (
-                    <TableCell key={idx} style={{ textAlign: col.align || "left" }}>
-                      {row[col.id]}
+                    <TableCell
+                      key={idx}
+                      style={{ ...cellStyle, textAlign: col.align || "center" }}
+                    >
+                      {row[col.id] != null ? row[col.id] : "--"}
                     </TableCell>
                   ))}
-                  {action && <TableCell style={{ textAlign: "center" }}>
-                    <VisibilityIcon
-                      color="primary"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => handleActions(row.classId)} />
-                  </TableCell>}
-                </TableRow>
-              ))}</Fragment> :
 
+                  {action && (
+                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>
+                      <VisibilityIcon
+                        color="primary"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handleActions(row.studentId)}
+                      />
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length + 2}
-                  style={{ ...cellStyle, padding: "20px" }}
+                  colSpan={columns.length + (action ? 2 : 1)}
+                  style={{ ...cellStyle, padding: "20px", textAlign: "center" }}
                 >
                   Chưa có dữ liệu để hiển thị
                 </TableCell>
               </TableRow>
-            }
+            )}
           </TableBody>
         </Table>
       </TableContainer>
