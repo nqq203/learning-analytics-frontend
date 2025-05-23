@@ -120,7 +120,7 @@ const StudentContainerLNO = () => {
       <LearningOutComeContainerBody>
         <LearningOutComeHeader>
           <LearningOutComeItemsContainer style={{ width: "100%" }}>
-            <FormControl style={{ width: "550px" }} variant="outlined">
+            <FormControl style={{ width: "100%" }} variant="outlined">
               <TextField
                 id="outlined-basic"
                 label="Tìm kiếm"
@@ -163,9 +163,9 @@ const StudentContainerLNO = () => {
             </FormControl>
           </LearningOutComeItemsContainer>
 
-          <LearningOutComeItemsContainer style={{ width: "6%" }}>
+          {/* <LearningOutComeItemsContainer style={{ width: "6%" }}> */}
             {/* Nút lọc hoặc hành động khác nếu cần */}
-          </LearningOutComeItemsContainer>
+          {/* </LearningOutComeItemsContainer> */}
         </LearningOutComeHeader>
 
         <LineDivider />

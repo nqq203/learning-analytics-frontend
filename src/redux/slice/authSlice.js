@@ -5,6 +5,7 @@ import {
     logout,
     refresh,
 } from '../thunk/authThunk';
+import { jwtDecode } from "jwt-decode";
 
 const initialState = {
     accessToken: null,
@@ -15,6 +16,7 @@ const initialState = {
     loading: false,
     success: false,
     userId: -1,
+    user: null
 }
 
 const authSlice = createSlice({
@@ -57,6 +59,9 @@ const authSlice = createSlice({
                 state.accessToken = action.payload.data.accessToken;
                 state.userId = action.payload.data.userId;
                 state.isAuthenticated = true;
+                const decodedToken = jwtDecode(action.payload.data.accessToken);
+                console.log(decodedToken);
+                state.user = decodedToken.user;
             })
             .addCase(login.rejected, (state, action) => {
                 state.loading = false;
