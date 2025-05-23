@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useState } from "react";
 import RootLayout from "@/pages/layout";
-import "../styles/global.css";
+
 function AuthWrapper({ Component, pageProps }) {
     const router = useRouter();
     const { accessToken,isLoading } = useToken();

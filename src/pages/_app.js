@@ -5,7 +5,6 @@ import { store } from "@/redux/store";
 import "../styles/global.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../styles/global.css";
 import { FilterContextProvider } from "@/context/FilterContext";
 import AuthGuard from "@/components/AuthGuard";
 
