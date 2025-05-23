@@ -24,7 +24,7 @@ import { useDispatch } from "react-redux";
 
 const StudentsList = () => {
   const router = useRouter();
-  const { classId, pathname } = router.query;
+  const { classId } = router.query;
   const [search, setSearch] = useState("");
   const [sortOption, setSortOption] = useState("studentId");
   const [buttonVariant, setButtonVariant] = useState("contained");
@@ -48,9 +48,7 @@ const StudentsList = () => {
           { id: "programName", label: "Hệ đào tạo", align: "left" },
         ]);
       } else {
-        const response = await dispatch(
-          fetchStudentsDetails({ classId })
-        ).unwrap();
+        const response = await dispatch(fetchStudentsDetails({ classId })).unwrap();
         setRows(response?.data?.studentList || []);
         setColumns([
           { id: "studentId", label: "MSSV" },
@@ -76,8 +74,8 @@ const StudentsList = () => {
   };
 
   const filteredRows = rows.filter((row) => {
-    const name = row.fullName || "";
-    const id = row.studentId || "";
+    const name = row.fullName ?? "";
+    const id = row.studentId ?? "";
     return (
       name.toLowerCase().includes(search.toLowerCase()) ||
       id.toLowerCase().includes(search.toLowerCase())
@@ -90,9 +88,9 @@ const StudentsList = () => {
 
   const sortedRows = filteredRows.sort((a, b) => {
     if (sortOption === "studentId") {
-      return a.studentId.localeCompare(b.studentId);
+      return (a.studentId ?? "").localeCompare(b.studentId ?? "");
     }
-    return a.fullName.localeCompare(b.fullName);
+    return (a.fullName ?? "").localeCompare(b.fullName ?? "");
   });
 
   const handleViewDetail = () => {
@@ -109,10 +107,14 @@ const StudentsList = () => {
     router.push(`/analytics/reports-and-statistics/${classId}/charts`);
   };
 
+  const studentCount = sortedRows.length;
+  const averageGrade = (buttonVariant === "outlined")
+    ? (sortedRows.reduce((sum, row) => sum + (row.totalGrade ?? 0), 0) / studentCount || 0).toFixed(2)
+    : 0;
+
   return (
     <Container>
       <Header>
-        {/* Filter for Sorting */}
         <FormControl style={{ width: "20%" }}>
           <InputLabel>Sắp xếp</InputLabel>
           <Select
@@ -124,7 +126,6 @@ const StudentsList = () => {
             <MenuItem value="fullName">Họ và Tên</MenuItem>
           </Select>
         </FormControl>
-        {/* Search */}
         <TextField
           variant="outlined"
           label="Tìm kiếm"
@@ -156,11 +157,14 @@ const StudentsList = () => {
       </Header>
       <BodyWrapper>
         <InformationWrapper>
-          <InformationItem>Số lượng sinh viên: {0}</InformationItem>
-          <InformationItem>Điểm trung bình: {0}</InformationItem>
+          <InformationItem>Số lượng sinh viên: {studentCount}</InformationItem>
+          <InformationItem>Điểm trung bình: {averageGrade}</InformationItem>
         </InformationWrapper>
         <AnalyticsTable
-          filteredRows={sortedRows}
+          filteredRows={sortedRows.map(row => ({
+            ...row,
+            fullName: row.fullName ?? "Không có tên"
+          }))}
           columns={columns}
           handleActions={handleViewClass}
           action={false}
