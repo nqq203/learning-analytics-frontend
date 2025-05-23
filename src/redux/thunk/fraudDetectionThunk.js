@@ -8,7 +8,7 @@ export const fetchClassesByLecturer = createAsyncThunk(
             try{
                 
                 const response = await fraudDetectionApi.fetchClassesByLecturer({userId});
-                console.log("fetchClassesByLecturer: ",response.data);
+                console.log(response.data)
                 return response.data;
             }
             catch(error){
@@ -39,7 +39,7 @@ export const fetchImportQuizFile = createAsyncThunk(
         try{
             const response = await fraudDetectionApi.fetchImportQuizFile({userId, file, class_id, activity_type})
            
-            console.log("Xong fetchImportQuizFilEEEEEEEEEEEEEEEEEEEEEE: ",response.data)
+            console.log("Xong fetchImportQuizFile: ",response.data)
             
             return response.data;
         }
