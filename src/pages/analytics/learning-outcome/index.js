@@ -7,8 +7,11 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  InputAdornment,
+  IconButton, 
   Select,
 } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
 import ClassListLNO from "@/components/LearningOutcome/ClassListLNO";
 import {
   FetchAcademicYearClass,
@@ -97,8 +100,9 @@ const semester = [1, 2, 3];
 const LearningOutcome = () => {
   const { classes, academicYear } = useSelector((state) => state.learningoutcome);
   const dispatch = useDispatch();
+  const [searchResult, setSearchResult] = useState("");
   const router = useRouter();
-
+  const [searchKeyword, setSearchKeyword] = useState("");
   const [classID, setClassID] = useState("");
   const [page, setPage] = useState(1);
   const [amount] = useState(10);
@@ -126,6 +130,7 @@ const LearningOutcome = () => {
         amount,
         semester: chosenSemester,
         academicYear: chosenAcademicYear,
+        search:searchResult
       })
     );
     setIsLoading(false);
@@ -136,6 +141,22 @@ const LearningOutcome = () => {
       setPage((prev) => prev + 1);
     }
   };
+  const handleSearch = (value) => {
+    setSearchKeyword(value);
+  };
+
+  const handleSearchResult = (value) => {
+    setSearchResult(value);
+    setPage(1); // reset page
+    setRows([]); // reset data
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearchResult(searchKeyword);
+    }
+  };
+
 
   const handleChangeSemester = (value) => {
     setChosenSemester(value);
@@ -155,7 +176,7 @@ const LearningOutcome = () => {
 
   useEffect(() => {
     fetchClasses();
-  }, [chosenAcademicYear, chosenSemester, page]);
+  }, [chosenAcademicYear, chosenSemester, page,searchResult]);
 
   useEffect(() => {
     if (page === 1) {
@@ -175,8 +196,49 @@ const LearningOutcome = () => {
     <LearningOutcomesContainer>
       <LearningOutComeContainerBody>
         <LearningOutComeHeader>
+
           <LearningOutComeItemsContainer>
-            <LearningOutComeTabButtons>DANH SÁCH LỚP</LearningOutComeTabButtons>
+            <FormControl style={{ width: "550px" }} variant="outlined">
+                          <TextField
+                            id="outlined-basic"
+                            label="Tìm kiếm"
+                            variant="outlined"
+                            onChange={(e) => handleSearch(e.target.value)}
+                            onKeyDown={handleKeyPress}
+                            InputProps={{
+                              style: {
+                                height: 40,
+                                paddingRight: 0,
+                                fontSize: "0.9rem",
+                                alignItems: "center",
+                              },
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <IconButton
+                                    sx={{
+                                      backgroundColor: "#1976D2",
+                                      borderRadius: "0 4px 4px 0",
+                                      padding: "10px",
+                                      height: "40px",
+                                      '&:hover': {
+                                        backgroundColor: "#1565C0",
+                                      },
+                                    }}
+                                    onClick={() => handleSearchResult(searchKeyword)}
+                                  >
+                                    <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
+                                  </IconButton>
+                                </InputAdornment>
+                              ),
+                            }}
+                            InputLabelProps={{
+                              style: {
+                                lineHeight: "40px",
+                                top: "-15px",
+                              },
+                            }}
+                          />
+                        </FormControl>
           </LearningOutComeItemsContainer>
 
           <LearningOutComeItemsContainer>
@@ -212,7 +274,7 @@ const LearningOutcome = () => {
               </Select>
             </FormControl>
 
-            <NextBtn>Tiếp tục</NextBtn>
+            
           </LearningOutComeItemsContainer>
         </LearningOutComeHeader>
 

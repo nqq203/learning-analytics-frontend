@@ -47,8 +47,9 @@ const LearningOutcomeApi = {
     page,
     amount,
     semester,
-    academicYear
-  }) => axios.get(`${API_URL}/learning-outcome/classes?instructor_id=${userId}&page=${page}&amount=${amount}&semester=${semester}&academic_year=${academicYear}`),
+    academicYear,
+    search
+  }) => axios.get(`${API_URL}/learning-outcome/classes?instructor_id=${userId}&page=${page}&amount=${amount}&semester=${semester}&academic_year=${academicYear}&search=${search}`),
 
   FetchStudentSearch:({
     classId,
