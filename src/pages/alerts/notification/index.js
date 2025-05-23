@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import AlertsTable from '@/components/Analytics/Table/Table';
 import { Divider } from '@mui/material';
+import { toast } from 'react-toastify';
 
 const Alerts = () => {
   const router = useRouter();
@@ -53,7 +54,7 @@ const Alerts = () => {
   // Handlers
   const handleSendWarning = () => setOpenDialog(true);
   const handleConfirmWarning = () => {
-    alert('Đã gửi cảnh cáo!');
+    toast.success('Đã gửi cảnh cáo!');
     setWarningCount(prev => prev + 1);
     setOpenDialog(false);
   };

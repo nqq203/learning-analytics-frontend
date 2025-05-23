@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import StudentList from "@/components/PredictionAchievements/StudentList";
+import { toast } from "react-toastify";
 
 const LearningOutcomesContainer = styled.div`
     margin: auto;
@@ -65,97 +66,96 @@ const LineDivider = styled.div`
 
 
 
-const TableHeader = ["MSSV","Họ tên","Lớp","Môn","Khóa","Chi tiết"];
+const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa", "Chi tiết"];
 const TableContent = [{
-  "MSSV":"21125434",
+  "MSSV": "21125434",
   "Name": "Nguyễn Văn A",
-  "Class":"21CLC08",
-  "Subject":"Cơ sở dữ liệu nâng cao",
-  "ClassOf":"2021"
+  "Class": "21CLC08",
+  "Subject": "Cơ sở dữ liệu nâng cao",
+  "ClassOf": "2021"
 },
 {
-  "MSSV":"21125435",
+  "MSSV": "21125435",
   "Name": "Nguyễn Văn B",
-  "Class":"21CLC09",
-  "Subject":"Cơ sở dữ liệu nâng cao",
-  "ClassOf":"2021"
+  "Class": "21CLC09",
+  "Subject": "Cơ sở dữ liệu nâng cao",
+  "ClassOf": "2021"
 },
 {
-  "MSSV":"21125435",
+  "MSSV": "21125435",
   "Name": "Nguyễn Văn C",
-  "Class":"21CLC10",
-  "Subject":"Cơ sở dữ liệu nâng cao",
-  "ClassOf":"2021"
+  "Class": "21CLC10",
+  "Subject": "Cơ sở dữ liệu nâng cao",
+  "ClassOf": "2021"
 }
 ]
 
 const SubjectStudentContainer = () => {
-    const userId = "12456";
-    
-    const router = useRouter();
-    // const { classID, subjectID } = router.query;
-    const [chosenStudent,setChosenStudent]  = useState([])
+  const userId = "12456";
 
-    // useEffect(() => {
-    //   console.log( `CHOSEN: `,chosenStudent)
-    // }, [chosenStudent]);
+  const router = useRouter();
+  // const { classID, subjectID } = router.query;
+  const [chosenStudent, setChosenStudent] = useState([])
 
-    const handleNav = ()=>{
-      if(chosenStudent.length===0){
-        
-        alert("Chọn ít nhất một sinh viên")
-      }
-      else{
-        const encodedData = encodeURIComponent(JSON.stringify(chosenStudent));
-        //router.push(`/predictions/predict-achievements/improvement-suggestion?data=${encodedData}`);
-        //const encodedData = encodeURIComponent(JSON.stringify(chosenStudent));
-        router.push(`/predictions/predict-achievements/send-noti?data=${encodedData}`);
-      }
+  // useEffect(() => {
+  //   console.log( `CHOSEN: `,chosenStudent)
+  // }, [chosenStudent]);
+
+  const handleNav = () => {
+    if (chosenStudent.length === 0) {
+      toast.warning("Chọn ít nhất một sinh viên")
     }
+    else {
+      const encodedData = encodeURIComponent(JSON.stringify(chosenStudent));
+      //router.push(`/predictions/predict-achievements/improvement-suggestion?data=${encodedData}`);
+      //const encodedData = encodeURIComponent(JSON.stringify(chosenStudent));
+      router.push(`/predictions/predict-achievements/send-noti?data=${encodedData}`);
+    }
+  }
 
-    return (
-      < LearningOutcomesContainer >
+  return (
+    < LearningOutcomesContainer >
 
 
       <LearningOutComeContainerBody>
         <LearningOutComeHeader>
-            <LearningOutComeItemsContainer>
+          <LearningOutComeItemsContainer>
 
 
-                <FormControl style={{ minWidth: "40rem" }} variant="outlined">
-                        <TextField id="outlined-basic" label="Tìm kiếm" variant="outlined" />
-                </FormControl>
+            <FormControl style={{ minWidth: "40rem" }} variant="outlined">
+              <TextField id="outlined-basic" label="Tìm kiếm" variant="outlined" />
+            </FormControl>
 
-                <FormControl style={{ minWidth: "12rem" }} variant="outlined">
-                    <InputLabel>Khóa</InputLabel>
-                    <Select  label="Chọn khóa">
-                        <MenuItem value="class">21</MenuItem>
-                        <MenuItem value="course">22</MenuItem>
-                        <MenuItem value="subject">23</MenuItem>
-                    </Select>
-                </FormControl>
-            </LearningOutComeItemsContainer>
+            <FormControl style={{ minWidth: "12rem" }} variant="outlined">
+              <InputLabel>Khóa</InputLabel>
+              <Select label="Chọn khóa">
+                <MenuItem value="class">21</MenuItem>
+                <MenuItem value="course">22</MenuItem>
+                <MenuItem value="subject">23</MenuItem>
+              </Select>
+            </FormControl>
+          </LearningOutComeItemsContainer>
 
-            <LearningOutComeItemsContainer>
+          <LearningOutComeItemsContainer>
 
-                <AnalyticsBtn>Lọc</AnalyticsBtn>
-                <AnalyticsBtn onClick= {()=>handleNav()}>Dự đoán</AnalyticsBtn>
+            <AnalyticsBtn>Lọc</AnalyticsBtn>
+            <AnalyticsBtn onClick={() => handleNav()}>Dự đoán</AnalyticsBtn>
 
 
-            </LearningOutComeItemsContainer>
+          </LearningOutComeItemsContainer>
 
 
         </LearningOutComeHeader>
 
 
         <LineDivider></LineDivider>
-        
-        <StudentList TableHeader = {TableHeader} TableContent ={TableContent}setChosenStudentOuter={setChosenStudent} > </StudentList>
-        
 
-       </LearningOutComeContainerBody>
-      </LearningOutcomesContainer>
-    );
-  };
-  
-  export default SubjectStudentContainer;
+        <StudentList TableHeader={TableHeader} TableContent={TableContent} setChosenStudentOuter={setChosenStudent} > </StudentList>
+
+
+      </LearningOutComeContainerBody>
+    </LearningOutcomesContainer>
+  );
+};
+
+export default SubjectStudentContainer;

@@ -33,10 +33,14 @@ const NoContent = styled.div`
 
 
 export default function StudentListLNO({TableContent,TableHeader,setStudentID,onScrollEnd }){
+
+    useEffect(()=>{
+        console.log("Table content: ",TableContent)
+    },[TableContent])
     const handleScroll = (e) => {
         const { scrollTop, scrollHeight, clientHeight } = e.target;
         if (scrollTop + clientHeight >= scrollHeight - 50) {
-          onScrollEnd(); // Gọi hàm callback khi gần chạm đáy
+          onScrollEnd(); 
         }
       };
 

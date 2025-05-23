@@ -31,7 +31,7 @@ const LearningOutComeHeader = styled.div`
 const LearningOutComeItemsContainer = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  gap: 1rem;
 `;
 
 const LineDivider = styled.div`
@@ -43,7 +43,7 @@ const LineDivider = styled.div`
 const DropdownTitleContainer = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 0.5rem;
+  
   align-items: center;
 `;
 
@@ -56,6 +56,9 @@ export default function StudentAnalytics() {
   const { courseInfo, grades, studentInfo } = useSelector(
     (state) => state.learningoutcome
   );
+  useEffect(()=>{
+    console.log('Thong tin:',courseInfo, grades, studentInfo)
+  },[courseInfo, grades, studentInfo])
   const dispatch = useDispatch();
   const router = useRouter();
   const { classID, studentID } = router.query;
@@ -102,7 +105,8 @@ export default function StudentAnalytics() {
         <LearningOutComeHeader>
           <LearningOutComeItemsContainer>
             <DropdownTitleContainer>
-              <FormControl sx={{ minWidth: 300, height: 40 }}>
+
+              <FormControl sx={{ minWidth: 300}}>
                 <InputLabel id="course-label" sx={{ fontSize: "1rem" }}>
                   Môn
                 </InputLabel>
@@ -110,10 +114,7 @@ export default function StudentAnalytics() {
                   labelId="course-label"
                   value={courseInfo_Student.courseName || ""}
                   label="Môn"
-                  sx={{
-                    height: 40,
-                    fontSize: "1rem",
-                  }}
+                 
                 >
                   <MenuItem value={courseInfo_Student.courseName || ""}>
                     {courseInfo_Student.courseName || "Chưa có dữ liệu"}
@@ -123,7 +124,7 @@ export default function StudentAnalytics() {
             </DropdownTitleContainer>
 
             <DropdownTitleContainer>
-              <FormControl sx={{ minWidth: 300, height: 40 }}>
+              <FormControl sx={{ minWidth: 300}}>
                 <InputLabel id="class-label" sx={{ fontSize: "1rem" }}>
                   Lớp
                 </InputLabel>
@@ -131,10 +132,7 @@ export default function StudentAnalytics() {
                   labelId="class-label"
                   value={courseInfo_Student.className || ""}
                   label="Lớp"
-                  sx={{
-                    height: 40,
-                    fontSize: "1rem",
-                  }}
+                  
                 >
                   <MenuItem value={courseInfo_Student.className || ""}>
                     {courseInfo_Student.className || "Chưa có dữ liệu"}
@@ -144,7 +142,7 @@ export default function StudentAnalytics() {
             </DropdownTitleContainer>
 
             <DropdownTitleContainer>
-              <FormControl sx={{ minWidth: 300, height: 40 }} disabled>
+              <FormControl sx={{ minWidth: 300 }} disabled>
                 <InputLabel id="student-label" sx={{ fontSize: "1rem" }}>
                   MSSV - Họ tên
                 </InputLabel>
@@ -153,10 +151,7 @@ export default function StudentAnalytics() {
                   id="student-select"
                   value={studentInfo?.studentId || ""}
                   label="MSSV - Họ tên"
-                  sx={{
-                    height: 40,
-                    fontSize: "1rem",
-                  }}
+                 
                 >
                   <MenuItem value={studentInfo?.studentId || ""}>
                     {`${studentInfo?.studentId || ""} - ${studentInfo?.fullName || ""}`}
@@ -170,7 +165,7 @@ export default function StudentAnalytics() {
         <LineDivider />
 
         <StudentResultLNO
-          userId={userID}
+          userId={userId}
           studentID={studentID}
           classID={classID}
           studentInfo={studentInfo_Student}
