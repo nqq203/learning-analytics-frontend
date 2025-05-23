@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import { TableWrapper } from "../Styles/Styles";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Fragment } from "react";
 
 const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true }) => {
   const cellStyle = {
@@ -54,7 +53,7 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
           <TableBody>
             {filteredRows?.length > 0 ? (
               filteredRows.map((row, index) => (
-                <TableRow key={row.studentId || index}>
+                <TableRow key={row.classId || index}>
                   <TableCell style={{ ...cellStyle, textAlign: "center" }}>
                     {index + 1}
                   </TableCell>
@@ -73,7 +72,7 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
                       <VisibilityIcon
                         color="primary"
                         style={{ cursor: "pointer" }}
-                        onClick={() => handleActions(row.studentId)}
+                        onClick={() => handleActions(row.classId)}
                       />
                     </TableCell>
                   )}
