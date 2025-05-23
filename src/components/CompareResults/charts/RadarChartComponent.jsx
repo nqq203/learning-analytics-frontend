@@ -19,11 +19,11 @@ export default function RadarChartComponent({ data, getDisplayName, getClassColo
   ];
 
   return (
-    <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
+    <div style={{ display: "flex", gap: "80px", flexWrap: "wrap", justifyContent: "center" }}>
       {data.map((item, index) => (
         <div key={index} style={{ width: "300px", height: "300px" }}>
           <ResponsiveContainer width="100%" height="100%">
-            <RadarChart outerRadius={90} data={radarData.map((d) => ({
+            <RadarChart outerRadius={70} data={radarData.map((d) => ({
               subject: d.subject,
               value: item[d.key],
             }))}>

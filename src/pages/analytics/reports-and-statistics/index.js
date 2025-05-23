@@ -68,7 +68,7 @@ const ClassesList = () => {
   };
 
   const handleViewClass = (classId) => {
-    router.push(`/analytics/reports-and-statistics/${btoa(classId)}`);
+    router.push(`/analytics/reports-and-statistics/${classId}`);
   };
 
   useEffect(() => {

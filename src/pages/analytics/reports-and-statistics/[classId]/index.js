@@ -73,7 +73,7 @@ const StudentsList = () => {
 
   const handleViewClass = (studentId) => {
     router.push(
-      `/analytics/reports-and-statistics/${classId}/${btoa(studentId)}`
+      `/analytics/reports-and-statistics/${classId}/${studentId}`
     );
   };
 
