@@ -10,6 +10,8 @@ import {
   InputAdornment,
   IconButton,
   Select,
+  Box,
+  CircularProgress
 } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import ClassListLNO from "@/components/LearningOutcome/ClassListLNO";
@@ -99,7 +101,7 @@ const ClassTableHeader = ["STT", "Lớp", "Khóa", "Môn", "Học Kỳ", "Tín c
 const semester = [1, 2, 3];
 
 const LearningOutcome = () => {
-  const { classes, academicYear } = useSelector((state) => state.learningoutcome);
+  const { classes, academicYear, loading } = useSelector((state) => state.learningoutcome);
   const dispatch = useDispatch();
   const [searchResult, setSearchResult] = useState("");
   const router = useRouter();
@@ -109,7 +111,7 @@ const LearningOutcome = () => {
   const [amount] = useState(10);
   const [chosenAcademicYear, setChosenAcademicYear] = useState("");
   const [chosenSemester, setChosenSemester] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState([]);
   const { accessToken } = useSelector(state => state.auth);
   const userId = useMemo(() => {
@@ -123,7 +125,7 @@ const LearningOutcome = () => {
   }, [accessToken]);
 
   const fetchClasses = async () => {
-    setIsLoading(true);
+    // setIsLoading(true);
     await dispatch(
       fetchFilteredClasses({
         userId: userId,
@@ -134,7 +136,7 @@ const LearningOutcome = () => {
         search: searchResult
       })
     );
-    setIsLoading(false);
+    // setIsLoading(false);
   };
 
   const handleScrollEnd = () => {
@@ -240,9 +242,9 @@ const LearningOutcome = () => {
                 }}
               />
             </FormControl>
-          {/* </LearningOutComeItemsContainer> */}
+            {/* </LearningOutComeItemsContainer> */}
 
-          {/* <LearningOutComeItemsContainer> */}
+            {/* <LearningOutComeItemsContainer> */}
             <FormControl sx={{ minWidth: 200 }} variant="outlined" size="small">
               <InputLabel id="academic-year-label">Khóa</InputLabel>
               <Select
@@ -281,12 +283,31 @@ const LearningOutcome = () => {
 
         <LineDivider />
 
-        <ClassListLNO
-          TableHeader={ClassTableHeader}
-          TableContent={rows}
-          setClassID={setClassID}
-          onScrollEnd={handleScrollEnd}
-        />
+        <Box position="relative">
+          <ClassListLNO
+            TableHeader={ClassTableHeader}
+            TableContent={rows}
+            setClassID={setClassID}
+            onScrollEnd={handleScrollEnd}
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.7)"
+              zIndex={10}
+            >
+              <CircularProgress />
+            </Box>
+          )}
+        </Box>
       </LearningOutComeContainerBody>
     </LearningOutcomesContainer>
   );
