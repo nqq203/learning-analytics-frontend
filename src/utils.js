@@ -32,7 +32,10 @@ export const getTabTitle = (pathname) => {
         return "QUẢN LÝ SINH VIÊN"
     } else if(pathname.startsWith("/data-management/class-management")) {
         return "QUẢN LÝ LỚP HỌC"
-    }  else if (pathname.startsWith("/")) {
+    } else if(pathname.startsWith("/data-management")) {
+        return "QUẢN LÝ DỮ LIỆU"
+    }  
+    else if (pathname.startsWith("/")) {
         return "TRANG CHỦ";
     } 
     
