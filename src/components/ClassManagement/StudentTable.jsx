@@ -11,9 +11,9 @@ import { TableWrapper } from "../Analytics/Styles/Styles";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Fragment } from "react";
-
-const ClassTable = ({ filteredRows, columns, handleDelete,handleEdit,handleViewStudent, action = true }) => {
+import { Fragment, use } from "react";
+import { useEffect } from "react";
+const StudentTable = ({ filteredRows, columns, handleDelete,handleEdit,summary, action = true }) => {
   const cellStyle = {
     fontSize: "16px",
     textAlign: "center",
@@ -22,7 +22,7 @@ const ClassTable = ({ filteredRows, columns, handleDelete,handleEdit,handleViewS
     ...cellStyle,
     fontWeight: "700",
   };
-
+  
   return (
     <TableWrapper className="scroll-view">
       <TableContainer
@@ -55,9 +55,7 @@ const ClassTable = ({ filteredRows, columns, handleDelete,handleEdit,handleViewS
               {action && (
                 <TableCell style={headerCellStyle}>Xóa</TableCell>
               )}
-              {action && (
-                <TableCell style={headerCellStyle}>Chi tiết</TableCell>
-              )}
+              
               
             </TableRow>
 
@@ -75,6 +73,7 @@ const ClassTable = ({ filteredRows, columns, handleDelete,handleEdit,handleViewS
                       {row[col.id]}
                     </TableCell>
                   ))}
+                  
                   {action && <TableCell style={{ textAlign: "center" }}>
                     <EditIcon
                       color="warning"
@@ -89,12 +88,7 @@ const ClassTable = ({ filteredRows, columns, handleDelete,handleEdit,handleViewS
                       onClick={() => handleDelete(row.id)} />
                   </TableCell>}
 
-                  {action && <TableCell style={{ textAlign: "center" }}>
-                    <VisibilityIcon 
-                      color="primary"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => handleViewStudent(row.id)} />
-                  </TableCell>}
+                  
                 </TableRow>
               ))}</Fragment> :
 
@@ -114,4 +108,4 @@ const ClassTable = ({ filteredRows, columns, handleDelete,handleEdit,handleViewS
   );
 };
 
-export default ClassTable;
+export default StudentTable;
