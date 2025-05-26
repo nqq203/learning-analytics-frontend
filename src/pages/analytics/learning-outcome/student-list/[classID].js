@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import StudentListLNO from "@/components/LearningOutcome/StudentListLNO";
 import { useRouter } from "next/router";
-import { TextField, FormControl, InputAdornment, IconButton } from "@mui/material";
+import { TextField, FormControl, InputAdornment, IconButton, Box, CircularProgress } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import { fetchStudentSearch } from "@/redux/thunk/learningoutcomeThunk";
 import { jwtDecode } from "jwt-decode";
@@ -42,7 +42,7 @@ const LineDivider = styled.div`
 const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa", "Chuyên ngành", "Kết Quả", "Chi tiết"];
 
 const StudentContainerLNO = () => {
-  const { studentsOverview, totalRecords } = useSelector(state => state.learningoutcome);
+  const { studentsOverview, totalRecords, loading } = useSelector(state => state.learningoutcome);
   const dispatch = useDispatch();
   const router = useRouter();
   const { classID } = router.query;
@@ -51,7 +51,7 @@ const StudentContainerLNO = () => {
   const [page, setPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchResult, setSearchResult] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState([]);
   const { accessToken } = useSelector(state => state.auth);
 
@@ -79,9 +79,9 @@ const StudentContainerLNO = () => {
   };
 
   const fetchStudentRow = async () => {
-    setIsLoading(true);
+    // setIsLoading(true);
     await dispatch(fetchStudentSearch({ userId: userId, classId: classID, page: page, amount: amount, search: searchResult }));
-    setIsLoading(false);
+    // setIsLoading(false);
   };
 
   const handleScrollEnd = () => {
@@ -120,7 +120,7 @@ const StudentContainerLNO = () => {
       <LearningOutComeContainerBody>
         <LearningOutComeHeader>
           <LearningOutComeItemsContainer style={{ width: "100%" }}>
-            <FormControl style={{ width: "550px" }} variant="outlined">
+            <FormControl style={{ width: "100%" }} variant="outlined">
               <TextField
                 id="outlined-basic"
                 label="Tìm kiếm"
@@ -163,19 +163,38 @@ const StudentContainerLNO = () => {
             </FormControl>
           </LearningOutComeItemsContainer>
 
-          <LearningOutComeItemsContainer style={{ width: "6%" }}>
-            {/* Nút lọc hoặc hành động khác nếu cần */}
-          </LearningOutComeItemsContainer>
+          {/* <LearningOutComeItemsContainer style={{ width: "6%" }}> */}
+          {/* Nút lọc hoặc hành động khác nếu cần */}
+          {/* </LearningOutComeItemsContainer> */}
         </LearningOutComeHeader>
 
         <LineDivider />
 
-        <StudentListLNO
-          TableContent={rows}
-          TableHeader={TableHeader}
-          setStudentID={setStudentID}
-          onScrollEnd={handleScrollEnd}
-        />
+        <Box position="relative">
+          <StudentListLNO
+            TableContent={rows}
+            TableHeader={TableHeader}
+            setStudentID={setStudentID}
+            onScrollEnd={handleScrollEnd}
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.7)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px"/>
+            </Box>
+          )}
+        </Box>
       </LearningOutComeContainerBody>
     </LearningOutcomesContainer>
   );

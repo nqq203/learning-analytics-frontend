@@ -8,8 +8,10 @@ import {
   InputLabel,
   MenuItem,
   InputAdornment,
-  IconButton, 
+  IconButton,
   Select,
+  Box,
+  CircularProgress
 } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import ClassListLNO from "@/components/LearningOutcome/ClassListLNO";
@@ -44,6 +46,7 @@ const LearningOutComeItemsContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 20px;
+  width: 100%;
 `;
 
 const LearningOutComeTabButtons = styled.div`
@@ -98,7 +101,7 @@ const ClassTableHeader = ["STT", "Lớp", "Khóa", "Môn", "Học Kỳ", "Tín c
 const semester = [1, 2, 3];
 
 const LearningOutcome = () => {
-  const { classes, academicYear } = useSelector((state) => state.learningoutcome);
+  const { classes, academicYear, loading } = useSelector((state) => state.learningoutcome);
   const dispatch = useDispatch();
   const [searchResult, setSearchResult] = useState("");
   const router = useRouter();
@@ -108,7 +111,7 @@ const LearningOutcome = () => {
   const [amount] = useState(10);
   const [chosenAcademicYear, setChosenAcademicYear] = useState("");
   const [chosenSemester, setChosenSemester] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState([]);
   const { accessToken } = useSelector(state => state.auth);
   const userId = useMemo(() => {
@@ -122,7 +125,7 @@ const LearningOutcome = () => {
   }, [accessToken]);
 
   const fetchClasses = async () => {
-    setIsLoading(true);
+    // setIsLoading(true);
     await dispatch(
       fetchFilteredClasses({
         userId: userId,
@@ -130,10 +133,10 @@ const LearningOutcome = () => {
         amount,
         semester: chosenSemester,
         academicYear: chosenAcademicYear,
-        search:searchResult
+        search: searchResult
       })
     );
-    setIsLoading(false);
+    // setIsLoading(false);
   };
 
   const handleScrollEnd = () => {
@@ -176,7 +179,7 @@ const LearningOutcome = () => {
 
   useEffect(() => {
     fetchClasses();
-  }, [chosenAcademicYear, chosenSemester, page,searchResult]);
+  }, [chosenAcademicYear, chosenSemester, page, searchResult]);
 
   useEffect(() => {
     if (page === 1) {
@@ -198,50 +201,50 @@ const LearningOutcome = () => {
         <LearningOutComeHeader>
 
           <LearningOutComeItemsContainer>
-            <FormControl style={{ width: "550px" }} variant="outlined">
-                          <TextField
-                            id="outlined-basic"
-                            label="Tìm kiếm"
-                            variant="outlined"
-                            onChange={(e) => handleSearch(e.target.value)}
-                            onKeyDown={handleKeyPress}
-                            InputProps={{
-                              style: {
-                                height: 40,
-                                paddingRight: 0,
-                                fontSize: "0.9rem",
-                                alignItems: "center",
-                              },
-                              endAdornment: (
-                                <InputAdornment position="end">
-                                  <IconButton
-                                    sx={{
-                                      backgroundColor: "#1976D2",
-                                      borderRadius: "0 4px 4px 0",
-                                      padding: "10px",
-                                      height: "40px",
-                                      '&:hover': {
-                                        backgroundColor: "#1565C0",
-                                      },
-                                    }}
-                                    onClick={() => handleSearchResult(searchKeyword)}
-                                  >
-                                    <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
-                                  </IconButton>
-                                </InputAdornment>
-                              ),
-                            }}
-                            InputLabelProps={{
-                              style: {
-                                lineHeight: "40px",
-                                top: "-15px",
-                              },
-                            }}
-                          />
-                        </FormControl>
-          </LearningOutComeItemsContainer>
+            <FormControl style={{ width: "100%" }} variant="outlined">
+              <TextField
+                id="outlined-basic"
+                label="Tìm kiếm"
+                variant="outlined"
+                onChange={(e) => handleSearch(e.target.value)}
+                onKeyDown={handleKeyPress}
+                InputProps={{
+                  style: {
+                    height: 40,
+                    paddingRight: 0,
+                    fontSize: "0.9rem",
+                    alignItems: "center",
+                  },
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        sx={{
+                          backgroundColor: "#1976D2",
+                          borderRadius: "0 4px 4px 0",
+                          padding: "10px",
+                          height: "40px",
+                          '&:hover': {
+                            backgroundColor: "#1565C0",
+                          },
+                        }}
+                        onClick={() => handleSearchResult(searchKeyword)}
+                      >
+                        <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                InputLabelProps={{
+                  style: {
+                    lineHeight: "40px",
+                    top: "-15px",
+                  },
+                }}
+              />
+            </FormControl>
+            {/* </LearningOutComeItemsContainer> */}
 
-          <LearningOutComeItemsContainer>
+            {/* <LearningOutComeItemsContainer> */}
             <FormControl sx={{ minWidth: 200 }} variant="outlined" size="small">
               <InputLabel id="academic-year-label">Khóa</InputLabel>
               <Select
@@ -274,18 +277,37 @@ const LearningOutcome = () => {
               </Select>
             </FormControl>
 
-            
+
           </LearningOutComeItemsContainer>
         </LearningOutComeHeader>
 
         <LineDivider />
 
-        <ClassListLNO
-          TableHeader={ClassTableHeader}
-          TableContent={rows}
-          setClassID={setClassID}
-          onScrollEnd={handleScrollEnd}
-        />
+        <Box position="relative">
+          <ClassListLNO
+            TableHeader={ClassTableHeader}
+            TableContent={rows}
+            setClassID={setClassID}
+            onScrollEnd={handleScrollEnd}
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.7)"
+              zIndex={10}
+            >
+              <CircularProgress />
+            </Box>
+          )}
+        </Box>
       </LearningOutComeContainerBody>
     </LearningOutcomesContainer>
   );
