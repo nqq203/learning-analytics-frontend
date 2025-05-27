@@ -312,7 +312,7 @@ const Sidebar = ({
                   "/analytics/reports-and-statistics"
                 )}
               >
-                BIỂU ĐỒ VÀ BÁO CÁO
+                THEO SINH VIÊN
               </NavText>
             </SubNavItem>
           </Link>
@@ -336,7 +336,7 @@ const Sidebar = ({
                   "/analytics/learning-outcome"
                 )}
               >
-                KẾT QUẢ CHI TIẾT
+                THEO LỚP
               </NavText>
             </SubNavItem>
           </Link>
@@ -352,7 +352,7 @@ const Sidebar = ({
                 $isMobile={isMobile}
                 $active={router.pathname.startsWith("/analytics/compare")}
               >
-                SO SÁNH KQ HỌC TẬP
+                THEO MÔN
               </NavText>
             </SubNavItem>
           </Link>
