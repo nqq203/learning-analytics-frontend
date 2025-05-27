@@ -28,17 +28,17 @@ const CompareResult = ({
   loading,
 }) => {
   const [chartType, setChartType] = useState("bar");
+
   if (loading) {
     return (
-      <Card
-        sx={{ mt: 4, maxWidth: 800, mx: "auto", py: 5, textAlign: "center" }}
-      >
+      <Card sx={{ mt: 4, maxWidth: 800, mx: "auto", py: 5, textAlign: "center" }}>
         <CircularProgress color="primary" />
         <Typography sx={{ mt: 2 }}>Đang tải dữ liệu...</Typography>
       </Card>
     );
   }
-  if (!data) {
+
+  if (!data || Object.keys(data).length === 0) {
     return (
       <Card sx={{ mt: 4, maxWidth: 800, mx: "auto" }}>
         <CardContent>
@@ -64,6 +64,16 @@ const CompareResult = ({
   const handleChangeTab = (event, newValue) => {
     setChartType(newValue);
   };
+
+  const sanitizedData = Object.values(data).map((item) => ({
+    ...item,
+    midtermAvg: Number(item.midtermAvg) || 0,
+    practiceAvg: Number(item.practiceAvg) || 0,
+    projectAvg: Number(item.projectAvg) || 0,
+    finalAvg: Number(item.finalAvg) || 0,
+    totalAvg: Number(item.totalAvg) || 0,
+    totalStudents: Number(item.totalStudents) || 0,
+  }));
 
   return (
     <Card
@@ -143,7 +153,7 @@ const CompareResult = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {Object.values(data).map((item, index) => (
+              {sanitizedData.map((item, index) => (
                 <TableRow
                   key={index}
                   sx={{
@@ -153,25 +163,25 @@ const CompareResult = ({
                 >
                   <TableCell>
                     {mode === "class"
-                      ? item.class_name || "N/A"
-                      : item.class_name?.match(/K\d+/)?.[0] || "N/A"}
+                      ? item.className || "N/A"
+                      : item.className?.match(/K\d+/)?.[0] || "N/A"}
                   </TableCell>
                   {mode === "class" && (
-                    <TableCell>{item.course_name}</TableCell>
+                    <TableCell>{item.courseName || "N/A"}</TableCell>
                   )}
-                  <TableCell>{item.midterm_avg}</TableCell>
-                  <TableCell>{item.practice_avg}</TableCell>
-                  <TableCell>{item.project_avg}</TableCell>
-                  <TableCell>{item.final_avg}</TableCell>
-                  <TableCell>{item.total_avg}</TableCell>
-                  <TableCell>{item.total_students}</TableCell>
+                  <TableCell>{item.midtermAvg}</TableCell>
+                  <TableCell>{item.practiceAvg}</TableCell>
+                  <TableCell>{item.projectAvg}</TableCell>
+                  <TableCell>{item.finalAvg}</TableCell>
+                  <TableCell>{item.totalAvg}</TableCell>
+                  <TableCell>{item.totalStudents}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
 
-        {/* Charts*/}
+        {/* Charts */}
         <Box sx={{ width: "100%", mt: 4 }}>
           <Tabs
             value={chartType}
@@ -188,8 +198,8 @@ const CompareResult = ({
           <Box sx={{ mt: 2 }}>
             <ScoreComparisonCharts
               chartType={chartType}
-              data={Object.values(data)}
-              getDisplayName={(item) => item.class_name}
+              data={sanitizedData}
+              getDisplayName={(item) => item.className}
               getClassColor={(index) => {
                 const colors = [
                   "#8884d8",

@@ -1,3 +1,4 @@
+import { academicRankData, subjects } from "@/components/Dashboard/charts/constant";
 import {
   Box,
   Card,
@@ -26,7 +27,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { academicRankData, subjects } from "../constant";
 
 export function AcademicRankChart({ data }) {
   const [subject, setSubject] = useState("");
