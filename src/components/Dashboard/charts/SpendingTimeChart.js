@@ -19,7 +19,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { spendingTimeChartData } from "../constant";
+import { spendingTimeChartData } from "./constant";
+
 
 export function SpendingTimeChart({ data }) {
   return (
