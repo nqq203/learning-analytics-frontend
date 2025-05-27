@@ -7,9 +7,10 @@ import { toggleSidebar as toggleGlobalSidebar } from "../redux/slice/sidebarSlic
 import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
+import HomeIcon from "@mui/icons-material/Home";
 import BatchPredictionIcon from "@mui/icons-material/BatchPrediction";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
-import AddchartIcon from '@mui/icons-material/Addchart';
+import AddchartIcon from "@mui/icons-material/Addchart";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Collapse } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
@@ -196,7 +197,7 @@ const Sidebar = ({
   const { isFetch } = useSelector((state) => state.sidebar);
   const [openStatistic, setOpenStatistic] = useState(false);
   const [openPrediction, setOpenPrediction] = useState(false);
-  
+
   const handleToggleStatistic = () => {
     if (collapsed) toggleSidebar();
 
@@ -208,7 +209,7 @@ const Sidebar = ({
 
     setOpenPrediction((prev) => !prev);
   };
- 
+
   const toggleSidebar = () => {
     setCollapsed((prev) => !prev);
     dispatch(toggleGlobalSidebar(!collapsed));
@@ -253,7 +254,7 @@ const Sidebar = ({
           onClick={toggleProps}
         >
           <NavIcon>
-            <SpaceDashboardIcon />
+            <HomeIcon />
           </NavIcon>
           <NavText
             $collapsed={collapsed}
@@ -261,6 +262,25 @@ const Sidebar = ({
             $active={router.pathname === "/"}
           >
             {"TRANG CHỦ"}
+          </NavText>
+        </NavItem>
+      </Link>
+      <Link href="/dashboard" passHref style={{ width: "100%" }}>
+        <NavItem
+          $collapsed={collapsed}
+          $active={router.pathname.startsWith("/dashboard")}
+          $isMobile={isMobile}
+          onClick={toggleProps}
+        >
+          <NavIcon>
+            <SpaceDashboardIcon />
+          </NavIcon>
+          <NavText
+            $collapsed={collapsed}
+            $isMobile={isMobile}
+            $active={router.pathname.startsWith("/dashboard")}
+          >
+            DASHBOARD
           </NavText>
         </NavItem>
       </Link>
@@ -455,10 +475,6 @@ const Sidebar = ({
       </Link>
       */}
 
-
-
-      
-      
       <Link href="/data-management" passHref style={{ width: "100%" }}>
         <NavItem
           $collapsed={collapsed}
