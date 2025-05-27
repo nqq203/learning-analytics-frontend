@@ -7,8 +7,10 @@ import { toggleSidebar as toggleGlobalSidebar } from "../redux/slice/sidebarSlic
 import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
+import HomeIcon from "@mui/icons-material/Home";
 import BatchPredictionIcon from "@mui/icons-material/BatchPrediction";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+import AddchartIcon from "@mui/icons-material/Addchart";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Collapse } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
@@ -195,7 +197,7 @@ const Sidebar = ({
   const { isFetch } = useSelector((state) => state.sidebar);
   const [openStatistic, setOpenStatistic] = useState(false);
   const [openPrediction, setOpenPrediction] = useState(false);
-  const [openDataManagement, setOpenDataManagement] = useState(false);
+
   const handleToggleStatistic = () => {
     if (collapsed) toggleSidebar();
 
@@ -207,10 +209,7 @@ const Sidebar = ({
 
     setOpenPrediction((prev) => !prev);
   };
-  const handleToggleDataManagement = () => {
-    if (collapsed) toggleSidebar();
-    setOpenDataManagement((prev) => !prev);
-  };
+
   const toggleSidebar = () => {
     setCollapsed((prev) => !prev);
     dispatch(toggleGlobalSidebar(!collapsed));
@@ -255,7 +254,7 @@ const Sidebar = ({
           onClick={toggleProps}
         >
           <NavIcon>
-            <SpaceDashboardIcon />
+            <HomeIcon />
           </NavIcon>
           <NavText
             $collapsed={collapsed}
@@ -263,6 +262,25 @@ const Sidebar = ({
             $active={router.pathname === "/"}
           >
             {"TRANG CHỦ"}
+          </NavText>
+        </NavItem>
+      </Link>
+      <Link href="/dashboard" passHref style={{ width: "100%" }}>
+        <NavItem
+          $collapsed={collapsed}
+          $active={router.pathname.startsWith("/dashboard")}
+          $isMobile={isMobile}
+          onClick={toggleProps}
+        >
+          <NavIcon>
+            <SpaceDashboardIcon />
+          </NavIcon>
+          <NavText
+            $collapsed={collapsed}
+            $isMobile={isMobile}
+            $active={router.pathname.startsWith("/dashboard")}
+          >
+            DASHBOARD
           </NavText>
         </NavItem>
       </Link>
@@ -314,7 +332,7 @@ const Sidebar = ({
                   "/analytics/reports-and-statistics"
                 )}
               >
-                BIỂU ĐỒ VÀ BÁO CÁO
+                THEO SINH VIÊN
               </NavText>
             </SubNavItem>
           </Link>
@@ -338,7 +356,7 @@ const Sidebar = ({
                   "/analytics/learning-outcome"
                 )}
               >
-                KẾT QUẢ CHI TIẾT
+                THEO LỚP
               </NavText>
             </SubNavItem>
           </Link>
@@ -354,7 +372,7 @@ const Sidebar = ({
                 $isMobile={isMobile}
                 $active={router.pathname.startsWith("/analytics/compare")}
               >
-                SO SÁNH KQ HỌC TẬP
+                THEO MÔN
               </NavText>
             </SubNavItem>
           </Link>
@@ -457,109 +475,25 @@ const Sidebar = ({
       </Link>
       */}
 
-      <ExpandableContainer $open={openDataManagement}>
-        {/* Data Management Tab */}
-
+      <Link href="/data-management" passHref style={{ width: "100%" }}>
         <NavItem
           $collapsed={collapsed}
           $active={router.pathname.startsWith("/data-management")}
           $isMobile={isMobile}
-          onClick={handleToggleDataManagement}
+          onClick={toggleProps}
         >
           <NavIcon>
-            <BatchPredictionIcon />
+            <AddchartIcon />
           </NavIcon>
-
           <NavText
             $collapsed={collapsed}
             $isMobile={isMobile}
             $active={router.pathname.startsWith("/data-management")}
           >
-            QUẢN LÝ DỮ LIỆU
+            {"QUẢN LÝ"}
           </NavText>
-          {!collapsed && (
-            <DropdownItem>
-              {openDataManagement ? <ExpandLess /> : <ExpandMore />}
-            </DropdownItem>
-          )}
         </NavItem>
-
-        {/* Predictions Collapsed */}
-        <Collapse in={openDataManagement} timeout="auto" unmountOnExit>
-          <Link
-            href="/data-management/file-management"
-            passHref
-            style={{ width: "100%" }}
-          >
-            <SubNavItem
-              $collapsed={collapsed}
-              $active={router.pathname.startsWith(
-                "/data-management/file-management"
-              )}
-              $isMobile={isMobile}
-              // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
-            >
-              <NavText
-                $collapsed={collapsed}
-                $isMobile={isMobile}
-                $active={router.pathname.startsWith(
-                  "/data-management/file-management"
-                )}
-              >
-                QUẢN LÝ TẬP TIN
-              </NavText>
-            </SubNavItem>
-          </Link>
-
-          <Link
-            href="/data-management/student-management"
-            passHref
-            style={{ width: "100%" }}
-          >
-            <SubNavItem
-              $collapsed={collapsed}
-              $active={router.pathname.startsWith(
-                "/data-management/student-management"
-              )}
-              $isMobile={isMobile}
-            >
-              <NavText
-                $collapsed={collapsed}
-                $isMobile={isMobile}
-                $active={router.pathname.startsWith(
-                  "/data-management/student-management"
-                )}
-              >
-                QUẢN LÝ SINH VIÊN
-              </NavText>
-            </SubNavItem>
-          </Link>
-
-          <Link
-            href="/data-management/class-management"
-            passHref
-            style={{ width: "100%" }}
-          >
-            <SubNavItem
-              $collapsed={collapsed}
-              $active={router.pathname.startsWith(
-                "/data-management/class-management"
-              )}
-              $isMobile={isMobile}
-            >
-              <NavText
-                $collapsed={collapsed}
-                $isMobile={isMobile}
-                $active={router.pathname.startsWith(
-                  "/data-management/class-management"
-                )}
-              >
-                QUẢN LÝ LỚP HỌC
-              </NavText>
-            </SubNavItem>
-          </Link>
-        </Collapse>
-      </ExpandableContainer>
+      </Link>
 
       {/* Section Avatar & User Name ở Bottom */}
       <UserProfileSection>

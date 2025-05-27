@@ -16,140 +16,101 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Checkbox,
-  FormControlLabel,
 } from "@mui/material";
-import CompareResult from "./CompareResult"; 
-import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
+import CompareResult from "./CompareResult";
 import { useDispatch, useSelector } from "react-redux";
-
-const data = {
-  course1: {
-    class_name: "K01",
-    course_name: "Lập trình Web",
-    midterm_avg: 8.5,
-    practice_avg: 7.9,
-    project_avg: 9.1,
-    final_avg: 8.7,
-    total_avg: 8.8,
-    total_students: 30,
-  },
-  course2: {
-    class_name: "K02",
-    course_name: "Cơ sở dữ liệu",
-    midterm_avg: 7.0,
-    practice_avg: 7.5,
-    project_avg: 8.0,
-    final_avg: 7.3,
-    total_avg: 7.6,
-    total_students: 25,
-  },
-  course3: {
-    class_name: "K03",
-    course_name: "Mạng máy tính",
-    midterm_avg: 6.8,
-    practice_avg: 6.5,
-    project_avg: 7.0,
-    final_avg: 6.9,
-    total_avg: 6.8,
-    total_students: 20,
-  },
-};
-
-const fakeClasses = [
-  {
-    no: 1,
-    courseName: "Lập trình Web",
-    className: "K01",
-    academicYear: "2023",
-    totalStudents: 30,
-    passRate: 95,
-  },
-  {
-    no: 2,
-    courseName: "Lập trình Web",
-    className: "K04",
-    academicYear: "2024",
-    totalStudents: 28,
-    passRate: 90,
-  },
-  {
-    no: 3,
-    courseName: "Cơ sở dữ liệu",
-    className: "K02",
-    academicYear: "2023",
-    totalStudents: 25,
-    passRate: 80,
-  },
-  {
-    no: 4,
-    courseName: "Cơ sở dữ liệu",
-    className: "K05",
-    academicYear: "2024",
-    totalStudents: 27,
-    passRate: 85,
-  },
-  {
-    no: 5,
-    courseName: "Mạng máy tính",
-    className: "K03",
-    academicYear: "2023",
-    totalStudents: 20,
-    passRate: 75,
-  },
-  {
-    no: 6,
-    courseName: "Mạng máy tính",
-    className: "K06",
-    academicYear: "2024",
-    totalStudents: 22,
-    passRate: 78,
-  },
-];
+import { jwtDecode } from "jwt-decode";
+import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
+import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk } from "@/redux/thunk/compareThunk";
 
 const Compare = () => {
   const [criteria, setCriteria] = useState("");
-  const dispatch = useDispatch();
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const [isComparing, setIsComparing] = useState(false);
-  const { totalRecords, classes } = useSelector((state) => state.analytics);
-  const { accessToken } = useSelector(state => state.auth);
-    const userId = useMemo(() => {
-      if (!accessToken) return null;
-      try {
-        const { sub } = jwtDecode(accessToken);
-        return sub;
-      } catch {
-        return null;
-      }
-    }, [accessToken]);
 
-  const rows = useMemo(() => {
-    return fakeClasses || [];
-  }, [fakeClasses]);
+  const dispatch = useDispatch();
+  const { compareResults, compareLoading, compareError } = useSelector((state) => state.compare);
+  const { accessToken } = useSelector(state => state.auth);
+  const { classes } = useSelector((state) => state.analytics);
+
+  const userId = useMemo(() => {
+    if (!accessToken) return null;
+    try {
+      const { sub } = jwtDecode(accessToken);
+      return sub;
+    } catch {
+      return null;
+    }
+  }, [accessToken]);
+
+  const rows = useMemo(() => classes || [], [classes]);
 
   const handleCriteriaChange = (e) => {
     const newCriteria = e.target.value;
     setCriteria(newCriteria);
     setSelectedSubject("");
-    setSelectedRows([]); 
+    setSelectedRows([]);
+  };
+
+  const handleSubjectChange = (e) => {
+    setSelectedSubject(e.target.value);
+    setSelectedRows([]);
   };
 
   const handleSelectRow = (rowNo) => {
+    const selectedItem = rows.find(r => r.no === rowNo);
+    if (!selectedItem) return;
+
+    if (criteria === "course") {
+      const courseId = selectedItem.courseId;
+      const currentSelectedItems = rows.filter(r => selectedRows.includes(r.no));
+
+      if (
+        currentSelectedItems.length > 0 &&
+        currentSelectedItems[0].courseId !== courseId
+      ) {
+        alert("Chỉ có thể chọn các lớp thuộc cùng một môn học khi so sánh theo khóa.");
+        return;
+      }
+    }
+
     setSelectedRows((prev) =>
-      prev.includes(rowNo)
-        ? prev.filter((no) => no !== rowNo)
-        : [...prev, rowNo]
+      prev.includes(rowNo) ? prev.filter((no) => no !== rowNo) : [...prev, rowNo]
     );
   };
 
-  const isCompareEnabled = () => {
-    return selectedRows.length >= 2;
-  };
+  const isCompareEnabled = () =>
+    selectedRows.length >= 2 &&
+    (criteria !== "course" || new Set(selectedRows.map(no => {
+      const item = rows.find(r => r.no === no);
+      return item?.courseId;
+    })).size === 1);
 
-  const handleCompareClick = () => {
-    setIsComparing(true);
+  const handleCompareClick = async () => {
+    const selectedItems = rows.filter(row => selectedRows.includes(row.no));
+
+    if (selectedItems.length < 2) {
+      alert("Cần chọn ít nhất 2 lớp hoặc khóa học để so sánh.");
+      return;
+    }
+
+    try {
+      if (criteria === 'class') {
+        const classIds = selectedItems.map(row => String(row.classId));
+        const payload = { class_ids: classIds };
+        console.log(payload)
+        console.log(await dispatch(fetchCompareByClassesThunk(payload)))
+        await dispatch(fetchCompareByClassesThunk(payload));
+      } else if (criteria === 'course') {
+        const cohorts = selectedItems.map(row => String(row.cohort || row.academicYear || ''));
+        const courseId = selectedItems[0].courseId;
+        const payload = { cohorts, course_id: courseId };
+        await dispatch(fetchCompareByCohortsThunk(payload));
+      }
+    } catch (error) {
+      console.error("Lỗi khi gửi yêu cầu so sánh:", error);
+    }
   };
 
   const handleBack = () => {
@@ -157,37 +118,39 @@ const Compare = () => {
   };
 
   useEffect(() => {
-    const fetchClasses = async () => {
-      await dispatch(
-        fetchClassesByLecturer({ userId: userId, page: 1, amount: 10 })
-      );
-    };
-    fetchClasses();
-  }, [dispatch]);
+    console.log(compareResults)
+    if (compareResults && !compareLoading && !compareError) {
+      setIsComparing(true);
+    } else if (compareError) {
+      console.error("Lỗi khi so sánh:", compareError);
+      alert("Đã xảy ra lỗi khi so sánh: " + (compareError.message || ""));
+    }
+  }, [compareResults, compareLoading, compareError]);
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchClassesByLecturer({ userId, page: 1, amount: 10 }));
+    }
+  }, [dispatch, userId]);
 
   if (isComparing) {
-    return <CompareResult data={data} mode="course" onBack={handleBack} />;
+    console.log(compareResults.data)
+    return <CompareResult data={compareResults.data} mode={criteria} onBack={handleBack} />;
   }
 
   return (
     <div style={{ padding: "16px" }}>
       <Grid container spacing={3} alignItems="center">
-        {/* Chọn tiêu chí */}
         <Grid item xs={12} sm={4}>
           <FormControl fullWidth variant="outlined">
             <InputLabel>Tiêu chí</InputLabel>
-            <Select
-              label="Tiêu chí"
-              value={criteria}
-              onChange={handleCriteriaChange}
-            >
+            <Select label="Tiêu chí" value={criteria} onChange={handleCriteriaChange}>
               <MenuItem value="class">Theo Lớp</MenuItem>
               <MenuItem value="course">Theo Khóa</MenuItem>
             </Select>
           </FormControl>
         </Grid>
 
-        {/* Chọn môn học */}
         <Grid item xs={12} sm={4}>
           <FormControl fullWidth variant="outlined">
             <InputLabel>Môn học</InputLabel>
@@ -195,30 +158,18 @@ const Compare = () => {
               label="Môn học"
               value={selectedSubject}
               disabled={!criteria}
-              onChange={(e) => setSelectedSubject(e.target.value)}
+              onChange={handleSubjectChange}
             >
-              {[...new Set(rows.map((item) => item.courseName))].map(
-                (subject) => (
-                  <MenuItem key={subject} value={subject}>
-                    {subject}
-                  </MenuItem>
-                )
-              )}
+              {[...new Set(rows.map((item) => item.courseName))].map((subject) => (
+                <MenuItem key={subject} value={subject}>
+                  {subject}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Grid>
 
-        {/* Nút So sánh */}
-        <Grid
-          item
-          xs={12}
-          sm={4}
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <Grid item xs={12} sm={4} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           <Button
             variant="contained"
             color="primary"
@@ -230,7 +181,6 @@ const Compare = () => {
         </Grid>
       </Grid>
 
-      {/* Table */}
       <Card style={{ marginTop: "32px" }}>
         <CardContent>
           <Typography variant="h6" style={{ padding: "16px", fontWeight: 600 }}>
@@ -240,38 +190,18 @@ const Compare = () => {
             <Table stickyHeader size="medium" aria-label="Danh sách lớp">
               <TableHead>
                 <TableRow>
-                  <TableCell>
-                    <strong>STT</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Môn</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Lớp</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Khóa</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Số sinh viên</strong>
-                  </TableCell>
-                  <TableCell>
-                    <strong>Tỷ lệ đậu (%)</strong>
-                  </TableCell>
-                  {criteria && (
-                    <TableCell>
-                      <strong>Chọn</strong>
-                    </TableCell>
-                  )}
+                  <TableCell><strong>STT</strong></TableCell>
+                  <TableCell><strong>Môn</strong></TableCell>
+                  <TableCell><strong>Lớp</strong></TableCell>
+                  <TableCell><strong>Khóa</strong></TableCell>
+                  <TableCell><strong>Số sinh viên</strong></TableCell>
+                  <TableCell><strong>Tỷ lệ đậu (%)</strong></TableCell>
+                  {criteria && <TableCell><strong>Chọn</strong></TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows
-                  .filter(
-                    (item) =>
-                      item.courseName === selectedSubject ||
-                      selectedSubject === ""
-                  )
+                  .filter(item => selectedSubject === "" || item.courseName === selectedSubject)
                   .map((item, index) => (
                     <TableRow
                       key={item.no}
@@ -279,12 +209,9 @@ const Compare = () => {
                         backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#fff",
                         transition: "background-color 0.3s ease",
                       }}
-                      onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor = "#e3f2fd")
-                      }
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e3f2fd")}
                       onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor =
-                          index % 2 === 0 ? "#fff" : "#f9f9f9")
+                        (e.currentTarget.style.backgroundColor = index % 2 === 0 ? "#fff" : "#f9f9f9")
                       }
                     >
                       <TableCell>{item.no}</TableCell>
@@ -292,17 +219,13 @@ const Compare = () => {
                       <TableCell>{item.className}</TableCell>
                       <TableCell>{item.academicYear}</TableCell>
                       <TableCell>{item.totalStudents}</TableCell>
-                      <TableCell>{item.passRate}</TableCell>
+                      <TableCell>{item.passRate}%</TableCell>
                       {criteria && (
                         <TableCell>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={selectedRows.includes(item.no)}
-                                onChange={() => handleSelectRow(item.no)}
-                              />
-                            }
-                            label=""
+                          <input
+                            type="checkbox"
+                            checked={selectedRows.includes(item.no)}
+                            onChange={() => handleSelectRow(item.no)}
                           />
                         </TableCell>
                       )}

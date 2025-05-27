@@ -1,8 +1,8 @@
-import DashboardPage from "@/components/Dashboard";
+import HomePage from "@/components/HomePage/Home";
 
 export default function Home() {
     return (
-        <DashboardPage></DashboardPage>
+        <HomePage></HomePage>
     );
 }
 
