@@ -29,7 +29,7 @@ const PageWrapper = styled.div`
     min-height: 100vh;
     background: linear-gradient(
         135deg,
-        var(--blue-100) 0%,
+        var(--white) 0%,
         var(--blue-200) 100%
     );
     padding: 1rem;
