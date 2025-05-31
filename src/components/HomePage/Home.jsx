@@ -104,7 +104,7 @@ export default function HomePage() {
         </motion.div>
       </Container>
 
-      <Container maxWidth="lg" sx={{ flexGrow: 1, mt: 4  }}>
+      <Container maxWidth="lg" sx={{ flexGrow: 1, mt: 4 }}>
         <Grid container spacing={2} justifyContent="center">
           {features.map((feature, idx) => {
             const Icon = feature.icon;
@@ -150,19 +150,29 @@ export default function HomePage() {
                       >
                         <Icon fontSize="medium" />
                       </Box>
-                      <Typography
-                        variant="caption"
+                      <Box
                         sx={{
-                          color: feature.colorStart,
-                          fontWeight: 600,
-                          letterSpacing: 1,
-                          textTransform: "uppercase",
+                          display: "inline-block",
+                          px: 1.5,
+                          py: 0.5,
+                          border: `1.5px solid ${feature.colorStart}`,
+                          borderRadius: "999px",
                           mb: 1,
-                          display: "block",
                         }}
                       >
-                        {feature.badge}
-                      </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: feature.colorStart,
+                            fontWeight: 600,
+                            letterSpacing: 1,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          {feature.badge}
+                        </Typography>
+                      </Box>
+
                       <Typography variant="subtitle1" fontWeight={700}>
                         {feature.title}
                       </Typography>
