@@ -10,7 +10,12 @@ import {
 import { TableWrapper } from "../Styles/Styles";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true }) => {
+const AnalyticsTable = ({
+  filteredRows,
+  columns,
+  handleActions,
+  action = true,
+}) => {
   const cellStyle = {
     fontSize: "16px",
   };
@@ -18,6 +23,9 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
   const headerCellStyle = {
     ...cellStyle,
     fontWeight: "700",
+  };
+  const renderCell = (value) => {
+    return value !== null && value !== undefined && value !== "" ? value : "--";
   };
 
   return (
@@ -30,7 +38,9 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>STT</TableCell>
+              <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
+                STT
+              </TableCell>
               {columns.map((col, index) => (
                 <TableCell
                   key={index}
@@ -63,7 +73,7 @@ const AnalyticsTable = ({ filteredRows, columns, handleActions, action = true })
                       key={idx}
                       style={{ ...cellStyle, textAlign: col.align || "center" }}
                     >
-                      {row[col.id] != null ? row[col.id] : "--"}
+                      {renderCell(row[col.id])}
                     </TableCell>
                   ))}
 
