@@ -174,7 +174,7 @@ const Compare = () => {
       <Grid container spacing={3} alignItems="center">
         {/* Chọn tiêu chí */}
         <Grid item xs={12} sm={4}>
-          <FormControl fullWidth variant="outlined">
+          <FormControl fullWidth variant="outlined" size="small">
             <InputLabel>Tiêu chí</InputLabel>
             <Select
               label="Tiêu chí"
@@ -189,7 +189,7 @@ const Compare = () => {
 
         {/* Chọn môn học */}
         <Grid item xs={12} sm={4}>
-          <FormControl fullWidth variant="outlined">
+          <FormControl fullWidth variant="outlined" size="small">
             <InputLabel>Môn học</InputLabel>
             <Select
               label="Môn học"

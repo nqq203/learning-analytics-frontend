@@ -54,7 +54,7 @@ const StudentContainerLNO = () => {
   // const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState([]);
   const { accessToken } = useSelector(state => state.auth);
-
+  const [isLoading, setIsLoading] = useState(false);
   // useEffect(()=>{
   //   console.log("Rows: ",rows)
   // },[rows])
