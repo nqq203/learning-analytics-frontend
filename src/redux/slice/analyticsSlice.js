@@ -24,6 +24,9 @@ const initialState = {
   classAverageGrade: 0,
   studentCount: 0,
   details: false,
+  compareResults: null, 
+  compareLoading: false, 
+  compareError: null,
 };
 
 const analyticsSlice = createSlice({

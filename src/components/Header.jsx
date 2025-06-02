@@ -14,13 +14,15 @@ import { toast } from "react-toastify";
 // nếu bạn thích import từ CDN Material Icons.
 
 const HeaderContainer = styled.header`
+  position: ${props => !props.transparent ? 'static' : 'fixed'};
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--white);
+  background-color: ${props => !props.transparent ? 'var(--white)' : 'transparent'};
   height: 60px;
   padding: 0 20px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: ${props => !props.transparent ? '0px 2px 4px rgba(0, 0, 0, 0.1);' : 'None'};
 `;
 
 const Title = styled.h1`
@@ -32,7 +34,7 @@ const Title = styled.h1`
 
 export default function Header({ title }) {
   const pathname = usePathname(); // Lấy đường dẫn hiện tại
-  if (pathname === "/") return null; // tắt header ở trang chủ
+  // if (pathname === "/") return null; // tắt header ở trang chủ
   const isLoginPage = pathname === "/login"; // Kiểm tra có phải trang login không
   // State để quản lý mở/tắt menu
   const [anchorEl, setAnchorEl] = useState(null);
@@ -64,16 +66,18 @@ export default function Header({ title }) {
       await dispatch(logout());
       handleCloseMenu();
       router.replace('/login')
-    } catch(error) {
+    } catch (error) {
       console.error(error);
       toast.error("Logout failed, somnething went wrong");
     }
   };
 
+  console.log(pathname);
+
   return (
-    <HeaderContainer>
+    <HeaderContainer transparent={pathname === "/"}>
       {/* Tiêu đề bên trái */}
-      <Title>{title || "Tiêu đề "}</Title>
+      {pathname !== "/" ? <Title>{title || "Tiêu đề "}</Title> : <Title></Title>}
 
       {/* Icon “Cài đặt” bên phải */}
       {!isLoginPage && (
@@ -85,7 +89,7 @@ export default function Header({ title }) {
 
 
             {
-              router.pathname == "/" ?
+              router.pathname == "/dashboard" ?
                 (
                   <IconButton
                     onClick={() => setShowFilters(!showFilters)}

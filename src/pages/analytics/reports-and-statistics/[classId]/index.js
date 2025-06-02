@@ -26,7 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 const StudentsList = () => {
   const router = useRouter();
-  const { loading } = useSelector((state) => state.analytics);
+  const { loading } = useSelector(state => state.analytics);
   const { classId } = router.query;
   const [search, setSearch] = useState("");
   const [sortOption, setSortOption] = useState("studentId");
