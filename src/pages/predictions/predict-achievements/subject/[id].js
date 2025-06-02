@@ -1,10 +1,13 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { TextField, FormControl, InputLabel, MenuItem, Select,  IconButton,Button,
+  Box,
+  CircularProgress} from "@mui/material";
+  import SearchIcon from '@mui/icons-material/Search';
 import StudentList from "@/components/PredictionAchievements/StudentList";
 import { toast } from "react-toastify";
-
+import InputAdornment from '@mui/material/InputAdornment';
 const LearningOutcomesContainer = styled.div`
     margin: auto;
     width: 97%;
@@ -122,11 +125,42 @@ const SubjectStudentContainer = () => {
           <LearningOutComeItemsContainer>
 
 
-            <FormControl style={{ minWidth: "40rem" }} variant="outlined">
-              <TextField id="outlined-basic" label="Tìm kiếm" variant="outlined" />
-            </FormControl>
+            <TextField
+            variant="outlined"
+            label="Tìm kiếm"
+            // value={search}
+            // onChange={handleSearchChange}
+            style={{ width: "100%", minWidth: 800 }}
+            size="small"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    // onClick={handleSearch}
+                    sx={{
+                      backgroundColor: "#1976D2",
+                      borderRadius: "0 4px 4px 0",
+                      padding: "10px",
+                      height: "100%",
+                      '&:hover': {
+                        backgroundColor: "#1976d2",
+                      },
+                    }}
+                  >
+                    <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              width: "100%",
+              '& .MuiOutlinedInput-root': {
+                paddingRight: 0,
+              },
+            }}
+          />
 
-            <FormControl style={{ minWidth: "12rem" }} variant="outlined">
+            <FormControl style={{ minWidth: "250px" }} variant="outlined" size="small">
               <InputLabel>Khóa</InputLabel>
               <Select label="Chọn khóa">
                 <MenuItem value="class">21</MenuItem>
@@ -137,9 +171,22 @@ const SubjectStudentContainer = () => {
           </LearningOutComeItemsContainer>
 
           <LearningOutComeItemsContainer>
+            <Button 
+              style={{ minWidth: "100px" }}      
+              color="primary"
+              variant="contained"
+              >
+                  Lọc
+            </Button>
 
-            <AnalyticsBtn>Lọc</AnalyticsBtn>
-            <AnalyticsBtn onClick={() => handleNav()}>Dự đoán</AnalyticsBtn>
+            <Button 
+              style={{ minWidth: "100px" }}
+                color="primary"
+                onClick={() => handleNav()}
+                variant="contained"
+                >Dự đoán
+            </Button>
+            {/* <AnalyticsBtn onClick={() => handleNav()}>Dự đoán</AnalyticsBtn> */}
 
 
           </LearningOutComeItemsContainer>

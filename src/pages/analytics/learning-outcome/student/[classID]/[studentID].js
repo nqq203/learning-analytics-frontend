@@ -106,7 +106,7 @@ export default function StudentAnalytics() {
           <LearningOutComeItemsContainer>
             <DropdownTitleContainer>
 
-              <FormControl sx={{ minWidth: 300}}>
+              <FormControl style={{ minWidth: "300px" }} variant="outlined" size="small" disabled>
                 <InputLabel id="course-label" sx={{ fontSize: "1rem" }}>
                   Môn
                 </InputLabel>
@@ -124,7 +124,7 @@ export default function StudentAnalytics() {
             </DropdownTitleContainer>
 
             <DropdownTitleContainer>
-              <FormControl sx={{ minWidth: 300}}>
+              <FormControl style={{ minWidth: "300px" }} variant="outlined" size="small" disabled>
                 <InputLabel id="class-label" sx={{ fontSize: "1rem" }}>
                   Lớp
                 </InputLabel>
@@ -142,7 +142,7 @@ export default function StudentAnalytics() {
             </DropdownTitleContainer>
 
             <DropdownTitleContainer>
-              <FormControl sx={{ minWidth: 300 }} disabled>
+              <FormControl style={{ minWidth: "300px" }} variant="outlined" size="small" disabled>
                 <InputLabel id="student-label" sx={{ fontSize: "1rem" }}>
                   MSSV - Họ tên
                 </InputLabel>

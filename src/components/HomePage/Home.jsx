@@ -14,6 +14,7 @@ import BatchPredictionIcon from "@mui/icons-material/BatchPrediction";
 import SecurityIcon from "@mui/icons-material/Security";
 import { useRouter } from "next/router";
 import "@fontsource/inter";
+import { motion } from "framer-motion";
 
 const features = [
   {
@@ -55,224 +56,224 @@ export default function HomePage() {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
-        background: `linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #e0e7ff 100%)`,
-        py: 8,
+        height: "100vh",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        background: "linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)",
       }}
     >
-      <Container maxWidth="md" sx={{ textAlign: "center", mb: 10 }}>
-        <Typography
-          variant="h2"
-          fontWeight={900}
-          sx={{
-            fontFamily: "'Inter', sans-serif",
-            background: `linear-gradient(90deg, #1e40af, #8b5cf6, #1e40af)`,
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            mb: 2,
-            lineHeight: 1.1,
-          }}
+      <Container maxWidth="md" sx={{ textAlign: "center", pt: 4, pb: 2 }}>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
         >
-          Khám Phá Dữ Liệu
-          <br />
-          <Box
-            component="span"
+          <Typography
+            variant="h3"
+            fontWeight={900}
             sx={{
               fontFamily: "'Inter', sans-serif",
-              background: `linear-gradient(90deg, #3b82f6, #8b5cf6)`,
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
+              lineHeight: 1.2,
+              mb: 1,
             }}
           >
-            Học Tập Thông Minh
-          </Box>
-        </Typography>
-        <Typography
-          variant="h6"
-          color="text.secondary"
-          sx={{ maxWidth: 600, mx: "auto", mb: 6, fontWeight: 400 }}
-        >
-          Nền tảng phân tích dữ liệu giáo dục tiên tiến với các công cụ trực
-          quan hóa mạnh mẽ, giúp bạn hiểu sâu hơn về quá trình học tập và đưa ra
-          quyết định thông minh
-        </Typography>
+            <Box
+              component="span"
+              sx={{
+                display: "block",
+                background: `linear-gradient(90deg, #1e40af, #8b5cf6, #1e40af)`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Khám Phá Dữ Liệu
+            </Box>
+            <Box
+              component="span"
+              sx={{
+                display: "block",
+                background: `linear-gradient(90deg, #3b82f6, #8b5cf6)`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Học Tập Thông Minh
+            </Box>
+          </Typography>
+        </motion.div>
       </Container>
 
-      <Container maxWidth="lg" sx={{ mb: 12 }}>
-        <Grid container spacing={4} justifyContent="center">
+      <Container maxWidth="lg" sx={{ flexGrow: 1, mt: 4 }}>
+        <Grid container spacing={2} justifyContent="center">
           {features.map((feature, idx) => {
             const Icon = feature.icon;
             return (
-              <Grid item xs={12} sm={6} md={4} key={idx}>
-                <Card
-                  onClick={() => router.push(feature.link)}
-                  sx={{
-                    cursor: "pointer",
-                    position: "relative",
-                    overflow: "hidden",
-                    backdropFilter: "blur(8px)",
-                    backgroundColor: "rgba(255, 255, 255, 0.75)",
-                    boxShadow:
-                      "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05)",
-                    borderRadius: 3,
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      boxShadow:
-                        "0 20px 25px -5px rgb(0 0 0 / 0.15), 0 10px 10px -5px rgb(0 0 0 / 0.1)",
-                      transform: "translateY(-8px)",
-                      "& .iconWrapper": {
-                        transform: "scale(1.1)",
-                        filter: "drop-shadow(0 0 5px rgba(0,0,0,0.2))",
-                      },
-                      "& h3": {
-                        color: theme.palette.primary.dark,
-                      },
-                    },
-                  }}
+              <Grid item xs={12} sm={4} key={idx}>
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.2, duration: 0.6 }}
+                  viewport={{ once: true }}
                 >
-                  <CardContent
+                  <Card
+                    onClick={() => router.push(feature.link)}
                     sx={{
+                      cursor: "pointer",
                       textAlign: "center",
-                      position: "relative",
-                      zIndex: 1,
+                      px: 2,
+                      py: 3,
+                      borderRadius: 2,
+                      height: "100%",
+                      background: "#ffffffdd",
+                      transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                      "&:hover": {
+                        boxShadow: 4,
+                        transform: "translateY(-4px)",
+                      },
                     }}
                   >
-                    <Box
-                      className="iconWrapper"
-                      sx={{
-                        width: 64,
-                        height: 64,
-                        mx: "auto",
-                        mb: 2,
-                        borderRadius: 2,
-                        background: `linear-gradient(135deg, ${feature.colorStart}, ${feature.colorEnd})`,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        color: "white",
-                        transition: "all 0.3s ease",
-                      }}
-                    >
-                      <Icon fontSize="large" />
-                    </Box>
+                    <CardContent>
+                      <Box
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          mx: "auto",
+                          mb: 1,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderRadius: "50%",
+                          background: `linear-gradient(135deg, ${feature.colorStart}, ${feature.colorEnd})`,
+                          color: "#fff",
+                        }}
+                      >
+                        <Icon fontSize="medium" />
+                      </Box>
+                      <Box
+                        sx={{
+                          display: "inline-block",
+                          px: 1.5,
+                          py: 0.5,
+                          border: `1.5px solid ${feature.colorStart}`,
+                          borderRadius: "999px",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: feature.colorStart,
+                            fontWeight: 600,
+                            letterSpacing: 1,
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          {feature.badge}
+                        </Typography>
+                      </Box>
 
-                    <Box
-                      sx={{
-                        mb: 1,
-                        px: 1.8,
-                        py: 0.5,
-                        fontWeight: 700,
-                        color: feature.colorStart,
-                        borderRadius: "999px",
-                        textTransform: "uppercase",
-                        fontSize: "0.75rem",
-                        backgroundColor: "rgba(255, 255, 255, 0.9)",
-                        display: "inline-block",
-                        userSelect: "none",
-                        letterSpacing: 0.5,
-                        border: `1.5px solid ${feature.colorStart}`,
-                      }}
-                    >
-                      {feature.badge}
-                    </Box>
-
-                    <Typography
-                      variant="h6"
-                      component="h3"
-                      fontWeight={700}
-                      sx={{ mb: 1, transition: "color 0.3s ease" }}
-                    >
-                      {feature.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ fontWeight: 400, lineHeight: 1.5 }}
-                    >
-                      {feature.description}
-                    </Typography>
-                  </CardContent>
-                </Card>
+                      <Typography variant="subtitle1" fontWeight={700}>
+                        {feature.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {feature.description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               </Grid>
             );
           })}
         </Grid>
       </Container>
-
-      <Box
-        sx={{
-          background: "linear-gradient(90deg, #3b82f6, #8b5cf6)",
-          borderRadius: 4,
-          p: { xs: 4, md: 6 },
-          color: "common.white",
-          textAlign: "center",
-          mx: "auto",
-          maxWidth: 1150,
-          boxShadow: "0 12px 24px rgba(59, 130, 246, 0.5)",
-        }}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
       >
-        <Typography variant="h4" fontWeight={700} mb={2}>
-          Sẵn sàng khám phá dữ liệu?
-        </Typography>
-        <Typography
-          variant="body1"
-          sx={{
-            mb: 4,
-            opacity: 0.85,
-            fontWeight: 400,
-            maxWidth: 600,
-            mx: "auto",
-          }}
-        >
-          Bắt đầu hành trình phân tích dữ liệu học tập của bạn ngay hôm nay với
-          các công cụ mạnh mẽ và trực quan.
-        </Typography>
-
         <Box
           sx={{
-            display: "flex",
-            gap: 2,
-            flexWrap: "wrap",
-            justifyContent: "center",
-            width: "100%",
+            mt: 2,
+            py: { xs: 4, md: 6 },
+            px: 2,
+            textAlign: "center",
+            background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+            color: "white",
+            borderTopLeftRadius: 32,
+            borderTopRightRadius: 32,
+            boxShadow: "0 -8px 24px rgba(0,0,0,0.1)",
           }}
         >
-          <Button
-            variant="contained"
-            onClick={() => router.push("/analytics/reports-and-statistics")}
+          <Typography
+            variant="h5"
+            fontWeight={700}
             sx={{
-              backgroundColor: "white",
-              color: "#2563eb",
-              px: 6,
-              fontWeight: 700,
-              borderRadius: 1,
-              textTransform: "none",
+              mb: 2,
+              letterSpacing: 1,
             }}
           >
-            Bắt đầu phân tích
-          </Button>
-          <Button
-            variant="outlined"
-            color="common"
-            size="large"
-            onClick={() => router.push("/predictions/predict-achievements")}
+            🎯 Sẵn sàng khám phá dữ liệu?
+          </Typography>
+          <Box
             sx={{
-              px: 6,
-              borderColor: "white",
-              color: "white",
-              fontWeight: 700,
-              textTransform: "none",
-              "&:hover": {
-                backgroundColor: "#e0e7ff",
-                color: "#1e40af",
-                textTransform: "none",
-              },
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: 2,
+              alignItems: "center",
             }}
           >
-            Xem dự đoán
-          </Button>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "white",
+                  color: "#2563eb",
+                  textTransform: "none",
+                  px: 4,
+                  fontWeight: 600,
+                  boxShadow: 2,
+                  "&:hover": {
+                    backgroundColor: "#e0e7ff",
+                  },
+                  width: { xs: "100%", sm: "auto" },
+                }}
+                onClick={() => router.push("/analytics/reports-and-statistics")}
+              >
+                Bắt đầu phân tích
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Button
+                variant="outlined"
+                sx={{
+                  borderColor: "white",
+                  color: "white",
+                  textTransform: "none",
+                  px: 4,
+                  fontWeight: 600,
+                  "&:hover": {
+                    backgroundColor: "#f0f9ff",
+                    color: "#1e40af",
+                  },
+                  width: { xs: "100%", sm: "auto" },
+                }}
+                onClick={() => router.push("/predictions/predict-achievements")}
+              >
+                Xem dự đoán
+              </Button>
+            </motion.div>
+          </Box>
         </Box>
-      </Box>
+      </motion.div>
     </Box>
   );
 }

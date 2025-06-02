@@ -9,8 +9,8 @@ import {
 
 const GaugeChart = ({value}) => {
   const RADIAN = Math.PI / 180;
-  const width = 700;
-  const height = 500;
+  const width = 580;
+  const height = 320;
 
   const chartValue = value;
 
@@ -32,7 +32,7 @@ const GaugeChart = ({value}) => {
   };
 
   return (
-    <div style={{ width, height: 400 }}>
+    <div style={{ width, height }}>
       <ResponsiveContainer>
         <PieChart width={width} height={height}>
           {/* Biểu đồ chính */}

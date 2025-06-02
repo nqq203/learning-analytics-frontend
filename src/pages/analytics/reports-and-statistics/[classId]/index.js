@@ -51,16 +51,20 @@ const StudentsList = () => {
           { id: "programName", label: "Hệ đào tạo", align: "left" },
         ]);
       } else {
-        const response = await dispatch(fetchStudentsDetails({ classId })).unwrap();
+        const response = await dispatch(
+          fetchStudentsDetails({ classId })
+        ).unwrap();
         setRows(response?.data?.studentList || []);
         setColumns([
           { id: "studentId", label: "MSSV" },
           { id: "fullName", label: "Họ và tên" },
           { id: "midtermGrade", label: "Giữa kỳ" },
-          { id: "finalGrade", label: "Cuối kỳ" },
-          { id: "projectGrade", label: "Đồ án" },
           { id: "practiceGrade", label: "Thực hành" },
+          { id: "assignmentQuizGrade", label: "Quiz + Bài tập" },
+          { id: "projectGrade", label: "Đồ án" },
+          { id: "bonus", label: "Điểm cộng" },
           { id: "totalGrade", label: "Tổng kết" },
+          { id: "finalGrade", label: "Cuối kỳ" },
           { id: "classification", label: "Xếp loại" },
         ]);
       }
@@ -77,11 +81,10 @@ const StudentsList = () => {
   };
 
   const filteredRows = rows.filter((row) => {
-    const name = row.fullName ?? "";
-    const id = row.studentId ?? "";
+    const name = (row.fullName ?? "").toLowerCase();
+    const id = String(row.studentId ?? "").toLowerCase();
     return (
-      name.toLowerCase().includes(search.toLowerCase()) ||
-      id.toLowerCase().includes(search.toLowerCase())
+      name.includes(search.toLowerCase()) || id.includes(search.toLowerCase())
     );
   });
 
@@ -91,7 +94,7 @@ const StudentsList = () => {
 
   const sortedRows = filteredRows.sort((a, b) => {
     if (sortOption === "studentId") {
-      return (a.studentId ?? "").localeCompare(b.studentId ?? "");
+      return (a.studentId ?? 0) - (b.studentId ?? 0);
     }
     return (a.fullName ?? "").localeCompare(b.fullName ?? "");
   });
@@ -111,9 +114,13 @@ const StudentsList = () => {
   };
 
   const studentCount = sortedRows.length;
-  const averageGrade = (buttonVariant === "outlined")
-    ? (sortedRows.reduce((sum, row) => sum + (row.totalGrade ?? 0), 0) / studentCount || 0).toFixed(2)
-    : 0;
+  const averageGrade =
+    buttonVariant === "outlined"
+      ? (
+          sortedRows.reduce((sum, row) => sum + (row.totalGrade ?? 0), 0) /
+            studentCount || 0
+        ).toFixed(2)
+      : 0;
 
   return (
     <Container>
@@ -161,19 +168,23 @@ const StudentsList = () => {
       <BodyWrapper>
         <InformationWrapper>
           <InformationItem>Số lượng sinh viên: {studentCount}</InformationItem>
-          <InformationItem>Điểm trung bình: {
-            buttonVariant === "outlined"
-              ? averageGrade
-              : "-"
-          }
+          <InformationItem>
+            Điểm trung bình: {buttonVariant === "outlined" ? averageGrade : "-"}
           </InformationItem>
         </InformationWrapper>
-        {/* Bọc table + loading overlay */}
         <Box position="relative">
           <AnalyticsTable
-            filteredRows={rows.map(row => ({
+            filteredRows={rows.map((row) => ({
               ...row,
-              fullName: row.fullName ?? "Không có tên"
+              fullName: row.fullName ?? "Không có tên",
+              midtermGrade: row.midtermGrade ?? "-",
+              practiceGrade: row.practiceGrade ?? "-",
+              assignmentQuizGrade: row.assignmentQuizGrade ?? "-",
+              projectGrade: row.projectGrade ?? "-",
+              bonus: row.bonus ?? "-",
+              totalGrade: row.totalGrade ?? "-",
+              finalGrade: row.finalGrade ?? "-",
+              classification: row.classification ?? "Chưa đánh giá",
             }))}
             columns={columns}
             handleActions={handleViewClass}
