@@ -187,18 +187,18 @@ const StudentAnalytics = () => {
     <Container>
       <Header>
         <Box display="flex" gap="10px">
-          <TextField
+          <TextField 
             variant="outlined"
             label="Môn học"
             value={"Cở sở dữ liệu"}
-            style={{ width: "90%" }}
+            style={{ width: "20%", minWidth: 250 }} size="small"
             disabled
           />
           <TextField
             variant="outlined"
             label="Lớp"
             value={"21CLC05"}
-            style={{ width: "90%" }}
+            style={{ width: "20%", minWidth: 250 }} size="small"
             disabled
           />
         </Box>
@@ -209,7 +209,7 @@ const StudentAnalytics = () => {
               fontWeight: "700",
               fontSize: "14px",
               width: "50%",
-              height: "90%"
+              
             }}
             onClick={handleOpenConfig}
           >
@@ -221,7 +221,7 @@ const StudentAnalytics = () => {
               fontWeight: "700",
               fontSize: "14px",
               width: "50%",
-              height: "90%"
+             
             }}
           >
             Xuất PDF

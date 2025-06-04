@@ -13,10 +13,13 @@ import {
   FormControl,
   InputLabel,
   Select,
+  IconButton,
   MenuItem,
   Box,
   CircularProgress,
+  InputAdornment
 } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
 import AnalyticsTable from "@/components/Analytics/Table/Table";
 import {
   fetchStudents,
@@ -124,8 +127,10 @@ const StudentsList = () => {
 
   return (
     <Container>
-      <Header>
-        <FormControl style={{ width: "20%" }}>
+      <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent:"space-between", width: "100%" }}>
+          
+        <FormControl style={{ width: "25%", minWidth: 250 }} size="small">
           <InputLabel>Sắp xếp</InputLabel>
           <Select
             value={sortOption}
@@ -136,22 +141,55 @@ const StudentsList = () => {
             <MenuItem value="fullName">Họ và Tên</MenuItem>
           </Select>
         </FormControl>
+
         <TextField
           variant="outlined"
           label="Tìm kiếm"
           value={search}
           onChange={handleSearchChange}
-          style={{ width: "50%" }}
-        />
-        <ActionButton
+          style={{ width: "53%", minWidth: 200 }}
+            size="small"
+          InputProps={{
+                    endAdornment: (
+                      <InputAdornment
+                        position="end"
+                        sx={{ marginRight: 0, paddingRight: 0 }}
+                      >
+                        <IconButton
+                          // onClick={handleSearch}
+                          sx={{
+                            backgroundColor: "#1976D2",
+                            borderRadius: "0 4px 4px 0",
+                            padding: "10px",
+                            height: "100%",
+                            "&:hover": {
+                              backgroundColor: "#1976D2",
+                              marginRight: 0,
+                            },
+                          }}
+                        >
+                          <SearchIcon
+                            sx={{ color: "white", fontSize: "20px" }}
+                          />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                    sx: { paddingRight: 0 },
+                  }}
+                />
+
+        
+
+        {/* <ActionButton
           variant="contained"
           style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
         >
           Tìm kiếm
-        </ActionButton>
+        </ActionButton> */}
+        
         <ActionButton
           variant={buttonVariant}
-          style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
+           style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
           onClick={handleViewDetail}
           $variant={buttonVariant}
         >
@@ -164,7 +202,11 @@ const StudentsList = () => {
         >
           Thống kê
         </ActionButton>
+        
+        </div>
       </Header>
+
+
       <BodyWrapper>
         <InformationWrapper>
           <InformationItem>Số lượng sinh viên: {studentCount}</InformationItem>

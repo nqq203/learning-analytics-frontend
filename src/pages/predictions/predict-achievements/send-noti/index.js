@@ -10,6 +10,19 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
+
+
+import {
+  ActionButton,
+  BodyWrapper,
+  Container,
+  Header,
+  InformationItem,
+  InformationWrapper,
+} from "@/components/Analytics/Styles/Styles";
+
+
+
 import SearchIcon from "@mui/icons-material/Search";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import PredictionStudentList from "@/components/PredictionAchievements/PredictionStudentList";
@@ -160,11 +173,16 @@ const SendNoti = () => {
   };
   
   return (
-    <LearningOutcomesContainer>
-      <LearningOutComeContainerBody>
-        <LearningOutComeHeader>
-        <FormControl style={{ minWidth: "260px", flex: 1 }} variant="outlined">
+    <Container>
+      
+        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+
+           <div style={{ display: "flex", alignItems: "center", justifyContent:"space-between", width: "100%" }}>
+
+            
+        
         <TextField
+          style={{ width: "70%", minWidth: 200 }}
           placeholder="Tìm kiếm"
           variant="outlined"
           InputProps={{
@@ -199,7 +217,7 @@ const SendNoti = () => {
             },
           }}
         />
-      </FormControl>
+      
 
 
           <FormControl sx={{ minWidth: "120px", height: "40px" }} variant="outlined">
@@ -256,9 +274,11 @@ const SendNoti = () => {
           <AnalyticsBtn onClick={() => handleNav()}>
             Gửi Thông Báo
           </AnalyticsBtn>
-        </LearningOutComeHeader>
 
-        <LineDivider />
+          </div>
+        </Header>
+
+       
 
         <PredictionStudentList
           TableHeader={TableHeader}
@@ -275,8 +295,8 @@ const SendNoti = () => {
             student={studentModal}
           />
         ) : null}
-      </LearningOutComeContainerBody>
-    </LearningOutcomesContainer>
+      
+    </Container>
   );
 };
 

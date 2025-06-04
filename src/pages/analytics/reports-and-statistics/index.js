@@ -101,13 +101,13 @@ const ClassesList = () => {
   return (
     <Container>
       <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent:"space-between", width: "100%" }}>
           <TextField
             variant="outlined"
             label="Tìm kiếm"
             value={search}
             onChange={handleSearchChange}
-            style={{ width: "50%", minWidth: 200 }}
+            style={{ width: "55%", minWidth: 200 }}
             size="small"
             InputProps={{
               endAdornment: (

@@ -8,6 +8,17 @@ import { TextField, FormControl, InputLabel, MenuItem, Select,  IconButton,Butto
 import StudentList from "@/components/PredictionAchievements/StudentList";
 import { toast } from "react-toastify";
 import InputAdornment from '@mui/material/InputAdornment';
+
+import {
+  ActionButton,
+  BodyWrapper,
+  Container,
+  Header,
+  InformationItem,
+  InformationWrapper,
+} from "@/components/Analytics/Styles/Styles";
+
+
 const LearningOutcomesContainer = styled.div`
     margin: auto;
     width: 97%;
@@ -117,12 +128,22 @@ const SubjectStudentContainer = () => {
   }
 
   return (
-    < LearningOutcomesContainer >
+    <Container>
 
 
-      <LearningOutComeContainerBody>
-        <LearningOutComeHeader>
-          <LearningOutComeItemsContainer>
+      
+        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent:"space-between", width: "100%" }}>
+
+            <div style={{display:"flex", gap:"8px",alignItems: "center",width:"100%"}}>
+            <FormControl style={{ width: "20%", minWidth: 250 }} size="small">
+              <InputLabel>Khóa</InputLabel>
+              <Select label="Chọn khóa">
+                <MenuItem value="class">21</MenuItem>
+                <MenuItem value="course">22</MenuItem>
+                <MenuItem value="subject">23</MenuItem>
+              </Select>
+            </FormControl>
 
 
             <TextField
@@ -130,7 +151,7 @@ const SubjectStudentContainer = () => {
             label="Tìm kiếm"
             // value={search}
             // onChange={handleSearchChange}
-            style={{ width: "100%", minWidth: 800 }}
+            style={{ width: "70%", minWidth: 200 }}
             size="small"
             InputProps={{
               endAdornment: (
@@ -160,48 +181,41 @@ const SubjectStudentContainer = () => {
             }}
           />
 
-            <FormControl style={{ minWidth: "250px" }} variant="outlined" size="small">
-              <InputLabel>Khóa</InputLabel>
-              <Select label="Chọn khóa">
-                <MenuItem value="class">21</MenuItem>
-                <MenuItem value="course">22</MenuItem>
-                <MenuItem value="subject">23</MenuItem>
-              </Select>
-            </FormControl>
-          </LearningOutComeItemsContainer>
-
-          <LearningOutComeItemsContainer>
-            <Button 
-              style={{ minWidth: "100px" }}      
+          </div>
+          
+          <div style={{display:"flex", gap:"8px",alignItems: "center",width:"30%"}}>
+            <ActionButton 
+             style={{ width: "50%", fontWeight: "700", fontSize: "14px" }}  
               color="primary"
               variant="contained"
               >
                   Lọc
-            </Button>
+            </ActionButton>
 
-            <Button 
-              style={{ minWidth: "100px" }}
+            <ActionButton 
+               style={{ width: "50%", fontWeight: "700", fontSize: "14px" }}
                 color="primary"
                 onClick={() => handleNav()}
                 variant="contained"
                 >Dự đoán
-            </Button>
+            </ActionButton>
             {/* <AnalyticsBtn onClick={() => handleNav()}>Dự đoán</AnalyticsBtn> */}
 
+            </div>
 
-          </LearningOutComeItemsContainer>
-
-
-        </LearningOutComeHeader>
+          </div>
 
 
-        <LineDivider></LineDivider>
+        </Header>
+
+
+        
 
         <StudentList TableHeader={TableHeader} TableContent={TableContent} setChosenStudentOuter={setChosenStudent} > </StudentList>
 
 
-      </LearningOutComeContainerBody>
-    </LearningOutcomesContainer>
+     
+    </Container>
   );
 };
 

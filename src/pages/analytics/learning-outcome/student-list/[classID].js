@@ -9,6 +9,14 @@ import SearchIcon from '@mui/icons-material/Search';
 import { fetchStudentSearch } from "@/redux/thunk/learningoutcomeThunk";
 import { jwtDecode } from "jwt-decode";
 
+import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
+
+
+
 const LearningOutcomesContainer = styled.div`
   margin: auto;
   width: 97%;
@@ -116,24 +124,22 @@ const StudentContainerLNO = () => {
   }, [studentID]);
 
   return (
-    <LearningOutcomesContainer>
-      <LearningOutComeContainerBody>
-        <LearningOutComeHeader>
-          <LearningOutComeItemsContainer style={{ width: "100%" }}>
-            <FormControl style={{ width: "100%" }} variant="outlined">
+    <Container>
+      
+        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
+
+            
               <TextField
-                id="outlined-basic"
-                label="Tìm kiếm"
                 variant="outlined"
+                label="Tìm kiếm"
+                style={{ width: "100%" }}
+                size="small"
                 onChange={(e) => handleSearch(e.target.value)}
                 onKeyDown={handleKeyPress}
                 InputProps={{
-                  style: {
-                    height: 40,
-                    paddingRight: 0,
-                    fontSize: "0.9rem",
-                    alignItems: "center",
-                  },
+                  
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
@@ -141,11 +147,11 @@ const StudentContainerLNO = () => {
                           backgroundColor: "#1976D2",
                           borderRadius: "0 4px 4px 0",
                           padding: "10px",
-                          height: "40px",
+                          height: "100%",
                           '&:hover': {
-                            backgroundColor: "#1565C0",
-                          },
-                        }}
+                            backgroundColor: "#1976d2",
+                        },
+                      }}
                         onClick={() => handleSearchResult(searchKeyword)}
                       >
                         <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
@@ -153,50 +159,56 @@ const StudentContainerLNO = () => {
                     </InputAdornment>
                   ),
                 }}
-                InputLabelProps={{
-                  style: {
-                    lineHeight: "40px",
-                    top: "-15px",
+                 sx={{
+                  width: "100%",
+                  '& .MuiOutlinedInput-root': {
+                    paddingRight: 0,
                   },
                 }}
               />
-            </FormControl>
-          </LearningOutComeItemsContainer>
+            
+          </div>
 
           {/* <LearningOutComeItemsContainer style={{ width: "6%" }}> */}
           {/* Nút lọc hoặc hành động khác nếu cần */}
           {/* </LearningOutComeItemsContainer> */}
-        </LearningOutComeHeader>
+        </Header>
 
-        <LineDivider />
+        
+         <div style={{ display: "flex", flexDirection: "column" }}>
+            
+            <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}>
+          Tổng số lớp hiển thị: {totalRecords}
+        </span>
+         
+              <Box position="relative">
+                <StudentListLNO
+                  TableContent={rows}
+                  TableHeader={TableHeader}
+                  setStudentID={setStudentID}
+                  onScrollEnd={handleScrollEnd}
+                />
 
-        <Box position="relative">
-          <StudentListLNO
-            TableContent={rows}
-            TableHeader={TableHeader}
-            setStudentID={setStudentID}
-            onScrollEnd={handleScrollEnd}
-          />
-
-          {loading && (
-            <Box
-              position="absolute"
-              top={0}
-              left={0}
-              width="100%"
-              height="100%"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              bgcolor="rgba(255,255,255,0.7)"
-              zIndex={10}
-            >
-              <CircularProgress size="50px"/>
-            </Box>
-          )}
-        </Box>
-      </LearningOutComeContainerBody>
-    </LearningOutcomesContainer>
+                {loading && (
+                  <Box
+                    position="absolute"
+                    top={0}
+                    left={0}
+                    width="100%"
+                    height="100%"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    bgcolor="rgba(255,255,255,0.7)"
+                    zIndex={10}
+                  >
+                    <CircularProgress size="50px"/>
+                  </Box>
+                )}
+              </Box>
+        </div>
+      
+    </Container>
   );
 };
 

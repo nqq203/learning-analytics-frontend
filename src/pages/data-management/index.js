@@ -11,6 +11,14 @@ import {
   Button,
   Box
 } from "@mui/material";
+
+import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
+
+
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Search,
@@ -207,9 +215,9 @@ export default function MainClassManagement() {
       }
 
     return (
-      <ClassManagementContainer>
-            <ClassManagementContainerBody>
-                <ClassManagementItemsContainer>
+      <Container>
+            
+        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
                 <div style={{display:"flex", gap:"0.5rem"}}>
                     <TextField
             variant="outlined"
@@ -295,18 +303,21 @@ export default function MainClassManagement() {
                     variant="contained"
                     >Tải file</Button>
 
-            </div>
-                </ClassManagementItemsContainer>
+              </div>
+                </Header>
 
-            <Box sx={{ p: 2, borderBottom: "1px solid #e0e0e0" }}>
-          <Typography
-            variant="body1"
-            component="div"
-            sx={{ fontWeight: "bold" }}
+
+
+
+
+            
+          <div style={{ display: "flex", flexDirection: "column" }}>
+          <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}
           >
              Tổng số môn hiển thị: {rows.length}
-          </Typography>
-        </Box>
+          </span>
+
+        
             
             
 
@@ -323,9 +334,9 @@ export default function MainClassManagement() {
             {modalInsert?<InsertModal Modal= {modalInsert}setModal={setModalInsert}/> :null}
 
             {modalUpdate?<EditModal Modal={modalUpdate} setModal={setModalUpdate} classId={classEdit}></EditModal>: null}
+        </div>
         
-        </ClassManagementContainerBody>
 
-      </ClassManagementContainer>
+      </Container>
     );
   }
