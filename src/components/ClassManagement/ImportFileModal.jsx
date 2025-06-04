@@ -1,29 +1,22 @@
 import styled from "styled-components";
 import {
-  TextField,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  IconButton,
   Dialog,
-  Button
+  DialogTitle,
+  DialogContent,
+  TextField,
+  Button,
+  Box,
+  IconButton,
+  Typography,
+  Tabs,
+  Tab,
+  Grid,
+  Divider
 } from "@mui/material";
 
-import CloseIcon from '@mui/icons-material/Close';
+
 import { useState } from "react";
-const Backdrop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5); /* Làm mờ nền */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
+import { Close } from "@mui/icons-material";
 
 
 const ModalContainer = styled.div`
@@ -150,8 +143,8 @@ const ButtonGroup = styled.div`
 `
 
 const LabelInput = styled.div`
-    font-weight:550;
-    font-size:1.3rem;
+    
+    font-size:1rem;
     font-style:italic;
     color:var(--grey-900)
 
@@ -178,19 +171,25 @@ export default function ImportFileModal({Modal,setModal}){
      };
     return(
         <Dialog open={Modal} onClose={CloseModal} fullWidth maxWidth="md">
-        
-            <ModalContainer onClick={(e) => e.stopPropagation()} >
-                <HeaderContainer>
-                        <HeaderItemContainer>
-                                <div style={{fontSize:"1.8rem", fontWeight:"570",paddingLeft:"0.5rem", color:"var(--grey-800)"}}>Import file </div>
-                                <IconButton  onClick={()=>CloseModal()}>
-                                    <CloseIcon></CloseIcon>
-                                </IconButton>
-                                
-                        
-                        </HeaderItemContainer>
-                        <LineDivider></LineDivider>
-                </HeaderContainer>
+            <DialogTitle
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      pb: 1,
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ fontWeight: "medium" }}>
+                      Thêm Dữ Liệu Bằng File
+                    </Typography>
+                    <IconButton onClick={CloseModal} aria-label="close">
+                      <Close />
+                    </IconButton>
+            </DialogTitle>
+
+            <Divider style={{marginBottom:"1rem"}} />
+
+            <DialogContent sx={{ p: 0 }} style={{paddingBottom:"1.5rem"}}>
                 
 
                 <BodyContainer>
@@ -238,7 +237,7 @@ export default function ImportFileModal({Modal,setModal}){
                         >NHẬP FILE</Button>
                 </ButtonGroup>
                
-            </ModalContainer>
+            </DialogContent>
             </Dialog>
         
         

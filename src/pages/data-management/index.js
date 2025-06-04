@@ -36,69 +36,10 @@ import ClassTable from "@/components/ClassManagement/ClassTable";
 import InsertModal from "@/components/ClassManagement/InsertModal";
 import EditModal from "@/components/ClassManagement/EditModal";
 import ImportFileModal from "@/components/ClassManagement/ImportFileModal";
-const ClassManagementContainer = styled.div`
-    margin: auto;
-    width: 97%;
-    padding-block:20px;
-    
-    
-    
-`
-const ClassManagementContainerBody = styled.div`
-  display:flex;
-  flex-direction:column;
-  gap:1rem;
-
-`
-const ClassManagementHeader = styled.div`
-  display:flex;
-  flex-direction:row;
-  gap:2rem;
-  
-  align-items:center;
-`
-
-const ClassManagementItemsContainer = styled.div`
-  display:flex;
-  flex-direction:row;
-  align-items:center;
-  justify-content:space-between;
-  
-  
-`
 
 
 
-const AnalyticsBtn = styled.div`
-    cursor:pointer;
-    padding-inline:2rem;
-    padding-block:1rem;
-    color:white;
-    font-size:1.2rem;
-    background-color:var(--blue-600);
-    border:none;
-    border-radius:10px;
-    font-weight:bold;
 
-    &:hover{
-        background-color:var(--blue-400);
-    }
-    &:active{
-    
-        background-color:var(--blue-500);
-    }
-
-
-`
-
-
-
-const LineDivider = styled.div`
-    background-color:var(--grey-500);
-    height:1px;
-//   border:0.1px solid var(--grey-500);
-  width:100%;
-`
 
 const semester =  [1,2,3]
 const academicYear = ["2014-2018","2015-2019","2021-2025","2022-2026"]
@@ -218,7 +159,7 @@ export default function MainClassManagement() {
       <Container>
             
         <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                <div style={{display:"flex", gap:"0.5rem"}}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
                     <TextField
             variant="outlined"
             label="Tìm kiếm"
@@ -284,26 +225,29 @@ export default function MainClassManagement() {
           </FormControl>
 
 
-          </div>
-            <div style={{display:"flex", gap:"0.5rem"}}>
-                <Button 
+          
+            
+                <ActionButton 
                     startIcon={<Add />}
-                    color="primary"
+                    style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
                     variant="contained"
                     onClick={()=>setModalInsert(true)}
                     >
-                        Thêm</Button>
+                        Thêm</ActionButton>
 
                 
 
-                <Button 
+                <ActionButton 
                     startIcon={<FileDownload />}
                     color="primary"
+                      style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
                     onClick={()=>setImportFile(true)}
                     variant="contained"
-                    >Tải file</Button>
+                    >Tải file</ActionButton>
 
-              </div>
+             
+
+                          </div>
                 </Header>
 
 

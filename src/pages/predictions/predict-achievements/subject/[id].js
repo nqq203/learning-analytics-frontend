@@ -19,66 +19,6 @@ import {
 } from "@/components/Analytics/Styles/Styles";
 
 
-const LearningOutcomesContainer = styled.div`
-    margin: auto;
-    width: 97%;
-    padding-block:20px;
-    
-    
-    
-`
-const LearningOutComeContainerBody = styled.div`
-  display:flex;
-  flex-direction:column;
-  gap:1rem;
-
-`
-const LearningOutComeHeader = styled.div`
-  display:flex;
-  flex-direction:row;
-  justify-content:space-between;
-  
-  align-items:center;
-`
-
-const LearningOutComeItemsContainer = styled.div`
-  display:flex;
-  flex-direction:row;
-  gap:20px;
-`
-
-
-
-const AnalyticsBtn = styled.div`
-    cursor:pointer;
-    padding-inline:2rem;
-    padding-block:1rem;
-    color:white;
-    font-size:1.2rem;
-    background-color:var(--blue-600);
-    border:none;
-    border-radius:10px;
-    font-weight:bold;
-
-    &:hover{
-        background-color:var(--blue-400);
-    }
-    &:active{
-    
-        background-color:var(--blue-500);
-    }
-
-
-`
-
-
-
-const LineDivider = styled.div`
-  border:0.1px solid gray;
-  width:100%;
-`
-
-
 
 const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa"];
 const TableContent = [{

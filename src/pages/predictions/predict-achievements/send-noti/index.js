@@ -28,26 +28,7 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import PredictionStudentList from "@/components/PredictionAchievements/PredictionStudentList";
 import ModalSuggestion from "@/components/PredictionAchievements/ModalSuggestion";
 
-const LearningOutcomesContainer = styled.div`
-  margin: auto;
-  width: 97%;
-  padding-block: 20px;
-`;
 
-const LearningOutComeContainerBody = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const LearningOutComeHeader = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-`;
 
 const AnalyticsBtn = styled.div`
   cursor: pointer;
@@ -74,10 +55,7 @@ const AnalyticsBtn = styled.div`
   }
 `;
 
-const LineDivider = styled.div`
-  border: 0.1px solid gray;
-  width: 100%;
-`;
+
 
 const TableHeader = [
   {id:"MSSV",label:"MSSV",align:"center"},

@@ -15,27 +15,7 @@ import {
 } from "@/components/Analytics/Styles/Styles";
 
 
-const LearningOutcomesContainer = styled.div`
-    margin: auto;
-    width: 97%;
-    padding-top:1.7rem;
-    
-    
-    
-`
-const LearningOutComeContainerBody = styled.div`
-  display:flex;
-  flex-direction:column;
-  gap:0.8rem;
 
-`
-const LearningOutComeHeader = styled.div`
-  display:flex;
-  flex-direction:row;
-  justify-content:space-between ;
-  padding-bottom:10px;
-  align-items:center;
-`
 
 const LearningOutComeItemsContainer = styled.div`
   display:flex;
@@ -72,18 +52,6 @@ const LearningOutComeTabButtons = styled.div`
 
 
 
-const LineDivider = styled.div`
-  background-color: var(--grey-600);
-  height:1px;
-  width:100%;
-`
-
-const FilterInput = styled.select`
-    
-    font-size:1rem;
-    padding-inline:2rem;
-
-`
 
 
 const ClasssColumns = [
