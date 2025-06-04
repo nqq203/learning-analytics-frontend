@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect, useMemo } from "react";
 import {
-  Container,
 
   Box,
 
@@ -26,6 +25,14 @@ import {
   CircularProgress
 
 } from "@mui/material";
+
+import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
+
+
 import Alert from '@mui/material/Alert';
 import SearchIcon from '@mui/icons-material/Search';
 import { fetchClassesByLecturer, fetchFraudDetect, fetchImportQuizFile } from "@/redux/thunk/fraudDetectionThunk";
@@ -213,12 +220,14 @@ const FraudDetection = () => {
 
   return (
     <div style={{ cursor: loading ? 'wait' : 'default' }}>
-      <Container maxWidth={false} sx={{ padding: 2 }}> {/* Set the container to full width */}
+      <Container > {/* Set the container to full width */}
 
         {/* Bộ lọc + Button */}
-        <Grid container spacing={2} alignItems="center" mb={3}>
+        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem", width: "100%" }}>
+
           {/* Lớp */}
-          <Grid item xs={12} sm={6} md={4}>
+        
             <FormControl
               style={{ width: "30%", minWidth: 450 }}
               size="small"
@@ -238,10 +247,10 @@ const FraudDetection = () => {
                 ))}
               </Select>
             </FormControl>
-          </Grid>
+          
 
           {/* Quiz */}
-          <Grid item xs={12} sm={6} md={4}>
+         
             <FormControl
               style={{ width: "30%", minWidth: 450 }}
               size="small"
@@ -269,9 +278,9 @@ const FraudDetection = () => {
               style={{ display: 'none' }}
               onChange={handleFileChange}
             />
-          </Grid>
+          
 
-          <Grid item xs={6} sm={3} md={2}>
+          
             <Button
               disabled={disabledThreehold}
               variant="contained"
@@ -287,9 +296,9 @@ const FraudDetection = () => {
             >
               Thiết lập ngưỡng
             </Button>
-          </Grid>
+          
 
-          <Grid item xs={6} sm={3} md={2}>
+          
             <Button
               disabled={disabledThreehold}
               variant="contained"
@@ -305,8 +314,17 @@ const FraudDetection = () => {
             >
               Phân tích
             </Button>
-          </Grid>
-        </Grid>
+          
+
+
+          </div>
+        </Header>
+
+
+        
+
+
+
 
         <Box
           sx={{

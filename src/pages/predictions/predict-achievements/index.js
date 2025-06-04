@@ -7,6 +7,14 @@ import ClassList from "@/components/PredictionAchievements/ClassList";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFilteredClasses } from "@/redux/thunk/learningoutcomeThunk";
 import InputAdornment from '@mui/material/InputAdornment';
+import TableList from "@/components/PredictionAchievements/TableList";
+import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
+
+
 const LearningOutcomesContainer = styled.div`
     margin: auto;
     width: 97%;
@@ -78,10 +86,110 @@ const FilterInput = styled.select`
 `
 
 
-const ClassTableHeader = ["STT","Lớp","Khóa","Chương trình","Khoa","Chuyên ngành","Chi tiết"];
+const ClasssColumns = [
+  {id:"ClassName",label:"Lớp",align:"center"},
+  {id:"ClassOf",label:"Khóa",align:"center"},
+  {id:"Program",label:"Chương trình",align:"center"},
+  {id:"Falculity",label:"Khoa",align:"center"},
+  {id:"Specialized",label:"Chuyên ngành",align:"center"},
+]
 
-const SubjectTableHeader = ["STT","Môn","Lớp","Khóa","Tín chỉ","Học kỳ","Chương trình","Khoa","Chuyên ngành","Chi tiết"];
-const SubjectTableContent = [
+const CourseColumns = [
+  {id:"SubjectName",label:"Môn",align:"center"},
+  {id:"ClassName",label:"Lớp",align:"center"},
+  {id:"ClassOf",label:"Khóa",align:"center"},
+  {id:"Credit",label:"Tín chỉ",align:"center"},
+  {id:"Semester",label:"Học kỳ",align:"center"},
+]
+const ClassTableContent = [
+        {
+          "ID":"1",
+          "ClassName": "21CLC08",
+          "ClassOf":2021,
+          "Program":"Chất Lượng Cao",
+          "Falculity":"Công nghệ thông tin",
+          "Specialized":"Không"
+        },
+        {
+          "ID":"2",
+          "ClassName": "21HTTT1",
+          "ClassOf":2021,
+          "Program":"Chất Lượng Cao",
+          "Falculity":"Công nghệ thông tin",
+          "Specialized":"Hệ thống thông tin"
+        },
+        {
+          "ID":"3",
+          "ClassName": "21HTTT2",
+          "ClassOf":2021,
+          "Program":"Chất Lượng Cao",
+          "Falculity":"Công nghệ thông tin",
+          "Specialized":"Hệ thống thông tin"
+        },
+    
+        {
+          "ID":"4",
+          "ClassName": "21HTTT3",
+          "ClassOf":2021,
+          "Program":"Chất Lượng Cao",
+          "Falculity":"Công nghệ thông tin",
+          "Specialized":"Hệ thống thông tin"
+        },
+    
+        {
+          "ID":"5",
+          "ClassName": "21HTTT4",
+          "ClassOf":2021,
+          "Program":"Chất Lượng Cao",
+          "Falculity":"Công nghệ thông tin",
+          "Specialized":"Hệ thống thông tin"
+        },
+    
+        {
+          "ID":"6",
+          "ClassName": "21HTTT5",
+          "ClassOf":2021,
+          "Program":"Chất Lượng Cao",
+          "Falculity":"Công nghệ thông tin",
+          "Specialized":"Hệ thống thông tin"
+        }
+        ,{
+          "ID":"7",
+          "ClassName": "21HTTT1",
+          "ClassOf":2021,
+          "Program":"Chất Lượng Cao",
+          "Falculity":"Công nghệ thông tin",
+          "Specialized":"Hệ thống thông tin"
+        },
+        {
+          "ID":"8",
+          "ClassName": "21HTTT2",
+          "ClassOf":2021,
+          "Program":"Chất Lượng Cao",
+          "Falculity":"Công nghệ thông tin",
+          "Specialized":"Hệ thống thông tin"
+        },
+    
+        {
+          "ID":"9",
+          "ClassName": "21HTTT3",
+          "ClassOf":2021,
+          "Program":"Chất Lượng Cao",
+          "Falculity":"Công nghệ thông tin",
+          "Specialized":"Hệ thống thông tin"
+        },
+    
+        {
+          "ID":"10",
+          "ClassName": "21HTTT4",
+          "ClassOf":2021,
+          "Program":"Chất Lượng Cao",
+          "Falculity":"Công nghệ thông tin",
+          "Specialized":"Hệ thống thông tin"
+        }
+    ]
+
+const CourseTableContent = [
             {
                 "ID":"1",
                 "SubjectName":"Cơ Sở Dữ Liệu Nâng Cao 1",
@@ -235,13 +343,13 @@ const LearningOutcome = () => {
 
 
     return (
-      < LearningOutcomesContainer >
+      < Container >
 
 
-      <LearningOutComeContainerBody>
+      
         
-        <LearningOutComeHeader>
-
+        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          
           <LearningOutComeItemsContainer>
 
             <LearningOutComeTabButtons active={MiniTab === 1} onClick={()=>{setMiniTab(1)}}>
@@ -284,22 +392,22 @@ const LearningOutcome = () => {
 
 
           </LearningOutComeItemsContainer>
+        
+
+        </Header>
 
 
-        </LearningOutComeHeader>
-
-
-        <LineDivider></LineDivider>
+       
 
           { MiniTab==1?
-            <ClassList  TableHeader={ClassTableHeader} TableContent={classes} setClassID={setClassID} ></ClassList>:
-            <SubjectList  TableHeader={SubjectTableHeader} TableContent={SubjectTableContent} setsubjectID = {setsubjectID}></SubjectList>
+            <TableList  columns={ClasssColumns} filteredRows={ClassTableContent} handleActions={setClassID} ></TableList>:
+            <TableList  columns={CourseColumns} filteredRows={CourseTableContent} handleActions = {setsubjectID}></TableList>
 
           }
         
 
-       </LearningOutComeContainerBody>
-      </LearningOutcomesContainer>
+      
+      </Container>
     );
   };
   

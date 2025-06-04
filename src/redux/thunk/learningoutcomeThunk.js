@@ -22,10 +22,10 @@ export const fetchFilteredClasses = createAsyncThunk(
     "learningOutcome/fetchFilteredClasses",
     async({userId,page,amount,semester,academicYear,search},{rejectWithValue})=>{
         try{
-            console.log("HERE")
+            
             console.log(`${userId} ${search}`)
             const response = await LearningOutcomeApi.FilterClass({userId,page,amount,semester,academicYear,search})
-            console.log("filter class",response.data)
+           
             return response.data;
         }
         catch(error){
@@ -40,7 +40,7 @@ export const fetchStudent = createAsyncThunk (
     async({userId,classId,page,amount},{rejectWithValue})=>{
         try{
             const response = await LearningOutcomeApi.fetchStudent({userId,classId,page,amount})
-            console.log("DATA NE", response.data);
+            
             return response.data;
         }
         catch(error){
@@ -54,9 +54,9 @@ export const fetchStudentDetail = createAsyncThunk(
     "learningOutcome/fetchStudentDetail",
     async({studentId,userId,classId},{rejectWithValue})=>{
         try{
-            console.log(`Input: ${studentId} ${userId} ${classId}`)
+           
             const response = await LearningOutcomeApi.fetchStudentDetail({studentId,userId,classId})
-            console.log('data ne',response.data)
+            
             return response.data;
         }
         catch(error){
@@ -71,9 +71,9 @@ export const fetchStudentSearch = createAsyncThunk(
     async({classId,page,amount,userId,search})=>{
         try{
             
-            console.log(`Fetch Student: ${classId} ${page} ${amount} ${userId} ${search}`)
+            
             const response = await LearningOutcomeApi.FetchStudentSearch({classId,page,amount,userId,search})
-            console.log("Respond: ",response.data)
+            
             return response.data;
         }
         catch(error){

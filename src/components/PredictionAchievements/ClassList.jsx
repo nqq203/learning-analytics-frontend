@@ -2,7 +2,7 @@ import { Card, CardContent, IconButton, Checkbox, Button } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import styled from "styled-components";
 const TableContainer = styled.div`
-    
+    margin-top:1rem;
     background-color: white;
     
     border-radius: 5px;

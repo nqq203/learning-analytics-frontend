@@ -11,7 +11,7 @@ import {
   TableHead,
   TableRow,
   IconButton,
-  Container,
+ 
   Grid,
   InputAdornment,
   InputLabel,
@@ -19,6 +19,14 @@ import {
   MenuItem,
   FormControl
 } from "@mui/material";
+
+import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
+
+
 import {
   Search,
   Settings,
@@ -221,11 +229,11 @@ export default function StudentDetailView({ onBack }) {
         sx={{
           display: "flex",
           flexDirection: "column",
-          height: "100vh",
-          borderLeft: "1px solid #e0e0e0",
+         
+          
         }}
       >
-        <Box sx={{ p: 2, borderBottom: "1px solid #e0e0e0" }}>
+        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={6}>
               <Box sx={{ display: "flex" }}>
@@ -318,17 +326,17 @@ export default function StudentDetailView({ onBack }) {
               </Box>
             </Grid>
           </Grid>
-        </Box>
+        </Header>
 
-        <Box sx={{ p: 2, borderBottom: "1px solid #e0e0e0" }}>
-          <Typography
-            variant="body1"
-            component="div"
-            sx={{ fontWeight: "bold" }}
+
+
+       
+        <Box sx={{ p: 2 }}>
+          <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}
           >
             Số lượng sinh viên: {studentCount} &nbsp;&nbsp;&nbsp; Điểm trung
             bình: {averageScore}
-          </Typography>
+          </span>
         </Box>
                   
         { showSummary?

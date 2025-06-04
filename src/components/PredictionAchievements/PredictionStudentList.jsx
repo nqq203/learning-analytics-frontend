@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useState,useEffect } from "react";
 
 const TableContainer = styled.div`
-    
+    margin-top:1rem;
     background-color: white;
     
     border-radius: 5px;
@@ -13,6 +13,7 @@ const TableContainer = styled.div`
     overflow-y:auto;
 `
 const TitleStudentList = styled.div`
+    margin-top:1rem;
     display:flex;
     flex-direction:row;
     justify-content:space-between;
