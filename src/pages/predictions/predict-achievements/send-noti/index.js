@@ -80,13 +80,12 @@ const LineDivider = styled.div`
 `;
 
 const TableHeader = [
-  "MSSV",
-  "Họ tên",
-  "Lớp",
-  "Môn",
-  "Khóa",
-  "Thành tích dự đoán",
-  "Chi tiết",
+  {id:"MSSV",label:"MSSV",align:"center"},
+  {id:"Name",label:"Họ tên",align:"center"},
+  {id:"Class",label:"Lớp",align:"center"},
+  {id:"Subject",label:"Môn",align:"center"},
+  {id:"ClassOf",label:"Khóa",align:"center"},
+  {id:"PredictAchivement",label:"Thành tích dự đoán",align:"center"},
 ];
 
 
@@ -168,6 +167,12 @@ const SendNoti = () => {
     }
   }, [router.query.data]);
 
+
+  const CloseModal = ()=>{
+
+     setModal(false);
+  }
+
   const handleNav = () => {
     // Gửi thông báo
   };
@@ -189,7 +194,7 @@ const SendNoti = () => {
             endAdornment: (
               <InputAdornment position="end" sx={{ marginRight: "12px" }}>
                 <IconButton
-                  onClick={handleSearch}
+                  // onClick={handleSearch}
                   edge="end"
                   sx={{
                     backgroundColor: "#1976D2",
@@ -281,20 +286,22 @@ const SendNoti = () => {
        
 
         <PredictionStudentList
-          TableHeader={TableHeader}
-          TableContent={TableContent}
+          columns={TableHeader}
+          filteredRows={TableContent}
           setChosenStudentOuter={setChosenStudent}
           setModal={setModal}
           setStudentModal={setStudentModal}
         />
 
-        {modalOpen ? (
+        
           <ModalSuggestion
+            open = {modalOpen}
+            CloseModal = {CloseModal}
             studentID={"124"}
             setModal={setModal}
             student={studentModal}
           />
-        ) : null}
+        
       
     </Container>
   );

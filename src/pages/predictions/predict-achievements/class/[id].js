@@ -7,7 +7,16 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  IconButton,
+  InputAdornment
 } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
+import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
+
 import StudentList from "@/components/PredictionAchievements/StudentList";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStudentSearch } from "@/redux/thunk/learningoutcomeThunk";
@@ -63,7 +72,8 @@ const LineDivider = styled.div`
   width: 100%;
 `;
 
-const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa", "Chi tiết"];
+
+const TableHeader = ["MSSV", "Họ và tên", "Lớp", "Môn", "Khóa"];
 const ClassStudentContainer = () => {
   const { accessToken } = useSelector(state => state.auth);
   const userId = useMemo(() => {
@@ -136,19 +146,50 @@ const ClassStudentContainer = () => {
   const handleChangeAcedemicYear = (value) => { };
 
   return (
-    <LearningOutcomesContainer>
-      <LearningOutComeContainerBody>
-        <LearningOutComeHeader>
-          <LearningOutComeItemsContainer>
-            <FormControl style={{ minWidth: "40rem" }} variant="outlined">
-              <TextField
-                id="outlined-basic"
-                label="Tìm kiếm"
-                variant="outlined"
-              />
-            </FormControl>
+    <Container>
+      
+        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent:"space-between", width: "100%" }}>
 
-            <FormControl style={{ minWidth: "12rem" }} variant="outlined">
+            
+              <TextField
+                variant="outlined"
+                label="Tìm kiếm"
+                style={{ width: "55%", minWidth: 200 }}
+                size="small"
+                onChange={(e) => handleSearch(e.target.value)}
+               
+                InputProps={{
+                  
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        sx={{
+                          backgroundColor: "#1976D2",
+                          borderRadius: "0 4px 4px 0",
+                          padding: "10px",
+                          height: "100%",
+                          '&:hover': {
+                            backgroundColor: "#1976d2",
+                        },
+                      }}
+                        
+                      >
+                        <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  width: "100%",
+                  '& .MuiOutlinedInput-root': {
+                    paddingRight: 0,
+                  },
+                }}
+              />
+            
+
+            <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
               <InputLabel>Khóa</InputLabel>
               <Select
                 label="Chọn khóa"
@@ -164,15 +205,23 @@ const ClassStudentContainer = () => {
                 })}
               </Select>
             </FormControl>
-          </LearningOutComeItemsContainer>
+          
 
-          <LearningOutComeItemsContainer>
-            <AnalyticsBtn>Lọc</AnalyticsBtn>
-            <AnalyticsBtn onClick={() => handleNav()}>Dự đoán</AnalyticsBtn>
-          </LearningOutComeItemsContainer>
-        </LearningOutComeHeader>
+          
+            <ActionButton
+            variant="contained"
+            style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}>Lọc</ActionButton>
 
-        <LineDivider></LineDivider>
+            <ActionButton 
+            onClick={() => handleNav()}
+            variant="contained"
+            style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}>Dự đoán</ActionButton>
+          
+            </div>
+          
+        </Header>
+
+        
 
         <StudentList
           TableHeader={TableHeader}
@@ -181,8 +230,8 @@ const ClassStudentContainer = () => {
         >
           {" "}
         </StudentList>
-      </LearningOutComeContainerBody>
-    </LearningOutcomesContainer>
+      
+    </Container>
   );
 };
 

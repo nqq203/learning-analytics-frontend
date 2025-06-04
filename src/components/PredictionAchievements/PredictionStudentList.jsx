@@ -1,28 +1,43 @@
-import { Card, CardContent, IconButton, Checkbox, Button, Tab } from "@mui/material";
+import { useEffect, useState } from "react";
+
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Checkbox
+} from "@mui/material";
+import { TableWrapper } from "../Analytics/Styles/Styles";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import styled from "styled-components";
-import { useState,useEffect } from "react";
 
-const TableContainer = styled.div`
-    margin-top:1rem;
-    background-color: white;
-    
-    border-radius: 5px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    height:600px;
-    overflow-y:auto;
-`
-const TitleStudentList = styled.div`
-    margin-top:1rem;
-    display:flex;
-    flex-direction:row;
-    justify-content:space-between;
-    width:97%;
-    align-items:center;
+const PredictionStudentList = ({
+  filteredRows,
+  columns,
+  handleActions,
+  setChosenStudentOuter,
+  setModal,
+  setStudentModal,
+  action = true,
+}) => {
 
-`
-const PredictionStudentList = ({TableHeader,TableContent,setChosenStudentOuter,setModal,setStudentModal}) =>{
-    
+
+
+  const cellStyle = {
+    fontSize: "16px",
+  };
+
+  const headerCellStyle = {
+    ...cellStyle,
+    fontWeight: "700",
+  };
+  const renderCell = (value) => {
+    return value !== null && value !== undefined && value !== "" ? value : "--";
+  };
+
+
     const [studentChosen,setStudentChosen] = useState([])
     const handleCheck = (student) =>{
         
@@ -45,113 +60,115 @@ const PredictionStudentList = ({TableHeader,TableContent,setChosenStudentOuter,s
 
     
     const handleCheckAll = ()=>{
-        if(studentChosen.length == TableContent.length){
+        if(studentChosen.length == filteredRows.length){
             setStudentChosen([])
             setChosenStudentOuter([])
         }
         else{
-            setStudentChosen(TableContent)
-            setChosenStudentOuter(TableContent)
+            setStudentChosen(filteredRows)
+            setChosenStudentOuter(filteredRows)
         }
     }
-    
 
     const handleClick = (item)=>
     {
         setStudentModal(item)
         setModal(true);
     }
+    
+  return (
+    <TableWrapper className="scroll-view">
+      <TableContainer
+        component={Paper}
+        className="TableContainer"
+        style={{ maxHeight: "550px", overflow: "auto" }}
+      >
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
+                STT
+              </TableCell>
+              {columns.map((col, index) => (
+                <TableCell
+                  key={index}
+                  style={{
+                    ...headerCellStyle,
+                    textAlign: col.align || "center",
+                  }}
+                >
+                  {col.label}
+                </TableCell>
+              ))}
+              {action && (
+                <>
+                <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
+                  Chi tiết
+                </TableCell>
+                
+                <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
+                  <Checkbox
+                  onChange={ ()=>handleCheckAll()} 
+                    checked={(studentChosen.length === filteredRows.length)}
+                  ></Checkbox>
+                </TableCell>
+                </>
+              )}
+            </TableRow>
+          </TableHead>
 
-    useEffect(()=>{
-        console.log('STUDENT CHOSEN: ',studentChosen);
-    },[studentChosen])
+          <TableBody>
+            {filteredRows?.length > 0 ? (
+              filteredRows.map((row, index) => (
+                <TableRow key={row.classId || index}>
+                  <TableCell style={{ ...cellStyle, textAlign: "center" }}>
+                    {index + 1}
+                  </TableCell>
 
-    return(
-        <>
-            
-                <TitleStudentList> 
-                    <div style={{fontSize:"1.5rem",fontWeight:"bold"}}>Danh sách sinh viên</div>
+                  {columns.map((col, idx) => (
+                    <TableCell
+                      key={idx}
+                      style={{ ...cellStyle, textAlign: col.align || "center" }}
+                    >
+                      {renderCell(row[col.id])}
+                    </TableCell>
+                  ))}
 
-                    <div style={{display:"flex", flexDirection:"row",alignItems:"center"}} >
+                  {action && (
+                    <>
+                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>
+                      <VisibilityIcon
+                        color="primary"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handleClick(row)}
+                      />
+                    </TableCell>
 
-                        <div style={{fontSize:"1.2rem",fontWeight:"bold"}}>Chọn tất cả :</div>
+                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>
                         <Checkbox 
-                            onChange={handleCheckAll}
-                            checked={studentChosen.length === TableContent.length}
-                        > </Checkbox>
-                    </div>
-                </TitleStudentList>
-            
-
-            <TableContainer style={{
-                maxHeight: "650px",
-                overflow: "auto",
-            }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse",backgroundColor: "white" }}>
-                        <thead  style={{
-                            position: "sticky", 
-                            top:0,
-                            zIndex: 1000, 
-                            backgroundColor: "white",
-                            textAlign: "center",
-                            boxShadow: "0px 2px 2px -1px #ddd"
-                            
-                        }}>
-                            <tr >
-                            {
-                                TableHeader.map((item,index)=>{
-                                return <th 
-                                style={{
-                                    position: "sticky", 
-                                    top:0,
-                                    zIndex: 1000, 
-                                    paddingBlock:"1.4rem",
-                                    backgroundColor: "white",
-                                    textAlign: "center",
-                                    
-                                } } key={index}> {item}</th>
-                                })
-                            }
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {TableContent.map((item, index) => (
-                                <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
-                                    
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.MSSV}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Name}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Class}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Subject}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.ClassOf}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.PredictAchivement}</td>
-
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>
-                                        <IconButton 
-                                        onClick={()=> handleClick(item) }
-                                        style={{zIndex: 10 }}
-                                        >
-                                            <VisibilityIcon style={{zIndex: 10 }} color="primary" />
-                                        </IconButton>
-                                    </td>
-
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>
-                                        <Checkbox 
-                                            key={index} onChange={ ()=>handleCheck(item)} 
-                                            checked={studentChosen.some((s) => s.ID === item.ID)}
-                                        ></Checkbox>
-                                    </td>
-
-                                    
-                                
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </TableContainer>
-        
-        
-        </>
-    )
-}
+                        onChange={ ()=>handleCheck(row)} 
+                        checked={studentChosen.some((s) => s.ID === row.ID)}
+                        ></Checkbox>
+                    </TableCell>
+                    </>
+                  )}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length + (action ? 2 : 1)}
+                  style={{ ...cellStyle, padding: "20px", textAlign: "center" }}
+                >
+                  Chưa có dữ liệu để hiển thị
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </TableWrapper>
+  );
+};
 
 export default PredictionStudentList;

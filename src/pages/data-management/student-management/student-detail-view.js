@@ -371,6 +371,7 @@ export default function StudentDetailView({ onBack }) {
           </Table>
         </TableContainer>
       </Box>
+
       <AddStudentModal
         open={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
@@ -379,6 +380,7 @@ export default function StudentDetailView({ onBack }) {
         onAddStudent={handleAddNewStudent}
         mode="add"
       />
+      
       <EditStudentModal
         open={openEditModal}
         onClose={handleCloseEdit}
