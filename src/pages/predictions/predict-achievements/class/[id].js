@@ -189,7 +189,7 @@ const ClassStudentContainer = () => {
               />
             
 
-            <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
+            <FormControl style={{ width: "25%", minWidth: 250 }} size="small">
               <InputLabel>Khóa</InputLabel>
               <Select
                 label="Chọn khóa"
@@ -208,14 +208,12 @@ const ClassStudentContainer = () => {
           
 
           
-            <ActionButton
-            variant="contained"
-            style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}>Lọc</ActionButton>
+            
 
             <ActionButton 
             onClick={() => handleNav()}
             variant="contained"
-            style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}>Dự đoán</ActionButton>
+            style={{ width: "18%", fontWeight: "700", fontSize: "14px" }}>Dự đoán</ActionButton>
           
             </div>
           

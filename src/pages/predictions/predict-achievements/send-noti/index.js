@@ -254,9 +254,13 @@ const SendNoti = () => {
           </IconButton>
 
 
-          <AnalyticsBtn onClick={() => handleNav()}>
+          <ActionButton 
+          style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
+          color="primary"
+          variant="contained"
+          onClick={() => handleNav()}>
             Gửi Thông Báo
-          </AnalyticsBtn>
+          </ActionButton>
 
           </div>
         </Header>

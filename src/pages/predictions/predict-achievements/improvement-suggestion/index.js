@@ -156,7 +156,7 @@ const ImprovementSuggestion = () => {
       <TextField
                     variant="outlined"
                     label="Tìm kiếm"
-                    style={{ width: "45%", minWidth: 200 }}
+                    style={{ width: "55%", minWidth: 200 }}
                     size="small"
                     onChange={(e) => handleSearch(e.target.value)}
                     
@@ -191,7 +191,7 @@ const ImprovementSuggestion = () => {
                
 
 
-                <FormControl  style={{ width: "10%", minWidth: 250 }}variant="outlined" size="small" >
+                <FormControl  style={{ width: "17%", minWidth: 250 }}variant="outlined" size="small" >
                     <InputLabel>Xếp loại</InputLabel>
                     <Select  label="Chọn Xếp loại">
                         
@@ -205,7 +205,7 @@ const ImprovementSuggestion = () => {
                     </Select>
                 </FormControl>
 
-                <FormControl  style={{ width: "10%", minWidth: 250 }}variant="outlined" size="small">
+                <FormControl  style={{ width: "17%", minWidth: 250 }}variant="outlined" size="small">
                     <InputLabel>Khóa</InputLabel>
                     <Select  label="Chọn khóa">
                         <MenuItem value="class">21</MenuItem>
@@ -217,11 +217,7 @@ const ImprovementSuggestion = () => {
 
             
 
-                <ActionButton
-                variant="contained"
-                style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
                 
-                >Lọc</ActionButton>
 
                 <ActionButton onClick= {()=>handleNav()}
                   variant="contained"

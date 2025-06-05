@@ -75,8 +75,8 @@ const SubjectStudentContainer = () => {
         <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent:"space-between", width: "100%" }}>
 
-            <div style={{display:"flex", gap:"8px",alignItems: "center",width:"100%"}}>
-            <FormControl style={{ width: "20%", minWidth: 250 }} size="small">
+            
+            <FormControl style={{ width: "25%", minWidth: 250 }} size="small">
               <InputLabel>Khóa</InputLabel>
               <Select label="Chọn khóa">
                 <MenuItem value="class">21</MenuItem>
@@ -91,7 +91,7 @@ const SubjectStudentContainer = () => {
             label="Tìm kiếm"
             // value={search}
             // onChange={handleSearchChange}
-            style={{ width: "70%", minWidth: 200 }}
+            style={{ width: "55%", minWidth: 200 }}
             size="small"
             InputProps={{
               endAdornment: (
@@ -121,19 +121,13 @@ const SubjectStudentContainer = () => {
             }}
           />
 
-          </div>
           
-          <div style={{display:"flex", gap:"8px",alignItems: "center",width:"30%"}}>
-            <ActionButton 
-             style={{ width: "50%", fontWeight: "700", fontSize: "14px" }}  
-              color="primary"
-              variant="contained"
-              >
-                  Lọc
-            </ActionButton>
+          
+          
+            
 
             <ActionButton 
-               style={{ width: "50%", fontWeight: "700", fontSize: "14px" }}
+               style={{ width: "19%", fontWeight: "700", fontSize: "14px" }}
                 color="primary"
                 onClick={() => handleNav()}
                 variant="contained"
@@ -141,7 +135,7 @@ const SubjectStudentContainer = () => {
             </ActionButton>
             {/* <AnalyticsBtn onClick={() => handleNav()}>Dự đoán</AnalyticsBtn> */}
 
-            </div>
+            
 
           </div>
 
