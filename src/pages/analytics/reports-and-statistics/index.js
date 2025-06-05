@@ -152,7 +152,7 @@ const ClassesList = () => {
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
+            gap: "8px",
             width: "100%",
           }}
         >
@@ -194,7 +194,7 @@ const ClassesList = () => {
             }}
           />
 
-          <FormControl style={{ width: "20%", minWidth: 250 }} size="small">
+          <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
             <InputLabel>Môn học</InputLabel>
             <Select
               label="Môn học"
@@ -212,7 +212,7 @@ const ClassesList = () => {
             </Select>
           </FormControl>
 
-          <FormControl style={{ width: "20%", minWidth: 250 }} size="small">
+          <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
             <InputLabel>Lớp</InputLabel>
             <Select
               label="Lớp"
