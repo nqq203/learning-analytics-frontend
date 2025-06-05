@@ -24,8 +24,16 @@ import HistogramChartAnalytics from "@/components/Analytics/Charts/HistogramChar
 import RadarChartAnalytics from "@/components/Analytics/Charts/RadarChart";
 import ClassificationPieChart from "@/components/Analytics/Charts/ClassificationPieChart";
 import PassFailPieChart from "@/components/Analytics/Charts/PassFailPieChart";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchStudents,
+  fetchStudentsDetails,
+} from "@/redux/thunk/analyticsThunk";
+import { useRouter } from "next/router";
 
 const StudentAnalytics = () => {
+  const router = useRouter();
+  const dispatch = useDispatch();
   const [isOpenAnalyticConfig, setIsOpenAnalyticConfig] = useState(false);
   const [selectedChartTypes, setSelectedChartTypes] = useState([]);
   const [selectedOthers, setSelectedOthers] = useState([]);
@@ -33,153 +41,22 @@ const StudentAnalytics = () => {
   const [pieChartData, setPieChartData] = useState(null);
   const [selectedGradeField, setSelectedGradeField] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const { classId } = router.query;
+  const [data, setData] = useState([]);
+  const [className, setClassName] = useState("");
+  const [subjectName, setSubjectName] = useState("");
 
-  const [data, setData] = useState([
-    {
-      id: 1,
-      identificationCode: "21127001",
-      fullName: "Nguyễn Văn A",
-      midtermGrade: "10",
-      finalGrade: "10",
-      projectGrade: "10",
-      practiceGrade: "10",
-      totalGrade: "10",
-      classification: "Xuất sắc",
-      academicYear: "2021",
-    },
-    {
-      id: 2,
-      identificationCode: "21127002",
-      fullName: "Hoàng Văn B",
-      midtermGrade: "9",
-      finalGrade: "9",
-      projectGrade: "10",
-      practiceGrade: "10",
-      totalGrade: "9.9",
-      classification: "Xuất sắc",
-      academicYear: "2021",
-    },
-    {
-      id: 3,
-      identificationCode: "21127003",
-      fullName: "Trần Văn C",
-      midtermGrade: "8",
-      finalGrade: "8",
-      projectGrade: "8",
-      practiceGrade: "8",
-      totalGrade: "8",
-      classification: "Giỏi",
-      academicYear: "2021",
-    },
-    {
-      id: 4,
-      identificationCode: "21127004",
-      fullName: "Nguyễn Văn D",
-      midtermGrade: "5",
-      finalGrade: "5",
-      projectGrade: "5",
-      practiceGrade: "5",
-      totalGrade: "5",
-      classification: "Trung bình",
-      academicYear: "2021",
-    },
-    {
-      id: 5,
-      identificationCode: "21127005",
-      fullName: "Lê Văn A",
-      midtermGrade: "4.5",
-      finalGrade: "4.5",
-      projectGrade: "4.5",
-      practiceGrade: "4.5",
-      totalGrade: "4.5",
-      classification: "Yếu",
-      academicYear: "2021",
-    },
-    {
-      id: 6,
-      identificationCode: "21127006",
-      fullName: "Trần Văn E",
-      midtermGrade: "0",
-      finalGrade: "0",
-      projectGrade: "7",
-      practiceGrade: "8",
-      totalGrade: "3.2",
-      classification: "Yếu",
-      academicYear: "2021",
-    },
-    {
-      id: 7,
-      identificationCode: "21127007",
-      fullName: "Nguyễn Văn F",
-      midtermGrade: "9",
-      finalGrade: "8",
-      projectGrade: "8",
-      practiceGrade: "10",
-      totalGrade: "9.2",
-      classification: "Xuất sắc",
-      academicYear: "2021",
-    },
-    {
-      id: 8,
-      identificationCode: "21127008",
-      fullName: "Nguyễn Văn G",
-      midtermGrade: "8",
-      finalGrade: "9",
-      projectGrade: "8",
-      practiceGrade: "9",
-      totalGrade: "8.5",
-      classification: "Giỏi",
-      academicYear: "2021",
-    },
-    {
-      id: 9,
-      identificationCode: "21127009",
-      fullName: "Trần Thị H",
-      midtermGrade: "7",
-      finalGrade: "7",
-      projectGrade: "10",
-      practiceGrade: "10",
-      totalGrade: "8.8",
-      classification: "Giỏi",
-      academicYear: "2022",
-    },
-    {
-      id: 10,
-      identificationCode: "21127010",
-      fullName: "Hoàng Văn A",
-      midtermGrade: "10",
-      finalGrade: "10",
-      projectGrade: "10",
-      practiceGrade: "10",
-      totalGrade: "10",
-      classification: "Xuất sắc",
-      academicYear: "2021",
-    },
-    {
-      id: 11,
-      identificationCode: "21127011",
-      fullName: "Nguyễn Văn A",
-      midtermGrade: "10",
-      finalGrade: "10",
-      projectGrade: "10",
-      practiceGrade: "10",
-      totalGrade: "10",
-      classification: "Xuất sắc",
-      academicYear: "2022",
-    },
-    {
-      id: 12,
-      identificationCode: "21127012",
-      fullName: "Nguyễn Văn A",
-      midtermGrade: "10",
-      finalGrade: "10",
-      projectGrade: "10",
-      practiceGrade: "10",
-      totalGrade: "10",
-      classification: "Xuất sắc",
-      academicYear: "2022",
-    },
-  ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!classId) return;
+
+      const response = await dispatch(
+        fetchStudentsDetails({ classId })
+      ).unwrap();
+      setData(response?.data?.studentList || []);
+    };
+    fetchData();
+  }, [classId, dispatch]);
 
   const handleOpenConfig = () => {
     setIsOpenAnalyticConfig(true);
@@ -250,11 +127,11 @@ const StudentAnalytics = () => {
     );
   };
 
-  const renderHistogramChart = () => {
-    return (
-      <HistogramChartAnalytics data={data} selectedGrades={selectedGrades} />
-    );
-  };
+  // const renderHistogramChart = () => {
+  //   return (
+  //     <HistogramChartAnalytics data={data} selectedGrades={selectedGrades} />
+  //   );
+  // };
 
   const renderRadarChart = () => {
     return <RadarChartAnalytics data={data} selectedGrades={selectedGrades} />;
@@ -317,8 +194,8 @@ const StudentAnalytics = () => {
                 return renderBarChart();
               case "scatter":
                 return renderScatterChart();
-              case "histogram":
-                return renderHistogramChart();
+              // case "histogram":
+              //   return renderHistogramChart();
               case "radar":
                 return renderRadarChart();
               default:

@@ -39,7 +39,7 @@ const AnalyticConfig = ({ open, onClose, onApply }) => {
     { key: "pie", label: "Biểu đồ tròn" },
     { key: "column", label: "Biểu đồ cột" },
     { key: "scatter", label: "Biểu đồ phân tán" },
-    { key: "histogram", label: "Biểu đồ phân phối" },
+    // { key: "histogram", label: "Biểu đồ phân phối" },
     { key: "radar", label: "Biểu đồ radar" },
   ];
 
