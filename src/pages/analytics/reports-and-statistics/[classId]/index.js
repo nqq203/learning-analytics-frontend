@@ -109,7 +109,7 @@ const StudentsList = () => {
 
   const sortedRows = filteredRows.sort((a, b) => {
     if (sortOption === "studentId") {
-      return (Number(a.studentId ?? 0)) - (Number(b.studentId ?? 0));
+      return Number(a.studentId ?? 0) - Number(b.studentId ?? 0);
     }
     return (a.fullName ?? "").localeCompare(b.fullName ?? "");
   });
