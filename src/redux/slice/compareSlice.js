@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk } from '../thunk/compareThunk';
 
 const initialState = {
-  compareResults: [],
+  compareResults: null,
   loading: false,
   error: null,
 };

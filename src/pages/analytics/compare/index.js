@@ -17,7 +17,7 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import CompareResult from "./CompareResult";
+import CompareResult from "../compare/compareResult/CompareResult";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
@@ -86,7 +86,7 @@ const Compare = () => {
       const item = rows.find(r => r.no === no);
       return item?.courseId;
     })).size === 1);
-
+    
   const handleCompareClick = async () => {
     const selectedItems = rows.filter(row => selectedRows.includes(row.no));
 
@@ -99,8 +99,6 @@ const Compare = () => {
       if (criteria === 'class') {
         const classIds = selectedItems.map(row => String(row.classId));
         const payload = { class_ids: classIds };
-        console.log(payload)
-        console.log(await dispatch(fetchCompareByClassesThunk(payload)))
         await dispatch(fetchCompareByClassesThunk(payload));
       } else if (criteria === 'course') {
         const cohorts = selectedItems.map(row => String(row.cohort || row.academicYear || ''));
@@ -108,6 +106,8 @@ const Compare = () => {
         const payload = { cohorts, course_id: courseId };
         await dispatch(fetchCompareByCohortsThunk(payload));
       }
+      // Sau khi fetch thành công, hiển thị phần kết quả so sánh
+      setIsComparing(true);
     } catch (error) {
       console.error("Lỗi khi gửi yêu cầu so sánh:", error);
     }
