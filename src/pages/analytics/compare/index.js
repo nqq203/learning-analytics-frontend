@@ -142,7 +142,7 @@ const Compare = () => {
     <div style={{ padding: "16px" }}>
       <Grid container spacing={3} alignItems="center">
         <Grid item xs={12} sm={4}>
-          <FormControl fullWidth variant="outlined">
+          <FormControl fullWidth variant="outlined" size="small">
             <InputLabel>Tiêu chí</InputLabel>
             <Select label="Tiêu chí" value={criteria} onChange={handleCriteriaChange}>
               <MenuItem value="class">Theo Lớp</MenuItem>
@@ -152,7 +152,7 @@ const Compare = () => {
         </Grid>
 
         <Grid item xs={12} sm={4}>
-          <FormControl fullWidth variant="outlined">
+          <FormControl fullWidth variant="outlined" size="small">
             <InputLabel>Môn học</InputLabel>
             <Select
               label="Môn học"

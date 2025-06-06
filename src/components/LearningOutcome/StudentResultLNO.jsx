@@ -12,21 +12,10 @@ import {
 } from "@mui/material";
 
 const LearningOutcomeBody = styled.div`
+  padding-inline:2rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-`;
-
-const DropdownTitleContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-  align-items: center;
-`;
-
-const DropdownTitle = styled.div`
-  font-weight: bold;
-  font-size: 1rem;
 `;
 
 const ChartContainer = styled.div`
@@ -38,14 +27,14 @@ const ChartContainer = styled.div`
 const ChartContainer1 = styled.div`
   display: flex;
   flex-direction: row;
+  justify-content:space-between;
   gap: 1rem;
 `;
 
 const ChartBox = styled.div`
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
   background-color: white;
-  width: 50%;
-  // height: 300px;
+  width: 47%;
   padding: 1rem;
   text-align: center;
   border-radius: 10px;
@@ -56,11 +45,11 @@ const BarChartContainer1 = styled.div`
 `;
 
 const BarChartBox = styled.div`
+  padding:1rem;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
   background-color: white;
   width: 100%;
-  padding: 1rem;
-  padding-inline: 2rem;
+  
   text-align: center;
   align-items: center;
   justify-content: center;
@@ -69,7 +58,7 @@ const BarChartBox = styled.div`
 
 const TitleChart = styled.div`
   text-align: left;
-  margin-bottom: 1rem;
+ 
   font-weight: bold;
   font-size: 1.2rem;
 `;
@@ -85,23 +74,6 @@ export default function StudentResultLNO({
 
   return (
     <LearningOutcomeBody>
-      {/* <DropdownTitleContainer>
-        <DropdownTitle>MSSV - Họ tên:</DropdownTitle>
-
-        <FormControl sx={{ minWidth: 300 }} disabled>
-          <InputLabel id="student-label">MSSV - Họ tên</InputLabel>
-          <Select
-            labelId="student-label"
-            id="student-select"
-            value={studentInfo?.studentId || ""}
-            label="MSSV - Họ tên"
-          >
-            <MenuItem value={studentInfo?.studentId || ""}>
-              {`${studentInfo?.studentId || ""} - ${studentInfo?.fullName || ""}`}
-            </MenuItem>
-          </Select>
-        </FormControl>
-      </DropdownTitleContainer> */}
 
       <ChartContainer>
         <ChartContainer1>
@@ -121,13 +93,13 @@ export default function StudentResultLNO({
       {/* Biểu đồ Gauge đưa xuống dưới */}
       <BarChartContainer1>
         <BarChartBox>
-          <h2 style={{ textAlign: "left", marginBottom: "1rem" }}>
+          <h3 style={{ textAlign: "left" }}>
             Loại xếp hạng của sinh viên:
             <span style={{ fontWeight: 500 }}>
               {" "}
               {studentGrade.classification}
             </span>
-          </h2>
+          </h3>
           <MyGaugeChart value={studentGrade.totalGrade} />
         </BarChartBox>
       </BarChartContainer1>

@@ -6,6 +6,7 @@ import SubjectList from "@/components/PredictionAchievements/SubjectList";
 import ClassList from "@/components/PredictionAchievements/ClassList";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFilteredClasses } from "@/redux/thunk/learningoutcomeThunk";
+import InputAdornment from '@mui/material/InputAdornment';
 const LearningOutcomesContainer = styled.div`
     margin: auto;
     width: 97%;
@@ -224,7 +225,6 @@ const LearningOutcome = () => {
 
     useEffect(() => {
             if(classID!=""){
-              
               router.push(`/predictions/predict-achievements/class/${classID}`) 
             }
             else if (subjectID!=""){
@@ -259,7 +259,7 @@ const LearningOutcome = () => {
 
           <LearningOutComeItemsContainer>
 
-          <FormControl style={{ minWidth: "200px" }} variant="outlined">
+          <FormControl style={{ minWidth: "250px" }} variant="outlined" size="small">
             <InputLabel>Khóa</InputLabel>
             <Select label="Chọn khóa" onChange={(e)=>handleChangeAcedemicYear(e.target.value)}>
                             <MenuItem value="">Tất cả</MenuItem>
@@ -273,7 +273,7 @@ const LearningOutcome = () => {
             </FormControl>
 
 
-            <FormControl style={{ minWidth: "200px" }} variant="outlined">
+            <FormControl style={{ minWidth: "250px" }} variant="outlined" size="small">
             <InputLabel>Lớp</InputLabel>
             <Select  label="Chọn lớp">
                 <MenuItem value="class">21CLC05</MenuItem>
