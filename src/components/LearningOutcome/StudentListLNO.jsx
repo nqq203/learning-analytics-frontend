@@ -1,130 +1,161 @@
-import { Card, CardContent, IconButton, Checkbox, Button, Tab } from "@mui/material";
+import { 
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow, 
+    IconButton, 
+    Checkbox, 
+    Button
+} from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import styled from "styled-components";
-import { useState, useEffect } from "react";
-const LearningOutcomeBody = styled.div`
-  display:flex;
-  flex-direction: column;
-  gap:1rem;
-  margin-top:1rem;
+import { useState, useEffect,useRef } from "react";
+import { TableWrapper } from "../Analytics/Styles/Styles";
+
+
+
+
+
+
+export default function StudentListLNO({TableContent,TableHeader,setStudentID, onScrollEnd, action = true, loading }){
+    const [isFetching, setIsFetching] = useState(false);
   
-`
 
-const TableContainer = styled.div`
+    const cellStyle = {
+        fontSize: "16px",
+    };
+    const headerCellStyle = {
+        ...cellStyle,
+        fontWeight: "700",
+    };
+     const renderCell = (value) => {
+        return value !== null && value !== undefined && value !== "" ? value : "--";
+    };
     
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    height:600px;
-    overflow-y:auto;
-`
-const NoContent = styled.div`
-    display:flex;
-    width:100%;
-    justify-content:center;
-    align-items:center;
-    font-size:1.5rem;
-    font-weight:bold;
+    
 
-
-`
-
-
-
-
-
-export default function StudentListLNO({TableContent,TableHeader,setStudentID,onScrollEnd }){
-
-    useEffect(()=>{
-        console.log("Table content: ",TableContent)
-    },[TableContent])
     const handleScroll = (e) => {
         const { scrollTop, scrollHeight, clientHeight } = e.target;
-        if (scrollTop + clientHeight >= scrollHeight - 50) {
-          onScrollEnd(); 
-        }
-      };
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
 
-    
+        if (isAtBottom && !isFetching && !loading) {
+        setIsFetching(true);
+        onScrollEnd();
+        }
+    };
+
+    useEffect(() => {
+        // khi dữ liệu mới được add, reset flag
+        if (!loading) {
+        setIsFetching(false);
+        }
+    }, [TableContent, loading]);
 
     return(
         <>
-            <LearningOutcomeBody>
+                <TableWrapper 
+                className="scroll-view">
             
-                      <TableContainer style={{
-                maxHeight: "650px",
-                overflow: "auto"}}
-                onScroll={handleScroll}>
-                    <table 
-                    style={{ width: "100%", borderCollapse: "collapse",backgroundColor: "white" }}
+                      <TableContainer 
+                      onScroll={handleScroll}
+                      component={Paper}
+                      className="TableContainer"
+                      style={{
+                        maxHeight: "550px",
+                        overflow: "auto"
+                        }}
+                
+                
+                >
+                    <Table stickyHeader
                     
                     >
-                        <thead  style={{
-                            position: "sticky", 
-                            top:0,
-                            zIndex: 1000, 
-                            backgroundColor: "white",
-                            textAlign: "center",
-                            boxShadow: "0px 2px 2px -1px #ddd"
-                            
-                        }}>
-                            <tr >
-                            {
-                                TableHeader.map((item,index)=>{
-                                return <th 
-                                style={{
-                                    position: "sticky", 
-                                    top:0,
-                                    zIndex: 1000, 
-                                    paddingBlock:"1.4rem",
-                                    backgroundColor: "white",
-                                    textAlign: "center",
-                                    
-                                } } key={index}> {item}</th>
-                                })
-                            }
-                            </tr>
-                        </thead>
-                        <tbody>
+                        <TableHead >
+                            <TableRow >
+                                <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
+                                STT
+                                </TableCell>
+
+                                {TableHeader.map((col, index) => (
+                                    <TableCell
+                                    key={index}
+                                    style={{
+                                        ...headerCellStyle,
+                                        textAlign: col.align || "center",
+                                    }}
+                                    >
+                                    {col.label}
+                                    </TableCell>
+                                ))}
+                                {action && (
+                                    <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
+                                    Chi tiết
+                                    </TableCell>
+                                )}
+
+
+                            </TableRow>
+                        </TableHead>
+
+                        <TableBody>
                             {
                                 TableContent.length>0?
-                                TableContent.map((item, index) => (
-                                <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.studentId}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.fullName}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.className}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.courseName}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.academicYear}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.majorName}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.totalGrade}</td>
+                                TableContent.map((row, index) => (
+                                <TableRow key={index} style={{ borderBottom: "1px solid #eee" }}>
+                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>
+                                        {index + 1}
+                                    </TableCell>
                                     
                                     
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>
-                                        <IconButton onClick={()=>setStudentID(item.studentId) }
-                                        style={{zIndex: 10 }}>
-                                            <VisibilityIcon style={{zIndex: 10 }} color="primary" />
-                                        </IconButton>
-                                    </td>
+                                    {TableHeader.map((col, idx) => (
+                                        <TableCell
+                                        key={idx}
+                                        style={{ ...cellStyle, textAlign: col.align || "center" }}
+                                        >
+                                        {renderCell(row[col.id])}
+                                        </TableCell>
+                                    ))}
+                                    
+                                    {   action &&
+                                        (
+                                            <TableCell style={{ ...cellStyle, textAlign: "center" }}>
+                                                <VisibilityIcon 
+                                                 color="primary"
+                                                style={{ cursor: "pointer" }}
+
+                                                onClick={()=>setStudentID(row.studentId) }
+                                                
+                                                >
+                                                    
+                                                </VisibilityIcon>
+                                            </TableCell>
+                                        )
+                                    
+                                    }
+                                    
                                 
-                                </tr>
+                                </TableRow>
                                 ))  
                                 :
-                                <tr style={{ borderBottom: "1px solid #eee" }}>
-                                <td colspan="7"
-                                    style={{textAlign:"center",fontSize:"1.5rem",fontWeight:"bold",padding:"1.5rem"}}
+                                <TableRow style={{ borderBottom: "1px solid #eee" }}>
+                                <TableCell 
+                                    colSpan={TableHeader.length + (action ? 2 : 1)}
+                                    style={{ ...cellStyle, padding: "20px", textAlign: "center" }}
                                 >
-                                    Không có dữ liệu</td>
-                                </tr>
+                                    Chưa có dữ liệu để hiển thị
+                                </TableCell>
+                                </TableRow>
                             
                             
                             }
-                        </tbody>
-                    </table>
+                        </TableBody>
+
+                    </Table>
                 </TableContainer>
-                      
-                    </LearningOutcomeBody>
-        
-        
+                </TableWrapper>
         
         </>
     )

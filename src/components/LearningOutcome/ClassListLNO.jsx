@@ -1,121 +1,149 @@
 import FilterBoard from "./FilterBoard";
-import { Card, CardContent, IconButton, Checkbox, Button } from "@mui/material";
+import { 
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow, 
+    IconButton, 
+    Checkbox, 
+    Button 
+} from "@mui/material";
+import { TableWrapper } from "../Analytics/Styles/Styles";
 import styled from "styled-components";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-const LearningOutcomeBody = styled.div`
-  display:flex;
-  flex-direction: column;
-  gap:1rem;
-  margin-top:1rem;
-`
-
-const TableContainer = styled.div`
-    
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    height:600px;
-    overflow-y:auto;
-`
+import { useEffect,useState } from "react";
 
 
+export default function ClassListLNO({TableHeader,TableContent,setClassID,onScrollEnd, action = true, loading}){
+    const [isFetching, setIsFetching] = useState(false);
 
 
-
-export default function ClassListLNO({TableHeader,TableContent,setClassID,onScrollEnd}){
     const handleScroll = (e) => {
         const { scrollTop, scrollHeight, clientHeight } = e.target;
-        if (scrollTop + clientHeight >= scrollHeight - 50) {
-          onScrollEnd(); // Gọi hàm callback khi gần chạm đáy
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
+
+        if (isAtBottom && !isFetching && !loading) {
+        setIsFetching(true);
+        onScrollEnd();
         }
-      };
-    
+    };
+
+    useEffect(() => {
+        // khi dữ liệu mới được add, reset flag
+        if (!loading) {
+        setIsFetching(false);
+        }
+    }, [TableContent, loading]);
+
+
+    const cellStyle = {
+        fontSize: "16px",
+    };
+    const headerCellStyle = {
+        ...cellStyle,
+        fontWeight: "700",
+    };
     const handleClick=(Classid)=>{
         setClassID(Classid);
 
     }
+    const renderCell = (value) => {
+        return value !== null && value !== undefined && value !== "" ? value : "--";
+    };
     return(
-
-
         <>
-            <LearningOutcomeBody>
-            
-            
-                      
-              {/* <FilterBoard></FilterBoard> */}
-                      
-              <TableContainer style={{
-                maxHeight: "650px",
+            <TableWrapper className="scroll-view">
+              <TableContainer 
+              component={Paper}
+              className="TableContainer"
+              style={{
+                maxHeight: "550px",
                 overflow: "auto"}}
                 onScroll={handleScroll}
                 >
-                    <table style={{ width: "100%", borderCollapse: "collapse",backgroundColor: "white" }}>
-                        <thead  style={{
-                            position: "sticky", 
-                            top:0,
-                            zIndex: 1000, 
-                            backgroundColor: "white",
-                            textAlign: "center",
-                            boxShadow: "0px 2px 2px -1px #ddd"
-                            
-                        }}>
-                            <tr >
-                            {
-                                TableHeader.map((item,index)=>{
-                                return <th 
-                                style={{
-                                    position: "sticky", 
-                                    top:0,
-                                    zIndex: 1000, 
-                                    paddingBlock:"1.4rem",
-                                    backgroundColor: "white",
-                                    textAlign: "center",
-                                    
-                                } } key={index}> {item}</th>
-                                })
-                            }
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <Table stickyHeader>
+
+                        <TableHead>
+                            <TableRow>
+                                <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
+                                STT
+                                </TableCell>
+
+                                {TableHeader.map((col, index) => (
+                                    <TableCell
+                                    key={index}
+                                    style={{
+                                        ...headerCellStyle,
+                                        textAlign: col.align || "center",
+                                    }}
+                                    >
+                                    {col.label}
+                                    </TableCell>
+                                ))}
+                                {action && (
+                                    <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
+                                    Chi tiết
+                                    </TableCell>
+                                )}
+
+                            </TableRow>
+                        </TableHead>
+
+
+                        <TableBody>
                             {
                                 TableContent.length>0?
-                                TableContent.map((item, index) => (
-                                <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{index+1}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.className}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.academicYear}</td>
-
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.courseName}</td>
-
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.semester}</td>
-
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.credit}</td>
+                                TableContent.map((row, index) => (
+                                <TableRow key={index} >
+                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>
+                                        {index + 1}
+                                    </TableCell>
                                     
-                                    
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>
-                                        <IconButton onClick={()=>handleClick(item.id) }
-                                        style={{zIndex: 10 }}>
-                                            <VisibilityIcon style={{zIndex: 10 }} color="primary" />
-                                        </IconButton>
-                                    </td>
+                                    {TableHeader.map((col, idx) => (
+                                        <TableCell
+                                        key={idx}
+                                        style={{ ...cellStyle, textAlign: col.align || "center" }}
+                                        >
+                                        {renderCell(row[col.id])}
+                                        </TableCell>
+                                    ))}
+                                     {action && 
+                                     (
+                                        <TableCell style={{ ...cellStyle, textAlign: "center" }}>
+                                            <VisibilityIcon
+                                            color="primary"
+                                            style={{ cursor: "pointer" }}
+                                            onClick={()=>handleClick(row.id) }
+                                            />
+                                               
+                                        </TableCell>
                                 
-                                </tr>
+                                    )}
+                                </TableRow>
                                 ))  
                                 :
-                                <tr style={{ borderBottom: "1px solid #eee" }}>
-                                <td colspan="7"
-                                    style={{textAlign:"center",fontSize:"1.5rem",fontWeight:"bold",padding:"1.5rem"}}
+                                <TableRow style={{ borderBottom: "1px solid #eee" }}>
+                                <TableCell 
+                                    colSpan={TableHeader.length + (action ? 2 : 1)}
+                                    style={{ ...cellStyle, padding: "20px", textAlign: "center" }}
                                 >
-                                    Không có dữ liệu</td>
-                                </tr>
+                                    Chưa có dữ liệu để hiển thị
+                                    </TableCell>
+                                </TableRow>
                             
                             
                             }
-                        </tbody>
-                    </table>
+                        </TableBody>
+                    
+
+                    </Table>
                 </TableContainer>
+                </TableWrapper>
                       
-                    </LearningOutcomeBody>
+                    
         
         
         
