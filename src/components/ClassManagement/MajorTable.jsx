@@ -44,7 +44,7 @@ export default function MajorTable({ rows }) {
             <Table stickyHeader size="small" sx={{ tableLayout: "fixed", minWidth: "100%" }}>
                 <TableHead>
                     <TableRow>
-                        <TableCell style={headerCellStyle}>Mã chuyên ngành</TableCell>
+                        <TableCell style={headerCellStyle}>ID</TableCell>
                         <TableCell style={headerCellStyle}>Tên chuyên ngành</TableCell>
                         <TableCell style={headerCellStyle}>Hành Động</TableCell>
                     </TableRow>
@@ -82,7 +82,7 @@ export default function MajorTable({ rows }) {
                         </Fragment> :
                         <TableRow>
                             <TableCell
-                                colSpan={3}
+                                colSpan={6}
                                 style={{ ...cellStyle, padding: "20px" }}
                             >
                                 Chưa có dữ liệu để hiển thị

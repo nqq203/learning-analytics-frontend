@@ -67,7 +67,7 @@ export default function EditModal({ Modal, setModal, fields, onSubmit }) {
                 >
                   {options.map((opt, i) => {
                     // first try opt[key] (for Id-fields), else opt.value (for courseType)
-                    const optionValue = opt[key] ?? opt.value;
+                    const optionValue = opt[key];
                     // then opt[key.replace('Id','Name')] else opt.label
                     const optionLabel = opt[key.replace("Id", "Name")] ?? opt.label;
                     return (

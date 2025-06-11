@@ -44,7 +44,7 @@ export default function ProgramTable({ rows }) {
             <Table stickyHeader size="small" sx={{ tableLayout: "fixed", minWidth: "100%" }}>
                 <TableHead>
                     <TableRow>
-                        <TableCell style={headerCellStyle}>Mã chương trình</TableCell>
+                        <TableCell style={headerCellStyle}>ID</TableCell>
                         <TableCell style={headerCellStyle}>Tên chương trình</TableCell>
                         <TableCell style={headerCellStyle}>Hành Động</TableCell>
                     </TableRow>
