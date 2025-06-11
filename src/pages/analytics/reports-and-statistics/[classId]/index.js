@@ -13,10 +13,13 @@ import {
   FormControl,
   InputLabel,
   Select,
+  IconButton,
   MenuItem,
   Box,
   CircularProgress,
+  InputAdornment,
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import AnalyticsTable from "@/components/Analytics/Table/Table";
 import {
   fetchStudents,
@@ -26,7 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 const StudentsList = () => {
   const router = useRouter();
-  const { loading } = useSelector(state => state.analytics);
+  const { loading } = useSelector((state) => state.analytics);
   const { classId } = router.query;
   const [search, setSearch] = useState("");
   const [sortOption, setSortOption] = useState("studentId");
@@ -35,6 +38,7 @@ const StudentsList = () => {
   const [rows, setRows] = useState([]);
   const [columns, setColumns] = useState([]);
   const dispatch = useDispatch();
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,6 +80,16 @@ const StudentsList = () => {
     setSearch(e.target.value);
   };
 
+  const handleSearch = () => {
+    setSearchTerm(search.trim());
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   const handleViewClass = (studentId) => {
     router.push(`/analytics/reports-and-statistics/${classId}/${studentId}`);
   };
@@ -84,7 +98,8 @@ const StudentsList = () => {
     const name = (row.fullName ?? "").toLowerCase();
     const id = String(row.studentId ?? "").toLowerCase();
     return (
-      name.includes(search.toLowerCase()) || id.includes(search.toLowerCase())
+      name.includes(searchTerm.toLowerCase()) ||
+      id.includes(searchTerm.toLowerCase())
     );
   });
 
@@ -94,7 +109,7 @@ const StudentsList = () => {
 
   const sortedRows = filteredRows.sort((a, b) => {
     if (sortOption === "studentId") {
-      return (a.studentId ?? 0) - (b.studentId ?? 0);
+      return Number(a.studentId ?? 0) - Number(b.studentId ?? 0);
     }
     return (a.fullName ?? "").localeCompare(b.fullName ?? "");
   });
@@ -124,47 +139,80 @@ const StudentsList = () => {
 
   return (
     <Container>
-      <Header>
-        <FormControl style={{ width: "20%" }}>
-          <InputLabel>Sắp xếp</InputLabel>
-          <Select
-            value={sortOption}
-            onChange={handleSortChange}
-            label="Sắp xếp"
+      <Header style={{ alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <FormControl style={{ width: "25%", minWidth: 250 }} size="small">
+            <InputLabel>Sắp xếp</InputLabel>
+            <Select
+              value={sortOption}
+              onChange={handleSortChange}
+              label="Sắp xếp"
+            >
+              <MenuItem value="studentId">MSSV</MenuItem>
+              <MenuItem value="fullName">Họ và Tên</MenuItem>
+            </Select>
+          </FormControl>
+
+          <TextField
+            variant="outlined"
+            label="Tìm kiếm"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+            style={{ width: "53%", minWidth: 200 }}
+            size="small"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment
+                  position="end"
+                  sx={{ marginRight: 0, paddingRight: 0 }}
+                >
+                  <IconButton
+                    onClick={handleSearch}
+                    sx={{
+                      backgroundColor: "#1976D2",
+                      borderRadius: "0 4px 4px 0",
+                      padding: "10px",
+                      height: "100%",
+                      "&:hover": {
+                        backgroundColor: "#1976D2",
+                        marginRight: 0,
+                      },
+                    }}
+                  >
+                    <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+              sx: { paddingRight: 0 },
+            }}
+          />
+
+          <ActionButton
+            variant={buttonVariant}
+            style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
+            onClick={handleViewDetail}
+            $variant={buttonVariant}
           >
-            <MenuItem value="studentId">MSSV</MenuItem>
-            <MenuItem value="fullName">Họ và Tên</MenuItem>
-          </Select>
-        </FormControl>
-        <TextField
-          variant="outlined"
-          label="Tìm kiếm"
-          value={search}
-          onChange={handleSearchChange}
-          style={{ width: "50%" }}
-        />
-        <ActionButton
-          variant="contained"
-          style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
-        >
-          Tìm kiếm
-        </ActionButton>
-        <ActionButton
-          variant={buttonVariant}
-          style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
-          onClick={handleViewDetail}
-          $variant={buttonVariant}
-        >
-          {buttonContent}
-        </ActionButton>
-        <ActionButton
-          variant="contained"
-          style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
-          onClick={handleClickAnalytics}
-        >
-          Thống kê
-        </ActionButton>
+            {buttonContent}
+          </ActionButton>
+          <ActionButton
+            variant="contained"
+            style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
+            onClick={handleClickAnalytics}
+          >
+            Thống kê
+          </ActionButton>
+        </div>
       </Header>
+
       <BodyWrapper>
         <InformationWrapper>
           <InformationItem>Số lượng sinh viên: {studentCount}</InformationItem>
@@ -174,7 +222,7 @@ const StudentsList = () => {
         </InformationWrapper>
         <Box position="relative">
           <AnalyticsTable
-            filteredRows={rows.map((row) => ({
+            filteredRows={sortedRows.map((row) => ({
               ...row,
               fullName: row.fullName ?? "Không có tên",
               midtermGrade: row.midtermGrade ?? "-",

@@ -7,7 +7,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend
+  Legend,
 } from "recharts";
 
 const labelMap = {
@@ -26,27 +26,10 @@ const BarChartAnalytics = ({ data, selectedGrades }) => {
     }));
   }, [selectedGrades]);
 
-  const [selectedBarFields, setSelectedBarFields] = useState([selectedGrades[0]]);
-
+  const [selectedBarFields, setSelectedBarFields] = useState([
+    selectedGrades[0],
+  ]);
   const [barData, setBarData] = useState([]);
-
-  const academicYearOptions = useMemo(() => {
-    const yearsSet = new Set();
-    data.forEach(item => {
-      if (item.academicYear) {
-        yearsSet.add(item.academicYear);
-      }
-    });
-    return Array.from(yearsSet);
-  }, [data]);
-
-  const [selectedAcademicYears, setSelectedAcademicYears] = useState([]);
-
-  useEffect(() => {
-    if (academicYearOptions.length > 0 && selectedAcademicYears.length === 0) {
-      setSelectedAcademicYears(academicYearOptions);
-    }
-  }, [academicYearOptions, selectedAcademicYears]);
 
   const colorMap = {
     midtermGrade: "#8884d8",
@@ -56,26 +39,34 @@ const BarChartAnalytics = ({ data, selectedGrades }) => {
     totalGrade: "#a4de6c",
   };
 
-  // Hàm convert dữ liệu cho BarChart với dữ liệu đã được lọc theo academicYear
-  function convertDataForBarChart(data) {
-    return data.map((item) => ({
-      identificationCode: item.identificationCode,
-      midtermGrade: parseFloat(item.midtermGrade),
-      finalGrade: parseFloat(item.finalGrade),
-      projectGrade: parseFloat(item.projectGrade),
-      practiceGrade: parseFloat(item.practiceGrade),
-      totalGrade: parseFloat(item.totalGrade),
-    }));
-  };
+  // Các khoảng điểm
+  const scoreRanges = [
+    { label: "0–4", min: 0, max: 4 },
+    { label: "4–6", min: 4, max: 6 },
+    { label: "6–8", min: 6, max: 8 },
+    { label: "8–10", min: 8, max: 10.0001 }, 
+  ];
 
-  // Lọc dữ liệu theo academicYear và convert dữ liệu cho BarChart
+  function convertDataForBarChart(data, selectedFields) {
+    const result = scoreRanges.map((range) => {
+      const row = { range: range.label };
+      selectedFields.forEach((field) => {
+        const count = data.filter((item) => {
+          const value = parseFloat(item[field]);
+          return !isNaN(value) && value >= range.min && value < range.max;
+        }).length;
+        row[field] = count;
+      });
+      return row;
+    });
+
+    return result;
+  }
+
   useEffect(() => {
-    const filteredData = data.filter(item =>
-      selectedAcademicYears.includes(item.academicYear)
-    );
-    const converted = convertDataForBarChart(filteredData);
+    const converted = convertDataForBarChart(data, selectedBarFields);
     setBarData(converted);
-  }, [data, selectedAcademicYears]);
+  }, [data, selectedBarFields]);
 
   // Xử lý thay đổi cho dropdown chọn loại điểm
   const handleFieldChange = (e) => {
@@ -87,7 +78,9 @@ const BarChartAnalytics = ({ data, selectedGrades }) => {
   const handleAcademicYearChange = (e) => {
     const { value } = e.target;
     // Nếu value là chuỗi thì chuyển thành mảng, ngược lại lấy nguyên mảng
-    setSelectedAcademicYears(typeof value === "string" ? value.split(",") : value);
+    setSelectedAcademicYears(
+      typeof value === "string" ? value.split(",") : value
+    );
   };
 
   return (
@@ -100,13 +93,13 @@ const BarChartAnalytics = ({ data, selectedGrades }) => {
       gap="20px"
     >
       <h3 style={{ margin: 0 }}>
-        (Biểu đồ cột) So sánh điểm giữa nhiều thành phần và nhiều sinh viên
+        (Biểu đồ cột) So sánh số lượng sinh viên theo khoảng điểm
       </h3>
 
       {/* Render BarChart */}
       <BarChart width={600} height={500} data={barData}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="identificationCode" />
+        <XAxis dataKey="range"  />
         <YAxis />
         <Tooltip />
         <Legend />
@@ -125,25 +118,6 @@ const BarChartAnalytics = ({ data, selectedGrades }) => {
       </BarChart>
 
       <Box display="flex" flexDirection="row" gap="20px">
-        {/* Dropdown filter cho khóa (academicYear) */}
-        <FormControl size="small" style={{ width: 300 }}>
-          <InputLabel id="academic-year-label">Chọn khóa</InputLabel>
-          <Select
-            labelId="academic-year-label"
-            multiple
-            value={selectedAcademicYears}
-            onChange={handleAcademicYearChange}
-            label="Chọn khóa"
-            renderValue={(selected) => selected.join(", ")}
-          >
-            {academicYearOptions.map((year) => (
-              <MenuItem key={year} value={year}>
-                {year}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
         {/* Dropdown để chọn loại điểm (field) */}
         <FormControl size="small" style={{ width: 300 }}>
           <InputLabel id="bar-field-label">Chọn loại điểm</InputLabel>

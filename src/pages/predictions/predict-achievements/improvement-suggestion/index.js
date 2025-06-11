@@ -1,10 +1,17 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { TextField, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { TextField, FormControl, InputLabel, MenuItem, Select,InputAdornment,IconButton } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
 import PredictionStudentList from "@/components/PredictionAchievements/PredictionStudentList";
 import ModalSuggestion from "@/components/PredictionAchievements/ModalSuggestion";
+
 import { toast } from "react-toastify";
+import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
 const LearningOutcomesContainer = styled.div`
     margin: auto;
     width: 97%;
@@ -65,7 +72,14 @@ const LineDivider = styled.div`
 `
 
 
-
+const columns = [
+    { id: "MSSV", label: "MSSV", align: "center" },
+    { id: "Name", label: "Họ tên", align: "center" },
+    { id: "Class", label: "Lớp", align: "center" },
+    { id: "Subject", label: "Môn", align: "center" },
+    { id: "ClassOf", label: "Khóa", align: "center" },
+    { id: "PredictAchivement", label: "Thành tích dự đoán", align: "center" }
+  ];
 const TableHeader = ["MSSV","Họ tên","Lớp","Môn","Khóa","Thành tích dự đoán" , "Chi tiết"];
 
 const ImprovementSuggestion = () => {
@@ -113,7 +127,10 @@ const ImprovementSuggestion = () => {
         // setTableContent()
     }, [TableContent]);
 
-    
+     const CloseModal = ()=>{
+
+     setModal(false);
+  }
 
     const handleNav = ()=>{
       if(chosenStudent.length===0){
@@ -127,20 +144,54 @@ const ImprovementSuggestion = () => {
     }
 
     return (
-      < LearningOutcomesContainer >
+      < Container >
 
 
-      <LearningOutComeContainerBody>
-        <LearningOutComeHeader>
+      
+        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
             
+        <div style={{ display: "flex", alignItems: "center", justifyContent:"space-between", width: "100%" }}>
+
+                
+      <TextField
+                    variant="outlined"
+                    label="Tìm kiếm"
+                    style={{ width: "55%", minWidth: 200 }}
+                    size="small"
+                    onChange={(e) => handleSearch(e.target.value)}
+                    
+                    InputProps={{
+                      
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            sx={{
+                              backgroundColor: "#1976D2",
+                              borderRadius: "0 4px 4px 0",
+                              padding: "10px",
+                              height: "100%",
+                              '&:hover': {
+                                backgroundColor: "#1976d2",
+                            },
+                          }}
+                            
+                          >
+                            <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      width: "100%",
+                      '& .MuiOutlinedInput-root': {
+                        paddingRight: 0,
+                      },
+                    }}
+                  />
+               
 
 
-                <FormControl style={{ minWidth: "45rem" }} variant="outlined">
-                        <TextField id="outlined-basic" label="Tìm kiếm" variant="outlined" />
-                </FormControl>
-
-
-                <FormControl style={{ minWidth: "13rem" }} variant="outlined">
+                <FormControl  style={{ width: "17%", minWidth: 250 }}variant="outlined" size="small" >
                     <InputLabel>Xếp loại</InputLabel>
                     <Select  label="Chọn Xếp loại">
                         
@@ -154,7 +205,7 @@ const ImprovementSuggestion = () => {
                     </Select>
                 </FormControl>
 
-                <FormControl style={{ minWidth: "13rem" }} variant="outlined">
+                <FormControl  style={{ width: "17%", minWidth: 250 }}variant="outlined" size="small">
                     <InputLabel>Khóa</InputLabel>
                     <Select  label="Chọn khóa">
                         <MenuItem value="class">21</MenuItem>
@@ -166,24 +217,30 @@ const ImprovementSuggestion = () => {
 
             
 
-                <AnalyticsBtn>Lọc</AnalyticsBtn>
+                
 
-                <AnalyticsBtn onClick= {()=>handleNav()}>Gợi ý cải thiện</AnalyticsBtn>
+                <ActionButton onClick= {()=>handleNav()}
+                  variant="contained"
+            style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
+            >Gợi ý cải thiện</ActionButton>
 
+        </div>
 
             
 
 
-        </LearningOutComeHeader>
+        </Header>
 
 
-        <LineDivider></LineDivider> 
+        
 
-          <PredictionStudentList TableHeader = {TableHeader} TableContent ={TableContent} setChosenStudentOuter={setChosenStudent} setModal={setModal} setStudentModal={setStudentModal}> </PredictionStudentList>
+          <PredictionStudentList columns = {columns} filteredRows ={TableContent} setChosenStudentOuter={setChosenStudent} setModal={setModal} setStudentModal={setStudentModal}> </PredictionStudentList>
 
 
           {modalOpen?
             <ModalSuggestion 
+                          open = {modalOpen}
+                          CloseModal = {CloseModal}
                           studentID={"124"} 
                           student = {studentModal}
                           setModal={setModal} 
@@ -192,10 +249,8 @@ const ImprovementSuggestion = () => {
               <></>
           }
 
-       </LearningOutComeContainerBody>
 
-
-      </LearningOutcomesContainer>
+      </Container>
     );
   };
   

@@ -41,7 +41,7 @@ export default function InsertModal({Modal,setModal,classId}){
                     <IconButton onClick={CloseModal} aria-label="close">
                       <Close />
                     </IconButton>
-                  </DialogTitle>
+            </DialogTitle>
             <Divider style={{marginBottom:"1rem"}} />
             
             <DialogContent sx={{ p: 0 }}>

@@ -11,7 +11,7 @@ import {
   TableHead,
   TableRow,
   IconButton,
-  Container,
+ 
   Grid,
   InputAdornment,
   InputLabel,
@@ -19,6 +19,14 @@ import {
   MenuItem,
   FormControl
 } from "@mui/material";
+
+import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
+
+
 import {
   Search,
   Settings,
@@ -217,29 +225,20 @@ export default function StudentDetailView({ onBack }) {
 
   return (
     <Container maxWidth={false} disableGutters>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100vh",
-          borderLeft: "1px solid #e0e0e0",
-        }}
-      >
-        <Box sx={{ p: 2, borderBottom: "1px solid #e0e0e0" }}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <Box sx={{ display: "flex" }}>
+      
+        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
+              
                 <TextField
                   placeholder="Tìm kiếm"
                   variant="outlined"
                   size="small"
-                  fullWidth
-                  sx={{ mr: 1 }}
+                  style={{ width: "55%", minWidth: 500 }}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment
                         position="end"
-                        sx={{ marginRight: 0, paddingRight: 0 }}
+                        
                       >
                         <IconButton
                           // onClick={handleSearch}
@@ -260,8 +259,13 @@ export default function StudentDetailView({ onBack }) {
                         </IconButton>
                       </InputAdornment>
                     ),
-                    sx: { paddingRight: 0 },
                   }}
+                  sx={{
+              width: "100%",
+              '& .MuiOutlinedInput-root': {
+                paddingRight: 0,
+              },
+            }}
                 />
 
                 <FormControl style={{ width: "20%", minWidth: 250 }} size="small">
@@ -276,20 +280,21 @@ export default function StudentDetailView({ onBack }) {
                         
                     </Select>
             </FormControl>
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
-                <Button
+              
+            
+            
+              
+                <ActionButton
                   variant="contained"
+                   style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
                   color="primary"
                   startIcon={<Add />}
                   onClick={() => setIsAddModalOpen(true)}
                 >
                   Thêm
-                </Button>
+                </ActionButton>
 
-                <Button
+                <ActionButton
                   variant={showSummary ? "outlined" : "contained"}
                   color="primary"
                   startIcon={<Info />}
@@ -306,29 +311,28 @@ export default function StudentDetailView({ onBack }) {
                   }}
                 >
                   {showSummary ? "Tổng quan" : "Chi tiết"}
-                </Button>
+                </ActionButton>
 
-                <Button
+                <ActionButton
+                style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
                   variant="contained"
                   color="primary"
                   startIcon={<FileDownload />}
                 >
                   Tải file
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
+                </ActionButton>
+              </div>
+        </Header>
 
-        <Box sx={{ p: 2, borderBottom: "1px solid #e0e0e0" }}>
-          <Typography
-            variant="body1"
-            component="div"
-            sx={{ fontWeight: "bold" }}
+
+
+       
+        <Box sx={{ p: 2 }}>
+          <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}
           >
             Số lượng sinh viên: {studentCount} &nbsp;&nbsp;&nbsp; Điểm trung
             bình: {averageScore}
-          </Typography>
+          </span>
         </Box>
                   
         { showSummary?
@@ -354,7 +358,7 @@ export default function StudentDetailView({ onBack }) {
         }
 
         
-      </Box>
+      
 
 
 

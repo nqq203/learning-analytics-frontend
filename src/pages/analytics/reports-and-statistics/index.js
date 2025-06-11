@@ -12,10 +12,9 @@ import {
   Select,
   IconButton,
   Box,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import SearchIcon from "@mui/icons-material/Search";
 import AnalyticsTable from "@/components/Analytics/Table/Table";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,16 +22,20 @@ import {
   fetchClassesByLecturer,
   searchClasses,
 } from "@/redux/thunk/analyticsThunk";
-import InputAdornment from '@mui/material/InputAdornment';
+import InputAdornment from "@mui/material/InputAdornment";
 import { jwtDecode } from "jwt-decode";
 
 const ClassesList = () => {
-  const { totalRecords, classes, loading } = useSelector((state) => state.analytics);
+  const { totalRecords, classes, loading } = useSelector(
+    (state) => state.analytics
+  );
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
   const [filterSubject, setFilterSubject] = useState("");
   const [filterClass, setFilterClass] = useState("");
-  const { accessToken } = useSelector(state => state.auth);
+  const { accessToken } = useSelector((state) => state.auth);
+  const [subjectOptions, setSubjectOptions] = useState([]);
+  const [classOptions, setClassOptions] = useState([]);
 
   const userId = useMemo(() => {
     if (!accessToken) return null;
@@ -83,6 +86,50 @@ const ClassesList = () => {
     fetchClasses();
   }, []);
 
+  useEffect(() => {
+    if (!userId) return;
+    dispatch(
+      searchClasses({
+        search,
+        userId,
+        page: 1,
+        amount: 10,
+        subject: filterSubject,
+        className: filterClass,
+      })
+    );
+  }, [filterSubject, filterClass]);
+
+  useEffect(() => {
+    if (!classes || classes.length === 0) return;
+
+    const subjectSet = new Set();
+    const classSet = new Set();
+
+    const uniqueSubjects = [];
+    const uniqueClasses = [];
+
+    classes.forEach((item) => {
+      const subjectKey = item.courseId;
+      const classKey = item.className; 
+
+      if (!subjectSet.has(subjectKey)) {
+        subjectSet.add(subjectKey);
+        uniqueSubjects.push({ id: item.courseId, name: item.courseName });
+      }
+
+      if (!classSet.has(classKey)) {
+        classSet.add(classKey);
+        uniqueClasses.push({ id: classKey, name: item.className }); 
+      }
+    });
+
+    uniqueSubjects.sort((a, b) => a.name.localeCompare(b.name));
+    uniqueClasses.sort((a, b) => a.name.localeCompare(b.name));
+
+    setSubjectOptions(uniqueSubjects);
+    setClassOptions(uniqueClasses);
+  }, [classes]);
 
   const handleSearch = () => {
     dispatch(
@@ -100,14 +147,24 @@ const ClassesList = () => {
 
   return (
     <Container>
-      <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
+      <Header style={{ alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            width: "100%",
+          }}
+        >
           <TextField
             variant="outlined"
             label="Tìm kiếm"
             value={search}
             onChange={handleSearchChange}
-            style={{ width: "50%", minWidth: 200 }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSearch();
+            }}
+            style={{ width: "55%", minWidth: 200 }}
             size="small"
             InputProps={{
               endAdornment: (
@@ -119,7 +176,7 @@ const ClassesList = () => {
                       borderRadius: "0 4px 4px 0",
                       padding: "10px",
                       height: "100%",
-                      '&:hover': {
+                      "&:hover": {
                         backgroundColor: "#1976d2",
                       },
                     }}
@@ -131,46 +188,59 @@ const ClassesList = () => {
             }}
             sx={{
               width: "100%",
-              '& .MuiOutlinedInput-root': {
+              "& .MuiOutlinedInput-root": {
                 paddingRight: 0,
               },
             }}
           />
 
-          <FormControl style={{ width: "20%", minWidth: 250 }} size="small">
+          <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
             <InputLabel>Môn học</InputLabel>
             <Select
               label="Môn học"
               value={filterSubject}
               onChange={handleSubjectChange}
             >
-              <MenuItem value=""><em>None</em></MenuItem>
-              <MenuItem value="CSDL">Cơ sở dữ liệu</MenuItem>
-              <MenuItem value="CSDLNC">Cơ sở dữ liệu nâng cao</MenuItem>
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {subjectOptions.map((subject) => (
+                <MenuItem key={subject.id} value={subject.id}>
+                  {subject.name}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
 
-          <FormControl style={{ width: "20%", minWidth: 250 }} size="small">
+          <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
             <InputLabel>Lớp</InputLabel>
             <Select
               label="Lớp"
               value={filterClass}
               onChange={handleClassChange}
             >
-              <MenuItem value=""><em>None</em></MenuItem>
-              <MenuItem value="21CLC05">21CLC05</MenuItem>
-              <MenuItem value="22HTTT1">22HTTT1</MenuItem>
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {classOptions.map((cls) => (
+                <MenuItem key={`${cls.id}-${cls.name}`} value={cls.id}>
+                  {cls.name}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
-
-          <IconButton onClick={handleFilter} disabled={!filterSubject && !filterClass}>
-            <FilterAltIcon />
-          </IconButton>
         </div>
       </Header>
 
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}>
+        <span
+          style={{
+            paddingLeft: "20px",
+            paddingTop: "20px",
+            fontSize: "20px",
+            fontWeight: "700",
+          }}
+        >
           Tổng số lớp hiển thị: {totalStudents}
         </span>
         <Box position="relative">
@@ -197,7 +267,6 @@ const ClassesList = () => {
             </Box>
           )}
         </Box>
-
       </div>
     </Container>
   );

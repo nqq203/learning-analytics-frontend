@@ -1,6 +1,23 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { Close } from "@mui/icons-material";
+
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  Button,
+  Box,
+  IconButton,
+  Typography,
+  Tabs,
+  Tab,
+  Grid,
+  Divider,
+} from "@mui/material";
+
 
 const Backdrop = styled.div`
   position: fixed;
@@ -18,7 +35,7 @@ const Backdrop = styled.div`
 const ModalContainer = styled.div`
   gap:1rem;
   background-color: white;
-  width: 50%;
+  width: 100%;
   padding: 1.5rem;
   border-radius: 10px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
@@ -128,7 +145,7 @@ const CancelBtn = styled.div`
         background-color:var(--blue-600);
     }
 `
-const ModalSuggestion = ({ studentID,setModal,student }) => {
+const ModalSuggestion = ({ open, onClose,studentID,setModal,student }) => {
   const router= useRouter();
   const [student_1,setStudent] = useState([])
   useEffect(()=>{
@@ -144,9 +161,9 @@ const ModalSuggestion = ({ studentID,setModal,student }) => {
     setModal(false)
   }
   return (
-    <Backdrop onClick={()=>CloseModal()}>
-      <ModalContainer onClick={(e) => e.stopPropagation()} >
-        
+    
+      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth >
+        <ModalContainer>
         <div style={{color:"var(--grey-700)", fontSize:"1.8rem",fontWeight:"bold"}}>CHI TIẾT GỢI Ý</div>
         <ModalInfo>
 
@@ -241,9 +258,9 @@ const ModalSuggestion = ({ studentID,setModal,student }) => {
               <SendNotiBtn>GỬI THÔNG BÁO</SendNotiBtn>
             </BtnGroup>
 
-
-      </ModalContainer>
-    </Backdrop>
+        </ModalContainer>
+      </Dialog>
+    
   );
 };
 

@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 import {
   Paper,
   Table,
@@ -8,23 +6,17 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Checkbox
 } from "@mui/material";
+// import { TableWrapper } from "../Styles/Styles";
 import { TableWrapper } from "../Analytics/Styles/Styles";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-const PredictionStudentList = ({
+const TableList = ({
   filteredRows,
   columns,
   handleActions,
-  setChosenStudentOuter,
-  setModal,
-  setStudentModal,
   action = true,
 }) => {
-
-
-
   const cellStyle = {
     fontSize: "16px",
   };
@@ -37,45 +29,6 @@ const PredictionStudentList = ({
     return value !== null && value !== undefined && value !== "" ? value : "--";
   };
 
-
-    const [studentChosen,setStudentChosen] = useState([])
-    const handleCheck = (student) =>{
-        
-        setStudentChosen(
-
-            (prev) =>{
-                if (prev.some((s) => s.ID === student.ID) )
-                {
-                    setChosenStudentOuter(prev.filter ((s)=>s.ID !==student.ID) );
-                    return prev.filter ((s)=>s.ID !==student.ID) 
-                }
-                else{
-                    setChosenStudentOuter([...prev,student]);
-                    return [...prev,student]
-                }
-            }
-
-        )
-    }
-
-    
-    const handleCheckAll = ()=>{
-        if(studentChosen.length == filteredRows.length){
-            setStudentChosen([])
-            setChosenStudentOuter([])
-        }
-        else{
-            setStudentChosen(filteredRows)
-            setChosenStudentOuter(filteredRows)
-        }
-    }
-
-    const handleClick = (item)=>
-    {
-        setStudentModal(item)
-        setModal(true);
-    }
-    
   return (
     <TableWrapper className="scroll-view">
       <TableContainer
@@ -101,18 +54,9 @@ const PredictionStudentList = ({
                 </TableCell>
               ))}
               {action && (
-                <>
                 <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
                   Chi tiết
                 </TableCell>
-                
-                <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
-                  <Checkbox
-                  onChange={ ()=>handleCheckAll()} 
-                    checked={(studentChosen.length === filteredRows.length)}
-                  ></Checkbox>
-                </TableCell>
-                </>
               )}
             </TableRow>
           </TableHead>
@@ -135,22 +79,13 @@ const PredictionStudentList = ({
                   ))}
 
                   {action && (
-                    <>
                     <TableCell style={{ ...cellStyle, textAlign: "center" }}>
                       <VisibilityIcon
                         color="primary"
                         style={{ cursor: "pointer" }}
-                        onClick={() => handleClick(row)}
+                        onClick={() => handleActions(row.ID)}
                       />
                     </TableCell>
-
-                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                        <Checkbox 
-                        onChange={ ()=>handleCheck(row)} 
-                        checked={studentChosen.some((s) => s.ID === row.ID)}
-                        ></Checkbox>
-                    </TableCell>
-                    </>
                   )}
                 </TableRow>
               ))
@@ -171,4 +106,4 @@ const PredictionStudentList = ({
   );
 };
 
-export default PredictionStudentList;
+export default TableList;

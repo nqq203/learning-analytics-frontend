@@ -5,30 +5,17 @@ import {
   Header,
   TitleWrapper,
   Title,
-  ButtonWrapper
+  ButtonWrapper,
 } from "@/components/Analytics/Styles/Styles";
-import { Box, FormControl, InputLabel, Select, MenuItem, Grid, TextField } from "@mui/material";
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  PieChart,
-  Pie,
-  Cell,
-  ScatterChart,
-  Scatter,
-  RadarChart,
-  Radar,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis
-} from 'recharts';
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Grid,
+  TextField,
+} from "@mui/material";
 import AnalyticConfig from "@/components/Analytics/Config/AnalyticConfig";
 import { PieChartAnalytics } from "@/components/Analytics/Charts/PieChart";
 import BarChartAnalytics from "@/components/Analytics/Charts/BarChart";
@@ -37,30 +24,39 @@ import HistogramChartAnalytics from "@/components/Analytics/Charts/HistogramChar
 import RadarChartAnalytics from "@/components/Analytics/Charts/RadarChart";
 import ClassificationPieChart from "@/components/Analytics/Charts/ClassificationPieChart";
 import PassFailPieChart from "@/components/Analytics/Charts/PassFailPieChart";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchStudents,
+  fetchStudentsDetails,
+} from "@/redux/thunk/analyticsThunk";
+import { useRouter } from "next/router";
 
 const StudentAnalytics = () => {
+  const router = useRouter();
+  const dispatch = useDispatch();
   const [isOpenAnalyticConfig, setIsOpenAnalyticConfig] = useState(false);
   const [selectedChartTypes, setSelectedChartTypes] = useState([]);
   const [selectedOthers, setSelectedOthers] = useState([]);
   const [selectedGrades, setSelectedGrades] = useState([]);
   const [pieChartData, setPieChartData] = useState(null);
   const [selectedGradeField, setSelectedGradeField] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const { classId } = router.query;
+  const [data, setData] = useState([]);
+  const [className, setClassName] = useState("");
+  const [subjectName, setSubjectName] = useState("");
 
-  // Giả sử data gốc (danh sách sinh viên) được dùng ở đây
-  const [data, setData] = useState([
-    { id: 1, identificationCode: '21127001', fullName: 'Nguyễn Văn A', midtermGrade: '10', finalGrade: '10', projectGrade: '10', practiceGrade: '10', totalGrade: '10', classification: 'Xuất sắc', academicYear: "2021" },
-    { id: 2, identificationCode: "21127002", fullName: "Hoàng Văn B", midtermGrade: '9', finalGrade: '9', projectGrade: '10', practiceGrade: '10', totalGrade: '9.9', classification: 'Xuất sắc', academicYear: "2021" },
-    { id: 3, identificationCode: "21127003", fullName: "Trần Văn C", midtermGrade: '8', finalGrade: '8', projectGrade: '8', practiceGrade: '8', totalGrade: '8', classification: 'Giỏi', academicYear: "2021" },
-    { id: 4, identificationCode: "21127004", fullName: "Nguyễn Văn D", midtermGrade: '5', finalGrade: '5', projectGrade: '5', practiceGrade: '5', totalGrade: '5', classification: 'Trung bình', academicYear: "2021" },
-    { id: 5, identificationCode: "21127005", fullName: "Lê Văn A", midtermGrade: '4.5', finalGrade: '4.5', projectGrade: '4.5', practiceGrade: '4.5', totalGrade: '4.5', classification: 'Yếu', academicYear: "2021" },
-    { id: 6, identificationCode: "21127006", fullName: "Trần Văn E", midtermGrade: '0', finalGrade: '0', projectGrade: '7', practiceGrade: '8', totalGrade: '3.2', classification: 'Yếu', academicYear: "2021" },
-    { id: 7, identificationCode: "21127007", fullName: "Nguyễn Văn F", midtermGrade: '9', finalGrade: '8', projectGrade: '8', practiceGrade: '10', totalGrade: '9.2', classification: 'Xuất sắc', academicYear: "2021" },
-    { id: 8, identificationCode: "21127008", fullName: "Nguyễn Văn G", midtermGrade: '8', finalGrade: '9', projectGrade: '8', practiceGrade: '9', totalGrade: '8.5', classification: 'Giỏi', academicYear: "2021" },
-    { id: 9, identificationCode: "21127009", fullName: "Trần Thị H", midtermGrade: '7', finalGrade: '7', projectGrade: '10', practiceGrade: '10', totalGrade: '8.8', classification: 'Giỏi', academicYear: "2022" },
-    { id: 10, identificationCode: "21127010", fullName: "Hoàng Văn A", midtermGrade: '10', finalGrade: '10', projectGrade: '10', practiceGrade: '10', totalGrade: '10', classification: 'Xuất sắc', academicYear: "2021" },
-    { id: 11, identificationCode: "21127011", fullName: "Nguyễn Văn A", midtermGrade: '10', finalGrade: '10', projectGrade: '10', practiceGrade: '10', totalGrade: '10', classification: 'Xuất sắc', academicYear: "2022" },
-    { id: 12, identificationCode: "21127012", fullName: "Nguyễn Văn A", midtermGrade: '10', finalGrade: '10', projectGrade: '10', practiceGrade: '10', totalGrade: '10', classification: 'Xuất sắc', academicYear: "2022" },
-  ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!classId) return;
+
+      const response = await dispatch(
+        fetchStudentsDetails({ classId })
+      ).unwrap();
+      setData(response?.data?.studentList || []);
+    };
+    fetchData();
+  }, [classId, dispatch]);
 
   const handleOpenConfig = () => {
     setIsOpenAnalyticConfig(true);
@@ -87,10 +83,13 @@ const StudentAnalytics = () => {
       { min: 8, max: 10, label: "8-10", count: 0 },
     ];
 
-    data.forEach(item => {
+    data.forEach((item) => {
       const score = parseFloat(item[fieldName]);
-      ranges.forEach(range => {
-        if (score >= range.min && (score < range.max || (range.max === 10 && score === 10))) {
+      ranges.forEach((range) => {
+        if (
+          score >= range.min &&
+          (score < range.max || (range.max === 10 && score === 10))
+        ) {
           range.count++;
         }
       });
@@ -106,57 +105,82 @@ const StudentAnalytics = () => {
     }
   }, [selectedGradeField, data]);
 
-  // Render pie chart 
+  // Render pie chart
   const renderPieChart = () => {
-    return <PieChartAnalytics pieChartData={pieChartData} selectedGradeField={selectedGradeField} selectedGrades={selectedGrades} setSelectedGradeField={setSelectedGradeField} />
+    return (
+      <PieChartAnalytics
+        pieChartData={pieChartData}
+        selectedGradeField={selectedGradeField}
+        selectedGrades={selectedGrades}
+        setSelectedGradeField={setSelectedGradeField}
+      />
+    );
   };
 
   const renderBarChart = () => {
-    return <BarChartAnalytics data={data} selectedGrades={selectedGrades} />
-  }
+    return <BarChartAnalytics data={data} selectedGrades={selectedGrades} />;
+  };
 
   const renderScatterChart = () => {
-    return <ScatterChartAnalytics data={data} selectedGrades={selectedGrades} />
-  }
+    return (
+      <ScatterChartAnalytics data={data} selectedGrades={selectedGrades} />
+    );
+  };
 
-  const renderHistogramChart = () => {
-    return <HistogramChartAnalytics data={data} selectedGrades={selectedGrades} />
-  }
+  // const renderHistogramChart = () => {
+  //   return (
+  //     <HistogramChartAnalytics data={data} selectedGrades={selectedGrades} />
+  //   );
+  // };
 
   const renderRadarChart = () => {
-    return <RadarChartAnalytics data={data} selectedGrades={selectedGrades} />
-  }
+    return <RadarChartAnalytics data={data} selectedGrades={selectedGrades} />;
+  };
 
   const renderOtherCharts = () => {
     if (selectedOthers.length === 0) return;
-    return <Box mt={2}>
-      <h3 style={{
-        // alignItems: "center",
-        // justifyContent: "center",
-        fontSize: "24px",
-        marginBottom: "20px",
-        padding: "10px",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-      }}>Thống kê khác</h3>
-      <Box display="grid" gridTemplateColumns="repeat(auto-fit, minmax(600px, 1fr))" gap={2}>
-        <ClassificationPieChart data={data} />
-        <PassFailPieChart data={data} />
+    return (
+      <Box mt={2}>
+        <h3
+          style={{
+            // alignItems: "center",
+            // justifyContent: "center",
+            fontSize: "24px",
+            marginBottom: "20px",
+            padding: "10px",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+          }}
+        >
+          Thống kê khác
+        </h3>
+        <Box
+          display="grid"
+          gridTemplateColumns="repeat(auto-fit, minmax(600px, 1fr))"
+          gap={2}
+        >
+          <ClassificationPieChart data={data} />
+          <PassFailPieChart data={data} />
+        </Box>
       </Box>
-    </Box>
-  }
+    );
+  };
 
   // Render các biểu đồ (chỉ xử lý pie chart, các loại khác để trống)
   const renderCharts = () => {
     return (
       <Box>
-        <h3 style={{
-          // alignItems: "center",
-          // justifyContent: "center",
-          fontSize: "24px",
-          marginBottom: "30px",
-          padding: "10px",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        }}>Thống Kê Điểm Số</h3>
+        <h3
+          style={{
+            // alignItems: "center",
+            // justifyContent: "center",
+            fontSize: "24px",
+            marginBottom: "30px",
+            padding: "10px",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+          }}
+        >
+          Thống Kê Điểm Số
+        </h3>
         <Box
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(600px, 1fr))"
@@ -170,8 +194,8 @@ const StudentAnalytics = () => {
                 return renderBarChart();
               case "scatter":
                 return renderScatterChart();
-              case "histogram":
-                return renderHistogramChart();
+              // case "histogram":
+              //   return renderHistogramChart();
               case "radar":
                 return renderRadarChart();
               default:
@@ -191,37 +215,60 @@ const StudentAnalytics = () => {
             variant="outlined"
             label="Môn học"
             value={"Cở sở dữ liệu"}
-            style={{ width: "90%" }}
+            style={{ width: "20%", minWidth: 250 }}
+            size="small"
             disabled
           />
           <TextField
             variant="outlined"
             label="Lớp"
             value={"21CLC05"}
-            style={{ width: "90%" }}
+            style={{ width: "20%", minWidth: 250 }}
+            size="small"
             disabled
           />
         </Box>
         <ButtonWrapper>
           <ActionButton
             variant="contained"
-            style={{
-              fontWeight: "700",
-              fontSize: "14px",
+            sx={{
               width: "50%",
-              height: "90%"
+              fontWeight: 600,
+              fontSize: "15px",
+              py: 1.2,
+              textTransform: "none",
+              whiteSpace: "nowrap",
+              borderRadius: 1,
+              boxShadow: 2,
+              backgroundColor: "primary.main",
+              "&:hover": {
+                backgroundColor: "primary.dark",
+                boxShadow: 3,
+              },
             }}
             onClick={handleOpenConfig}
           >
-            Thiết lập & Thống kê
+            Cấu hình biểu đồ
           </ActionButton>
+
           <ActionButton
             variant="outlined"
-            style={{
-              fontWeight: "700",
-              fontSize: "14px",
+            sx={{
               width: "50%",
-              height: "90%"
+              fontWeight: 600,
+              fontSize: "15px",
+              py: 1.2,
+              textTransform: "none",
+              whiteSpace: "nowrap",
+              borderRadius: 1,
+              color: "primary.main",
+              borderColor: "primary.main",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                backgroundColor: "rgba(25, 118, 210, 0.1)",
+                color: "primary.main",
+                borderColor: "primary.main",
+              },
             }}
           >
             Xuất PDF
@@ -229,17 +276,26 @@ const StudentAnalytics = () => {
         </ButtonWrapper>
       </Header>
 
-      {selectedGrades.length === 0 || selectedChartTypes === 0 ?
-        <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" mt={20}>
-          <h3>Chưa có dữ liệu hiển thị, vui lòng thiết lập để tiếp tục</h3>
-        </Box> :
+      {selectedGrades.length === 0 || selectedChartTypes === 0 ? (
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          mt={20}
+        >
+          <h3>Chưa có dữ liệu hiển thị, vui lòng cấu hình để tiếp tục</h3>
+        </Box>
+      ) : (
         <Box mt={2}>
           {renderCharts()}
           {renderOtherCharts()}
-        </Box>}
+        </Box>
+      )}
 
       {isOpenAnalyticConfig && (
         <AnalyticConfig
+          open={isOpenAnalyticConfig}
           onClose={handleCloseConfig}
           onApply={handleApplyChartConfig}
         />

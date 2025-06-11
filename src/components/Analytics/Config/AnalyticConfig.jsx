@@ -1,180 +1,169 @@
 import React, { useEffect, useState } from "react";
 import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   FormControl,
   Checkbox,
   FormControlLabel,
   FormGroup,
+  Grid,
   Box,
   Button,
-  Tooltip,
+  IconButton,
+  Typography,
+  Divider,
+  Paper,
 } from "@mui/material";
-import { Overlay, Modal, CloseButton, Header } from "../Styles/Styles";
-import { Close as CloseIcon } from "@mui/icons-material";
-import styled from "styled-components";
+import CloseIcon from "@mui/icons-material/Close";
 
-const AnalyticConfig = ({ onClose, onApply }) => {
+const AnalyticConfig = ({ open, onClose, onApply }) => {
   const [selectedFields, setSelectedFields] = useState({
     grades: [],
     chartTypes: [],
     otherFields: [],
   });
+
   const [isDisabledButton, setIsDisabledButton] = useState(false);
 
-  useEffect(() => {
-    console.log(selectedFields);
-  }, [selectedFields]);
+  const gradeOptions = [
+    { key: "midtermGrade", label: "Điểm giữa kỳ" },
+    { key: "finalGrade", label: "Điểm cuối kỳ" },
+    { key: "totalGrade", label: "Điểm tổng kết" },
+    { key: "practiceGrade", label: "Điểm thực hành" },
+    { key: "projectGrade", label: "Điểm đồ án" },
+  ];
+
+  const chartOptions = [
+    { key: "pie", label: "Biểu đồ tròn" },
+    { key: "column", label: "Biểu đồ cột" },
+    { key: "scatter", label: "Biểu đồ phân tán" },
+    // { key: "histogram", label: "Biểu đồ phân phối" },
+    { key: "radar", label: "Biểu đồ radar" },
+  ];
+
+  const otherOptions = [
+    { key: "classification", label: "Xếp loại sinh viên" },
+    { key: "passRate", label: "Tỉ lệ đậu/rớt" },
+  ];
 
   const handleFieldChange = (e, category) => {
     const { value, checked } = e.target;
     setSelectedFields((prev) => {
       const updatedFields = { ...prev };
-      if (category === "grades") {
-        const allOptions = ["midtermGrade", "finalGrade", "totalGrade", "practiceGrade", "projectGrade"];
-        if (value === "allGrade") {
-          updatedFields.grades = checked ? allOptions : [];
-        } else {
-          updatedFields.grades = checked
-            ? [...updatedFields.grades, value]
-            : updatedFields.grades.filter((item) => item !== value);
-        }
-      } else if (category === "chartTypes") {
-        const allOptions = ["pie", "column", "scatter", "histogram", "radar"];
-        if (value === "allChart") {
-          updatedFields.chartTypes = checked ? allOptions : [];
-        } else {
-          updatedFields.chartTypes = checked
-            ? [...updatedFields.chartTypes, value]
-            : updatedFields.chartTypes.filter((item) => item !== value);
-        }
-      } else if (category === "otherFields") {
-        const allOptions = ["classification", "passRate"];
-        if (value === "allOthers") {
-          updatedFields.otherFields = checked ? allOptions : [];
-        } else {
-          updatedFields.otherFields = checked
-            ? [...updatedFields.otherFields, value]
-            : updatedFields.otherFields.filter((item) => item !== value);
-        }
+      const allOptions =
+        category === "grades"
+          ? gradeOptions.map((o) => o.key)
+          : category === "chartTypes"
+          ? chartOptions.map((o) => o.key)
+          : otherOptions.map((o) => o.key);
+
+      if (value === `all${category}`) {
+        updatedFields[category] = checked ? allOptions : [];
+      } else {
+        updatedFields[category] = checked
+          ? [...updatedFields[category], value]
+          : updatedFields[category].filter((item) => item !== value);
       }
+
       return updatedFields;
     });
   };
 
   useEffect(() => {
-    if (selectedFields.chartTypes.length === 0 || selectedFields.grades.length === 0) {
-      setIsDisabledButton(true);
-    } else {
-      setIsDisabledButton(false);
-    }
+    setIsDisabledButton(
+      selectedFields.chartTypes.length === 0 ||
+        selectedFields.grades.length === 0
+    );
   }, [selectedFields]);
 
   const generateChartData = () => {
-    onApply(selectedFields); // Pass the selected fields and chart data to parent component
+    onApply(selectedFields);
     onClose();
   };
 
   return (
-    <Overlay onClick={onClose}>
-      <Modal onClick={(e) => e.stopPropagation()}>
-        <Header>
-          <h2>Thiết lập thống kê</h2>
-          <Tooltip title="Close">
-            <CloseButton onClick={onClose} />
-          </Tooltip>
-        </Header>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+      <DialogTitle sx={{ m: 0, p: 2 }}>
+        <Typography variant="h6" fontWeight="bold">
+          Thiết lập thống kê
+        </Typography>
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
 
-        <Box style={{ display: "flex", justifyContent: "space-between", gap: "20px" }}>
-          {/* Left Side: Field Selection (Grades) */}
-          <Box style={{ width: "30%" }}>
-            <FormControl component="fieldset" fullWidth>
-              <FormGroup>
-                <h3 id="point-label">Điểm</h3>
+      <DialogContent dividers>
+        <Grid container spacing={3}>
+          {[
+            { title: "Điểm", category: "grades", options: gradeOptions },
+            {
+              title: "Loại biểu đồ",
+              category: "chartTypes",
+              options: chartOptions,
+            },
+            { title: "Khác", category: "otherFields", options: otherOptions },
+          ].map(({ title, category, options }) => (
+            <Grid item xs={12} md={4} key={category}>
+              <Paper elevation={2} sx={{ p: 2 }}>
+                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                  {title}
+                </Typography>
                 <FormControlLabel
-                  control={<Checkbox onChange={(e) => handleFieldChange(e, "grades")} value="allGrade" checked={selectedFields.grades.length === 5} />}
+                  control={
+                    <Checkbox
+                      onChange={(e) => handleFieldChange(e, category)}
+                      value={`all${category}`}
+                      checked={
+                        selectedFields[category].length === options.length
+                      }
+                    />
+                  }
                   label="Tất cả"
                 />
-                <FormControlLabel
-                  control={<Checkbox onChange={(e) => handleFieldChange(e, "grades")} value="midtermGrade" checked={selectedFields.grades.includes("midtermGrade")} />}
-                  label="Điểm giữa kỳ"
-                />
-                <FormControlLabel
-                  control={<Checkbox onChange={(e) => handleFieldChange(e, "grades")} value="finalGrade" checked={selectedFields.grades.includes("finalGrade")} />}
-                  label="Điểm cuối kỳ"
-                />
-                <FormControlLabel
-                  control={<Checkbox onChange={(e) => handleFieldChange(e, "grades")} value="totalGrade" checked={selectedFields.grades.includes("totalGrade")} />}
-                  label="Điểm tổng kết"
-                />
-                <FormControlLabel
-                  control={<Checkbox onChange={(e) => handleFieldChange(e, "grades")} value="practiceGrade" checked={selectedFields.grades.includes("practiceGrade")} />}
-                  label="Điểm thực hành"
-                />
-                <FormControlLabel
-                  control={<Checkbox onChange={(e) => handleFieldChange(e, "grades")} value="projectGrade" checked={selectedFields.grades.includes("projectGrade")} />}
-                  label="Điểm đồ án"
-                />
-              </FormGroup>
-            </FormControl>
-          </Box>
+                <Divider sx={{ mb: 1 }} />
+                <FormGroup>
+                  {options.map(({ key, label }) => (
+                    <FormControlLabel
+                      key={key}
+                      control={
+                        <Checkbox
+                          onChange={(e) => handleFieldChange(e, category)}
+                          value={key}
+                          checked={selectedFields[category].includes(key)}
+                        />
+                      }
+                      label={label}
+                    />
+                  ))}
+                </FormGroup>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      </DialogContent>
 
-          {/* Right Side: Chart Type Selection */}
-          <Box style={{ width: "30%" }}>
-            <FormControl fullWidth>
-              <h3 id="chart-type-label">Loại biểu đồ</h3>
-              <FormControlLabel
-                control={<Checkbox onChange={(e) => handleFieldChange(e, "chartTypes")} value="allChart" checked={selectedFields.chartTypes.length === 5} />}
-                label="Tất cả"
-              />
-              <FormGroup>
-                <FormControlLabel
-                  control={<Checkbox onChange={(e) => handleFieldChange(e, "chartTypes")} value="pie" checked={selectedFields.chartTypes.includes("pie")} />}
-                  label="Biểu đồ tròn"
-                />
-                <FormControlLabel
-                  control={<Checkbox onChange={(e) => handleFieldChange(e, "chartTypes")} value="column" checked={selectedFields.chartTypes.includes("column")} />}
-                  label="Biểu đồ cột"
-                />
-                <FormControlLabel
-                  control={<Checkbox onChange={(e) => handleFieldChange(e, "chartTypes")} value="scatter" checked={selectedFields.chartTypes.includes("scatter")} />}
-                  label="Biểu đồ phân tán"
-                />
-                <FormControlLabel
-                  control={<Checkbox onChange={(e) => handleFieldChange(e, "chartTypes")} value="histogram" checked={selectedFields.chartTypes.includes("histogram")} />}
-                  label="Biểu đồ phân phối"
-                />
-                <FormControlLabel
-                  control={<Checkbox onChange={(e) => handleFieldChange(e, "chartTypes")} value="radar" checked={selectedFields.chartTypes.includes("radar")} />}
-                  label="Biểu đồ radar"
-                />
-
-              </FormGroup>
-            </FormControl>
-          </Box>
-
-          <Box style={{ width: "30%" }}>
-            <FormControl fullWidth>
-              <h3 id="other-label">Khác</h3>
-              <FormControlLabel
-                control={<Checkbox onChange={(e) => handleFieldChange(e, "otherFields")} value="allOthers" checked={selectedFields.otherFields.length === 2} />}
-                label="Tất cả"
-              />
-              <FormGroup>
-                <FormControlLabel
-                  control={<Checkbox onChange={(e) => handleFieldChange(e, "otherFields")} value="classification" checked={selectedFields.otherFields.includes("classification")} />}
-                  label="Xếp loại sinh viên"
-                />
-                <FormControlLabel
-                  control={<Checkbox onChange={(e) => handleFieldChange(e, "otherFields")} value="passRate" checked={selectedFields.otherFields.includes("passRate")} />}
-                  label="Tỉ lệ đậu/rớt"
-                />
-              </FormGroup>
-            </FormControl>
-          </Box>
-        </Box>
-
-        <Button disabled={isDisabledButton} variant="contained" onClick={generateChartData} style={{ marginTop: "20px" }}>Áp dụng</Button>
-      </Modal>
-    </Overlay>
+      <DialogActions sx={{ p: 2 }}>
+        <Button onClick={onClose}>Hủy</Button>
+        <Button
+          variant="contained"
+          onClick={generateChartData}
+          disabled={isDisabledButton}
+        >
+          Áp dụng
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

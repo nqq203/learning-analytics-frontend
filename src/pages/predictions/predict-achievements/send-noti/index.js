@@ -10,31 +10,25 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
+
+
+import {
+  ActionButton,
+  BodyWrapper,
+  Container,
+  Header,
+  InformationItem,
+  InformationWrapper,
+} from "@/components/Analytics/Styles/Styles";
+
+
+
 import SearchIcon from "@mui/icons-material/Search";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import PredictionStudentList from "@/components/PredictionAchievements/PredictionStudentList";
 import ModalSuggestion from "@/components/PredictionAchievements/ModalSuggestion";
 
-const LearningOutcomesContainer = styled.div`
-  margin: auto;
-  width: 97%;
-  padding-block: 20px;
-`;
 
-const LearningOutComeContainerBody = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const LearningOutComeHeader = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-`;
 
 const AnalyticsBtn = styled.div`
   cursor: pointer;
@@ -61,19 +55,15 @@ const AnalyticsBtn = styled.div`
   }
 `;
 
-const LineDivider = styled.div`
-  border: 0.1px solid gray;
-  width: 100%;
-`;
+
 
 const TableHeader = [
-  "MSSV",
-  "Họ tên",
-  "Lớp",
-  "Môn",
-  "Khóa",
-  "Thành tích dự đoán",
-  "Chi tiết",
+  {id:"MSSV",label:"MSSV",align:"center"},
+  {id:"Name",label:"Họ tên",align:"center"},
+  {id:"Class",label:"Lớp",align:"center"},
+  {id:"Subject",label:"Môn",align:"center"},
+  {id:"ClassOf",label:"Khóa",align:"center"},
+  {id:"PredictAchivement",label:"Thành tích dự đoán",align:"center"},
 ];
 
 
@@ -155,23 +145,34 @@ const SendNoti = () => {
     }
   }, [router.query.data]);
 
+
+  const CloseModal = ()=>{
+
+     setModal(false);
+  }
+
   const handleNav = () => {
     // Gửi thông báo
   };
   
   return (
-    <LearningOutcomesContainer>
-      <LearningOutComeContainerBody>
-        <LearningOutComeHeader>
-        <FormControl style={{ minWidth: "260px", flex: 1 }} variant="outlined">
+    <Container>
+      
+        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+
+           <div style={{ display: "flex", alignItems: "center", justifyContent:"space-between", width: "100%" }}>
+
+            
+        
         <TextField
+          style={{ width: "70%", minWidth: 200 }}
           placeholder="Tìm kiếm"
           variant="outlined"
           InputProps={{
             endAdornment: (
               <InputAdornment position="end" sx={{ marginRight: "12px" }}>
                 <IconButton
-                  onClick={handleSearch}
+                  // onClick={handleSearch}
                   edge="end"
                   sx={{
                     backgroundColor: "#1976D2",
@@ -199,7 +200,7 @@ const SendNoti = () => {
             },
           }}
         />
-      </FormControl>
+      
 
 
           <FormControl sx={{ minWidth: "120px", height: "40px" }} variant="outlined">
@@ -253,30 +254,38 @@ const SendNoti = () => {
           </IconButton>
 
 
-          <AnalyticsBtn onClick={() => handleNav()}>
+          <ActionButton 
+          style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
+          color="primary"
+          variant="contained"
+          onClick={() => handleNav()}>
             Gửi Thông Báo
-          </AnalyticsBtn>
-        </LearningOutComeHeader>
+          </ActionButton>
 
-        <LineDivider />
+          </div>
+        </Header>
+
+       
 
         <PredictionStudentList
-          TableHeader={TableHeader}
-          TableContent={TableContent}
+          columns={TableHeader}
+          filteredRows={TableContent}
           setChosenStudentOuter={setChosenStudent}
           setModal={setModal}
           setStudentModal={setStudentModal}
         />
 
-        {modalOpen ? (
+        
           <ModalSuggestion
+            open = {modalOpen}
+            CloseModal = {CloseModal}
             studentID={"124"}
             setModal={setModal}
             student={studentModal}
           />
-        ) : null}
-      </LearningOutComeContainerBody>
-    </LearningOutcomesContainer>
+        
+      
+    </Container>
   );
 };
 

@@ -2,16 +2,16 @@ import { Card, CardContent, IconButton, Checkbox, Button, Tab } from "@mui/mater
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import styled from "styled-components";
 import { useState,useEffect } from "react";
-
-const TableContainer = styled.div`
-    
-    background-color: white;
-    
-    border-radius: 5px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    height:600px;
-    overflow-y:auto;
-`
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import { TableWrapper } from "../Analytics/Styles/Styles";
 const TitleStudentList = styled.div`
     display:flex;
     flex-direction:row;
@@ -20,8 +20,18 @@ const TitleStudentList = styled.div`
     align-items:center;
 
 `
+
+
 const StudentList = ({TableHeader,TableContent,setChosenStudentOuter}) =>{
-    
+    const cellStyle = {
+    fontSize: "16px",
+  };
+
+    const headerCellStyle = {
+    ...cellStyle,
+    fontWeight: "700",
+  };
+
     const [studentChosen,setStudentChosen] = useState([])
     const handleCheck = (student) =>{
         
@@ -62,8 +72,8 @@ const StudentList = ({TableHeader,TableContent,setChosenStudentOuter}) =>{
     return(
         <>
             
-                <TitleStudentList> 
-                    <div style={{fontSize:"1.5rem",fontWeight:"bold"}}>Danh sách sinh viên</div>
+                {/* <TitleStudentList> 
+                    <div style={{fontSize:"1.5rem",fontWeight:"bold"}}></div>
 
                     <div style={{display:"flex", flexDirection:"row",alignItems:"center"}} >
 
@@ -73,62 +83,63 @@ const StudentList = ({TableHeader,TableContent,setChosenStudentOuter}) =>{
                             checked={studentChosen.length === TableContent.length}
                         > </Checkbox>
                     </div>
-                </TitleStudentList>
+                </TitleStudentList> */}
             
+            <TableWrapper>
 
-            <TableContainer style={{
-                maxHeight: "650px",
-                overflow: "auto",
-            }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse",backgroundColor: "white" }}>
-                        <thead  style={{
-                            position: "sticky", 
-                            top:0,
-                            zIndex: 1000, 
-                            backgroundColor: "white",
-                            textAlign: "center",
-                            boxShadow: "0px 2px 2px -1px #ddd"
+            <TableContainer  
+                component={Paper}
+                className="TableContainer"
+                style={{ maxHeight: "550px", overflow: "auto" }}
+                
+            >
+                    <Table stickyHeader>
+                        <TableHead>
+                            <TableRow>
                             
-                        }}>
-                            <tr >
                             {
                                 TableHeader.map((item,index)=>{
-                                return <th 
-                                style={{
-                                    position: "sticky", 
-                                    top:0,
-                                    zIndex: 1000, 
-                                    paddingBlock:"1.4rem",
-                                    backgroundColor: "white",
-                                    textAlign: "center",
-                                    
-                                } } key={index}> {item}</th>
+                                return <TableCell 
+                                style={{ ...headerCellStyle, textAlign: "center" }} key={index}> {item}</TableCell>
                                 })
                             }
-                            </tr>
-                        </thead>
-                        <tbody>
+                            <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >
+
+                                <Checkbox 
+                            onChange={handleCheckAll}
+                            checked={studentChosen.length === TableContent.length}
+                        > </Checkbox>
+                            </TableCell>
+                            
+                            </TableRow>
+                        </TableHead>
+
+                        <TableBody>
+                            
                             {TableContent.map((item, index) => (
-                                <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
+                                <TableRow key={index} style={{ borderBottom: "1px solid #eee" }}>
                                     
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.MSSV}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Name}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Class}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.Subject}</td>
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>{item.ClassOf}</td>
+                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.MSSV}</TableCell>
+                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.Name}</TableCell>
+                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.Class}</TableCell>
+                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.Subject}</TableCell>
+                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.ClassOf}</TableCell>
                                     
-                                    <td style={{ textAlign: "center",padding: "1rem" }}>
+                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>
                                         <Checkbox 
                                             key={index} onChange={ ()=>handleCheck(item)} 
                                             checked={studentChosen.some((s) => s.ID === item.ID)}
                                         ></Checkbox>
-                                    </td>
+                                    </TableCell>
                                 
-                                </tr>
+                                </TableRow>
                             ))}
-                        </tbody>
-                    </table>
+                            
+                        </TableBody>
+                    </Table>
                 </TableContainer>
+
+                </TableWrapper>
         
         
         </>

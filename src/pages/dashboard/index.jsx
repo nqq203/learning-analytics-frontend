@@ -24,13 +24,21 @@ import {
 import { useState } from "react";
 import { FilterAlt } from "@mui/icons-material";
 
+// import {
+//   academicRankData,
+//   avgScoreChart,
+//   riskStudentData,
+//   spendingTimeChartData,
+//   subjects,
+// } from "@/components/Dashboard/charts/constant"
+
 import { useFilter } from "@/context/FilterContext";
 import { AvgScoreChart } from "@/components/Dashboard/charts/AvgScoreChart";
 import { RiskStudentChart } from "@/components/Dashboard/charts/RiskStudentChart";
 import { DashboardCards } from "@/components/Dashboard/charts/DashboardCards";
 import { AcademicRankChart } from "@/components/Dashboard/charts/AcademicRankChart";
 import { SpendingTimeChart } from "@/components/Dashboard/charts/SpendingTimeChart";
-import { academicRankData, avgScoreChart, riskStudentData, spendingTimeChartData } from "../../components/Dashboard/charts/constant";
+import { academicRankData, avgScoreChart, riskStudentData, spendingTimeChartData,subjects } from "../../components/Dashboard/charts/constant";
 
 export default function DashboardPage() {
   // const [showFilters, setShowFilters] = useState(false);

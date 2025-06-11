@@ -55,27 +55,6 @@ const ClassManagementItemsContainer = styled.div`
 
 
 
-const AnalyticsBtn = styled.div`
-    cursor:pointer;
-    padding-inline:2rem;
-    padding-block:1rem;
-    color:white;
-    font-size:1.2rem;
-    background-color:var(--blue-600);
-    border:none;
-    border-radius:10px;
-    font-weight:bold;
-
-    &:hover{
-        background-color:var(--blue-400);
-    }
-    &:active{
-    
-        background-color:var(--blue-500);
-    }
-
-
-`
 
 
 

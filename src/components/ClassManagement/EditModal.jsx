@@ -6,141 +6,101 @@ import {
   TextField,
   Button,
   Box,
-  IconButton,
   Typography,
-  Tabs,
-  Tab,
   Grid,
-  Divider
+  Divider,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
 import { Close } from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
+export default function EditModal({ Modal, setModal, fields, onSubmit }) {
+  const [formData, setFormData] = useState({});
+  const [focusKey, setFocusKey] = useState(null);
 
+  useEffect(() => {
+    const initial = {};
+    fields.forEach(field => initial[field.key] = field.value);
+    setFormData(initial);
+  }, [fields]);
 
+  const handleChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
 
+  const handleSubmit = async () => {
+    await onSubmit(formData);
+    closeModal();
+  };
 
-export default function EditModal({Modal,setModal,classId}){
-    const CloseModal=()=>{
-        setModal(false);
-    }
-    return(
-        // <Backdrop onClick={()=>CloseModal()}>
-        <Dialog open={Modal} onClose={CloseModal} fullWidth maxWidth="md">
-            <DialogTitle
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      pb: 1,
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ fontWeight: "medium" }}>
-                      Sửa Lớp
-                    </Typography>
-                    <IconButton onClick={CloseModal} aria-label="close">
-                      <Close />
-                    </IconButton>
-                  </DialogTitle>
-            <Divider style={{marginBottom:"1rem"}} />
-            
-            <DialogContent sx={{ p: 0 }}>
-                
-                    <Box sx={{ px: 2, pb: 2 }}>
-                                <Grid container spacing={3}>
-                                  <Grid item xs={12} md={6}>
-                                    <Typography variant="body2" sx={{ mb: 1 }}>
-                                      Thông tin A:
-                                    </Typography>
-                                    <TextField
-                                      fullWidth
-                                      
-                                      variant="outlined"
-                                      size="small"
-                                    />
-                                  </Grid>
-                    
-                                  <Grid item xs={12} md={6}>
-                                    <Typography variant="body2" sx={{ mb: 1 }}>
-                                      Thông tin B:
-                                    </Typography>
-                                    <TextField
-                                      fullWidth
-                                      
-                                      variant="outlined"
-                                      size="small"
-                                    />
-                                  </Grid>
-                    
-                                  <Grid item xs={12} md={6}>
-                                    <Typography variant="body2" sx={{ mb: 1 }}>
-                                      Thông tin C:
-                                    </Typography>
-                                    <TextField
-                                      fullWidth
-                                      
-                                      variant="outlined"
-                                      size="small"
-                                    />
-                                  </Grid>
-                    
-                                  <Grid item xs={12} md={6}>
-                                    <Typography variant="body2" sx={{ mb: 1 }}>
-                                      Thông tin D:
-                                    </Typography>
-                                    <TextField
-                                      fullWidth
-                                      
-                                      variant="outlined"
-                                      size="small"
-                                    />
-                                  </Grid>
-                    
-                                  <Grid item xs={12} md={6}>
-                                    <Typography variant="body2" sx={{ mb: 1 }}>
-                                      Thông tin A:
-                                    </Typography>
-                                    <TextField fullWidth variant="outlined" size="small" />
-                                  </Grid>
-                    
-                                  <Grid item xs={12} md={6}>
-                                    <Typography variant="body2" sx={{ mb: 1 }}>
-                                      Thông tin B:
-                                    </Typography>
-                                    <TextField fullWidth variant="outlined" size="small" />
-                                  </Grid>
-                                </Grid>
-                              </Box>
-                
+  const closeModal = () => setModal(false);
 
-                <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            p: 2,
-                            mt: 2,
-                          }}
-                        >
+  return (
+    <Dialog open={Modal} onClose={closeModal} fullWidth maxWidth="md">
+      <DialogTitle>Sửa Lớp</DialogTitle>
+      <Divider />
+      <DialogContent>
+        <Grid container spacing={3}>
+          {fields.map(({ key, label, type, options }) => (
+            <Grid item xs={12} md={6} key={key}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 600,
+                  color: focusKey === key ? 'primary.main' : 'text.primary',
+                  mb: 1
+                }}
+              >
+                {label}
+              </Typography>
 
-                          <Button variant="outlined" onClick={CloseModal} sx={{ width: "48%" }}>
-                            ĐÓNG
-                          </Button>
+              {type === "select" ? (
+                <Select
+                  fullWidth
+                  size="small"
+                  value={formData[key] ?? ""}
+                  onChange={e => handleChange(key, e.target.value)}
+                  onFocus={() => setFocusKey(key)}
+                  onBlur={() => setFocusKey(null)}
+                >
+                  {options.map((opt, i) => {
+                    // first try opt[key] (for Id-fields), else opt.value (for courseType)
+                    const optionValue = opt[key] ?? opt.value;
+                    // then opt[key.replace('Id','Name')] else opt.label
+                    const optionLabel = opt[key.replace("Id", "Name")] ?? opt.label;
+                    return (
+                      <MenuItem key={i} value={optionValue}>
+                        {optionLabel}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              ) : (
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  value={formData[key] ?? ""}
+                  onChange={e => handleChange(key, e.target.value)}
+                  onFocus={() => setFocusKey(key)}
+                  onBlur={() => setFocusKey(null)}
+                />
+              )}
+            </Grid>
+          ))}
+        </Grid>
 
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            
-                            sx={{ width: "48%" }}
-                          >
-                            SỬA THÔNG TIN
-                          </Button>
-
-                        </Box>
-
-            </DialogContent>
-        </Dialog>
-        
-        
-    )
+        <Box mt={3} display="flex" justifyContent="space-between" sx={{ gap: 2 }}>
+          <Button variant="outlined" onClick={closeModal} sx={{ flex: 1 }}>
+            Đóng
+          </Button>
+          <Button variant="contained" onClick={handleSubmit} sx={{ flex: 1 }}>
+            Sửa Thông Tin
+          </Button>
+        </Box>
+      </DialogContent>
+    </Dialog>
+  );
 }
-

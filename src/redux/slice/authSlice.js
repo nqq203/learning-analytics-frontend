@@ -94,6 +94,9 @@ const authSlice = createSlice({
                 state.message = action.payload.message;
                 state.accessToken = action.payload.data.accessToken;
                 state.isAuthenticated = true;
+                const decodedToken = jwtDecode(action.payload.data.accessToken);
+                state.user = decodedToken.user;
+                state.userId = decodedToken.sub;
             })
             .addCase(refresh.rejected, (state, action) => {
                 state.loading = false;

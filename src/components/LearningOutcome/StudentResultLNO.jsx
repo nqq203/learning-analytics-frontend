@@ -16,7 +16,8 @@ const LearningOutcomeBody = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-`;
+  margin-top:1rem;
+  `;
 
 const ChartContainer = styled.div`
   width: 100%;

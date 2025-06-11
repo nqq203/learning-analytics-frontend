@@ -1,6 +1,13 @@
 import styled from "styled-components";
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
+
+
 import { useRouter } from "next/router";
 import {
   TextField,
@@ -21,87 +28,12 @@ import {
 } from "@/redux/thunk/learningoutcomeThunk";
 import { jwtDecode } from "jwt-decode";
 
-// Styled Components
-const LearningOutcomesContainer = styled.div`
-  margin: auto;
-  width: 97%;
-  padding-top: 1.5rem;
-`;
-
-const LearningOutComeContainerBody = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-`;
-
-const LearningOutComeHeader = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding-bottom: 10px;
-  align-items: center;
-`;
-
-const LearningOutComeItemsContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  width: 100%;
-`;
-
-const LearningOutComeTabButtons = styled.div`
-  display: flex;
-  padding: 0.7rem 2rem;
-  font-weight: bold;
-  color: var(--blue-800);
-  border: 1px solid var(--blue-800);
-  border-left: none;
-  border-right: none;
-  border-top: none;
-  cursor: pointer;
-
-  &:hover {
-    color: var(--blue-300);
-    border-color: var(--blue-300);
-  }
-
-  &:active {
-    color: var(--blue-800);
-    border-color: var(--blue-800);
-  }
-`;
-
-const LineDivider = styled.div`
-  background-color: var(--grey-600);
-  height: 1px;
-  width: 100%;
-`;
-
-const NextBtn = styled.div`
-  padding-inline: 1.5rem;
-  height: 40px;
-  display: flex;
-  color: white;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  background-color: var(--blue-700);
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-
-  &:hover,
-  &:active {
-    background-color: var(--blue-900);
-  }
-`;
 
 const ClassTableHeader = ["STT", "Lớp", "Khóa", "Môn", "Học Kỳ", "Tín chỉ", "Chi tiết"];
 const semester = [1, 2, 3];
 
 const LearningOutcome = () => {
-  const { classes, academicYear, loading } = useSelector((state) => state.learningoutcome);
+  const { classes, totalRecords,academicYear, loading } = useSelector((state) => state.learningoutcome);
   const dispatch = useDispatch();
   const [searchResult, setSearchResult] = useState("");
   const router = useRouter();
@@ -196,25 +128,21 @@ const LearningOutcome = () => {
   }, [classID]);
 
   return (
-    <LearningOutcomesContainer>
-      <LearningOutComeContainerBody>
-        <LearningOutComeHeader>
+    <Container>
+      
+        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
 
-          <LearningOutComeItemsContainer>
-            <FormControl style={{ width: "100%" }} variant="outlined">
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
+            
               <TextField
-                id="outlined-basic"
-                label="Tìm kiếm"
                 variant="outlined"
+                label="Tìm kiếm"
+                style={{ width: "55%", minWidth: 200 }}
+                size="small"
                 onChange={(e) => handleSearch(e.target.value)}
                 onKeyDown={handleKeyPress}
                 InputProps={{
-                  style: {
-                    height: 40,
-                    paddingRight: 0,
-                    fontSize: "0.9rem",
-                    alignItems: "center",
-                  },
+                  
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
@@ -222,11 +150,11 @@ const LearningOutcome = () => {
                           backgroundColor: "#1976D2",
                           borderRadius: "0 4px 4px 0",
                           padding: "10px",
-                          height: "40px",
+                          height: "100%",
                           '&:hover': {
-                            backgroundColor: "#1565C0",
-                          },
-                        }}
+                            backgroundColor: "#1976d2",
+                        },
+                      }}
                         onClick={() => handleSearchResult(searchKeyword)}
                       >
                         <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
@@ -234,18 +162,15 @@ const LearningOutcome = () => {
                     </InputAdornment>
                   ),
                 }}
-                InputLabelProps={{
-                  style: {
-                    lineHeight: "40px",
-                    top: "-15px",
+                sx={{
+                  width: "100%",
+                  '& .MuiOutlinedInput-root': {
+                    paddingRight: 0,
                   },
                 }}
               />
-            </FormControl>
-            {/* </LearningOutComeItemsContainer> */}
-
-            {/* <LearningOutComeItemsContainer> */}
-            <FormControl sx={{ minWidth: 200 }} variant="outlined" size="small">
+           
+            <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
               <InputLabel id="academic-year-label">Khóa</InputLabel>
               <Select
                 labelId="academic-year-label"
@@ -261,7 +186,7 @@ const LearningOutcome = () => {
               </Select>
             </FormControl>
 
-            <FormControl sx={{ minWidth: 200 }} variant="outlined" size="small">
+            <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
               <InputLabel id="semester-label">Kỳ</InputLabel>
               <Select
                 labelId="semester-label"
@@ -277,11 +202,17 @@ const LearningOutcome = () => {
               </Select>
             </FormControl>
 
+        </div>
+          
+        </Header>
 
-          </LearningOutComeItemsContainer>
-        </LearningOutComeHeader>
+       
+        
+       <div style={{ display: "flex", flexDirection: "column" }}>
 
-        <LineDivider />
+        <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}>
+          Tổng số lớp hiển thị: {totalRecords}
+        </span>
 
         <Box position="relative">
           <ClassListLNO
@@ -308,8 +239,9 @@ const LearningOutcome = () => {
             </Box>
           )}
         </Box>
-      </LearningOutComeContainerBody>
-    </LearningOutcomesContainer>
+
+      </div>
+    </Container>
   );
 };
 

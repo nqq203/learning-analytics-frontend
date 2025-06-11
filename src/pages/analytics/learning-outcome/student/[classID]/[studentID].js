@@ -8,6 +8,13 @@ import { fetchStudentDetail } from "@/redux/thunk/learningoutcomeThunk";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { jwtDecode } from "jwt-decode";
 
+import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
+
+
 const LearningOutcomesContainer = styled.div`
   margin: auto;
   width: 97%;
@@ -100,13 +107,13 @@ export default function StudentAnalytics() {
   }, [studentInfo]);
 
   return (
-    <LearningOutcomesContainer key={studentID}>
-      <LearningOutComeContainerBody>
-        <LearningOutComeHeader>
-          <LearningOutComeItemsContainer>
-            <DropdownTitleContainer>
+    <Container>
+      
+        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
+            
 
-              <FormControl style={{ minWidth: "300px" }} variant="outlined" size="small" disabled>
+              <FormControl style={{ width: "20%", minWidth: 250 }} size="small" disabled>
                 <InputLabel id="course-label" sx={{ fontSize: "1rem" }}>
                   Môn
                 </InputLabel>
@@ -121,10 +128,10 @@ export default function StudentAnalytics() {
                   </MenuItem>
                 </Select>
               </FormControl>
-            </DropdownTitleContainer>
+            
 
-            <DropdownTitleContainer>
-              <FormControl style={{ minWidth: "300px" }} variant="outlined" size="small" disabled>
+            
+              <FormControl style={{ width: "20%", minWidth: 250 }} size="small" disabled>
                 <InputLabel id="class-label" sx={{ fontSize: "1rem" }}>
                   Lớp
                 </InputLabel>
@@ -139,10 +146,10 @@ export default function StudentAnalytics() {
                   </MenuItem>
                 </Select>
               </FormControl>
-            </DropdownTitleContainer>
+            
 
-            <DropdownTitleContainer>
-              <FormControl style={{ minWidth: "300px" }} variant="outlined" size="small" disabled>
+            
+              <FormControl style={{ width: "20%", minWidth: 250 }} size="small" disabled>
                 <InputLabel id="student-label" sx={{ fontSize: "1rem" }}>
                   MSSV - Họ tên
                 </InputLabel>
@@ -158,11 +165,11 @@ export default function StudentAnalytics() {
                   </MenuItem>
                 </Select>
               </FormControl>
-            </DropdownTitleContainer>
-          </LearningOutComeItemsContainer>
-        </LearningOutComeHeader>
+            
+          </div>
+        </Header>
 
-        <LineDivider />
+        
 
         <StudentResultLNO
           userId={userId}
@@ -171,7 +178,8 @@ export default function StudentAnalytics() {
           studentInfo={studentInfo_Student}
           studentGrade={grades_Student}
         />
-      </LearningOutComeContainerBody>
-    </LearningOutcomesContainer>
+      
+
+    </Container>
   );
 }
