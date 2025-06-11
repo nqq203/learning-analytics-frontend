@@ -8,15 +8,7 @@ export default function ScoreComparisonCharts({ chartType, data, getDisplayName,
   }
 
   if (chartType === "bar") {
-    const barData = data.map((item) => ({
-      name: item.class_name,
-      midterm: item.midterm_avg,
-      practice: item.practice_avg,
-      project: item.project_avg,
-      final: item.final_avg,
-      total: item.total_avg,
-    }))
-    return <BarChartComponent data={barData} />
+    return <BarChartComponent data={data} />
   }
 
   if (chartType === "radar") {
