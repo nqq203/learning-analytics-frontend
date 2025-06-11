@@ -5,6 +5,7 @@ import compareReducer from "./slice/compareSlice";
 import analyticsReducer from "./slice/analyticsSlice";
 import learningoutcomeReducer from "./slice/learningoutcomeSlice";
 import fraudDetectionReducer from "./slice/fraudDetectionSlice";
+import dataReducer from "./slice/dataSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     analytics: analyticsReducer,
     learningoutcome: learningoutcomeReducer,
     fraudDetection: fraudDetectionReducer,
+    data: dataReducer,
   },
 });

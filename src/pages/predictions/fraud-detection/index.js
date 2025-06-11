@@ -108,7 +108,6 @@ const FraudDetection = () => {
 
   useEffect(() => {
     const fetchClasses = async () => {
-
       await dispatch(fetchClassesByLecturer({ userId }));
     }
     fetchClasses();
@@ -212,22 +211,15 @@ const FraudDetection = () => {
 
     toast.success("Phân tích thành công")
     // setLoading(false);
-
-
   }
-
-
 
   return (
     <div style={{ cursor: loading ? 'wait' : 'default' }}>
       <Container > {/* Set the container to full width */}
-
         {/* Bộ lọc + Button */}
         <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <div style={{ display: "flex", alignItems: "center", gap: "1rem", width: "100%" }}>
-
-          {/* Lớp */}
-        
+            {/* Lớp */}
             <FormControl
               style={{ width: "30%", minWidth: 450 }}
               size="small"
@@ -247,10 +239,7 @@ const FraudDetection = () => {
                 ))}
               </Select>
             </FormControl>
-          
-
-          {/* Quiz */}
-         
+            {/* Quiz */}
             <FormControl
               style={{ width: "30%", minWidth: 450 }}
               size="small"
@@ -278,9 +267,6 @@ const FraudDetection = () => {
               style={{ display: 'none' }}
               onChange={handleFileChange}
             />
-          
-
-          
             <Button
               disabled={disabledThreehold}
               variant="contained"
@@ -296,9 +282,6 @@ const FraudDetection = () => {
             >
               Thiết lập ngưỡng
             </Button>
-          
-
-          
             <Button
               disabled={disabledThreehold}
               variant="contained"
@@ -314,18 +297,8 @@ const FraudDetection = () => {
             >
               Phân tích
             </Button>
-          
-
-
           </div>
         </Header>
-
-
-        
-
-
-
-
         <Box
           sx={{
             borderBottom: "1.2px solid #ccc",
@@ -337,7 +310,6 @@ const FraudDetection = () => {
         {/* Table + Spinner Overlay */}
         <Box position="relative">
           <TableFraudDetection data={data} />
-
           {loading && (
             <Box
               position="absolute"
@@ -355,7 +327,6 @@ const FraudDetection = () => {
             </Box>
           )}
         </Box>
-
         <Dialog1
           openDialog1={openDialog1}
           handleCloseDialog1={handleCloseDialog1}
@@ -363,10 +334,7 @@ const FraudDetection = () => {
           handleOpenDialog2={handleOpenDialog2}
           hasThreeHold={hasThreeHold}
         ></Dialog1>
-
         {/* Dialog 2: Hiển thị ngưỡng mặc định */}
-
-
         <Dialog2
           openDialog2={openDialog2}
           handleCloseDialog2={handleCloseDialog2}
@@ -375,10 +343,7 @@ const FraudDetection = () => {
           SetMinTime={SetMinTime}
           setHasThreeHold={setHasThreeHold}
         >
-
         </Dialog2>
-
-
         {/* Dialog 3: THIẾT LẬP NGƯỠNG */}
         <Dialog3
           openDialog3={openDialog3}

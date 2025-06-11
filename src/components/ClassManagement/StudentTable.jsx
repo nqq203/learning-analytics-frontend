@@ -13,7 +13,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Fragment, use } from "react";
 import { useEffect } from "react";
-const StudentTable = ({ filteredRows, columns, handleDelete,handleEdit,summary, action = true }) => {
+const StudentTable = ({ filteredRows, columns, handleDelete, handleEdit, summary, action = true }) => {
   const cellStyle = {
     fontSize: "16px",
     textAlign: "center",
@@ -22,7 +22,7 @@ const StudentTable = ({ filteredRows, columns, handleDelete,handleEdit,summary, 
     ...cellStyle,
     fontWeight: "700",
   };
-  
+
   return (
     <TableWrapper className="scroll-view">
       <TableContainer
@@ -35,7 +35,6 @@ const StudentTable = ({ filteredRows, columns, handleDelete,handleEdit,summary, 
       >
         <Table stickyHeader>
           <TableHead>
-
             <TableRow>
               <TableCell style={headerCellStyle}>STT</TableCell>
               {columns.map((col, index) => (
@@ -43,7 +42,7 @@ const StudentTable = ({ filteredRows, columns, handleDelete,handleEdit,summary, 
                   key={index}
                   style={{
                     ...headerCellStyle,
-                    textAlign:  "center",
+                    textAlign: "center",
                   }}
                 >
                   {col?.label}
@@ -55,14 +54,8 @@ const StudentTable = ({ filteredRows, columns, handleDelete,handleEdit,summary, 
               {action && (
                 <TableCell style={headerCellStyle}>Xóa</TableCell>
               )}
-              
-              
             </TableRow>
-
-
           </TableHead>
-
-
           <TableBody>
             {filteredRows?.length > 0 ?
               <Fragment>{filteredRows?.map((row, index) => (
@@ -73,25 +66,20 @@ const StudentTable = ({ filteredRows, columns, handleDelete,handleEdit,summary, 
                       {row[col.id]}
                     </TableCell>
                   ))}
-                  
                   {action && <TableCell style={{ textAlign: "center" }}>
                     <EditIcon
                       color="warning"
                       style={{ cursor: "pointer" }}
                       onClick={() => handleEdit(row.id)} />
                   </TableCell>}
-
-                   {action && <TableCell style={{ textAlign: "center" }}>
-                    <DeleteIcon 
+                  {action && <TableCell style={{ textAlign: "center" }}>
+                    <DeleteIcon
                       color="error"
                       style={{ cursor: "pointer" }}
                       onClick={() => handleDelete(row.id)} />
                   </TableCell>}
-
-                  
                 </TableRow>
               ))}</Fragment> :
-
               <TableRow>
                 <TableCell
                   colSpan={columns.length + 2}
