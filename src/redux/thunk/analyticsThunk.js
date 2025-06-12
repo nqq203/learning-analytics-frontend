@@ -8,7 +8,9 @@ export const fetchClassesByLecturer = createAsyncThunk(
   "analytics/fetchClassesByLecturer",
   async ({ userId, page, amount }, { rejectWithValue }) => {
     try {
+      console.log(`UserId: ${userId} Page: ${page} Amount: ${amount}`)
       const response = await analyticsApi.fetchClassesByLecturer({ userId, page, amount });
+      console.log(response.data)
       return response.data;
     } catch (error) {
       return rejectWithValue(handleAnalyticsApiError(error.response.data));

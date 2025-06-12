@@ -56,13 +56,16 @@ export default function ClassListLNO({TableHeader,TableContent,setClassID,onScro
     return(
         <>
             <TableWrapper className="scroll-view">
-              <TableContainer 
+              <TableContainer
+              
               component={Paper}
               className="TableContainer"
+              onScroll={handleScroll}
               style={{
                 maxHeight: "550px",
                 overflow: "auto"}}
-                onScroll={handleScroll}
+
+                
                 >
                     <Table stickyHeader>
 

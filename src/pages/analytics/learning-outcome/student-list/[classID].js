@@ -17,44 +17,14 @@ import {
 
 
 
-const LearningOutcomesContainer = styled.div`
-  margin: auto;
-  width: 97%;
-  padding-block: 20px;
-`;
-
-const LearningOutComeContainerBody = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const LearningOutComeHeader = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 2rem;
-  align-items: center;
-`;
-
-const LearningOutComeItemsContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-`;
-
-const LineDivider = styled.div`
-  border: 0.1px solid gray;
-  width: 100%;
-`;
-
 
 const columns = [
-  {id:"studentId",label:"MSSV", align:"center"},
-  {id:"fullName",label:"Họ và tên", align:"center"},
-  {id:"className",label:"Lớp", align:"center"},
-  {id:"courseName",label:"Môn", align:"center"},
+  {id:"studentId",label:"MSSV", align:"left"},
+  {id:"fullName",label:"Họ và tên", align:"left"},
+  {id:"className",label:"Lớp", align:"left"},
+  {id:"courseName",label:"Môn", align:"left"},
   {id:"academicYear",label:"Khóa", align:"center"},
-  {id:"majorName",label:"Chuyên ngành", align:"center"},
+  {id:"majorName",label:"Chuyên ngành", align:"left"},
   {id:"totalGrade",label:"Kết Quả", align:"center"},
 ]
 const StudentContainerLNO = () => {

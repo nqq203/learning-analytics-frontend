@@ -32,8 +32,9 @@ import { jwtDecode } from "jwt-decode";
 
 
 const columns = [
-  {id:"className",label:"Lớp", align:"center"},
-  {id:"courseName",label:"Môn", align:"center"},
+  {id:"courseName",label:"Môn", align:"left"},
+  {id:"className",label:"Lớp", align:"left"},
+  
   {id:"academicYear",label:"Khóa", align:"center"},
   {id:"semester",label:"Học Kỳ", align:"center"},
   {id:"credit",label:"Tín chỉ", align:"center"},
@@ -83,7 +84,7 @@ const LearningOutcome = () => {
       if (!loading && rows.length < totalRecords) {
           setPage(prev => prev + 1);
       }
-    };
+  };
 
   const handleSearch = (value) => { 
     setSearchKeyword(value);
