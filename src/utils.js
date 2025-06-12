@@ -38,6 +38,9 @@ export const getTabTitle = (pathname) => {
     else if (pathname.startsWith("/dashboard")) {
         return "DASHBOARD";
     }
+    else if (pathname.startsWith("/profile")) {
+        return "THÔNG TIN CÁ NHÂN";
+    }
     else if (pathname.startsWith("/")) {
         return "TRANG CHỦ";
     }
