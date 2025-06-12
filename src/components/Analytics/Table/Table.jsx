@@ -91,7 +91,7 @@ const AnalyticsTable = ({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={TableHeader.length + (action ? 2 : 1)}
+                  colSpan={columns.length + (action ? 2 : 1)}
                   style={{ ...cellStyle, padding: "20px", textAlign: "center" }}
                 >
                   Chưa có dữ liệu để hiển thị
