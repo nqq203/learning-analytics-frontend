@@ -36,7 +36,7 @@ const ClassesList = () => {
   const { accessToken } = useSelector((state) => state.auth);
   const [subjectOptions, setSubjectOptions] = useState([]);
   const [classOptions, setClassOptions] = useState([]);
-
+  const [page, setPage] = useState(1);
   const userId = useMemo(() => {
     if (!accessToken) return null;
     try {
@@ -48,7 +48,13 @@ const ClassesList = () => {
   }, [accessToken]);
 
   const rows = useMemo(() => {
-    return classes || [];
+    if(page ===1){
+      return classes || [];
+    }
+    else{
+      rows.push(classes);
+    }
+    
   }, [classes]);
 
   const totalStudents = useMemo(() => {
@@ -57,11 +63,20 @@ const ClassesList = () => {
 
   const router = useRouter();
 
+  const handleLoadMore = () => {
+      
+      if (!loading && rows.length < totalRecords) {
+          setPage(prev => prev + 1);
+      }
+  };
+
   const handleSubjectChange = (event) => {
+    setPage(1)
     setFilterSubject(event.target.value);
   };
 
   const handleClassChange = (event) => {
+    setPage(1)
     setFilterClass(event.target.value);
   };
 
@@ -70,6 +85,7 @@ const ClassesList = () => {
   };
 
   const handleSearchChange = (e) => {
+    setPage(1)
     setSearch(e.target.value);
   };
 
@@ -80,7 +96,7 @@ const ClassesList = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       await dispatch(
-        fetchClassesByLecturer({ userId: userId, page: 1, amount: 10 })
+        fetchClassesByLecturer({ userId: userId, page: page, amount: 10 })
       );
     };
     fetchClasses();
@@ -92,15 +108,15 @@ const ClassesList = () => {
       searchClasses({
         search,
         userId,
-        page: 1,
+        page: page,
         amount: 10,
         subject: filterSubject,
         className: filterClass,
       })
     );
-  }, [filterSubject, filterClass]);
+  }, [filterSubject, filterClass,page]);
 
-  useEffect(() => {
+  useEffect(() => { //Set unique option
     if (!classes || classes.length === 0) return;
 
     const subjectSet = new Set();
@@ -132,6 +148,7 @@ const ClassesList = () => {
   }, [classes]);
 
   const handleSearch = () => {
+    
     dispatch(
       searchClasses({ search: search, userId: userId, page: 1, amount: 10 })
     );
@@ -248,6 +265,8 @@ const ClassesList = () => {
             filteredRows={rows}
             columns={columns}
             handleActions={handleViewClass}
+            onScrollEnd={handleLoadMore}
+            loading={loading}
           />
 
           {loading && (

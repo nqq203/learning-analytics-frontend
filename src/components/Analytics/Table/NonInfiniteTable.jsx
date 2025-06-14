@@ -11,15 +11,14 @@ import { TableWrapper } from "../Styles/Styles";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useState, useEffect } from "react";
 
-const AnalyticsTable = ({
+const NonInfiniteAnalyticsTable = ({
   filteredRows,
   columns,
   handleActions,
-  onScrollEnd,
-  loading,
+  
   action = true,
 }) => {
-  const [isFetching, setIsFetching] = useState(false);
+ 
 
   const cellStyle = {
     fontSize: "16px",
@@ -33,27 +32,12 @@ const AnalyticsTable = ({
     return value !== null && value !== undefined && value !== "" ? value : "--";
   };
 
-  const handleScroll = (e) => {
-          const { scrollTop, scrollHeight, clientHeight } = e.target;
-          const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
-  
-          if (isAtBottom && !isFetching && !loading) {
-          setIsFetching(true);
-          onScrollEnd();
-          }
-      };
-  
-  useEffect(() => {
-      // khi dữ liệu mới được add, reset flag
-      if (!loading) {
-      setIsFetching(false);
-      }
-  }, [filteredRows, loading]);
+ 
 
   return (
     <TableWrapper className="scroll-view">
       <TableContainer
-        onScroll={handleScroll}
+       
         component={Paper}
         className="TableContainer"
         style={{ maxHeight: "550px", overflow: "auto" }}
@@ -128,4 +112,4 @@ const AnalyticsTable = ({
   );
 };
 
-export default AnalyticsTable;
+export default NonInfiniteAnalyticsTable;

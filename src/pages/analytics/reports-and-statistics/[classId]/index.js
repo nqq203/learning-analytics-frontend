@@ -20,7 +20,7 @@ import {
   InputAdornment,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import AnalyticsTable from "@/components/Analytics/Table/Table";
+import NonInfiniteAnalyticsTable from "@/components/Analytics/Table/NonInfiniteTable";
 import {
   fetchStudents,
   fetchStudentsDetails,
@@ -221,7 +221,7 @@ const StudentsList = () => {
           </InformationItem>
         </InformationWrapper>
         <Box position="relative">
-          <AnalyticsTable
+          <NonInfiniteAnalyticsTable
             filteredRows={sortedRows.map((row) => ({
               ...row,
               fullName: row.fullName ?? "Không có tên",
