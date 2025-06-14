@@ -35,17 +35,16 @@ const Profile = () => {
   };
 
   const handleSave = () => {
-    //API save info
     setIsEditing(false);
   };
 
   return (
     <Box
       sx={{
-        pt: 5, 
+        pt: 5,
         px: 2,
         pb: 4,
-        minHeight: "calc(100vh - 64px)", 
+        minHeight: "calc(100vh - 64px)",
         backgroundColor: "#f0f4f8",
         display: "flex",
         justifyContent: "center",
@@ -98,7 +97,8 @@ const Profile = () => {
               disabled={!isEditing}
             />
           </Grid>
-          <Grid item xs={12}>
+          {/* 
+            <Grid item xs={12}>
             <TextField
               label="Mật khẩu mới"
               fullWidth
@@ -109,6 +109,8 @@ const Profile = () => {
               disabled={!isEditing}
             />
           </Grid>
+          */}
+
           <Grid item xs={12}>
             <TextField
               label="Ngày tạo tài khoản"
@@ -123,8 +125,8 @@ const Profile = () => {
             />
           </Grid>
         </Grid>
-
-        <Stack direction="row" spacing={2} mt={4} justifyContent="flex-end">
+        {/*
+          <Stack direction="row" spacing={2} mt={4} justifyContent="flex-end">
           {!isEditing ? (
             <Button
               variant="contained"
@@ -158,6 +160,7 @@ const Profile = () => {
             </>
           )}
         </Stack>
+         */}
       </Paper>
     </Box>
   );
