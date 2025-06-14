@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
+
+import {
   Card,
   CardContent,
   Select,
@@ -7,6 +13,7 @@ import {
   FormControl,
   InputLabel,
   Button,
+  Box,
   Grid,
   Typography,
   Table,
@@ -22,7 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
 import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk } from "@/redux/thunk/compareThunk";
-
+import { TableWrapper } from "@/components/Analytics/Styles/Styles";
 const Compare = () => {
   const [criteria, setCriteria] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -33,6 +40,16 @@ const Compare = () => {
   const { compareResults, compareLoading, compareError } = useSelector((state) => state.compare);
   const { accessToken } = useSelector(state => state.auth);
   const { classes } = useSelector((state) => state.analytics);
+
+  const cellStyle = {
+    fontSize: "16px",
+  };
+
+  const headerCellStyle = {
+    ...cellStyle,
+    fontWeight: "700",
+  };
+
 
   const userId = useMemo(() => {
     if (!accessToken) return null;
@@ -139,20 +156,27 @@ const Compare = () => {
   }
 
   return (
-    <div style={{ padding: "16px" }}>
-      <Grid container spacing={3} alignItems="center">
-        <Grid item xs={12} sm={4}>
-          <FormControl fullWidth variant="outlined" size="small">
+    
+
+      <Container>
+      <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%", justifyContent:"space-between" }}>
+        
+          <FormControl 
+          style={{ width: "38%", minWidth: 250 }}  
+          size="small">
             <InputLabel>Tiêu chí</InputLabel>
             <Select label="Tiêu chí" value={criteria} onChange={handleCriteriaChange}>
               <MenuItem value="class">Theo Lớp</MenuItem>
               <MenuItem value="course">Theo Khóa</MenuItem>
             </Select>
           </FormControl>
-        </Grid>
+        
 
-        <Grid item xs={12} sm={4}>
-          <FormControl fullWidth variant="outlined" size="small">
+        
+          <FormControl 
+          style={{ width: "38%", minWidth: 250 }}  
+          size="small">
             <InputLabel>Môn học</InputLabel>
             <Select
               label="Môn học"
@@ -167,10 +191,11 @@ const Compare = () => {
               ))}
             </Select>
           </FormControl>
-        </Grid>
+        
 
-        <Grid item xs={12} sm={4} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        
           <Button
+            style={{ width: "25%", minWidth: 250 }} 
             variant="contained"
             color="primary"
             disabled={!isCompareEnabled()}
@@ -178,65 +203,145 @@ const Compare = () => {
           >
             So sánh
           </Button>
-        </Grid>
-      </Grid>
+        
+        </div>
+      </Header>
+      
 
-      <Card style={{ marginTop: "32px" }}>
-        <CardContent>
-          <Typography variant="h6" style={{ padding: "16px", fontWeight: 600 }}>
-            Danh sách các lớp đã dạy
-          </Typography>
-          <TableContainer component={Paper} style={{ marginTop: "16px" }}>
-            <Table stickyHeader size="medium" aria-label="Danh sách lớp">
-              <TableHead>
-                <TableRow>
-                  <TableCell><strong>STT</strong></TableCell>
-                  <TableCell><strong>Môn</strong></TableCell>
-                  <TableCell><strong>Lớp</strong></TableCell>
-                  <TableCell><strong>Khóa</strong></TableCell>
-                  <TableCell><strong>Số sinh viên</strong></TableCell>
-                  <TableCell><strong>Tỷ lệ đậu (%)</strong></TableCell>
-                  {criteria && <TableCell><strong>Chọn</strong></TableCell>}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows
-                  .filter(item => selectedSubject === "" || item.courseName === selectedSubject)
-                  .map((item, index) => (
-                    <TableRow
-                      key={item.no}
-                      style={{
-                        backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#fff",
-                        transition: "background-color 0.3s ease",
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e3f2fd")}
-                      onMouseLeave={(e) =>
-                        (e.currentTarget.style.backgroundColor = index % 2 === 0 ? "#fff" : "#f9f9f9")
+
+      
+        <div style={{ display: "flex", flexDirection: "column" }}>
+
+            <span 
+              style={{ 
+                paddingLeft: "20px", 
+                paddingTop: "20px", 
+                fontSize: "20px", 
+                fontWeight: "700" }}
+            >
+              Tổng số lớp hiển thị: {rows.length}
+            </span>
+
+          <Box position="relative">
+            <TableWrapper className="scroll-view">
+
+              <TableContainer
+              
+              component={Paper} 
+              className="TableContainer"
+              style={{ maxHeight: "550px", overflow: "auto" }}
+              
+              >
+                <Table stickyHeader>
+                  
+                  <TableHead>
+                    <TableRow>
+                      <TableCell
+                      style={{ ...headerCellStyle, textAlign: "center" }}
+                      > STT </TableCell>
+
+                      <TableCell
+                      style={{ ...headerCellStyle, textAlign: "center" }}
+                      > Môn </TableCell>
+
+                      <TableCell
+                      style={{ ...headerCellStyle, textAlign: "center" }}
+                      > Lớp </TableCell>
+
+
+                      <TableCell
+                      style={{ ...headerCellStyle, textAlign: "center" }}
+                      > Khóa </TableCell>
+
+
+                      <TableCell
+                      style={{ ...headerCellStyle, textAlign: "center" }}
+                      > Số sinh viên </TableCell>
+
+
+                      <TableCell
+                      style={{ ...headerCellStyle, textAlign: "center" }}
+                      > Tỷ lệ đậu (%) </TableCell>
+
+
+                      {
+                        criteria && <TableCell
+                        style={{ ...headerCellStyle, textAlign: "center" }}
+                        > Chọn </TableCell>
+                      
                       }
-                    >
-                      <TableCell>{item.no}</TableCell>
-                      <TableCell>{item.courseName}</TableCell>
-                      <TableCell>{item.className}</TableCell>
-                      <TableCell>{item.academicYear}</TableCell>
-                      <TableCell>{item.totalStudents}</TableCell>
-                      <TableCell>{item.passRate}%</TableCell>
-                      {criteria && (
-                        <TableCell>
-                          <input
-                            type="checkbox"
-                            checked={selectedRows.includes(item.no)}
-                            onChange={() => handleSelectRow(item.no)}
-                          />
-                        </TableCell>
-                      )}
                     </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
-    </div>
+                  </TableHead>
+
+
+                  <TableBody>
+                    {rows
+                      .filter(item => selectedSubject === "" || item.courseName === selectedSubject)
+                      .map((item, index) => (
+                        <TableRow
+                          key={item.no}
+                          // style={{
+                          //   backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#fff",
+                          //   transition: "background-color 0.3s ease",
+                          // }}
+                          // onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e3f2fd")}
+                          // onMouseLeave={(e) =>
+                          //   (e.currentTarget.style.backgroundColor = index % 2 === 0 ? "#fff" : "#f9f9f9")
+                          // }
+                        >
+                          <TableCell
+                          style={{ ...cellStyle, textAlign: "center" }}
+                          >
+                            {item.no}</TableCell>
+
+                          <TableCell
+                          style={{ ...cellStyle, textAlign: "center" }}
+                          >
+                            {item.courseName}</TableCell>
+
+                          <TableCell
+                          style={{ ...cellStyle, textAlign: "center" }}
+                          >
+                            {item.className}</TableCell>
+
+                          <TableCell
+                          style={{ ...cellStyle, textAlign: "center" }}
+                          >
+                            {item.academicYear}</TableCell>
+
+                          <TableCell
+                          style={{ ...cellStyle, textAlign: "center" }}
+                          >
+                            {item.totalStudents}</TableCell>
+
+                          <TableCell
+                          style={{ ...cellStyle, textAlign: "center" }}
+                          >
+                            {item.passRate}%</TableCell>
+
+                          {criteria && (
+                            <TableCell 
+                            style={{ ...cellStyle, textAlign: "center" }}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={selectedRows.includes(item.no)}
+                                onChange={() => handleSelectRow(item.no)}
+                              />
+                            </TableCell>
+                          )}
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </TableWrapper>
+          </Box>
+        </div>
+      
+      </Container>
+      
+    
   );
 };
 

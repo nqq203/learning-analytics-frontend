@@ -17,38 +17,16 @@ import {
 
 
 
-const LearningOutcomesContainer = styled.div`
-  margin: auto;
-  width: 97%;
-  padding-block: 20px;
-`;
 
-const LearningOutComeContainerBody = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const LearningOutComeHeader = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 2rem;
-  align-items: center;
-`;
-
-const LearningOutComeItemsContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-`;
-
-const LineDivider = styled.div`
-  border: 0.1px solid gray;
-  width: 100%;
-`;
-
-const TableHeader = ["MSSV", "Họ tên", "Lớp", "Môn", "Khóa", "Chuyên ngành", "Kết Quả", "Chi tiết"];
-
+const columns = [
+  {id:"studentId",label:"MSSV", align:"left"},
+  {id:"fullName",label:"Họ và tên", align:"left"},
+  {id:"className",label:"Lớp", align:"left"},
+  {id:"courseName",label:"Môn", align:"left"},
+  {id:"academicYear",label:"Khóa", align:"center"},
+  {id:"majorName",label:"Chuyên ngành", align:"left"},
+  {id:"totalGrade",label:"Kết Quả", align:"center"},
+]
 const StudentContainerLNO = () => {
   const { studentsOverview, totalRecords, loading } = useSelector(state => state.learningoutcome);
   const dispatch = useDispatch();
@@ -59,13 +37,11 @@ const StudentContainerLNO = () => {
   const [page, setPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchResult, setSearchResult] = useState("");
-  // const [isLoading, setIsLoading] = useState(false);
+  
   const [rows, setRows] = useState([]);
   const { accessToken } = useSelector(state => state.auth);
-  const [isLoading, setIsLoading] = useState(false);
-  // useEffect(()=>{
-  //   console.log("Rows: ",rows)
-  // },[rows])
+ 
+  
   const userId = useMemo(() => {
     if (!accessToken) return null;
     try {
@@ -75,6 +51,13 @@ const StudentContainerLNO = () => {
       return null;
     }
   }, [accessToken]);
+
+  
+  const handleLoadMore = () => {
+      if (!loading && rows.length < totalRecords) {
+          setPage(prev => prev + 1);
+      }
+    };
 
   const handleSearch = (value) => {
     setSearchKeyword(value);
@@ -87,16 +70,12 @@ const StudentContainerLNO = () => {
   };
 
   const fetchStudentRow = async () => {
-    // setIsLoading(true);
+   
     await dispatch(fetchStudentSearch({ userId: userId, classId: classID, page: page, amount: amount, search: searchResult }));
-    // setIsLoading(false);
+    
   };
 
-  const handleScrollEnd = () => {
-    if (!isLoading && rows.length < totalRecords) {
-      setPage(prev => prev + 1);
-    }
-  };
+  
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
@@ -116,6 +95,8 @@ const StudentContainerLNO = () => {
     }
   }, [studentsOverview]);
 
+
+  
   useEffect(() => {
     console.log(`Chuyển sang Students ${studentID}`);
     if (studentID !== "") {
@@ -169,9 +150,7 @@ const StudentContainerLNO = () => {
             
           </div>
 
-          {/* <LearningOutComeItemsContainer style={{ width: "6%" }}> */}
-          {/* Nút lọc hoặc hành động khác nếu cần */}
-          {/* </LearningOutComeItemsContainer> */}
+         
         </Header>
 
         
@@ -184,9 +163,11 @@ const StudentContainerLNO = () => {
               <Box position="relative">
                 <StudentListLNO
                   TableContent={rows}
-                  TableHeader={TableHeader}
+                  TableHeader={columns}
                   setStudentID={setStudentID}
-                  onScrollEnd={handleScrollEnd}
+                  onScrollEnd={handleLoadMore}
+                  loading={loading}
+                  
                 />
 
                 {loading && (
