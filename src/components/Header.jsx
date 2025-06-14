@@ -10,19 +10,21 @@ import { useDispatch } from "react-redux";
 import { logout, refresh } from "@/redux/thunk/authThunk";
 import { toast } from "react-toastify";
 
-// Hoặc bạn có thể dùng <span className="material-icons">settings</span> 
+// Hoặc bạn có thể dùng <span className="material-icons">settings</span>
 // nếu bạn thích import từ CDN Material Icons.
 
 const HeaderContainer = styled.header`
-  position: ${props => !props.transparent ? 'static' : 'fixed'};
+  position: ${(props) => (!props.transparent ? "static" : "fixed")};
   right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: ${props => !props.transparent ? 'var(--white)' : 'transparent'};
+  background-color: ${(props) =>
+    !props.transparent ? "var(--white)" : "transparent"};
   height: 60px;
   padding: 0 20px;
-  box-shadow: ${props => !props.transparent ? '0px 2px 4px rgba(0, 0, 0, 0.1);' : 'None'};
+  box-shadow: ${(props) =>
+    !props.transparent ? "0px 2px 4px rgba(0, 0, 0, 0.1);" : "None"};
 `;
 
 const Title = styled.h1`
@@ -54,8 +56,7 @@ export default function Header({ title }) {
 
   // Xử lý khi chọn "Profile"
   const handleProfileClick = () => {
-    // Ví dụ: Chuyển trang profile, hoặc mở modal
-    alert("Nhấn Profile");
+    router.push("/profile");
     handleCloseMenu();
   };
 
@@ -65,7 +66,7 @@ export default function Header({ title }) {
     try {
       await dispatch(logout());
       handleCloseMenu();
-      router.replace('/login')
+      router.replace("/login");
     } catch (error) {
       console.error(error);
       toast.error("Logout failed, somnething went wrong");
@@ -77,7 +78,11 @@ export default function Header({ title }) {
   return (
     <HeaderContainer transparent={pathname === "/"}>
       {/* Tiêu đề bên trái */}
-      {pathname !== "/" ? <Title>{title || "Tiêu đề "}</Title> : <Title></Title>}
+      {pathname !== "/" ? (
+        <Title>{title || "Tiêu đề "}</Title>
+      ) : (
+        <Title></Title>
+      )}
 
       {/* Icon “Cài đặt” bên phải */}
       {!isLoginPage && (
@@ -87,25 +92,17 @@ export default function Header({ title }) {
               <SettingsIcon />
             </IconButton>
 
-
-            {
-              router.pathname == "/dashboard" ?
-                (
-                  <IconButton
-                    onClick={() => setShowFilters(!showFilters)}
-                    sx={{ bgcolor: showFilters ? "#f5f5f5" : "transparent" }}
-                  >
-                    <FilterAlt />
-                  </IconButton>
-                )
-                : (<></>)
-
-            }
-
-
-
+            {router.pathname == "/dashboard" ? (
+              <IconButton
+                onClick={() => setShowFilters(!showFilters)}
+                sx={{ bgcolor: showFilters ? "#f5f5f5" : "transparent" }}
+              >
+                <FilterAlt />
+              </IconButton>
+            ) : (
+              <></>
+            )}
           </div>
-
 
           {/* dropdown menu */}
           <Menu
