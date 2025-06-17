@@ -29,19 +29,25 @@ const dataApi = {
         instructorId,
         page,
         amount,
-    }) => axios.get(`${API_URL}/data/classes?instructor_id=${instructorId}&page=${page}&amount=${amount}`),
+        search = null,
+        academicYear = null,
+        semester = null,
+    }) => axios.get(`${API_URL}/data/classes?instructor_id=${instructorId}&page=${page}&amount=${amount}&search=${search}&academic_year=${academicYear}&semester=${semester}`),
     fetchClassDetail: ({
         instructorId, classId
     }) => axios.get(`${API_URL}/data/classes/${classId}?instructor_id=${instructorId}`),
     fetchAllFaculties: ({
-        instructorId
-    }) => axios.get(`${API_URL}/data/faculties?instructor_id=${instructorId}`),
+        instructorId,
+        search = null,
+    }) => axios.get(`${API_URL}/data/faculties?instructor_id=${instructorId}&search=${search}`),
     fetchAllMajors: ({
-        instructorId
-    }) => axios.get(`${API_URL}/data/majors?instructor_id=${instructorId}`),
+        instructorId,
+        search = null,
+    }) => axios.get(`${API_URL}/data/majors?instructor_id=${instructorId}&search=${search}`),
     fetchAllPrograms: ({
-        instructorId
-    }) => axios.get(`${API_URL}/data/programs?instructor_id=${instructorId}`),
+        instructorId,
+        search = null,
+    }) => axios.get(`${API_URL}/data/programs?instructor_id=${instructorId}&search=${search}`),
     createFaculty: ({
         instructorId,
         data
@@ -56,8 +62,9 @@ const dataApi = {
     }) => axios.post(`${API_URL}/data/programs?instructor_id=${instructorId}`, data),
     updateClass: ({
         instructorId,
+        classId,
         data
-    }) => axios.put(`${API_URL}/data/classes?instructor_id=${instructorId}`, data),
+    }) => axios.put(`${API_URL}/data/classes/${classId}?instructor_id=${instructorId}`, data),
     createClass: ({
         instructorId,
         data,
@@ -65,6 +72,82 @@ const dataApi = {
     deleteClass: ({
         classId
     }) => axios.delete(`${API_URL}/classes/delete/${classId}`),
+    createCourse: ({
+        instructorId,
+        data
+    }) => axios.post(`${API_URL}/data/courses?instructor_id=${instructorId}`, data),
+    fetchAllCourses: ({
+        instructorId,
+        search = null,
+    }) => axios.get(`${API_URL}/data/courses?instructor_id=${instructorId}&search=${search}`),
+    processAllData: ({ instructorId, file }) => {
+        const form = new FormData();
+        form.append("file", file);
+        return axios.post(
+            `${API_URL}/data/all?instructor_id=${instructorId}`,
+            form,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+            }
+        );
+    },
+    processCourseData: ({ instructorId, file }) => {
+        const form = new FormData();
+        form.append("file", file);
+        return axios.post(
+            `${API_URL}/data/course-information?instructor_id=${instructorId}`,
+            form,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+            }
+        )
+    },
+    processFilePartly: ({ instructorId, replace = false, classId, activityType, file }) => {
+        const form = new FormData();
+        form.append("file", file);
+        form.append("replace", replace);
+        form.append("class_id", classId);
+        form.append("activity_type", activityType);
+        return axios.post(
+            `${API_URL}/data/part?instructor_id=${instructorId}`,
+            form,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+            }
+        )
+    },
+    processStudentInformation: ({ instructorId, classId, file }) => {
+        const form = new FormData();
+        form.append("file", file);
+        return axios.post(
+            `${API_URL}/data/student-information?instructor_id=${instructorId}&class_id=${classId}`,
+            form,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+            }
+        )
+    },
+    getAcademicYear: ({ instructorId }) =>
+        axios.get(`${API_URL}/learning-outcome/academic-year?instructor_id=${instructorId}`),
+    getSemester: ({ instructorId }) =>
+        axios.get(`${API_URL}/data/semesters?instructor_id=${instructorId}`),
+    deleteFaculty: ({ facultyId, instructorId }) =>
+        axios.delete(`${API_URL}/data/faculties/${facultyId}?instructor_id=${instructorId}`),
+    deleteMajor: ({ majorId, instructorId }) =>
+        axios.delete(`${API_URL}/data/majors/${majorId}?instructor_id=${instructorId}`),
+    deleteCourse: ({ courseId, instructorId }) =>
+        axios.delete(`${API_URL}/data/courses/${courseId}?instructor_id=${instructorId}`),
+    deleteProgram: ({ programId, instructorId }) =>
+        axios.delete(`${API_URL}/data/programs/${programId}?instructor_id=${instructorId}`),
+    updateProgram: ({ programId, payload, instructorId }) =>
+        axios.put(`${API_URL}/data/programs/${programId}?instructor_id=${instructorId}`, payload),
+    updateFaculty: ({ facultyId, payload, instructorId }) =>
+        axios.put(`${API_URL}/data/faculties/${facultyId}?instructor_id=${instructorId}`, payload),
+    updateMajor: ({ majorId, payload, instructorId }) =>
+        axios.put(`${API_URL}/data/majors/${majorId}?instructor_id=${instructorId}`, payload),
+    updateCourse: ({ courseId, payload, instructorId }) =>
+        axios.put(`${API_URL}/data/courses/${courseId}?instructor_id=${instructorId}`, payload),
+
 }
 
 export { dataApi, handleDataApiError }
