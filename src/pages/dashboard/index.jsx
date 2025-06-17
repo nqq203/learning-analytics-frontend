@@ -1,194 +1,121 @@
 import {
   Box,
-  Card,
-  CardContent,
-  Checkbox,
-  Divider,
-  FormControl,
-  FormControlLabel,
   Grid,
-  IconButton,
+  Typography,
+  Button,
+  useTheme,
+  FormControl,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
 } from "@mui/material";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useFilter } from "@/context/FilterContext";
 import { FilterAlt } from "@mui/icons-material";
 
-// import {
-//   academicRankData,
-//   avgScoreChart,
-//   riskStudentData,
-//   spendingTimeChartData,
-//   subjects,
-// } from "@/components/Dashboard/charts/constant"
-
-import { useFilter } from "@/context/FilterContext";
 import { AvgScoreChart } from "@/components/Dashboard/charts/AvgScoreChart";
 import { RiskStudentChart } from "@/components/Dashboard/charts/RiskStudentChart";
 import { DashboardCards } from "@/components/Dashboard/charts/DashboardCards";
 import { AcademicRankChart } from "@/components/Dashboard/charts/AcademicRankChart";
-import { SpendingTimeChart } from "@/components/Dashboard/charts/SpendingTimeChart";
-import { academicRankData, avgScoreChart, riskStudentData, spendingTimeChartData,subjects } from "../../components/Dashboard/charts/constant";
+
+import {
+  fetchDashboardCardsThunk,
+  fetchSummaryThunk,
+} from "@/redux/thunk/dashboardThunk";
 
 export default function DashboardPage() {
-  // const [showFilters, setShowFilters] = useState(false);
-  const {showFilters} = useFilter();
+  const { showFilters } = useFilter();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchSummaryThunk());
+    dispatch(fetchDashboardCardsThunk());
+  }, [dispatch]);
+
+  const { academicRankData, avgScoreChart, riskStudentData } = useSelector(
+    (state) => state.dashboard
+  );
+
+  const { cardsData } = useSelector((state) => state.dashboard);
+  const theme = useTheme();
+
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "inherit" }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "#f5faff ", p: 3 }}>
       {/* Header */}
-      {/* <Box
+      <Box
         sx={{
           display: "flex",
+          justifyContent: "space-between",
           alignItems: "center",
-          justifyContent: "flex-end",
-          borderBottom: "1px solid #e0e0e0",
-          bgcolor: "white",
-          p: 2,
+          mb: 3,
         }}
       >
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <IconButton
-            onClick={() => setShowFilters(!showFilters)}
-            sx={{ bgcolor: showFilters ? "#f5f5f5" : "transparent" }}
-          >
-            <FilterAlt />
-          </IconButton>
+        <Box>
+          <Typography variant="h4" fontWeight="bold">
+            Learning Analytics Dashboard
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary">
+            Giám sát tiến trình học tập và hiệu quả môn học của sinh viên.
+          </Typography>
         </Box>
-        
-      </Box> */}
 
-      <Box sx={{ display: "flex" }}>
-        <Box sx={{ flexGrow: 1, p: 3 }}>
-          {/* Stats Cards */}
-          <DashboardCards data={{subjects: 25,classes: 40,students: 500,dropoutRate: 20}} />
+        <Button
+          variant="outlined"
+          startIcon={<FilterAlt sx={{ color: "inherit" }} />}
+          sx={{
+            backgroundColor: "#fff",
+            borderColor: "#bbdefb",
+            color: "#1d4ed8",
+            textTransform: "none",
+            fontSize: "0.9rem",
+            px: 2,
+            py: 1,
+            "&:hover": {
+              backgroundColor: "#f0f9ff",
+              borderColor: theme.palette.primary.dark,
+            },
+          }}
+        >
+          Filter
+        </Button>
+      </Box>
 
-          {/* Line and Bar Charts */}
-          <Grid container spacing={3} sx={{ mt: 1 }}>
-            {/* Line Chart */}
+      {/* Stats Cards */}
+      {cardsData && (
+      <Box
+        sx={{
+          mb: 5,
+        }}
+      >
+        <DashboardCards
+          data={cardsData}
+          sx={{
+            border: "1px solid",
+            borderColor: theme.palette.primary.main,
+            borderRadius: 2,
+          }}
+        />
+      </Box>
+      )}
+
+      {/* Charts */}
+      <Box sx={{ width: "100%" }}>
+        {/* Top charts */}
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
             <AvgScoreChart data={avgScoreChart} />
-            {/* Bar Chart */}
+          </Grid>
+          <Grid item xs={12} md={6}>
             <RiskStudentChart data={riskStudentData} />
           </Grid>
+        </Grid>
 
-          {/* Pie Charts */}
-          <Grid container spacing={3} sx={{ mt: 1 }}>
-            {/* Pie Chart 1 */}
+        {/* Bottom charts */}
+        <Grid container spacing={3} sx={{ mt: 1 }}>
+          <Grid item xs={12}>
             <AcademicRankChart data={academicRankData} />
-            {/* Pie Chart 2 */}
-            <SpendingTimeChart data={spendingTimeChartData} />
           </Grid>
-        </Box>
-
-        {/* Filter Sidebar */}
-        {showFilters && (
-          <Box
-            sx={{
-              width: 320,
-              borderLeft: "1px solid #e0e0e0",
-              bgcolor: "white",
-              p: 3,
-              overflowY: "auto",
-            }}
-          >
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                Môn học
-              </Typography>
-              <Paper
-                variant="outlined"
-                sx={{ p: 2, maxHeight: 240, overflowY: "auto" }}
-              >
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                  <FormControlLabel
-                    control={<Checkbox defaultChecked />}
-                    label={
-                      <Typography variant="body2" fontWeight="medium">
-                        Tất cả
-                      </Typography>
-                    }
-                  />
-                  {subjects.map((subject, i) => (
-                    <FormControlLabel
-                      key={i}
-                      control={<Checkbox />}
-                      label={<Typography variant="body2">{subject}</Typography>}
-                    />
-                  ))}
-                </Box>
-              </Paper>
-            </Box>
-
-            <Divider sx={{ my: 3 }} />
-
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                Môn học
-              </Typography>
-              <Paper
-                variant="outlined"
-                sx={{ p: 2, maxHeight: 240, overflowY: "auto" }}
-              >
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                  <FormControlLabel
-                    control={<Checkbox defaultChecked />}
-                    label={
-                      <Typography variant="body2" fontWeight="medium">
-                        Tất cả
-                      </Typography>
-                    }
-                  />
-                  {subjects.map((subject, i) => (
-                    <FormControlLabel
-                      key={i}
-                      control={<Checkbox />}
-                      label={<Typography variant="body2">{subject}</Typography>}
-                    />
-                  ))}
-                </Box>
-              </Paper>
-            </Box>
-
-            <Divider sx={{ my: 3 }} />
-
-            <Box>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                Môn học
-              </Typography>
-              <Paper
-                variant="outlined"
-                sx={{ p: 2, maxHeight: 240, overflowY: "auto" }}
-              >
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                  <FormControlLabel
-                    control={<Checkbox defaultChecked />}
-                    label={
-                      <Typography variant="body2" fontWeight="medium">
-                        Tất cả
-                      </Typography>
-                    }
-                  />
-                  {subjects.map((subject, i) => (
-                    <FormControlLabel
-                      key={i}
-                      control={<Checkbox />}
-                      label={<Typography variant="body2">{subject}</Typography>}
-                    />
-                  ))}
-                </Box>
-              </Paper>
-            </Box>
-          </Box>
-        )}
+        </Grid>
       </Box>
     </Box>
   );

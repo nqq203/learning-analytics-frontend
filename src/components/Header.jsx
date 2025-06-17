@@ -38,6 +38,7 @@ export default function Header({ title }) {
   const pathname = usePathname(); // Lấy đường dẫn hiện tại
   // if (pathname === "/") return null; // tắt header ở trang chủ
   const isLoginPage = pathname === "/login"; // Kiểm tra có phải trang login không
+   if (pathname === "/dashboard") return null;
   // State để quản lý mở/tắt menu
   const [anchorEl, setAnchorEl] = useState(null);
   const { showFilters, setShowFilters } = useFilter();
