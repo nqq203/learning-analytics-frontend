@@ -48,6 +48,8 @@ export default function CourseTab({ rows, handleEdit, handleDelete }) {
             <TableCell style={headerCellStyle}>Tên khóa</TableCell>
             <TableCell style={headerCellStyle}>Tín chỉ</TableCell>
             <TableCell style={headerCellStyle}>Loại khóa</TableCell>
+            <TableCell style={headerCellStyle}>Thời gian tạo</TableCell>
+            <TableCell style={headerCellStyle}>Lần cuối cập nhật</TableCell>
             <TableCell style={headerCellStyle}>Hành động</TableCell>
           </TableRow>
         </TableHead>
@@ -56,18 +58,20 @@ export default function CourseTab({ rows, handleEdit, handleDelete }) {
             <Fragment>
               {rows.map((r) => (
                 <TableRow key={r.courseId}>
-                  <TableCell style={cellStyle}>{r.courseId}</TableCell>
-                  <TableCell style={cellStyle}>{r.courseCode}</TableCell>
-                  <TableCell style={cellStyle}>{r.courseName}</TableCell>
-                  <TableCell style={cellStyle}>{r.credit}</TableCell>
-                  <TableCell style={cellStyle}>{r.courseType}</TableCell>
+                  <TableCell style={cellStyle}>{r.courseId || "--"}</TableCell>
+                  <TableCell style={cellStyle}>{r.courseCode || "--"}</TableCell>
+                  <TableCell style={cellStyle}>{r.courseName || "--"}</TableCell>
+                  <TableCell style={cellStyle}>{r.credit || "--"}</TableCell>
+                  <TableCell style={cellStyle}>{r.courseType || "--"}</TableCell>
+                  <TableCell style={cellStyle}>{r.createdDate || "--"}</TableCell>
+                  <TableCell style={cellStyle}>{r.updatedDate || "--"}</TableCell>
                   <TableCell style={cellStyle}>
-                    <IconButton onClick={(e) => handleMenuOpen(e, r.course_id)}>
+                    <IconButton onClick={(e) => handleMenuOpen(e, r.courseId)}>
                       <MoreVertIcon />
                     </IconButton>
                     <Menu
                       anchorEl={anchorEl}
-                      open={open && menuRowId === r.course_id}
+                      open={open && menuRowId === r.courseId}
                       onClose={handleMenuClose}
                       anchorOrigin={{
                         vertical: "bottom",
@@ -80,7 +84,7 @@ export default function CourseTab({ rows, handleEdit, handleDelete }) {
                     >
                       <MenuItem
                         onClick={() => {
-                          handleEdit(r.course_id);
+                          handleEdit(r.courseId);
                           handleMenuClose();
                         }}
                       >
@@ -91,7 +95,7 @@ export default function CourseTab({ rows, handleEdit, handleDelete }) {
                       </MenuItem>
                       <MenuItem
                         onClick={() => {
-                          handleDelete(r.course_id);
+                          handleDelete(r.courseId);
                           handleMenuClose();
                         }}
                       >
@@ -107,7 +111,7 @@ export default function CourseTab({ rows, handleEdit, handleDelete }) {
             </Fragment>
           ) : (
             <TableRow>
-              <TableCell colSpan={5} style={{ ...cellStyle, padding: 20 }}>
+              <TableCell colSpan={8} style={{ ...cellStyle, padding: 20 }}>
                 Chưa có dữ liệu để hiển thị
               </TableCell>
             </TableRow>

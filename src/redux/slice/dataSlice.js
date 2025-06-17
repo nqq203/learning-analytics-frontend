@@ -15,6 +15,17 @@ import {
     processAllData,
     processCourseData,
     processFilePartly,
+    fetchAcademicyear,
+    fetchSemester,
+    deleteCourse,
+    deleteFaculty,
+    deleteProgram,
+    deleteMajor,
+    updateProgram,
+    updateFaculty,
+    updateMajor,
+    updateCourse,
+    processStudentData,
 } from "../thunk/dataThunk";
 
 const initialState = {
@@ -41,6 +52,8 @@ const initialState = {
     updatedClass: null,
     courses: [],
     processCsvResult: null,
+    academicYears: [],
+    semesters: [],
 }
 
 const dataSlice = createSlice({
@@ -347,6 +360,207 @@ const dataSlice = createSlice({
                 state.success = action.payload.success;
             })
             .addCase(processFilePartly.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            .addCase(fetchAcademicyear.pending, (state) => {
+                state.loading = false;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(fetchAcademicyear.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+                state.academicYears = action.payload.data;
+            })
+            .addCase(fetchAcademicyear.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            .addCase(fetchSemester.pending, (state) => {
+                state.loading = false;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(fetchSemester.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+                state.semesters = action.payload.data;
+            })
+            .addCase(fetchSemester.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            .addCase(deleteCourse.pending, (state) => {
+                state.loading = false;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(deleteCourse.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+            })
+            .addCase(deleteCourse.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            .addCase(deleteFaculty.pending, (state) => {
+                state.loading = false;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(deleteFaculty.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+            })
+            .addCase(deleteFaculty.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            .addCase(deleteProgram.pending, (state) => {
+                state.loading = false;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(deleteProgram.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+            })
+            .addCase(deleteProgram.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            .addCase(deleteMajor.pending, (state) => {
+                state.loading = false;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(deleteMajor.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+            })
+            .addCase(deleteMajor.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            .addCase(updateProgram.pending, (state) => {
+                state.loading = false;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(updateProgram.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+            })
+            .addCase(updateProgram.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            .addCase(updateFaculty.pending, (state) => {
+                state.loading = false;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(updateFaculty.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+            })
+            .addCase(updateFaculty.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            .addCase(updateMajor.pending, (state) => {
+                state.loading = false;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(updateMajor.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+            })
+            .addCase(updateMajor.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            .addCase(updateCourse.pending, (state) => {
+                state.loading = false;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(updateCourse.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+            })
+            .addCase(updateCourse.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            .addCase(processStudentData.pending, (state, action) => {
+                state.loading = true;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(processStudentData.fulfilled, (state, action) => {
+                state.loading = false;
+                state.processCsvResult = action.payload.data;
+                state.code = action.payload.code;
+                state.message = action.payload.message;
+                state.success = action.payload.success;
+            })
+            .addCase(processStudentData.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action?.payload?.error || action?.error?.message;
                 state.message = action?.payload?.message || action?.message || action?.payload;

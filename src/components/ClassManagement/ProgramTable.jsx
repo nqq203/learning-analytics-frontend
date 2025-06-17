@@ -14,7 +14,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function ProgramTable({ rows }) {
+export default function ProgramTable({ rows, handleDelete, handleEdit }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const [menuRowId, setMenuRowId] = useState(null);
     const open = Boolean(anchorEl);
@@ -46,6 +46,8 @@ export default function ProgramTable({ rows }) {
                     <TableRow>
                         <TableCell style={headerCellStyle}>ID</TableCell>
                         <TableCell style={headerCellStyle}>Tên chương trình</TableCell>
+                        <TableCell style={headerCellStyle}>Thời gian tạo</TableCell>
+                        <TableCell style={headerCellStyle}>Lần cuối cập nhật</TableCell>
                         <TableCell style={headerCellStyle}>Hành Động</TableCell>
                     </TableRow>
                 </TableHead>
@@ -54,15 +56,17 @@ export default function ProgramTable({ rows }) {
                         <Fragment>
                             {rows.map((r) => (
                                 <TableRow key={r.programId}>
-                                    <TableCell  style={{ textAlign: "center" }}>{r.programId}</TableCell>
-                                    <TableCell  style={{ textAlign: "center" }}>{r.programName}</TableCell>
+                                    <TableCell  style={{ textAlign: "center" }}>{r.programId || "--"}</TableCell>
+                                    <TableCell  style={{ textAlign: "center" }}>{r.programName || "--"}</TableCell>
+                                    <TableCell  style={{ textAlign: "center" }}>{r.createdDate || "--"}</TableCell>
+                                    <TableCell  style={{ textAlign: "center" }}>{r.updatedDate || "--"}</TableCell>
                                     <TableCell style={{ textAlign: "center" }}>
-                                        <IconButton onClick={(e) => handleMenuOpen(e, r.classId)}>
+                                        <IconButton onClick={(e) => handleMenuOpen(e, r.programId)}>
                                             <MoreVertIcon />
                                         </IconButton>
                                         <Menu
                                             anchorEl={anchorEl}
-                                            open={menuRowId === r.programId}
+                                            open={open && menuRowId === r.programId}
                                             onClose={handleMenuClose}
                                             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                                             transformOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -82,7 +86,7 @@ export default function ProgramTable({ rows }) {
                         </Fragment> :
                         <TableRow>
                             <TableCell
-                                colSpan={3}
+                                colSpan={5}
                                 style={{ ...cellStyle, padding: "20px" }}
                             >
                                 Chưa có dữ liệu để hiển thị

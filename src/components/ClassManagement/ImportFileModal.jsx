@@ -30,6 +30,7 @@ export default function ImportFileModal({
     open,
     setOpen,
     types = [],      // e.g. ["Lớp/Khóa học", "Toàn bộ"]
+    sampleLinks = [],
     onImport,        // fn(type, file)
 }) {
     const [typeChosen, setTypeChosen] = useState(null);
@@ -73,12 +74,14 @@ export default function ImportFileModal({
                 </TypeList>
 
                 {/* Download sample link */}
-                {typeChosen != null && (
+                {typeChosen != null && sampleLinks[typeChosen] && (
                     <Box mb={2}>
                         <Button
                             component="a"
-                            href="#"           // <-- sau này gán URL thật vào đây
+                            href={sampleLinks[typeChosen]}
+                            download
                             target="_blank"
+                            rel="noopener noreferrer"
                             size="small"
                         >
                             📥 Tải mẫu: {types[typeChosen]}

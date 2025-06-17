@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -19,6 +19,7 @@ import {
   Divider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { toast } from "react-toastify";
 
 // TabPanel helper
 function TabPanel({ children, value, index }) {
@@ -67,13 +68,49 @@ export default function InsertModal({
     { label: "Tự chọn ngành", value: "TCN" },
   ];
 
+  const isValid = useMemo(() => {
+    switch (tabIndex) {
+      case 0: // Lớp
+        return Boolean(
+          classData.className
+          && classData.semester
+          && classData.academicYear
+          && classData.numberStudent
+          && classData.courseId
+          && classData.facultyId
+          && classData.majorId
+          && classData.programId
+        );
+      case 1: // Khoa
+        return Boolean(facultyName.trim());
+      case 2: // Chuyên ngành
+        return Boolean(
+          majorData.majorName.trim()
+          && majorData.facultyId
+        );
+      case 3: // Chương trình
+        return Boolean(programName.trim());
+      case 4: // Khóa học
+        return Boolean(
+          courseData.courseName.trim()
+          && courseData.credit
+          && courseData.courseCode.trim()
+          && courseData.courseType
+          && courseData.facultyId
+        );
+      default:
+        return false;
+    }
+  }, [tabIndex, facultyName, majorData, programName, courseData, classData]);
+
   const closeModal = () => setModal(false);
 
-  useEffect(() => {
-    console.log(faculties, programs, majors, courses);
-  }, [faculties, programs, majors, courses]);
-
   const handleInsert = () => {
+    if (!isValid) return;
+    if (tabIndex === 0 && !isClassValid) {
+      toast.warning("Thông tin để tạo mới lớp chưa chính xác");
+      return;
+    }
     // dispatch the right payload depending on tabIndex:
     switch (tabIndex) {
       case 0:
@@ -95,6 +132,21 @@ export default function InsertModal({
     closeModal();
   };
 
+  const yearPattern = /^\d{4}-\d{4}$/;
+
+  const isClassValid = useMemo(() => {
+    return (
+      classData.className.trim() &&
+      ["1", "2", "3"].includes(classData.semester) &&
+      yearPattern.test(classData.academicYear) &&
+      classData.numberStudent > 0 &&
+      classData.courseId &&
+      classData.facultyId &&
+      classData.majorId &&
+      classData.programId
+    );
+  }, [classData]);
+
   const addButtonLabels = [
     "Thêm Lớp",
     "Thêm Khoa",
@@ -114,7 +166,7 @@ export default function InsertModal({
         }}
       >
         <Typography variant="h6" sx={{ fontWeight: "medium" }}>
-          Thêm mới
+          THÊM MỚI
         </Typography>
         <IconButton onClick={closeModal}>
           <CloseIcon />
@@ -149,19 +201,24 @@ export default function InsertModal({
               />
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField
-                label="Học kỳ"
-                fullWidth
-                size="small"
-                value={classData.semester}
-                onChange={(e) =>
-                  setClassData({ ...classData, semester: e.target.value })
-                }
-              />
+              <FormControl fullWidth size="small">
+                <InputLabel>Học kỳ</InputLabel>
+                <Select
+                  label="Học kỳ"
+                  value={classData.semester}
+                  onChange={e =>
+                    setClassData({ ...classData, semester: e.target.value })
+                  }
+                >
+                  <MenuItem value="1">1</MenuItem>
+                  <MenuItem value="2">2</MenuItem>
+                  <MenuItem value="3">3</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
-                label="Khóa"
+                label="Khóa (VD: 2021-2022 ...)"
                 fullWidth
                 size="small"
                 value={classData.academicYear}
@@ -408,7 +465,7 @@ export default function InsertModal({
         <Button variant="outlined" onClick={closeModal}>
           Hủy
         </Button>
-        <Button variant="contained" color="primary" onClick={handleInsert}>
+        <Button variant="contained" color="primary" onClick={handleInsert} disabled={!isValid}>
           {addButtonLabels[tabIndex]}
         </Button>
       </Box>

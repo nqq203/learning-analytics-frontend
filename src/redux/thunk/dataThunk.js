@@ -161,40 +161,183 @@ export const fetchAllCourses = createAsyncThunk(
 )
 
 export const processAllData = createAsyncThunk(
-  "data/processAllData",
-  async ({ instructorId, file }, { rejectWithValue }) => {
-    try {
-      const response = await dataApi.processAllData({ instructorId, file });
-      return response.data;
-    } catch (err) {
-      const payload = err.response?.data ?? err;
-      return rejectWithValue(handleDataApiError(payload));
+    "data/processAllData",
+    async ({ instructorId, file }, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.processAllData({ instructorId, file });
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
     }
-  }
 );
 
 export const processCourseData = createAsyncThunk(
-  "data/processCourseData",
-  async ({ instructorId, file }, { rejectWithValue }) => {
-    try {
-      const response = await dataApi.processCourseData({ instructorId, file });
-      return response.data;
-    } catch (err) {
-      const payload = err.response?.data ?? err;
-      return rejectWithValue(handleDataApiError(payload));
+    "data/processCourseData",
+    async ({ instructorId, file }, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.processCourseData({ instructorId, file });
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
     }
-  }
+);
+
+export const processStudentData = createAsyncThunk(
+    "data/processStudentData",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.processStudentInformation(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
 );
 
 export const processFilePartly = createAsyncThunk(
-  "data/processFilePartly",
-  async (data, { rejectWithValue }) => {
-    try {
-      const response = await dataApi.processFilePartly(data);
-      return response.data;
-    } catch (err) {
-      const payload = err.response?.data ?? err;
-      return rejectWithValue(handleDataApiError(payload));
+    "data/processFilePartly",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.processFilePartly(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
     }
-  }
+);
+
+export const fetchAcademicyear = createAsyncThunk(
+    "data/fetchAcademicYear",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.getAcademicYear(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const fetchSemester = createAsyncThunk(
+    "data/fetchSemester",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.getSemester(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const deleteFaculty = createAsyncThunk(
+    "data/deleteFaculty",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.deleteFaculty(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const deleteMajor = createAsyncThunk(
+    "data/deleteMajor",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.deleteMajor(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const deleteProgram = createAsyncThunk(
+    "data/deleteProgram",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.deleteProgram(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const deleteCourse = createAsyncThunk(
+    "data/deleteCourse",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.deleteCourse(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const updateCourse = createAsyncThunk(
+    "data/updateCourse",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.updateCourse(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const updateProgram = createAsyncThunk(
+    "data/updateProgram",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.updateProgram(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const updateFaculty = createAsyncThunk(
+    "data/updateFaculty",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.updateFaculty(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const updateMajor = createAsyncThunk(
+    "data/updateMajor",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.updateMajor(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
 );
