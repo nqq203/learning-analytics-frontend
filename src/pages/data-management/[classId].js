@@ -1,38 +1,16 @@
 import {
   Box,
-  Typography,
   TextField,
-  Button,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   IconButton,
-
-  Grid,
   InputAdornment,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormControl
+  CircularProgress
 } from "@mui/material";
-
 import {
   ActionButton,
   Container,
   Header,
 } from "@/components/Analytics/Styles/Styles";
-
-
 import {
-  Search,
-  Settings,
-  Edit,
-  Delete,
-  ArrowBack,
   Add,
   FileDownload,
   Info,
@@ -44,147 +22,38 @@ import AddStudentModal from "@/components/StudentManagement/AddStudentModal";
 import StudentTable from "@/components/ClassManagement/StudentTable";
 import { useDispatch, useSelector } from "react-redux";
 import ImportFileModal from "@/components/ClassManagement/ImportFileModal";
-import { processFilePartly, processStudentData } from "@/redux/thunk/dataThunk";
+import { fetchStudentList, processFilePartly, processStudentData } from "@/redux/thunk/dataThunk";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
+import { clearStudentList, setPageDefault } from "@/redux/slice/dataSlice";
 
 const InfoColumns = [
-  { id: "id", label: "MSSV", align: "center" },
-  { id: "name", label: "Họ và Tên", align: "center" },
-  { id: "class", label: "Lớp", align: "center" },
-  { id: "subject", label: "Môn", align: "center" },
-  { id: "term", label: "Khóa", align: "center" }
+  { id: "identificationCode", label: "MSSV", align: "center" },
+  { id: "email", label: "Email", align: "center" },
+  { id: "programName", label: "Chương trình", align: "center" },
+  { id: "facultyName", label: "Khoa", align: "center" },
+  { id: "majorName", label: "Chuyên ngành", align: "center" },
+  { id: "createdDate", label: "Ngày tạo", align: "center" },
+  { id: "updatedDate", label: "Cập nhật", align: "center" },
 ];
 
 const GradeColumns = [
-  { id: "id", label: "MSSV", align: "center" },
-  { id: "name", label: "Họ và Tên", align: "center" },
-  { id: "midterm", label: "Giữa kỳ", align: "center" },
-  { id: "final", label: "Cuối kỳ", align: "center" },
-  { id: "project", label: "Đồ án", align: "center" },
-  { id: "practice", label: "Thực hành", align: "center" },
-  { id: "total", label: "Tổng kết", align: "center" },
-  { id: "grade", label: "Xếp loại", align: "center" }
-]
-// sample data
-const studentData = [
-  {
-    id: "21127001",
-    name: "Nguyễn Văn A",
-    class: "21CLC05",
-    subject: "Cơ sở dữ liệu",
-    term: "21",
-    midterm: 7,
-    final: 8,
-    project: 9,
-    practice: 7,
-    total: 8,
-    grade: "Khá",
-  },
-  {
-    id: "21127002",
-    name: "Nguyễn Văn B",
-    class: "21CLC05",
-    subject: "Cơ sở dữ liệu",
-    term: "21",
-    midterm: 6,
-    final: 7,
-    project: 8,
-    practice: 6,
-    total: 7,
-    grade: "Trung bình",
-  },
-  {
-    id: "21127003",
-    name: "Nguyễn Văn C",
-    class: "21CLC05",
-    subject: "Cơ sở dữ liệu",
-    term: "21",
-    midterm: 6,
-    final: 7,
-    project: 8,
-    practice: 6,
-    total: 7,
-    grade: "Trung bình",
-  },
-  {
-    id: "21127004",
-    name: "Nguyễn Văn D",
-    class: "21CLC05",
-    subject: "Cơ sở dữ liệu",
-    term: "21",
-    midterm: 6,
-    final: 7,
-    project: 8,
-    practice: 6,
-    total: 7,
-    grade: "Trung bình",
-  },
-  {
-    id: "21127005",
-    name: "Nguyễn Văn E",
-    class: "21CLC05",
-    subject: "Cơ sở dữ liệu",
-    term: "21",
-    midterm: 6,
-    final: 7,
-    project: 8,
-    practice: 6,
-    total: 7,
-    grade: "Trung bình",
-  },
-  {
-    id: "21127006",
-    name: "Nguyễn Văn F",
-    class: "21CLC05",
-    subject: "Cơ sở dữ liệu",
-    term: "21",
-    midterm: 6,
-    final: 7,
-    project: 8,
-    practice: 6,
-    total: 7,
-    grade: "Trung bình",
-  },
-  {
-    id: "21127007",
-    name: "Nguyễn Văn G",
-    class: "21CLC05",
-    subject: "Cơ sở dữ liệu",
-    term: "21",
-    midterm: 6,
-    final: 7,
-    project: 8,
-    practice: 6,
-    total: 7,
-    grade: "Trung bình",
-  },
-  {
-    id: "21127008",
-    name: "Nguyễn Văn H",
-    class: "21CLC05",
-    subject: "Cơ sở dữ liệu",
-    term: "21",
-    midterm: 6,
-    final: 7,
-    project: 8,
-    practice: 6,
-    total: 7,
-    grade: "Trung bình",
-  },
+  { id: "identificationCode", label: "MSSV", align: "center" },
+  { id: "midtermGrade", label: "Giữa kỳ", align: "center" },
+  { id: "finalGrade", label: "Cuối kỳ", align: "center" },
+  { id: "projectGrade", label: "Đồ án", align: "center" },
+  { id: "practiceGrade", label: "Thực hành", align: "center" },
+  { id: "totalGrade", label: "Tổng kết", align: "center" },
+  { id: "registrationType", label: "Loại ĐK", align: "center" },
+  { id: "status", label: "Trạng thái", align: "center" },
+  { id: "createdDate", label: "Ngày tạo", align: "center" },
+  { id: "updatedDate", label: "Cập nhật", align: "center" },
 ];
+
+
 const academicYear = ["2014-2018", "2015-2019", "2021-2025", "2022-2026"]
 export default function StudentDetailView({ onBack }) {
-  const [students, setStudents] = useState(studentData);
-  const [chosenAcademicYear, setChosenAcademicYear] = useState("");
-  const studentCount = students.length;
-  const averageScore =
-    students.length === 0
-      ? 0
-      : (
-        students.reduce((sum, s) => sum + s.total, 0) / students.length
-      ).toFixed(2);
   const [className, setClassName] = useState("21CLC05");
   const [subject, setSubject] = useState("Cơ sở dữ liệu");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Thêm sv
@@ -205,10 +74,10 @@ export default function StudentDetailView({ onBack }) {
       return null;
     }
   }, [accessToken]);
+  const { loading, totalGrade, totalInformation, studentsInformation, studentsGrade, hasMore, page, amount } = useSelector(state => state.data);
 
   const handleChangeAcedemicYear = (value) => {
     setChosenAcademicYear(value)
-
   }
 
   const handleToggleSummary = () => {
@@ -230,21 +99,18 @@ export default function StudentDetailView({ onBack }) {
   };
 
   const handleSaveEdit = (updatedStudent) => {
-    setStudents((prev) =>
-      prev.map((stu) => (stu.id === updatedStudent.id ? updatedStudent : stu))
-    );
+
     setOpenEditModal(false);
     setSelectedStudent(null);
-    console.log("Student saved:", updatedStudent);
   };
 
   const handleDeleteStudent = (studentId) => {
-    setStudents((prev) => prev.filter((s) => s.id !== studentId));
   };
 
   const importTypes = ["Thông tin sinh viên", "Tổng kết", "Quiz", "Bài tập", "Cuối kỳ"];
   const handleImport = async (type, file) => {
     let response;
+    console.log(type);
     if (type === "Thông tin sinh viên") {
       response = await dispatch(processStudentData({ instructorId: userId, classId: classId, file }));
     } else if (type === "Tổng kết") {
@@ -264,6 +130,23 @@ export default function StudentDetailView({ onBack }) {
     }
     setImportFile(false);
   }
+
+  const handleLoadMore = () => {
+    if (!loading && hasMore) {
+      dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: page + 1, amount }));
+    }
+  };
+
+  useEffect(() => {
+    if (!classId) return;
+    dispatch(clearStudentList());
+    dispatch(fetchStudentList({
+      classId,
+      type: showSummary ? "summary" : "information",
+      page: 1,
+      amount
+    }));
+  }, [classId, showSummary]);
 
   return (
     <Container maxWidth={false} disableGutters>
@@ -312,6 +195,7 @@ export default function StudentDetailView({ onBack }) {
             color="primary"
             startIcon={<Add />}
             onClick={() => setIsAddModalOpen(true)}
+            disabled={loading}
           >
             Thêm
           </ActionButton>
@@ -320,6 +204,7 @@ export default function StudentDetailView({ onBack }) {
             color="primary"
             startIcon={<Info />}
             onClick={handleToggleSummary}
+            disabled={loading}
             sx={{
               ...(showSummary && {
                 bgcolor: "white",
@@ -339,6 +224,7 @@ export default function StudentDetailView({ onBack }) {
             color="primary"
             onClick={() => setImportFile(true)}
             startIcon={<FileDownload />}
+            disabled={loading}
           >
             Tải file
           </ActionButton>
@@ -347,26 +233,37 @@ export default function StudentDetailView({ onBack }) {
       <Box sx={{ p: 2 }}>
         <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}
         >
-          Số lượng sinh viên: {studentCount} &nbsp;&nbsp;&nbsp; Điểm trung
-          bình: {averageScore}
+          Số lượng sinh viên: {showSummary ? totalGrade : totalInformation} &nbsp;&nbsp;&nbsp;
         </span>
       </Box>
-      {showSummary ?
-        <StudentTable
-          filteredRows={students}
-          columns={GradeColumns}
-          handleDelete={handleDeleteStudent}
-          handleEdit={handleEditClick}
-
-        />
-        :
-        <StudentTable
-          filteredRows={students}
-          columns={InfoColumns}
-          handleDelete={handleDeleteStudent}
-          handleEdit={handleEditClick}
-        />
-      }
+      <div style={{ position: "relative", marginTop: 16 }}>
+        <Box position="relative">
+          <StudentTable
+            filteredRows={showSummary ? studentsGrade : studentsInformation}
+            columns={showSummary ? GradeColumns : InfoColumns}
+            handleDelete={handleDeleteStudent}
+            handleEdit={handleEditClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+          />
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+      </div>
       {importFile &&
         <ImportFileModal
           open={importFile}

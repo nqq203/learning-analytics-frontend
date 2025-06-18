@@ -341,3 +341,68 @@ export const updateMajor = createAsyncThunk(
         }
     }
 );
+
+export const fetchStudentList = createAsyncThunk(
+    "data/fetchStudentList",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.fetchStudentList(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const createStudent = createAsyncThunk(
+    "data/createStudent",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.createStudent(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const updateStudent = createAsyncThunk(
+    "data/updateStudent",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.updateStudent(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const fetchStudentDetail = createAsyncThunk(
+    "data/fetchStudentDetail",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.fetchStudentDetail(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const deleteStudentFromClass = createAsyncThunk(
+    "data/deleteStudentFromClass",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.deleteStudentFromClass(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);

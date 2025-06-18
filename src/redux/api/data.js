@@ -147,6 +147,16 @@ const dataApi = {
         axios.put(`${API_URL}/data/majors/${majorId}?instructor_id=${instructorId}`, payload),
     updateCourse: ({ courseId, payload, instructorId }) =>
         axios.put(`${API_URL}/data/courses/${courseId}?instructor_id=${instructorId}`, payload),
+    fetchStudentList: ({ classId, type = "information", page, amount}) => 
+        axios.get(`${API_URL}/data/students?class_id=${classId}&type=${type}&page=${page}&amount=${amount}`),
+    createStudent: ({ classId, payload }) => 
+        axios.post(`${API_URL}/data/students?class_id=${classId}`, payload),
+    updateStudent: ({ studentId, classId, payload }) =>
+        axios.put(`${API_URL}/data/students/${studentId}?class_id=${classId}`, payload),
+    fetchStudentDetail: ({ studentId, classId }) => 
+        axios.get(`${API_URL}/data/students/${studentId}?class_id=${classId}`),
+    deleteStudentFromClass: ({ studentId, classId }) =>
+        axios.delete(`${API_URL}/data/students/${studentId}?class_id=${classId}`)
 
 }
 
