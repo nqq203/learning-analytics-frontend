@@ -1,7 +1,5 @@
-import { Card, CardContent, IconButton, Checkbox, Button, Tab } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import styled from "styled-components";
-import { useState,useEffect } from "react";
+// src/components/ClassManagement/StudentGradeTable.jsx
+import React, { useEffect, useRef } from 'react';
 import {
   Paper,
   Table,
@@ -10,140 +8,93 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from "@mui/material";
-import { TableWrapper } from "../Analytics/Styles/Styles";
-const TitleStudentList = styled.div`
-    display:flex;
-    flex-direction:row;
-    justify-content:space-between;
-    width:95%;
-    align-items:center;
+  Checkbox,
+} from '@mui/material';
+import { TableWrapper } from '../Analytics/Styles/Styles';
 
-`
+export default function StudentGradeTable({
+  rows = [],             // list of student-grade objects
+  columns = [],          // e.g. [{ id: 'identificationCode', label: 'MSSV', align: 'center' }, …]
+  selected = new Set(),  // Set of studentId that are checked
+  onSelect,              // fn(studentId) to toggle selection
+  onLoadMore,            // optional infinite scroll callback
+}) {
+  const containerRef = useRef();
 
+  // infinite-scroll listener
+  useEffect(() => {
+    if (!onLoadMore) return;
+    const el = containerRef.current;
+    const handleScroll = () => {
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
+        onLoadMore();
+      }
+    };
+    el.addEventListener('scroll', handleScroll);
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, [onLoadMore]);
 
-const StudentList = ({TableHeader,TableContent,setChosenStudentOuter}) =>{
-    const cellStyle = {
+  const cellStyle = {
     fontSize: "16px",
+    textAlign: "center",
   };
-
-    const headerCellStyle = {
+  const headerCellStyle = {
     ...cellStyle,
     fontWeight: "700",
   };
 
-    const [studentChosen,setStudentChosen] = useState([])
-    const handleCheck = (student) =>{
-        
-        setStudentChosen(
-
-            (prev) =>{
-                if (prev.some((s) => s.ID === student.ID) )
-                {
-                    setChosenStudentOuter(prev.filter ((s)=>s.ID !==student.ID) );
-                    return prev.filter ((s)=>s.ID !==student.ID) 
-                }
-                else{
-                    setChosenStudentOuter([...prev,student]);
-                    return [...prev,student]
-                }
-            }
-
-        )
-    }
-
-    
-    const handleCheckAll = ()=>{
-        if(studentChosen.length == TableContent.length){
-            setStudentChosen([])
-            setChosenStudentOuter([])
-        }
-        else{
-            setStudentChosen(TableContent)
-            setChosenStudentOuter(TableContent)
-        }
-    }
-    
-
-    useEffect(()=>{
-        console.log(studentChosen);
-    },[studentChosen])
-
-    return(
-        <>
-            
-                {/* <TitleStudentList> 
-                    <div style={{fontSize:"1.5rem",fontWeight:"bold"}}></div>
-
-                    <div style={{display:"flex", flexDirection:"row",alignItems:"center"}} >
-
-                        <div style={{fontSize:"1.2rem",fontWeight:"bold"}}>Chọn tất cả :</div>
-                        <Checkbox 
-                            onChange={handleCheckAll}
-                            checked={studentChosen.length === TableContent.length}
-                        > </Checkbox>
-                    </div>
-                </TitleStudentList> */}
-            
-            <TableWrapper>
-
-            <TableContainer  
-                component={Paper}
-                className="TableContainer"
-                style={{ maxHeight: "550px", overflow: "auto" }}
-                
-            >
-                    <Table stickyHeader>
-                        <TableHead>
-                            <TableRow>
-                            
-                            {
-                                TableHeader.map((item,index)=>{
-                                return <TableCell 
-                                style={{ ...headerCellStyle, textAlign: "center" }} key={index}> {item}</TableCell>
-                                })
-                            }
-                            <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >
-
-                                <Checkbox 
-                            onChange={handleCheckAll}
-                            checked={studentChosen.length === TableContent.length}
-                        > </Checkbox>
-                            </TableCell>
-                            
-                            </TableRow>
-                        </TableHead>
-
-                        <TableBody>
-                            
-                            {TableContent.map((item, index) => (
-                                <TableRow key={index} style={{ borderBottom: "1px solid #eee" }}>
-                                    
-                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.MSSV}</TableCell>
-                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.Name}</TableCell>
-                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.Class}</TableCell>
-                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.Subject}</TableCell>
-                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.ClassOf}</TableCell>
-                                    
-                                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                                        <Checkbox 
-                                            key={index} onChange={ ()=>handleCheck(item)} 
-                                            checked={studentChosen.some((s) => s.ID === item.ID)}
-                                        ></Checkbox>
-                                    </TableCell>
-                                
-                                </TableRow>
-                            ))}
-                            
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-
-                </TableWrapper>
-        
-        
-        </>
-    )
+  return (
+    <TableWrapper>
+      <TableContainer
+        component={Paper}
+        ref={containerRef}
+        style={{ maxHeight: 550, overflow: 'auto' }}
+      >
+        <Table stickyHeader size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell style={headerCellStyle}>STT</TableCell>
+              {columns.map(col => (
+                <TableCell key={col.id} align={col.align || 'left'} style={headerCellStyle}>
+                  {col.label}
+                </TableCell>
+              ))}
+              <TableCell style={headerCellStyle}>Chọn</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.length > 0 ? (
+              rows.map((row, idx) => (
+                <TableRow hover key={row.studentId}>
+                  <TableCell style={cellStyle}>{idx + 1}</TableCell>
+                  {columns.map(col => (
+                    <TableCell
+                      key={col.id}
+                      align={col.align || 'left'}
+                      style={cellStyle}
+                    >
+                      {row[col.id] ?? '–'}
+                    </TableCell>
+                  ))}
+                  <TableCell padding="checkbox" style={cellStyle}>
+                    <Checkbox
+                      size="small"
+                      checked={selected.has(row.studentId)}
+                      onChange={() => onSelect(row.studentId)}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length + 2} align="center" style={cellStyle}>
+                  Chưa có dữ liệu
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </TableWrapper>
+  );
 }
-
-export default StudentList;
