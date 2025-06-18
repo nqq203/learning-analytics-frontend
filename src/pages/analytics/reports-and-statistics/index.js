@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActionButton,
   Container,
@@ -38,6 +38,14 @@ const ClassesList = () => {
   const [classOptions, setClassOptions] = useState([]);
   const [page, setPage] = useState(1);
   const [rows, setRows] = useState([]);
+  const [filters, setFilters] = useState({
+    search: "",
+    subject: "",
+    className: "",
+  });
+
+  const shouldReset = useRef(false);
+
   const userId = useMemo(() => {
     if (!accessToken) return null;
     try {
@@ -49,43 +57,45 @@ const ClassesList = () => {
   }, [accessToken]);
 
   useEffect(() => {
-      if (page === 1) {
-        setRows(classes);
-      } else {
-        setRows((prev) => [...prev, ...classes]);
-      }
-    }, [classes]);
+    if (page === 1) {
+      setRows(classes);
+    } else {
+      setRows((prev) => [...prev, ...classes]);
+    }
+  }, [classes]);
 
-  const totalStudents = useMemo(() => { //CHẠY KHI PAGE THAY ĐỔI 3
+  const totalStudents = useMemo(() => {
+    //CHẠY KHI PAGE THAY ĐỔI 3
     return rows.length || totalRecords;
   }, [rows]);
 
   const router = useRouter();
 
   const handleLoadMore = () => {
-      
-      if (!loading && rows.length < totalRecords) {
-          setPage(prev => prev + 1);
-      }
+    if (!loading && rows.length < totalRecords) {
+      setPage((prev) => prev + 1);
+    }
   };
 
-  const handleSubjectChange = (event) => {
-    setPage(1)
-    setFilterSubject(event.target.value);
+  const updateFilter = (key, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
 
-  const handleClassChange = (event) => {
-    setPage(1)
-    setFilterClass(event.target.value);
+
+  const handleSubjectChange = (e) => {
+    updateFilter("subject", e.target.value);
   };
 
-  const handleFilter = () => {
-    console.log("Lọc với Môn học:", filterSubject, "và Lớp:", filterClass);
+  const handleClassChange = (e) => {
+    updateFilter("className", e.target.value);
   };
 
   const handleSearchChange = (e) => {
-    setPage(1)
     setSearch(e.target.value);
+    updateFilter("search", e.target.value);
   };
 
   const handleViewClass = (classId) => {
@@ -101,21 +111,23 @@ const ClassesList = () => {
     fetchClasses();
   }, []);
 
-  useEffect(() => { //Chạy khi page thay đổi 1
+  useEffect(() => {
     if (!userId) return;
+    console.log(filters.subject, filters.className)
     dispatch(
       searchClasses({
-        search,
+        search: filters.search,
         userId,
         page: page,
         amount: 10,
-        subject: filterSubject,
-        className: filterClass,
+        subject: filters.subject,
+        className: filters.className,
       })
     );
-  }, [filterSubject, filterClass,page]);
+  }, [page, filters.search, filters.subject, filters.className]);
 
-  useEffect(() => { //Set unique option
+
+  useEffect(() => {
     if (!rows || rows.length === 0) return;
 
     const subjectSet = new Set();
@@ -126,7 +138,7 @@ const ClassesList = () => {
 
     rows.forEach((item) => {
       const subjectKey = item.courseId;
-      const classKey = item.className; 
+      const classKey = item.className;
 
       if (!subjectSet.has(subjectKey)) {
         subjectSet.add(subjectKey);
@@ -135,7 +147,7 @@ const ClassesList = () => {
 
       if (!classSet.has(classKey)) {
         classSet.add(classKey);
-        uniqueClasses.push({ id: classKey, name: item.className }); 
+        uniqueClasses.push({ id: classKey, name: item.className });
       }
     });
 
@@ -147,10 +159,7 @@ const ClassesList = () => {
   }, [rows]);
 
   const handleSearch = () => {
-    
-    dispatch(
-      searchClasses({ search: search, userId: userId, page: 1, amount: 10 })
-    );
+    updateFilter("search", search);
   };
 
   const columns = [
@@ -214,7 +223,7 @@ const ClassesList = () => {
             <InputLabel>Môn học</InputLabel>
             <Select
               label="Môn học"
-              value={filterSubject}
+              value={filters.subject}
               onChange={handleSubjectChange}
             >
               <MenuItem value="">
@@ -232,7 +241,7 @@ const ClassesList = () => {
             <InputLabel>Lớp</InputLabel>
             <Select
               label="Lớp"
-              value={filterClass}
+              value={filters.className}
               onChange={handleClassChange}
             >
               <MenuItem value="">

@@ -68,10 +68,10 @@ export const searchStudents = createAsyncThunk(
 
 export const searchClasses = createAsyncThunk(
   "analytics/searchClasses",
-  async ({ userId, page, amount, search }, { rejectWithValue }) => {
+  async ({ userId, page, amount, search, subject, className  }, { rejectWithValue }) => {
     try {
       
-      const response = await analyticsApi.searchClasses({ userId, page, amount, search });
+      const response = await analyticsApi.searchClasses({ userId, page, amount, search, subject, className  });
       console.log(response.data)
       return response.data;
     } catch (error) {
