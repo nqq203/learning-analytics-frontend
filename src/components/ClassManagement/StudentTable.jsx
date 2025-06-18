@@ -126,7 +126,7 @@ const StudentTable = ({
                           <ListItemIcon><EditIcon color="primary" fontSize="small" /></ListItemIcon>
                           <ListItemText>Chỉnh sửa</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={() => { handleDelete(row.studentId); handleMenuClose(); }}>
+                        <MenuItem onClick={() => { handleDelete(row.studentId, row.identificationCode); handleMenuClose(); }}>
                           <ListItemIcon><DeleteIcon color="error" fontSize="small" /></ListItemIcon>
                           <ListItemText>Xóa</ListItemText>
                         </MenuItem>

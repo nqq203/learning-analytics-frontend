@@ -70,7 +70,6 @@ export default function MainClassManagement() {
   }
 
   const handleSearch = async () => {
-    if (!search) return;
     if (tab === 0) {
       dispatch(clearClassList());
       await dispatch(fetchClassList({ instructorId: userId, page: 1, amount, search, academicYear: chosenAcademicYear, semester: chosenSemester }));
@@ -118,6 +117,7 @@ export default function MainClassManagement() {
   const classFields = [
     { label: "ID lớp", key: "classId" },
     // { label: "ID khóa học", key: "classId"}, 
+    { label: "Tên lớp", key: "className"},
     { label: "Mã khóa học", key: "courseCode" },
     { label: "Tên khóa học", key: "courseName" },
     { label: "Học kỳ", key: "semester" },
@@ -129,6 +129,7 @@ export default function MainClassManagement() {
     { label: "Chuyên ngành", key: "majorName" },
     { label: "Khoa", key: "facultyName" },
     { label: "Thời gian tạo", key: "createdDate" },
+    { label: "Cập nhật", key: "updatedDate"},
   ]
 
   const editLabelMap = {
@@ -525,31 +526,24 @@ export default function MainClassManagement() {
       <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
           <TextField
+            placeholder="Tìm kiếm"
             variant="outlined"
-            label="Tìm kiếm"
-            style={{ width: "70%", minWidth: 500 }}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
             size="small"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSearch()}
+            style={{ width: "70%", minWidth: 500 }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
                     onClick={handleSearch}
-                    sx={{
-                      backgroundColor: "#1976D2",
-                      borderRadius: "0 4px 4px 0",
-                      padding: "10px",
-                      height: "100%",
-                      '&:hover': {
-                        backgroundColor: "#1976d2",
-                      },
-                    }}
+                    disabled={loading}
                   >
-                    <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
+                    <SearchIcon />
                   </IconButton>
                 </InputAdornment>
-              ),
+              )
             }}
             sx={{
               width: "100%",

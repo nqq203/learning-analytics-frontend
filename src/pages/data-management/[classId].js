@@ -22,11 +22,12 @@ import AddStudentModal from "@/components/StudentManagement/AddStudentModal";
 import StudentTable from "@/components/ClassManagement/StudentTable";
 import { useDispatch, useSelector } from "react-redux";
 import ImportFileModal from "@/components/ClassManagement/ImportFileModal";
-import { fetchStudentList, processFilePartly, processStudentData } from "@/redux/thunk/dataThunk";
+import { deleteStudentFromClass, fetchAllFaculties, fetchAllMajors, fetchAllPrograms, fetchStudentDetail, fetchStudentList, processFilePartly, processStudentData } from "@/redux/thunk/dataThunk";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { clearStudentList, setPageDefault } from "@/redux/slice/dataSlice";
+import ConfirmDialog from "@/components/ClassManagement/ConfirmDialog";
 
 const InfoColumns = [
   { id: "identificationCode", label: "MSSV", align: "center" },
@@ -52,6 +53,8 @@ const GradeColumns = [
 ];
 
 
+
+
 const academicYear = ["2014-2018", "2015-2019", "2021-2025", "2022-2026"]
 export default function StudentDetailView({ onBack }) {
   const [className, setClassName] = useState("21CLC05");
@@ -74,19 +77,47 @@ export default function StudentDetailView({ onBack }) {
       return null;
     }
   }, [accessToken]);
-  const { loading, totalGrade, totalInformation, studentsInformation, studentsGrade, hasMore, page, amount } = useSelector(state => state.data);
+  const { loading, totalGrade, totalInformation, studentsInformation, studentsGrade, hasMore, page, amount, faculties, programs, majors, student } = useSelector(state => state.data);
+  const [search, setSearch] = useState("");
+  const [mssv, setMssv] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const handleChangeAcedemicYear = (value) => {
-    setChosenAcademicYear(value)
-  }
+  // trigger a fresh load with the current search term
+  const handleSearch = () => {
+    dispatch(clearStudentList());
+    dispatch(fetchStudentList({
+      classId,
+      type: showSummary ? "summary" : "information",
+      page: 1,
+      amount,
+      search
+    }));
+  };
+
+  useEffect(() => {
+    dispatch(fetchAllPrograms({ instructorId: userId }));
+    dispatch(fetchAllFaculties({ instructorId: userId }));
+    dispatch(fetchAllMajors({ instructorId: userId }));
+  }, [userId]);
+
 
   const handleToggleSummary = () => {
     setShowSummary((prev) => !prev);
   };
+
   const handleEditClick = (student) => {
     setSelectedStudent(student);
     setOpenEditModal(true);
   };
+
+  const handleUpdateStudent = async () => {
+
+  }
+
+  useEffect(() => {
+    if (!selectedStudent) return;
+    dispatch(fetchStudentDetail({ studentId: selectedStudent, classId: classId }));
+  }, [selectedStudent]);
 
   const handleCloseEdit = () => {
     setOpenEditModal(false);
@@ -98,14 +129,32 @@ export default function StudentDetailView({ onBack }) {
     setIsAddModalOpen(false);
   };
 
-  const handleSaveEdit = (updatedStudent) => {
-
-    setOpenEditModal(false);
-    setSelectedStudent(null);
+  const handleDeleteRequest = (studentId, identificationCode) => {
+    setSelectedStudent(studentId);
+    setMssv(identificationCode);
+    setConfirmOpen(true);
   };
 
-  const handleDeleteStudent = (studentId) => {
-  };
+
+  const handleDelete = async () => {
+    if (!selectedStudent) return;
+    try {
+      const response = await dispatch(deleteStudentFromClass({ studentId: selectedStudent, classId: classId }));
+      if (response.payload.success === true) {
+        toast.success(`Xóa thành công sinh viên ${mssv} khỏi lớp`);
+        dispatch(clearStudentList());
+        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: page + 1, amount, search }));
+      } else {
+        toast.error(`Xóa thất bại! Hãy thử lại sau`);
+      }
+    } catch {
+      toast.error(`Xóa thất bại! Hãy thử lại sau`);
+    } finally {
+      setConfirmOpen(false);
+      setSelectedStudent(null);
+      setMssv(null);
+    }
+  }
 
   const importTypes = ["Thông tin sinh viên", "Tổng kết", "Quiz", "Bài tập", "Cuối kỳ"];
   const handleImport = async (type, file) => {
@@ -114,17 +163,24 @@ export default function StudentDetailView({ onBack }) {
     if (type === "Thông tin sinh viên") {
       response = await dispatch(processStudentData({ instructorId: userId, classId: classId, file }));
     } else if (type === "Tổng kết") {
-      response = await dispatch(processFilePartly({ instructorId: userId, file, classId: classId, activityType: "final_note", replace: false }));
+      response = await dispatch(processFilePartly({ instructorId: userId, file, classId: classId, activityType: "final_note", replace: true }));
     } else if (type === "Quiz") {
-      response = await dispatch(processFilePartly({ instructorId: userId, file, classId: classId, activityType: "quiz", replace: false }));
+      response = await dispatch(processFilePartly({ instructorId: userId, file, classId: classId, activityType: "quiz", replace: true }));
     } else if (type === "Bài tập") {
-      response = await dispatch(processFilePartly({ instructorId: userId, file, classId: classId, activityType: "assignment", replace: false }));
+      response = await dispatch(processFilePartly({ instructorId: userId, file, classId: classId, activityType: "assignment", replace: true }));
     } else {
-      response = await dispatch(processFilePartly({ instructorId: userId, file, classId: classId, activityType: "final_exam", replace: false }));
+      response = await dispatch(processFilePartly({ instructorId: userId, file, classId: classId, activityType: "final_exam", replace: true }));
     }
 
     if (response.payload.success === true) {
       toast.success(`Tạo dữ liệu ${type.toLowerCase()} thành công`);
+      dispatch(fetchStudentList({
+        classId,
+        type: showSummary ? "summary" : "information",
+        page: 1,
+        amount,
+        search
+      }));
     } else {
       toast.error("Tạo dữ liệu thất bại! Hãy thữ lại sau");
     }
@@ -133,7 +189,7 @@ export default function StudentDetailView({ onBack }) {
 
   const handleLoadMore = () => {
     if (!loading && hasMore) {
-      dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: page + 1, amount }));
+      dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: page + 1, amount, search }));
     }
   };
 
@@ -144,7 +200,8 @@ export default function StudentDetailView({ onBack }) {
       classId,
       type: showSummary ? "summary" : "information",
       page: 1,
-      amount
+      amount,
+      search
     }));
   }, [classId, showSummary]);
 
@@ -156,31 +213,21 @@ export default function StudentDetailView({ onBack }) {
             placeholder="Tìm kiếm"
             variant="outlined"
             size="small"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSearch()}
             style={{ width: "70%", minWidth: 500 }}
             InputProps={{
               endAdornment: (
-                <InputAdornment
-                  position="end"
-                >
+                <InputAdornment position="end">
                   <IconButton
-                    // onClick={handleSearch}
-                    sx={{
-                      backgroundColor: "#1976D2",
-                      borderRadius: "0 4px 4px 0",
-                      padding: "10px",
-                      height: "100%",
-                      "&:hover": {
-                        backgroundColor: "#1976D2",
-                        marginRight: 0,
-                      },
-                    }}
+                    onClick={handleSearch}
+                    disabled={loading}
                   >
-                    <SearchIcon
-                      sx={{ color: "white", fontSize: "20px" }}
-                    />
+                    <SearchIcon />
                   </IconButton>
                 </InputAdornment>
-              ),
+              )
             }}
             sx={{
               width: "100%",
@@ -241,7 +288,7 @@ export default function StudentDetailView({ onBack }) {
           <StudentTable
             filteredRows={showSummary ? studentsGrade : studentsInformation}
             columns={showSummary ? GradeColumns : InfoColumns}
-            handleDelete={handleDeleteStudent}
+            handleDelete={handleDeleteRequest}
             handleEdit={handleEditClick}
             onLoadMore={handleLoadMore}
             hasMore={hasMore}
@@ -286,11 +333,35 @@ export default function StudentDetailView({ onBack }) {
         onAddStudent={handleAddNewStudent}
         mode="add"
       />
-      <EditStudentModal
+      {student && <EditStudentModal
         open={openEditModal}
         onClose={handleCloseEdit}
-        student={selectedStudent}
-        onSave={handleSaveEdit}
+        onSubmit={handleUpdateStudent} // nhận payload đã lọc
+        title="Sửa Sinh Viên"
+        basicFields={[
+          { key: 'identificationCode', label: 'MSSV', type: 'text' },
+          { key: 'fullName', label: 'Họ và tên', type: 'text' },
+          { key: 'email', label: 'Email', type: 'text' },
+          { key: 'programId', label: 'Chương trình', type: 'select', options: programs?.map(p => ({ value: p.programId, label: p.programName })) },
+          { key: 'facultyId', label: 'Khoa', type: 'select', options: faculties?.map(f => ({ value: f.facultyId, label: f.facultyName })) },
+          { key: 'majorId', label: 'Chuyên ngành', type: 'select', options: majors?.map(m => ({ value: m.majorId, label: m.majorName })) },
+        ]}
+        gradeFields={[
+          { key: 'midtermGrade', label: 'Giữa kỳ' },
+          { key: 'finalGrade', label: 'Cuối kỳ' },
+          { key: 'projectGrade', label: 'Đồ án' },
+          { key: 'practiceGrade', label: 'Thực hành' },
+          { key: 'assignmentQuizGrade', label: 'Quiz/Assignment' },
+          { key: 'totalGrade', label: 'Tổng kết' },
+        ]}
+        entityData={student}
+      />}
+      <ConfirmDialog
+        open={confirmOpen}
+        title={`Xác nhận xóa sinh viên`}
+        content={`Bạn có chắc chắn muốn xóa sinh viên với mã số ${mssv} này ra khỏi lớp không?`}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
       />
     </Container>
   );
