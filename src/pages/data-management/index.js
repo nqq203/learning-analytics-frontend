@@ -53,7 +53,7 @@ export default function MainClassManagement() {
   const [programOptions, setProgramOptions] = useState([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
-  const { classList, loading, totalRecords, totalMajors, totalPrograms, totalCourses, totalFaculties, page, amount, hasMore, _class, faculties, programs, majors, courses, academicYears, semesters } = useSelector(state => state.data);
+  const { classList, loading, totalRecords, totalMajors, totalPrograms, totalCourses, totalFaculties, page, amount, hasMore, _class, faculties, programs, majors, courses, academicYears, semesters, loadingFaculty, loadingMajor, loadingProgram, loadingCourse } = useSelector(state => state.data);
   const dispatch = useDispatch();
   const { accessToken } = useSelector(state => state.auth);
   const [tab, setTab] = useState(0);
@@ -587,6 +587,7 @@ export default function MainClassManagement() {
             style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
             variant="contained"
             onClick={() => setModalInsert(true)}
+            disabled={loading}
           >
             Thêm</ActionButton>
           <ActionButton
@@ -595,6 +596,7 @@ export default function MainClassManagement() {
             style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
             onClick={() => setImportFile(true)}
             variant="contained"
+            disabled={loading}
           >Tải file</ActionButton>
         </div>
       </Header>
@@ -661,7 +663,7 @@ export default function MainClassManagement() {
                 handleDelete={handleDeleteRequest}
                 handleEdit={handleEdit}
               />
-              {loading && (
+              {loadingProgram && (
                 <Box
                   position="absolute"
                   top={0}
@@ -687,7 +689,7 @@ export default function MainClassManagement() {
                 handleDelete={handleDeleteRequest}
                 handleEdit={handleEdit}
               />
-              {loading && (
+              {loadingFaculty && (
                 <Box
                   position="absolute"
                   top={0}
@@ -713,7 +715,7 @@ export default function MainClassManagement() {
                 handleDelete={handleDeleteRequest}
                 handleEdit={handleEdit}
               />
-              {loading && (
+              {loadingMajor && (
                 <Box
                   position="absolute"
                   top={0}
@@ -739,7 +741,7 @@ export default function MainClassManagement() {
                 handleDelete={handleDeleteRequest}
                 handleEdit={handleEdit}
               />
-              {loading && (
+              {loadingCourse && (
                 <Box
                   position="absolute"
                   top={0}

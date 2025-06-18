@@ -7,9 +7,11 @@ import {
     Box,
     IconButton,
     Typography,
+    CircularProgress,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import styled from "styled-components";
+import { useSelector } from "react-redux";
 
 const TypeList = styled(Box)`
   display: flex;
@@ -35,6 +37,7 @@ export default function ImportFileModal({
 }) {
     const [typeChosen, setTypeChosen] = useState(null);
     const [file, setFile] = useState(null);
+    const { loading } = useSelector(state => state.data);
 
     // reset when modal opens
     useEffect(() => {
@@ -117,12 +120,14 @@ export default function ImportFileModal({
                     <Button
                         fullWidth
                         variant="contained"
-                        disabled={typeChosen == null || !file}
+                        disabled={typeChosen == null || !file || loading}
                         onClick={() =>
                             onImport(types[typeChosen], file)
                         }
                     >
-                        Nhập
+                        {loading
+                            ? <CircularProgress size={24} color="white" />
+                            : 'Nhập'}
                     </Button>
                 </Box>
             </DialogContent>
