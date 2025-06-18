@@ -70,7 +70,9 @@ export const searchClasses = createAsyncThunk(
   "analytics/searchClasses",
   async ({ userId, page, amount, search }, { rejectWithValue }) => {
     try {
+      
       const response = await analyticsApi.searchClasses({ userId, page, amount, search });
+      console.log(response.data)
       return response.data;
     } catch (error) {
       return rejectWithValue(handleAnalyticsApiError(error.response.data));

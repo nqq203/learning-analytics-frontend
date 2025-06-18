@@ -37,6 +37,7 @@ const ClassesList = () => {
   const [subjectOptions, setSubjectOptions] = useState([]);
   const [classOptions, setClassOptions] = useState([]);
   const [page, setPage] = useState(1);
+  const [rows, setRows] = useState([]);
   const userId = useMemo(() => {
     if (!accessToken) return null;
     try {
@@ -47,17 +48,15 @@ const ClassesList = () => {
     }
   }, [accessToken]);
 
-  const rows = useMemo(() => {
-    if(page ===1){
-      return classes || [];
-    }
-    else{
-      rows.push(classes);
-    }
-    
-  }, [classes]);
+  useEffect(() => {
+      if (page === 1) {
+        setRows(classes);
+      } else {
+        setRows((prev) => [...prev, ...classes]);
+      }
+    }, [classes]);
 
-  const totalStudents = useMemo(() => {
+  const totalStudents = useMemo(() => { //CHẠY KHI PAGE THAY ĐỔI 3
     return rows.length || totalRecords;
   }, [rows]);
 
@@ -102,7 +101,7 @@ const ClassesList = () => {
     fetchClasses();
   }, []);
 
-  useEffect(() => {
+  useEffect(() => { //Chạy khi page thay đổi 1
     if (!userId) return;
     dispatch(
       searchClasses({
@@ -117,7 +116,7 @@ const ClassesList = () => {
   }, [filterSubject, filterClass,page]);
 
   useEffect(() => { //Set unique option
-    if (!classes || classes.length === 0) return;
+    if (!rows || rows.length === 0) return;
 
     const subjectSet = new Set();
     const classSet = new Set();
@@ -125,7 +124,7 @@ const ClassesList = () => {
     const uniqueSubjects = [];
     const uniqueClasses = [];
 
-    classes.forEach((item) => {
+    rows.forEach((item) => {
       const subjectKey = item.courseId;
       const classKey = item.className; 
 
@@ -145,7 +144,7 @@ const ClassesList = () => {
 
     setSubjectOptions(uniqueSubjects);
     setClassOptions(uniqueClasses);
-  }, [classes]);
+  }, [rows]);
 
   const handleSearch = () => {
     
@@ -258,7 +257,7 @@ const ClassesList = () => {
             fontWeight: "700",
           }}
         >
-          Tổng số lớp hiển thị: {totalStudents}
+          Tổng số lớp hiển thị: {totalRecords}
         </span>
         <Box position="relative">
           <AnalyticsTable
