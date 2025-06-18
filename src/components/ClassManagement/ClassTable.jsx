@@ -19,8 +19,9 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
-const ClassTable = ({ filteredRows, columns, handleDelete, handleEdit, handleViewStudent, action = true, onLoadMore }) => {
+const ClassTable = ({ filteredRows, columns, handleDelete, handleEdit, handleViewStudent, handleViewInformation, action = true, onLoadMore }) => {
   const containerRef = useRef();
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuRowId, setMenuRowId] = useState(null);
@@ -115,9 +116,13 @@ const ClassTable = ({ filteredRows, columns, handleDelete, handleEdit, handleVie
                       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                       transformOrigin={{ vertical: 'top', horizontal: 'center' }}
                     >
-                      <MenuItem onClick={() => { handleViewStudent(row.classId); handleMenuClose(); }}>
+                      <MenuItem onClick={() => { handleViewInformation(row.classId); handleMenuClose(); }}>
                         <ListItemIcon><VisibilityIcon color="primary" fontSize="small" /></ListItemIcon>
-                        <ListItemText>Xem Lớp</ListItemText>
+                        <ListItemText>Xem thông tin lớp</ListItemText>
+                      </MenuItem>
+                      <MenuItem onClick={() => { handleViewStudent(row.classId); handleMenuClose(); }}>
+                        <ListItemIcon><FormatListBulletedIcon color="primary" fontSize="small" /></ListItemIcon>
+                        <ListItemText>Xem danh sách lớp</ListItemText>
                       </MenuItem>
                       <MenuItem onClick={() => { handleEdit(row.classId); handleMenuClose(); }}>
                         <ListItemIcon><EditIcon color="primary" fontSize="small" /></ListItemIcon>

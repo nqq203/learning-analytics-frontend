@@ -27,7 +27,7 @@ import InsertModal from "@/components/ClassManagement/InsertModal";
 import EditModal from "@/components/ClassManagement/EditModal";
 import ImportFileModal from "@/components/ClassManagement/ImportFileModal";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchClassDetail, fetchClassList, fetchAllFaculties, fetchAllMajors, fetchAllPrograms, deleteClass } from "@/redux/thunk/dataThunk";
+import { fetchClassDetail, fetchClassList, fetchAllFaculties, fetchAllMajors, fetchAllPrograms, deleteClass, updateClass, createCourse, createFaculty, createMajor, createProgram, fetchAllCourses, createClass, processAllData, processCourseData, fetchAcademicyear, fetchSemester, deleteProgram, deleteFaculty, deleteMajor, deleteCourse, updateProgram, updateFaculty, updateMajor, updateCourse } from "@/redux/thunk/dataThunk";
 import { jwtDecode } from "jwt-decode";
 import { clearClassDetail, clearClassList } from "@/redux/slice/dataSlice";
 import { toast } from "react-toastify";
@@ -36,11 +36,14 @@ import Tab from "@mui/material/Tab";
 import ProgramTable from "@/components/ClassManagement/ProgramTable";
 import FacultyTable from "@/components/ClassManagement/FacultyTable";
 import MajorTable from "@/components/ClassManagement/MajorTable";
+import CourseTab from "@/components/ClassManagement/CourseTab";
+import ConfirmDialog from "@/components/ClassManagement/ConfirmDialog";
+import DetailModal from "@/components/ClassManagement/DetailModal";
 
 export default function MainClassManagement() {
   const router = useRouter();
-  const [chosenAcademicYear, setChosenAcademicYear] = useState("");
-  const [chosenSemester, setChosenSemester] = useState("");
+  const [chosenAcademicYear, setChosenAcademicYear] = useState(null);
+  const [chosenSemester, setChosenSemester] = useState(null);
   const [modalInsert, setModalInsert] = useState(false);
   const [modalUpdate, setModalUpdate] = useState(false);
   const [classId, setClassId] = useState(null);
@@ -48,45 +51,89 @@ export default function MainClassManagement() {
   const [facultyOptions, setFacultyOptions] = useState([]);
   const [majorOptions, setMajorOptions] = useState([]);
   const [programOptions, setProgramOptions] = useState([]);
-  const { classList, loading, totalRecords, totalMajors, totalPrograms, totalFaculties, page, amount, hasMore, _class, faculties, programs, majors } = useSelector(state => state.data);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const { classList, loading, totalRecords, totalMajors, totalPrograms, totalCourses, totalFaculties, page, amount, hasMore, _class, faculties, programs, majors, courses, academicYears, semesters, loadingFaculty, loadingMajor, loadingProgram, loadingCourse } = useSelector(state => state.data);
   const dispatch = useDispatch();
   const { accessToken } = useSelector(state => state.auth);
   const [tab, setTab] = useState(0);
-  const courses = useMemo(() => {
-    const map = new Map();
-    classList.forEach(c => {
-      if (!map.has(c.courseId)) {
-        map.set(c.courseId, { courseId: c.courseId, courseName: c.courseName });
-      }
-    });
-    return Array.from(map.values());
-  }, [classList]);
+  const [openDetail, setOpenDetail] = useState(false);
+  const [search, setSearch] = useState(null);
+  const [programId, setProgramId] = useState(null);
+  const [facultyId, setFacultyId] = useState(null);
+  const [majorId, setMajorId] = useState(null);
+  const [courseId, setCourseId] = useState(null);
+
+  const handleViewInformation = (id) => {
+    setClassId(id);
+    setOpenDetail(true);
+  }
+
+  const handleSearch = async () => {
+    if (!search) return;
+    if (tab === 0) {
+      dispatch(clearClassList());
+      await dispatch(fetchClassList({ instructorId: userId, page: 1, amount, search, academicYear: chosenAcademicYear, semester: chosenSemester }));
+    } else if (tab === 1) {
+      await dispatch(fetchAllPrograms({ instructorId: userId, search }));
+    } else if (tab === 2) {
+      await dispatch(fetchAllFaculties({ instructorId: userId, search }));
+    } else if (tab === 3) {
+      await dispatch(fetchAllMajors({ instructorId: userId, search }));
+    } else {
+      await dispatch(fetchAllCourses({ instructorId: userId, search }));
+    }
+  }
+
+  const importTypes = ["Lớp/Khóa học", "Toàn bộ"];
+  const handleImport = async (type, file) => {
+    let response;
+    if (type === "Lớp/Khóa học") {
+      response = await dispatch(processCourseData({ instructorId: userId, file }));
+    } else {
+      response = await dispatch(processAllData({ instructorId: userId, file }));
+    }
+    if (response.payload.success === true) {
+      toast.success("Tạo dữ liệu Lớp/Khóa học thành công");
+    } else {
+      toast.error("Tạo dữ liệu thất bại! Hãy thử lại sau");
+    }
+    setImportFile(false);
+  };
 
   const handleTabChange = (e, newIdx) => {
     setTab(newIdx);
   }
 
-  const semester = [1, 2, 3]
-  const academicYear = ["2014-2018", "2015-2019", "2021-2025", "2022-2026"]
   const columns = [
-    { id: "classId", label: "ID Lớp", align: "center" },
-    { id: "className", label: "Tên Lớp", align: "center" },
-    { id: "courseCode", label: "Mã Môn", align: "center" },
-    { id: "courseName", label: "Tên Môn", align: "center" },
-    { id: "courseType", label: "Loại Môn", align: "center" },
-    { id: "credit", label: "Tín Chỉ", align: "center" },
-    { id: "facultyName", label: "Tên Khóa", align: "center" },
-    { id: "majorName", label: "Chuyên Ngành", align: "center" },
-    { id: "numberStudent", label: "Tổng SV", align: "center" },
-    { id: "programName", label: "Chương Trình", align: "center" },
-    { id: "semester", label: "Học Kỳ", align: "center" },
-    { id: "academicYear", label: "Khóa", align: "center" },
+    { id: "classId", label: "ID", align: "center" },
+    { id: "className", label: "Tên lớp", align: "center" },
+    { id: "courseCode", label: "Mã khóa học", align: "center" },
+    { id: "courseName", label: "Tên khóa học", align: "center" },
+    { id: "createdDate", label: "Thời gian tạo", align: "center" },
+    { id: "updatedDate", label: "Cập nhật lần cuối", align: "center" }
+
   ];
 
-  const labelMap = {
+  const classFields = [
+    { label: "ID lớp", key: "classId" },
+    // { label: "ID khóa học", key: "classId"}, 
+    { label: "Mã khóa học", key: "courseCode" },
+    { label: "Tên khóa học", key: "courseName" },
+    { label: "Học kỳ", key: "semester" },
+    { label: "Năm/Khóa học", key: "academicYear" },
+    { label: "Tổng sinh viên", key: "numberStudent" },
+    { label: "Tín chỉ", key: "credit" },
+    { label: "Loại khóa học", key: "courseType" },
+    { label: "Chương trình", key: "programName" },
+    { label: "Chuyên ngành", key: "majorName" },
+    { label: "Khoa", key: "facultyName" },
+    { label: "Thời gian tạo", key: "createdDate" },
+  ]
+
+  const editLabelMap = {
     className: "Tên lớp",
     courseCode: "Môn",
-    courseType: "Loại môn",
     facultyName: "Tên khoa",
     majorName: "Chuyên ngành",
     numberStudent: "Tổng SV",
@@ -95,17 +142,30 @@ export default function MainClassManagement() {
     academicYear: "Khóa (VD: 2023-2024, 2022-2024, ...)",
   };
 
+  const editCourseLabelMap = {
+    courseCode: "Mã khóa học",
+    courseName: "Tên khóa học",
+    credit: "Tín chỉ",
+    courseType: "Loại khóa học"
+  }
+
+  const editProgramLabelMap = {
+    programName: "Tên chương trình"
+  }
+
+  const editFacultyLabelMap = {
+    facultyName: "Tên khoa"
+  }
+
+  const editMajorLabelMap = {
+    majorName: "Tên chuyên ngành"
+  }
+
   const selectFields = {
     courseId: courses,
     facultyId: facultyOptions,
     majorId: majorOptions,
     programId: programOptions,
-    courseType: [
-      { label: "Bắt buộc chuyên ngành", value: "BBCN" },
-      { label: "Cơ sở ngành", value: "CSN" },
-      { label: "Tốt nghiệp", value: "TN" },
-      { label: "Tự chọn ngành", value: "TCN" },
-    ],
   };
 
   const nameToId = {
@@ -114,35 +174,136 @@ export default function MainClassManagement() {
     programName: "programId",
   };
 
-  const buildFieldsFromClass = (_class) => {
-    if (!_class) return [];
+  const courseTypeOptions = [
+    { courseType: 'BBCN', label: 'Bắt buộc chuyên ngành' },
+    { courseType: 'CSN', label: 'Cơ sở ngành' },
+    { courseType: 'TCN', label: 'Tự chọn ngành' },
+    { courseType: 'TN', label: 'Tốt nghiệp' },
+  ];
 
-    return Object.entries(labelMap).map(([key, label]) => {
-      // khởi tạo
-      let fieldKey = key;
-      let value = _class[key];
-      let options = [];
+  const buildFields = (obj, type) => {
+    if (!obj) return [];
 
-      // 1) courseCode → courseId
-      if (key === "courseCode") {
-        fieldKey = "courseId";
-        value = _class.courseId;
-        options = selectFields.courseId;
-      }
-      // 2) chỉ facultyName, majorName, programName mới chuyển
-      else if (nameToId[key]) {
-        fieldKey = nameToId[key];
-        value = _class[fieldKey];
-        options = selectFields[fieldKey];
-      }
-      // 3) courseType vẫn giữ key gốc
-      else if (key === "courseType") {
-        options = selectFields.courseType;
-      }
+    switch (type) {
+      case "program":
+        // Chỉ sửa tên chương trình, input text
+        return [
+          {
+            key: "programName",
+            label: editProgramLabelMap.programName,
+            type: "text",
+            options: [],
+            value: obj.programName,
+          },
+        ];
 
-      const type = options.length > 0 ? "select" : "text";
-      return { key: fieldKey, label, type, options, value };
-    });
+      case "faculty":
+        // Chỉ sửa tên khoa, input text
+        return [
+          {
+            key: "facultyName",
+            label: editFacultyLabelMap.facultyName,
+            type: "text",
+            options: [],
+            value: obj.facultyName,
+          },
+        ];
+
+      case "major":
+        // Chỉnh tên chuyên ngành (text) và chọn khoa (select)
+        return [
+          {
+            key: "majorName",
+            label: editMajorLabelMap.majorName,
+            type: "text",
+            options: [],
+            value: obj.majorName,
+          },
+          {
+            key: "facultyId",
+            label: "Khoa",
+            type: "select",
+            options: selectFields.facultyId,
+            value: obj.facultyId,
+          },
+        ];
+
+      case "course":
+        // Tất cả các field đều text
+        return [
+          {
+            key: "courseCode",
+            label: editCourseLabelMap.courseCode,
+            type: "text",
+            options: [],
+            value: obj.courseCode,
+          },
+          {
+            key: "courseName",
+            label: editCourseLabelMap.courseName,
+            type: "text",
+            options: [],
+            value: obj.courseName,
+          },
+          {
+            key: "credit",
+            label: editCourseLabelMap.credit,
+            type: "text",
+            options: [],
+            value: obj.credit,
+          },
+          {
+            key: "courseType",
+            label: editCourseLabelMap.courseType,
+            type: "select",
+            options: courseTypeOptions,
+            value: obj.courseType,
+          },
+        ];
+
+      default:
+        // Class: giữ logic cũ, có select cho courseId, facultyId, majorId, programId
+        return Object.entries(editLabelMap).map(([key, label]) => {
+          let fieldKey = key;
+          let value = obj[key];
+          let options = [];
+
+          if (key === "courseCode") {
+            fieldKey = "courseId";
+            value = obj.courseId;
+            options = selectFields.courseId;
+          } else if (nameToId[key]) {
+            fieldKey = nameToId[key];
+            value = obj[fieldKey];
+            options = selectFields[fieldKey];
+          }
+
+          return {
+            key: fieldKey,
+            label,
+            type: options.length ? "select" : "text",
+            options,
+            value,
+          };
+        });
+    }
+  };
+
+  // 2) Đổi handleFields thành getEditFields, dùng find() để lấy đúng object:
+  const getEditFields = () => {
+    let obj, type;
+    if (tab === 0) {
+      obj = _class; type = "class";
+    } else if (tab === 1) {
+      obj = programs.find(r => r.programId === programId); type = "program";
+    } else if (tab === 2) {
+      obj = faculties.find(r => r.facultyId === facultyId); type = "faculty";
+    } else if (tab === 3) {
+      obj = majors.find(r => r.majorId === majorId); type = "major";
+    } else {
+      obj = courses.find(r => r.courseId === courseId); type = "course";
+    }
+    return buildFields(obj, type);
   };
 
   const userId = useMemo(() => {
@@ -159,7 +320,14 @@ export default function MainClassManagement() {
   useEffect(() => {
     if (!userId) return;
     dispatch(clearClassList());
-    dispatch(fetchClassList({ instructorId: userId, page: 1, amount }));
+    dispatch(fetchClassList({ instructorId: userId, page: 1, amount, search, academicYear: chosenAcademicYear, semester: chosenSemester }));
+  }, [userId, chosenSemester, chosenAcademicYear]);
+
+  // Fetch semester and academic year
+  useEffect(() => {
+    if (!userId) return;
+    dispatch(fetchAcademicyear({ instructorId: userId }));
+    dispatch(fetchSemester({ instructorId: userId }));
   }, [userId]);
 
   // Fetch class data detail
@@ -176,6 +344,7 @@ export default function MainClassManagement() {
       await dispatch(fetchAllFaculties({ instructorId: userId }));
       await dispatch(fetchAllMajors({ instructorId: userId }));
       await dispatch(fetchAllPrograms({ instructorId: userId }));
+      await dispatch(fetchAllCourses({ instructorId: userId }))
     }
     fetchOptions();
   }, [userId]);
@@ -188,38 +357,63 @@ export default function MainClassManagement() {
 
   const handleLoadMore = () => {
     if (!loading && hasMore) {
-      dispatch(fetchClassList({ instructorId: userId, page: page + 1, amount }));
+      dispatch(fetchClassList({ instructorId: userId, page: page + 1, amount, search, academicYear: chosenAcademicYear, semester: chosenSemester }));
     }
   };
 
-  useEffect(() => {
-    console.log("CLASS LIST", classList);
-  }, [classList]);
+  const handleDeleteRequest = (id) => {
+    setPendingDeleteId(id);
+    setConfirmOpen(true);
+  };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
+    if (!pendingDeleteId) return;
     try {
-      const response = await dispatch(deleteClass({ classId: id }));
+      let response;
+      if (tab === 0)
+        response = await dispatch(deleteClass({ classId: pendingDeleteId }));
+      else if (tab === 1)
+        response = await dispatch(deleteProgram({ programId: pendingDeleteId, instructorId: userId }));
+      else if (tab === 2)
+        response = await dispatch(deleteFaculty({ facultyId: pendingDeleteId, instructorId: userId }));
+      else if (tab === 3)
+        response = await dispatch(deleteMajor({ majorId: pendingDeleteId, instructorId: userId }));
+      else
+        response = await dispatch(deleteCourse({ courseId: pendingDeleteId, instructorId: userId }));
+      let entity = "lớp";
+      if (tab === 1) entity = "chương trình"
+      else if (tab === 2) entity = "khoa";
+      else if (tab === 3) entity = "chuyên ngành";
+      else if (tab === 4) entity = "khóa học";
       if (response.payload.code === 200) {
-        toast.success("Xóa lớp thành công");
-        dispatch(clearClassList());
-        await dispatch(fetchClassList({ instructorId: userId, page: 1, amount }));
+        toast.success(`Xóa ${entity} thành công`);
+        if (tab === 0) {
+          dispatch(clearClassList());
+          await dispatch(fetchClassList({ instructorId: userId, page: 1, amount, search, academicYear: chosenAcademicYear, semester: chosenSemester }));
+        }
+        else if (tab === 1) await dispatch(fetchAllPrograms({ instructorId: userId, search }));
+        else if (tab === 2) await dispatch(fetchAllFaculties({ instructorId: userId, search }));
+        else if (tab === 3) await dispatch(fetchAllMajors({ instructorId: userId, search }));
+        else await dispatch(fetchAllCourses({ instructorId: userId, search }));
       } else {
-        toast.error("Xóa lớp thất bại! Hãy thử lại sau");
+        toast.error(`Xóa ${entity} thất bại! Hãy thử lại sau`);
       }
-    } catch (error) {
-      toast.error("Xóa lớp thất bại! Hãy thử lại sau");
+    } catch {
+      toast.error(`Xóa ${entity} thất bại! Hãy thử lại sau`);
+    } finally {
+      setConfirmOpen(false);
+      setPendingDeleteId(null);
     }
-  }
+  };
 
   const handleEdit = (id) => {
-    console.log("heheheheh")
     setModalUpdate(true)
-    setClassId(id)
+    if (tab === 0) setClassId(id);
+    else if (tab === 1) setProgramId(id);
+    else if (tab === 2) setFacultyId(id);
+    else if (tab === 3) setMajorId(id);
+    else setCourseId(id);
   }
-
-  useEffect(() => {
-    console.log("modal update: ", modalUpdate);
-  }, [modalUpdate]);
 
   const handleViewStudent = (id) => {
     router.push(`/data-management/${id}`)
@@ -233,6 +427,99 @@ export default function MainClassManagement() {
     setChosenAcademicYear(value)
   }
 
+  const handleInsert = async ({ type, data }) => {
+    let response;
+    try {
+      switch (type) {
+        case "faculty":
+          response = await dispatch(createFaculty({ instructorId: userId, data }));
+          break;
+        case "major":
+          response = await dispatch(createMajor({ instructorId: userId, data }));
+          break;
+        case "program":
+          response = await dispatch(createProgram({ instructorId: userId, data }));
+          break;
+        case "course":
+          response = await dispatch(createCourse({ instructorId: userId, data }));
+          break;
+        case "class":
+          // if you have a createClass thunk:
+          response = await dispatch(createClass({ instructorId: userId, data }));
+          break;
+        default:
+          throw new Error("Unknown insert type: " + type);
+      }
+
+      if (response.payload?.success === true) {
+        let entity;
+        // refresh the relevant list:
+        switch (type) {
+          case "faculty":
+            await dispatch(fetchAllFaculties({ instructorId: userId }));
+            entity = "Khoa";
+            break;
+          case "major":
+            await dispatch(fetchAllMajors({ instructorId: userId }));
+            entity = "Chuyên ngành";
+            break;
+          case "program":
+            await dispatch(fetchAllPrograms({ instructorId: userId }));
+            entity = "Chương trình"
+            break;
+          case "course":
+            await dispatch(fetchAllCourses({ instructorId: userId }));
+            entity = "Khóa học"
+            break;
+          case "class":
+            dispatch(clearClassList());
+            await dispatch(fetchClassList({ instructorId: userId, page: 1, amount }));
+            entity = "Lớp"
+            break;
+        }
+        toast.success(`${entity} đã được thêm!`);
+      } else {
+        toast.error(`Thêm ${type} thất bại!`);
+      }
+    } catch (err) {
+      toast.error(`Lỗi khi thêm ${type}!`);
+    } finally {
+      setModalInsert(false);
+    }
+  };
+
+  const handleSubmitEdit = async (newData) => {
+    let response;
+    if (tab === 0)
+      response = await dispatch(updateClass({ instructorId: userId, data: newData, classId }));
+    else if (tab === 1)
+      response = await dispatch(updateProgram({ programId: programId, payload: newData, instructorId: userId }));
+    else if (tab === 2)
+      response = await dispatch(updateFaculty({ facultyId: facultyId, payload: newData, instructorId: userId }));
+    else if (tab === 3)
+      response = await dispatch(updateMajor({ majorId: majorId, payload: newData, instructorId: userId }));
+    else
+      response = await dispatch(updateCourse({ courseId: courseId, payload: newData, instructorId: userId }));
+    if (response?.payload?.code === 200) {
+      toast.success("Cập nhật thành công");
+      if (tab === 0) {
+        dispatch(clearClassList());
+        dispatch(clearClassDetail());
+        await dispatch(fetchClassList({ instructorId: userId, page: 1, amount, search, academicYear: chosenAcademicYear, semester: chosenSemester }));
+      } else if (tab === 1) {
+        await dispatch(fetchAllPrograms({ instructorId: userId, search }));
+      } else if (tab === 2) {
+        await dispatch(fetchAllFaculties({ instructorId: userId, search }));
+      } else if (tab === 3) {
+        await dispatch(fetchAllMajors({ instructorId: userId, search }));
+      } else {
+        await dispatch(fetchAllCourses({ instructorId: userId, search }));
+      }
+    } else {
+      toast.error("Cập nhật thất bại! Hãy thử lại sau");
+    }
+  }
+
   return (
     <Container>
       <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
@@ -241,12 +528,14 @@ export default function MainClassManagement() {
             variant="outlined"
             label="Tìm kiếm"
             style={{ width: "70%", minWidth: 500 }}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             size="small"
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
-                    // onClick={handleSearch}
+                    onClick={handleSearch}
                     sx={{
                       backgroundColor: "#1976D2",
                       borderRadius: "0 4px 4px 0",
@@ -274,7 +563,7 @@ export default function MainClassManagement() {
             <Select label="Chọn khóa" onChange={(e) => handleChangeAcedemicYear(e.target.value)}>
               <MenuItem value="">Tất cả</MenuItem>
               {
-                academicYear.map((item, index) => {
+                academicYears.map((item, index) => {
                   return (<MenuItem value={item} key={index}>{item}</MenuItem>)
                 })
               }
@@ -287,7 +576,7 @@ export default function MainClassManagement() {
             >
               <MenuItem value="">Tất cả</MenuItem>
               {
-                semester.map((item, index) => {
+                semesters.map((item, index) => {
                   return (<MenuItem value={item} key={index}>{item}</MenuItem>)
                 })
               }
@@ -298,6 +587,7 @@ export default function MainClassManagement() {
             style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
             variant="contained"
             onClick={() => setModalInsert(true)}
+            disabled={loading}
           >
             Thêm</ActionButton>
           <ActionButton
@@ -306,13 +596,14 @@ export default function MainClassManagement() {
             style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
             onClick={() => setImportFile(true)}
             variant="contained"
+            disabled={loading}
           >Tải file</ActionButton>
         </div>
       </Header>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}
         >
-          Tổng bản ghi: {tab == 0 && totalRecords} {tab == 1 && totalPrograms} {tab == 2 && totalFaculties} {tab == 3 && totalMajors}
+          Tổng bản ghi: {tab === 0 && totalRecords} {tab === 1 && totalPrograms} {tab === 2 && totalFaculties} {tab === 3 && totalMajors} {tab === 4 && totalCourses}
         </span>
         {/* --- Tabs --- */}
         <Tabs
@@ -326,6 +617,7 @@ export default function MainClassManagement() {
           <Tab label="Chương trình đào tạo" />
           <Tab label="Khoa" />
           <Tab label="Chuyên ngành" />
+          <Tab label="Khóa học" />
         </Tabs>
         {/* Table + Spinner Overlay */}
         <div style={{ position: "relative", marginTop: 16 }}>
@@ -339,9 +631,10 @@ export default function MainClassManagement() {
                   };
                 })}
                 columns={columns}
-                handleDelete={handleDelete}
+                handleDelete={handleDeleteRequest}
                 handleEdit={handleEdit}
                 handleViewStudent={handleViewStudent}
+                handleViewInformation={handleViewInformation}
                 onLoadMore={handleLoadMore}
               />
               {loading && (
@@ -364,28 +657,152 @@ export default function MainClassManagement() {
           )}
 
           {tab === 1 && (
-            <ProgramTable rows={programs || []} />
+            <Box position="relative">
+              <ProgramTable
+                rows={programs || []}
+                handleDelete={handleDeleteRequest}
+                handleEdit={handleEdit}
+              />
+              {loadingProgram && (
+                <Box
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  width="100%"
+                  height="100%"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  bgcolor="rgba(255,255,255,0.6)"
+                  zIndex={10}
+                >
+                  <CircularProgress size="50px" />
+                </Box>
+              )}
+            </Box>
           )}
 
           {tab === 2 && (
-            <FacultyTable rows={faculties || []} />
+            <Box position="relative">
+              <FacultyTable
+                rows={faculties || []}
+                handleDelete={handleDeleteRequest}
+                handleEdit={handleEdit}
+              />
+              {loadingFaculty && (
+                <Box
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  width="100%"
+                  height="100%"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  bgcolor="rgba(255,255,255,0.6)"
+                  zIndex={10}
+                >
+                  <CircularProgress size="50px" />
+                </Box>
+              )}
+            </Box>
           )}
 
           {tab === 3 && (
-            <MajorTable rows={majors || []} />
+            <Box position="relative">
+              <MajorTable
+                rows={majors || []}
+                handleDelete={handleDeleteRequest}
+                handleEdit={handleEdit}
+              />
+              {loadingMajor && (
+                <Box
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  width="100%"
+                  height="100%"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  bgcolor="rgba(255,255,255,0.6)"
+                  zIndex={10}
+                >
+                  <CircularProgress size="50px" />
+                </Box>
+              )}
+            </Box>
+          )}
+
+          {tab === 4 && (
+            <Box position="relative">
+              <CourseTab
+                rows={courses || []}
+                handleDelete={handleDeleteRequest}
+                handleEdit={handleEdit}
+              />
+              {loadingCourse && (
+                <Box
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  width="100%"
+                  height="100%"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  bgcolor="rgba(255,255,255,0.6)"
+                  zIndex={10}
+                >
+                  <CircularProgress size="50px" />
+                </Box>
+              )}
+            </Box>
           )}
         </div>
-        {importFile ? <ImportFileModal Modal={importFile} setModal={setImportFile} /> : null}
-        {modalInsert ? <InsertModal Modal={modalInsert} setModal={setModalInsert} /> : null}
+        {importFile ?
+          <ImportFileModal
+            open={importFile}
+            setOpen={setImportFile}
+            types={importTypes}
+            sampleLinks={[
+              "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1749965679/Course_Data_erpcd4.xlsx",
+              "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1749965679/All_lftjpg.xlsx",
+            ]}
+            onImport={handleImport}
+          /> : null}
+        {modalInsert ?
+          <InsertModal
+            Modal={modalInsert}
+            setModal={setModalInsert}
+            faculties={faculties}
+            majors={majors}
+            programs={programs}
+            courses={courses}
+            onInsert={handleInsert}
+          /> : null}
         {modalUpdate && !loading ?
           <EditModal
+            title={tab === 0 ? "lớp" : tab === 1 ? "chương trình" : tab === 2 ? "khoa" : tab === 3 ? "chuyên ngành" : "khóa học"}
             Modal={modalUpdate}
             setModal={setModalUpdate}
-            fields={buildFieldsFromClass(_class)}
-            onSubmit={async (newData) => {
-              console.log("📝 Updated class data:", newData);
-              // await dispatch(updateClass({ instructorId, data: newData }));
-            }} /> : null}
+            fields={getEditFields()}
+            onSubmit={handleSubmitEdit} /> : null}
+        {openDetail && !loading &&
+          <DetailModal
+            open={openDetail}
+            onClose={() => setOpenDetail(false)}
+            title={"Thông tin lớp"}
+            fields={classFields}
+            entityData={_class} />}
+        {/* Confirm dialog */}
+        <ConfirmDialog
+          open={confirmOpen}
+          title={`Xác nhận xóa ${tab === 0 ? "lớp" : tab === 1 ? "chương trình" : tab === 2 ? "khoa" : tab === 3 ? "chuyên ngành" : "khóa học"}`}
+          content={`Bạn có chắc chắn muốn xóa ${tab === 0 ? "LỚP" : tab === 1 ? "CHƯƠNG TRÌNH" : tab === 2 ? "KHOA" : tab === 3 ? "CHUYÊN NGÀNH" : "KHÓA HỌC"} này không?`}
+          onClose={() => setConfirmOpen(false)}
+          onConfirm={handleDelete}
+        />
       </div>
     </Container>
   );

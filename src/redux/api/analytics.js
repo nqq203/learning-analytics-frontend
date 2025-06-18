@@ -23,33 +23,28 @@ const handleAnalyticsApiError = (error) => {
 };
 
 const analyticsApi = {
-  fetchClassesByLecturer: ({
-    userId,
-    page,
-    amount
-  }) => axios.get(`${API_URL}/analytics/classes?user_id=${userId}&page=${page}&amount=${amount}`),
-  fetchSubjectsByLecturer: ({
-    userId
-  }) => axios.get(`${API_URL}/analytics/course?user_id=${userId}`),
-  fetchStudentsDetails: ({
-    classId,
-    details = true,
-  }) => axios.get(`${API_URL}/analytics/students?class_id=${classId}&details=${details}`),
-  fetchStudents: ({
-    classId,
-    details = false,
-  }) => axios.get(`${API_URL}/analytics/students?class_id=${classId}&details=${details}`),
-  searchStudents: ({
-    classId,
-    details,
-    search,
-  }) => axios.get(`${API_URL}/analytics/student?class_id=${classId}&details=${details}&search=${search}`),
-  searchClasses: ({
-    userId,
-    page,
-    amount,
-    search,
-  }) => axios.get(`${API_URL}/analytics/classes?user_id=${userId}&page=${page}&amount=${amount}&search=${search}`),
+  fetchClassesByLecturer: ({ userId, page, amount }) =>
+    axios.get(
+      `${API_URL}/analytics/classes?user_id=${userId}&page=${page}&amount=${amount}`
+    ),
+  fetchSubjectsByLecturer: ({ userId }) =>
+    axios.get(`${API_URL}/analytics/course?user_id=${userId}`),
+  fetchStudentsDetails: ({ classId, details = true }) =>
+    axios.get(
+      `${API_URL}/analytics/students?class_id=${classId}&details=${details}`
+    ),
+  fetchStudents: ({ classId, details = false }) =>
+    axios.get(
+      `${API_URL}/analytics/students?class_id=${classId}&details=${details}`
+    ),
+  searchStudents: ({ classId, details, search }) =>
+    axios.get(
+      `${API_URL}/analytics/student?class_id=${classId}&details=${details}&search=${search}`
+    ),
+  searchClasses: ({ userId, page, amount, search, subject, className }) =>
+    axios.get(
+      `${API_URL}/analytics/classes?user_id=${userId}&page=${page}&amount=${amount}&search=${search}&subject=${subject}&class_name=${className}`
+    ),
 };
 
 export { analyticsApi, handleAnalyticsApiError };

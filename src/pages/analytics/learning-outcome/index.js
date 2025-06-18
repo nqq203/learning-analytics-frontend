@@ -29,7 +29,16 @@ import {
 import { jwtDecode } from "jwt-decode";
 
 
-const ClassTableHeader = ["STT", "Lớp", "Khóa", "Môn", "Học Kỳ", "Tín chỉ", "Chi tiết"];
+
+
+const columns = [
+  {id:"courseName",label:"Môn", align:"left"},
+  {id:"className",label:"Lớp", align:"left"},
+  
+  {id:"academicYear",label:"Khóa", align:"center"},
+  {id:"semester",label:"Học Kỳ", align:"center"},
+  {id:"credit",label:"Tín chỉ", align:"center"},
+]
 const semester = [1, 2, 3];
 
 const LearningOutcome = () => {
@@ -71,35 +80,36 @@ const LearningOutcome = () => {
     // setIsLoading(false);
   };
 
-  const handleScrollEnd = () => {
-    if (!isLoading && classes.length >= amount) {
-      setPage((prev) => prev + 1);
-    }
+  const handleLoadMore = () => {
+      if (!loading && rows.length < totalRecords) {
+          setPage(prev => prev + 1);
+      }
   };
-  const handleSearch = (value) => {
+
+  const handleSearch = (value) => { 
     setSearchKeyword(value);
   };
 
-  const handleSearchResult = (value) => {
+  const handleSearchResult = (value) => { 
     setSearchResult(value);
     setPage(1); // reset page
     setRows([]); // reset data
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e) => { 
     if (e.key === "Enter") {
       handleSearchResult(searchKeyword);
     }
   };
 
 
-  const handleChangeSemester = (value) => {
+  const handleChangeSemester = (value) => {  
     setChosenSemester(value);
     setPage(1);
     setRows([]);
   };
 
-  const handleChangeAcademicYear = (value) => {
+  const handleChangeAcademicYear = (value) => { 
     setChosenAcademicYear(value);
     setPage(1);
     setRows([]);
@@ -216,10 +226,11 @@ const LearningOutcome = () => {
 
         <Box position="relative">
           <ClassListLNO
-            TableHeader={ClassTableHeader}
+            TableHeader={columns}
             TableContent={rows}
             setClassID={setClassID}
-            onScrollEnd={handleScrollEnd}
+            onScrollEnd={handleLoadMore}
+            loading={loading}
           />
 
           {loading && (
