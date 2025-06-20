@@ -32,7 +32,7 @@ const StudentTable = ({
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuRowId, setMenuRowId] = useState(null);
   const open = Boolean(anchorEl);
-
+  
   const handleMenuOpen = (event, rowId) => {
     setAnchorEl(event.currentTarget);
     setMenuRowId(rowId);
