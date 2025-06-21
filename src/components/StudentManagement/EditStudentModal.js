@@ -6,7 +6,9 @@ import {
   TextField,
   Select,
   MenuItem,
+  InputLabel,
   Button,
+  FormControl,
   Box,
   Grid,
   Tabs,
@@ -84,7 +86,7 @@ export default function EditStudentModal({
           <Tab label="Thông tin cơ bản" />
           <Tab label="Điểm sinh viên" />
 
-          <Tab label="Assigment" />
+          <Tab label="Assignment" />
           <Tab label="Quiz" />
           <Tab label="Giữa kỳ"/>
           <Tab label="Cuối kỳ"/>
@@ -150,6 +152,8 @@ export default function EditStudentModal({
 
         <TabPanel value={tab} index={2}>
           <Grid container spacing={2}>
+
+            
             {assignmentFields.map(({ key, label }) => (
               <Grid item xs={6} key={key}>
                 <Typography variant="subtitle2" gutterBottom>
@@ -172,7 +176,25 @@ export default function EditStudentModal({
         </TabPanel>
 
         <TabPanel value={tab} index={3}>
+          <div style={{display:"flex", justifyContent:"flex-end"}}>
+
+          <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
+                                <InputLabel id="academic-year-label">Chọn bài kiểm tra</InputLabel>
+                                <Select
+                                  labelId="academic-year-label"
+                                  label="Chọn khóa"
+                                  // onChange={(e) => handleChangeAcademicYear(e.target.value)}
+                                >
+                                  <MenuItem value="">Tất cả</MenuItem>
+                                  
+                                </Select>
+          </FormControl>
+
+          </div>
           <Grid container spacing={2}>
+            
+
+
             {QuizFields.map(({ key, label }) => (
               <Grid item xs={6} key={key}>
                 <Typography variant="subtitle2" gutterBottom>

@@ -3,7 +3,11 @@ import {
   TextField,
   IconButton,
   InputAdornment,
-  CircularProgress
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from "@mui/material";
 import {
   ActionButton,
@@ -15,6 +19,7 @@ import {
   FileDownload,
   Info,
 } from "@mui/icons-material";
+import AddExamModal from "@/components/StudentManagement/AddExamModal";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useMemo, useState } from "react";
 import EditStudentModal from "@/components/StudentManagement/EditStudentModal";
@@ -28,9 +33,43 @@ import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { clearStudentList, setPageDefault } from "@/redux/slice/dataSlice";
 import ConfirmDialog from "@/components/ClassManagement/ConfirmDialog";
-
+import ExamQuizTable from "@/components/StudentManagement/ExamQuizTable";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import styled from "styled-components";
+
+const LearningOutComeItemsContainer = styled.div`
+  display:flex;
+  flex-direction:row;
+  gap:20px;
+`
+
+const LearningOutComeTabButtons = styled.div`
+  display:flex;
+  flex-direction:row;
+  padding:1rem;
+  font-weight:bold;
+
+  // color:gray;
+  // border: ${({ active }) => (active ? "1px solid gray" : "transparent")};
+  
+
+  color: ${({ active }) => (active ? "var(--blue-800)" : "gray")};
+  border: 2px solid ${({ active }) => (active ? "var(--blue-800)" : "transparent")};
+
+
+  border-left:none;
+  border-right:none;
+  border-top:none;
+  cursor:pointer;
+
+  // &:hover{
+  //   color: var(--blue-300);
+  // }
+
+  
+`
+
 
 const InfoColumns = [
   { id: "identificationCode", label: "MSSV", align: "center" },
@@ -146,11 +185,47 @@ const MidtermScores = [
   { identificationCode: "ST009", Final: 3,   Q1: 5,   Q2: 1, Q3: 0,   Q4: 5,   Q4: 6,studentId:8 }
 ];
 
+
+const ExamQuizData = [
+  { name: "Quiz1", NumOfQuestion: 10,  Time: "15mins",ExamId:1 },
+  { name: "Quiz2", NumOfQuestion: 10,  Time: "15mins",ExamId:2 },
+  { name: "Quiz3", NumOfQuestion: 10,  Time: "15mins",ExamId:3 },
+  { name: "Quiz4", NumOfQuestion: 10,  Time: "15mins",ExamId:4 },
+  { name: "Quiz5", NumOfQuestion: 10,  Time: "15mins",ExamId:5 },
+];
+
+const ExamAssignmentData = [
+  { name: "Bài 1",  Time: "15mins",ExamId:1 },
+  { name: "Bài 2",  Time: "15mins",ExamId:2 },
+  { name: "Bài 3",  Time: "15mins",ExamId:3 },
+  { name: "Bài 4",  Time: "15mins",ExamId:4 },
+  { name: "Bài 5",  Time: "15mins",ExamId:5 },
+];
+
+
+const ExamMidtermData = [
+  { name: "Câu 1",  Time: "15mins",ExamId:1 },
+  { name: "Câu 2",  Time: "15mins",ExamId:2 },
+  { name: "Câu 3",  Time: "15mins",ExamId:3 },
+  { name: "Câu 4",  Time: "15mins",ExamId:4 },
+  { name: "Câu 5",  Time: "15mins",ExamId:5 },
+];
+
+const ExamFinalData = [
+  { name: "Câu 1",  Time: "15mins",ExamId:1 },
+  { name: "Câu 2",  Time: "15mins",ExamId:2 },
+  { name: "Câu 3",  Time: "15mins",ExamId:3 },
+  { name: "Câu 4",  Time: "15mins",ExamId:4 },
+  { name: "Câu 5",  Time: "15mins",ExamId:5 },
+];
+
 const academicYear = ["2014-2018", "2015-2019", "2021-2025", "2022-2026"]
 export default function StudentDetailView({ onBack }) {
+  const [MiniTab,setMiniTab] = useState(1);
   const [className, setClassName] = useState("21CLC05");
   const [subject, setSubject] = useState("Cơ sở dữ liệu");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Thêm sv
+  const [isAddModalExamOpen,setIsAddModalExamOpen] = useState(false) //Thêm bài kiểm tra
   const [openEditModal, setOpenEditModal] = useState(false); // Edit svs
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
@@ -188,6 +263,24 @@ export default function StudentDetailView({ onBack }) {
         }));
   }
 
+
+  const ColExamMidtermData = useMemo(()=>{
+     return SetHeader(ExamMidtermData);
+  },[ExamMidtermData])
+
+  const ColExamFinalData = useMemo(()=>{
+     return SetHeader(ExamFinalData);
+  },[ExamFinalData])
+
+
+  const ColExamAssignmentData = useMemo(()=>{
+     return SetHeader(ExamAssignmentData);
+  },[ExamAssignmentData])
+
+
+  const ColExamQuizData = useMemo(()=>{
+     return SetHeader(ExamQuizData);
+  },[ExamQuizData])
 
   const ColStudentsAssignments = useMemo(() => {
       return SetHeader(studentsAssignments);
@@ -396,6 +489,17 @@ export default function StudentDetailView({ onBack }) {
             Thêm
           </ActionButton>
 
+          <ActionButton
+            variant="contained"
+            style={{ width: "15%", fontWeight: "700", fontSize: "14px" }}
+            color="primary"
+            startIcon={<Add />}
+            onClick={() => setIsAddModalExamOpen(true)}
+            disabled={loading}
+          >
+            Thêm Bài Kiểm Tra
+          </ActionButton>
+
           {/* <ActionButton
             variant={showSummary ? "outlined" : "contained"}
             color="primary"
@@ -429,15 +533,50 @@ export default function StudentDetailView({ onBack }) {
           </ActionButton>
         </div>
       </Header>
-
-      <Box sx={{ p: 2 }}>
-        <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}
+      
+      <Box  sx={{
+              p: 2,
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center", // tùy chỉnh nếu cần căn chỉnh dọc
+            }}  >
+        <span style={{ fontSize: "20px", fontWeight: "700" }}
         >
           Số lượng sinh viên: {showSummary ? totalGrade : totalInformation} &nbsp;&nbsp;&nbsp;
         </span>
-      </Box>
 
-      <Tabs
+            { (tab==3 && MiniTab==1) &&( 
+              <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
+                      <InputLabel id="academic-year-label">Chọn bài kiểm tra</InputLabel>
+                      <Select
+                        labelId="academic-year-label"
+                        label="Chọn khóa"
+                        // onChange={(e) => handleChangeAcademicYear(e.target.value)}
+                      >
+                        <MenuItem value="">Tất cả</MenuItem>
+                        
+                      </Select>
+              </FormControl>
+        ) }
+        
+      
+      </Box>
+      
+        <LearningOutComeItemsContainer>
+            <LearningOutComeTabButtons active={MiniTab === 1} onClick={()=>{setMiniTab(1)}}>
+              SINH VIÊN
+            </LearningOutComeTabButtons>
+
+
+            <LearningOutComeTabButtons active={MiniTab === 2} onClick={()=>{setMiniTab(2)}}>
+              BÀI KIỂM TRA
+            </LearningOutComeTabButtons>
+          </LearningOutComeItemsContainer>
+
+      {MiniTab ===1 &&(
+        <>
+        <Tabs
                 value={tab}
                 onChange={handleTabChange}
                 indicatorColor="primary"
@@ -446,7 +585,7 @@ export default function StudentDetailView({ onBack }) {
               >
                 <Tab label="Thông tin" onClick={()=>setShowSummary(false)}/>
                 <Tab label="Tổng kết"   onClick={()=>setShowSummary(true)}/>
-                <Tab label="Assigment"/>
+                <Tab label="Assignment"/>
                 <Tab label="Quiz"/>
                 <Tab label="Giữa kỳ"/>
                 <Tab label="Cuối kỳ"/>
@@ -644,6 +783,159 @@ export default function StudentDetailView({ onBack }) {
 
         
       </div>
+      </>
+      )}
+      
+
+      {MiniTab ===2 &&(
+        <>
+        <Tabs
+                value={tab}
+                onChange={handleTabChange}
+                indicatorColor="primary"
+                textColor="primary"
+                sx={{ marginTop: 2 }}
+              >
+                <Tab label="Assignment"/>
+                <Tab label="Quiz"/>
+                <Tab label="Giữa kỳ"/>
+                <Tab label="Cuối kỳ"/>
+              </Tabs>
+
+
+      <div style={{ position: "relative", marginTop: 16 }}>
+
+        {tab === 0  &&(
+          <Box position="relative">  
+          <ExamQuizTable
+            filteredRows={ExamAssignmentData}
+            columns={ColExamAssignmentData}
+            handleDelete={handleDeleteRequest}
+            handleEdit={handleEditClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+        {tab === 1  &&(
+          <Box position="relative">  
+          <ExamQuizTable
+            filteredRows={ExamQuizData}
+            columns={ColExamQuizData}
+            handleDelete={handleDeleteRequest}
+            handleEdit={handleEditClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+
+        {tab === 2  &&(
+          <Box position="relative">  
+          <ExamQuizTable
+            filteredRows={ExamMidtermData}
+            columns={ColExamMidtermData}
+            handleDelete={handleDeleteRequest}
+            handleEdit={handleEditClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+        {tab === 3  &&(
+          <Box position="relative">  
+          <StudentTable
+            filteredRows={ExamFinalData}
+            columns={ColExamFinalData}
+            handleDelete={handleDeleteRequest}
+            handleEdit={handleEditClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+
+        
+      </div>
+      </>
+      )}
+      
       {importFile &&
         <ImportFileModal
           open={importFile}
@@ -661,6 +953,15 @@ export default function StudentDetailView({ onBack }) {
       <AddStudentModal
         open={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
+        className={className}
+        subject={subject}
+        onAddStudent={handleAddNewStudent}
+        mode="add"
+      />
+
+      <AddExamModal
+        open={isAddModalExamOpen}
+        onClose={() => setIsAddModalExamOpen(false)}
         className={className}
         subject={subject}
         onAddStudent={handleAddNewStudent}
