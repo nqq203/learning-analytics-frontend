@@ -27,6 +27,7 @@ const ExamQuizTable = ({
   handleDelete,
   handleEdit,
   onLoadMore,
+  mode,
   action = true
 }) => {
   const containerRef = useRef();
@@ -43,11 +44,11 @@ const ExamQuizTable = ({
     setAnchorEl(null);
     setMenuRowId(null);
   };
-
+  
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-
+    
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
       const nearBottom = scrollTop + clientHeight >= scrollHeight - 100;
@@ -104,7 +105,7 @@ const ExamQuizTable = ({
           <TableBody>
             {filteredRows?.length > 0 ?
               <Fragment>{filteredRows?.map((row, index) => (
-                <TableRow key={row.classId}>
+                <TableRow key={row.ExamId}>
                   <TableCell style={{ textAlign: "center" }}>{index + 1}</TableCell>
                   {columns.map((col, idx) => (
                     <TableCell key={idx} style={{ textAlign: "center" }}>
@@ -123,11 +124,11 @@ const ExamQuizTable = ({
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
                       >
-                        <MenuItem onClick={() => { handleEdit(row.ExamId); handleMenuClose(); }}>
+                        <MenuItem onClick={() => { handleEdit(row.ExamId,mode); handleMenuClose(); }}>
                           <ListItemIcon><EditIcon color="primary" fontSize="small" /></ListItemIcon>
                           <ListItemText>Chỉnh sửa</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={() => { handleDelete(row.ExamId, row.identificationCode); handleMenuClose(); }}>
+                        <MenuItem onClick={() => { handleDelete(row.ExamId, mode); handleMenuClose(); }}>
                           <ListItemIcon><DeleteIcon color="error" fontSize="small" /></ListItemIcon>
                           <ListItemText>Xóa</ListItemText>
                         </MenuItem>

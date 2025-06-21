@@ -19,9 +19,14 @@ import {
   FileDownload,
   Info,
 } from "@mui/icons-material";
-import AddExamModal from "@/components/StudentManagement/AddExamModal";
+import Menu from '@mui/material/Menu';
+import AddQuizModal from "@/components/StudentManagement/AddQuizModal";
+
+
+import EditExamModal from "@/components/StudentManagement/Update/EditExamModal";
+
 import SearchIcon from "@mui/icons-material/Search";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState,useRef } from "react";
 import EditStudentModal from "@/components/StudentManagement/EditStudentModal";
 import AddStudentModal from "@/components/StudentManagement/AddStudentModal";
 import StudentTable from "@/components/ClassManagement/StudentTable";
@@ -37,6 +42,11 @@ import ExamQuizTable from "@/components/StudentManagement/ExamQuizTable";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import styled from "styled-components";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+
+
+
+
 
 const LearningOutComeItemsContainer = styled.div`
   display:flex;
@@ -219,13 +229,49 @@ const ExamFinalData = [
   { name: "Câu 5",  Time: "15mins",ExamId:5 },
 ];
 
+
+const ExamUpdateData = 
+  {
+    name:"Quiz1",
+    info:[
+    {
+      MSSV: "ST001",
+      name: "Nguyễn Văn A",
+      time: "20 phút",
+      scores: {
+        "Câu 1": 8,
+        "Câu 2": 9,
+      },
+    },
+    {
+      MSSV: "ST002",
+      name: "Trần Thị B",
+      time: "22 phút",
+      scores: {
+        "Câu 1": 7,
+        "Câu 2": 8,
+      },
+    },
+  ]
+  }
+;
+
 const academicYear = ["2014-2018", "2015-2019", "2021-2025", "2022-2026"]
 export default function StudentDetailView({ onBack }) {
   const [MiniTab,setMiniTab] = useState(1);
   const [className, setClassName] = useState("21CLC05");
   const [subject, setSubject] = useState("Cơ sở dữ liệu");
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Thêm sv
-  const [isAddModalExamOpen,setIsAddModalExamOpen] = useState(false) //Thêm bài kiểm tra
+  const [isAddModalQuizOpen,setIsAddModalQuizOpen] = useState(false) //Thêm Quiz
+  const [isAddModalAssignmentOpen,setIsAddModalAssignmentOpen] = useState(false) //Thêm Assignment
+  const [isAddModalMidtermOpen,setIsAddModalMidtermOpen] = useState(false) //Thêm Midterm
+  const [isAddModalFinalOpen,setIsAddModalFinalOpen] = useState(false) //Thêm Final
+
+
+  const [isEditExamModal, setIsExamModal] = useState(false);
+  const [EditExamType,setEditExamType] = useState("");
+
   const [openEditModal, setOpenEditModal] = useState(false); // Edit svs
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
@@ -235,6 +281,39 @@ export default function StudentDetailView({ onBack }) {
   const router = useRouter();
   const { classId } = router.query;
 
+  //Dropdown
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+  const buttonRef = useRef(null); 
+
+  const handleClickAddQuiz = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const handleSelectQuizType = (type) => {
+    console.log("Loại bài kiểm tra được chọn:", type);
+    if(type=="Quiz"){
+      setIsAddModalQuizOpen(true);
+    }
+    else if(type=="Assignment"){
+      setIsAddModalAssignmentOpen(true);
+    }
+    else if(type=="Midterm"){
+      setIsAddModalMidtermOpen(true);
+    }
+    else if(type=="Final"){
+      setIsAddModalFinalOpen(true);
+    }
+    
+    handleCloseMenu();
+  };
+  //e Dropdown
+
+
   //Tạo header
 
   const mapKeyToLabel = (key) => {
@@ -242,6 +321,9 @@ export default function StudentDetailView({ onBack }) {
     if (key === "Final") return "Điểm tổng";
     if (key === "TimeTaken") return "Thời gian thực hiện";
     if (key === "Grade") return "Điểm tổng";
+    if (key === "name") return "Tên nội dung";
+    if (key === "NumOfQuestion") return "Số câu hỏi";
+    if (key === "Time") return "Thời gian";
     if (/^Q\d+$/.test(key)) return `Câu ${key.slice(1)} (điểm)`;
     if (/^A\d+$/.test(key)) return `Bài ${key.slice(1)} (điểm)`;
     return key; // fallback
@@ -253,7 +335,7 @@ export default function StudentDetailView({ onBack }) {
     filteredRows.reduce((a, b) =>
       Object.keys(a).length > Object.keys(b).length ? a : b
     )
-  ).filter(key => key !== "studentId");
+  ).filter(key => key !== "studentId" && key!="ExamId");
 
     return rawKeys.map((key) => ({
           id: key,
@@ -348,6 +430,18 @@ export default function StudentDetailView({ onBack }) {
     console.log("studentId: ",student)
     setSelectedStudent(student);
     setOpenEditModal(true);
+  };
+
+  const handleEditExamClick= (examId,mode)=>{
+
+    setIsExamModal(true);
+    setEditExamType(mode);
+    
+  }
+
+  const handleDeleteRequestExam = (examId,mode) => {
+      console.log(`XOA EXAM ${examId} MODE: ${mode}`)
+      
   };
 
   const handleUpdateStudent = async () => {
@@ -491,34 +585,38 @@ export default function StudentDetailView({ onBack }) {
 
           <ActionButton
             variant="contained"
+            ref={buttonRef}
             style={{ width: "15%", fontWeight: "700", fontSize: "14px" }}
             color="primary"
             startIcon={<Add />}
-            onClick={() => setIsAddModalExamOpen(true)}
-            disabled={loading}
+            // disabled={loading}
+            endIcon={<KeyboardArrowDownIcon />}
+            onClick={handleClickAddQuiz}
           >
             Thêm Bài Kiểm Tra
           </ActionButton>
 
-          {/* <ActionButton
-            variant={showSummary ? "outlined" : "contained"}
-            color="primary"
-            startIcon={<Info />}
-            onClick={handleToggleSummary}
-            disabled={loading}
-            sx={{
-              ...(showSummary && {
-                bgcolor: "white",
-                color: "#1976D2",
-                borderColor: "#1976D2",
-                "&:hover": {
-                  bgcolor: "#e3f2fd",
-                },
-              }),
+          <Menu
+            anchorEl={anchorEl}
+            open={openMenu}
+            onClose={handleCloseMenu}
+            
+            PaperProps={{
+              style: {
+                width: buttonRef.current ? buttonRef.current.offsetWidth : undefined,
+              },
             }}
           >
-            {showSummary ? "Tổng quan" : "Chi tiết"}
-          </ActionButton> */}
+            <MenuItem onClick={() => handleSelectQuizType("Quiz")}>Quiz</MenuItem>
+            <MenuItem onClick={() => handleSelectQuizType("Assignment")}>Assignment</MenuItem>
+            <MenuItem onClick={() => handleSelectQuizType("Midterm")}>Midterm</MenuItem>
+            <MenuItem onClick={() => handleSelectQuizType("Final")}>Final</MenuItem>
+          </Menu>
+
+
+          
+
+         
 
 
           <ActionButton
@@ -810,10 +908,11 @@ export default function StudentDetailView({ onBack }) {
           <ExamQuizTable
             filteredRows={ExamAssignmentData}
             columns={ColExamAssignmentData}
-            handleDelete={handleDeleteRequest}
-            handleEdit={handleEditClick}
+            handleDelete={handleDeleteRequestExam}
+            handleEdit={handleEditExamClick}
             onLoadMore={handleLoadMore}
             hasMore={hasMore}
+            mode="Assignment"
           />
 
           {loading && (
@@ -828,6 +927,7 @@ export default function StudentDetailView({ onBack }) {
               justifyContent="center"
               bgcolor="rgba(255,255,255,0.6)"
               zIndex={10}
+              
             >
               <CircularProgress size="50px" />
             </Box>
@@ -841,10 +941,11 @@ export default function StudentDetailView({ onBack }) {
           <ExamQuizTable
             filteredRows={ExamQuizData}
             columns={ColExamQuizData}
-            handleDelete={handleDeleteRequest}
-            handleEdit={handleEditClick}
+            handleDelete={handleDeleteRequestExam}
+            handleEdit={handleEditExamClick}
             onLoadMore={handleLoadMore}
             hasMore={hasMore}
+            mode="Quiz"
           />
 
           {loading && (
@@ -873,10 +974,11 @@ export default function StudentDetailView({ onBack }) {
           <ExamQuizTable
             filteredRows={ExamMidtermData}
             columns={ColExamMidtermData}
-            handleDelete={handleDeleteRequest}
-            handleEdit={handleEditClick}
+            handleDelete={handleDeleteRequestExam}
+            handleEdit={handleEditExamClick}
             onLoadMore={handleLoadMore}
             hasMore={hasMore}
+            mode="Giữa kỳ"
           />
 
           {loading && (
@@ -904,10 +1006,11 @@ export default function StudentDetailView({ onBack }) {
           <StudentTable
             filteredRows={ExamFinalData}
             columns={ColExamFinalData}
-            handleDelete={handleDeleteRequest}
-            handleEdit={handleEditClick}
+            handleDelete={handleDeleteRequestExam}
+            handleEdit={handleEditExamClick}
             onLoadMore={handleLoadMore}
             hasMore={hasMore}
+            mode="Cuối kỳ"
           />
 
           {loading && (
@@ -959,14 +1062,39 @@ export default function StudentDetailView({ onBack }) {
         mode="add"
       />
 
-      <AddExamModal
-        open={isAddModalExamOpen}
-        onClose={() => setIsAddModalExamOpen(false)}
-        className={className}
-        subject={subject}
-        onAddStudent={handleAddNewStudent}
-        mode="add"
+      <AddQuizModal
+        open={isAddModalQuizOpen}
+        onClose={() => setIsAddModalQuizOpen(false)}
+        mode="Quiz"
       />
+
+      <AddQuizModal
+        open={isAddModalAssignmentOpen}
+        onClose={() => setIsAddModalAssignmentOpen(false)}
+        mode="Assignment"
+      />
+
+      <AddQuizModal
+        open={isAddModalMidtermOpen}
+        onClose={() => setIsAddModalMidtermOpen(false)}
+        mode="Midterm"
+      />
+
+      <AddQuizModal
+        open={isAddModalFinalOpen}
+        onClose={() => setIsAddModalFinalOpen(false)}
+        mode="Final"
+      />
+
+      <EditExamModal
+         open={isEditExamModal}
+        onClose={() => setIsExamModal(false)}
+        mode={EditExamType}
+        ExamUpdateData={ExamUpdateData}
+        
+      />
+
+      
       {student && <EditStudentModal
         open={openEditModal}
         onClose={handleCloseEdit}

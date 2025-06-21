@@ -11,28 +11,38 @@ import {
 } from "@mui/material";
 
 
-
+import {
+  ActionButton,
+  Container,
+  Header,
+} from "@/components/Analytics/Styles/Styles";
 import {
   Add,
   FileDownload,
   Info,
 } from "@mui/icons-material";
-
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
-
+import { TableWrapper } from "../Analytics/Styles/Styles";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Fragment, use } from "react";
 import { useEffect, useMemo, useState, useRef } from "react";
 
-const ExamTableModal = ({
-  students,
-  mode
+const QuizTableModal = ({
+  students
 }) => {
    const [questions, setQuestions] = useState([]);
   const [scores, setScores] = useState({});
   const [times, setTimes] = useState({});
 
   const handleAddQuestion = () => {
-    
-    const newQuestion = mode =="Assignment"?`Bài ${questions.length + 1}` :`Câu ${questions.length + 1}`;
+    const newQuestion = `Câu ${questions.length + 1}`;
     setQuestions([...questions, newQuestion]);
   };
 
@@ -85,16 +95,30 @@ const ExamTableModal = ({
   
 
   return (
-    <div style={{display:"flex",flexDirection:"column",gap:"1rem"}}>
+    <div style={{display:"flex",flexDirection:"column",gap:"1rem", fontFamily: "Arial" }}>
 
       
         <div>
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Tên bài kiểm tra:</Typography>
+          <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Tên bài quiz:</Typography>
           <TextField 
           variant="outlined"
                       size="small"
-          placeholder="Nhập tên"/>
+          placeholder="Nhập tên bài Quiz"/>
         </div>
+
+
+        {/* <div style={{display:"flex",justifyContent:"flex-end",alignItems:"center"}}>
+
+        <ActionButton
+          onClick={handleAddQuestion}
+          style={{ width: "20%", fontWeight: "700", fontSize: "14px" }}
+          color="primary"
+          variant="outlined"
+          startIcon={<Add />}
+        >
+          Thêm câu hỏi
+        </ActionButton>
+        </div> */}
 
      
 
@@ -145,7 +169,15 @@ const ExamTableModal = ({
               <IconButton onClick={handleAddQuestion}>
                         <Add color="primary" alt="Thêm câu hỏi"/>
               </IconButton>
-              
+              {/* <ActionButton
+                onClick={handleAddQuestion}
+                style={{ width: "5%", fontWeight: "600", fontSize: "14px" }}
+                color="primary"
+                variant="outlined"
+                startIcon={<Add />}
+              >
+                
+              </ActionButton> */}
             </TableCell>
           </TableRow>
         </TableHead>
@@ -207,4 +239,4 @@ const ExamTableModal = ({
   );
 };
 
-export default ExamTableModal;
+export default QuizTableModal;

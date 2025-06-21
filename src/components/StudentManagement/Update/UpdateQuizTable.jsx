@@ -22,34 +22,52 @@ import IconButton from '@mui/material/IconButton';
 
 import { useEffect, useMemo, useState, useRef } from "react";
 
-const ExamTableModal = ({
-  students,
-  mode
-}) => {
-   const [questions, setQuestions] = useState([]);
+
+function UpdateQuizTable({ data,QuizName }) {
+  const [questions, setQuestions] = useState([]);
   const [scores, setScores] = useState({});
   const [times, setTimes] = useState({});
 
+  // Khởi tạo dữ liệu ban đầu từ props
+  useEffect(() => {
+    if (data && data.length > 0) {
+      // Tổng hợp tất cả câu hỏi xuất hiện trong data
+      const allQuestions = new Set();
+      const newScores = {};
+      const newTimes = {};
+
+      data.forEach((student) => {
+        newTimes[student.MSSV] = student.time || "";
+        newScores[student.MSSV] = student.scores || {};
+
+        Object.keys(student.scores || {}).forEach((q) =>
+          allQuestions.add(q)
+        );
+      });
+
+      setQuestions(Array.from(allQuestions));
+      setScores(newScores);
+      setTimes(newTimes);
+    }
+  }, [data]);
+
   const handleAddQuestion = () => {
-    
-    const newQuestion = mode =="Assignment"?`Bài ${questions.length + 1}` :`Câu ${questions.length + 1}`;
-    setQuestions([...questions, newQuestion]);
+    const newQuestion = `Câu ${questions.length + 1}`;
+    setQuestions((prev) => [...prev, newQuestion]);
   };
 
   const handleDeleteQuestion = (questionToDelete) => {
     if (!window.confirm(`Bạn có chắc chắn muốn xoá "${questionToDelete}"?`)) return;
 
-    // Xoá khỏi danh sách câu hỏi
     setQuestions((prev) => prev.filter((q) => q !== questionToDelete));
 
-    // Xoá điểm của câu hỏi đó trong từng sinh viên
     setScores((prev) => {
-      const updatedScores = {};
+      const updated = {};
       for (const mssv in prev) {
-        const { [questionToDelete]: _, ...restScores } = prev[mssv] || {};
-        updatedScores[mssv] = restScores;
+        const { [questionToDelete]: _, ...rest } = prev[mssv] || {};
+        updated[mssv] = rest;
       }
-      return updatedScores;
+      return updated;
     });
   };
 
@@ -71,49 +89,44 @@ const ExamTableModal = ({
   };
 
   const handleSave = () => {
-    const result = students.map((student) => ({
+    const result = data.map((student) => ({
       MSSV: student.MSSV,
       name: student.name,
       time: times[student.MSSV] || "",
       scores: scores[student.MSSV] || {},
     }));
-
     console.log("Kết quả:", result);
-    alert("Dữ liệu đã được lưu! Xem console log để kiểm tra.");
+    alert("Dữ liệu đã được lưu! Kiểm tra console log.");
   };
-
-  
 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:"1rem"}}>
 
-      
-        <div>
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Tên bài kiểm tra:</Typography>
-          <TextField 
-          variant="outlined"
-                      size="small"
-          placeholder="Nhập tên"/>
+         <div>
+                  <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Tên bài kiểm tra:</Typography>
+                  <TextField 
+                  variant="outlined"
+                  value={QuizName}
+                              size="small"
+                  placeholder="Nhập tên"/>
         </div>
 
-     
+      <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Điểm cho học sinh:</Typography>
 
-      
-      <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Nhập điểm cho học sinh:</Typography>
-      <TableContainer
-       component={Paper}
-       className="TableContainer"
-       style={{
-          
-          maxHeight: "350px",
-          overflow: "auto",
-        }}
-        // border="1"
-        // cellPadding="8"
-        // cellSpacing="0"
-        // style={{ width: "100%", borderCollapse: "collapse" }}
+      <button onClick={handleAddQuestion}>➕ Thêm câu hỏi</button>
+        <TableContainer
+        component={Paper}
+               className="TableContainer"
+               style={{
+                  
+                  maxHeight: "350px",
+                  overflow: "auto",
+                }}
+        
+        >
+      <Table stickyHeader
+       
       >
-        <Table stickyHeader>
         <TableHead>
           <TableRow>
             <TableCell>MSSV</TableCell>
@@ -142,15 +155,17 @@ const ExamTableModal = ({
             ))}
 
             <TableCell>
-              <IconButton onClick={handleAddQuestion}>
-                        <Add color="primary" alt="Thêm câu hỏi"/>
-              </IconButton>
-              
-            </TableCell>
+                          <IconButton onClick={handleAddQuestion}>
+                                    <Add color="primary" alt="Thêm câu hỏi"/>
+                          </IconButton>
+                          
+                        </TableCell>
+
+
           </TableRow>
         </TableHead>
         <TableBody>
-          {students.map((student) => (
+          {data.map((student) => (
             <TableRow key={student.MSSV}>
               <TableCell>{student.MSSV}</TableCell>
               <TableCell>{student.name}</TableCell>
@@ -180,31 +195,17 @@ const ExamTableModal = ({
                   />
                 </TableCell>
               ))}
+
               <TableCell></TableCell>
             </TableRow>
           ))}
         </TableBody>
-      </Table>
-      </TableContainer>
-      
 
-      {/* <button
-        onClick={handleSave}
-        style={{
-          marginTop: "20px",
-          padding: "10px 20px",
-          fontSize: "16px",
-          backgroundColor: "#4CAF50",
-          color: "white",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
-        💾 Lưu
-      </button> */}
+      </Table>
+          </TableContainer>
+      
     </div>
   );
-};
+}
 
-export default ExamTableModal;
+export default UpdateQuizTable;
