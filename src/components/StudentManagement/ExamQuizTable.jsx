@@ -20,12 +20,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Fragment, use } from "react";
 import { useEffect, useMemo, useState, useRef } from "react";
 
-const StudentTable = ({
+
+const ExamQuizTable = ({
   filteredRows,
   columns,
   handleDelete,
   handleEdit,
   onLoadMore,
+  mode,
   action = true
 }) => {
   const containerRef = useRef();
@@ -42,11 +44,11 @@ const StudentTable = ({
     setAnchorEl(null);
     setMenuRowId(null);
   };
-
+  
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-
+    
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
       const nearBottom = scrollTop + clientHeight >= scrollHeight - 100;
@@ -103,7 +105,7 @@ const StudentTable = ({
           <TableBody>
             {filteredRows?.length > 0 ?
               <Fragment>{filteredRows?.map((row, index) => (
-                <TableRow key={row.classId}>
+                <TableRow key={row.ExamId}>
                   <TableCell style={{ textAlign: "center" }}>{index + 1}</TableCell>
                   {columns.map((col, idx) => (
                     <TableCell key={idx} style={{ textAlign: "center" }}>
@@ -112,21 +114,21 @@ const StudentTable = ({
                   ))}
                   {action && (
                     <TableCell style={{ textAlign: "center" }}>
-                      <IconButton onClick={(e) => handleMenuOpen(e, row.studentId)}>
+                      <IconButton onClick={(e) => handleMenuOpen(e, row.ExamId)}>
                         <MoreVertIcon />
                       </IconButton>
                       <Menu
                         anchorEl={anchorEl}
-                        open={open && menuRowId === row.studentId}
+                        open={open && menuRowId === row.ExamId}
                         onClose={handleMenuClose}
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
                       >
-                        <MenuItem onClick={() => { handleEdit(row.studentId); handleMenuClose(); }}>
+                        <MenuItem onClick={() => { handleEdit(row.ExamId,mode); handleMenuClose(); }}>
                           <ListItemIcon><EditIcon color="primary" fontSize="small" /></ListItemIcon>
                           <ListItemText>Chỉnh sửa</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={() => { handleDelete(row.studentId, row.identificationCode); handleMenuClose(); }}>
+                        <MenuItem onClick={() => { handleDelete(row.ExamId, mode); handleMenuClose(); }}>
                           <ListItemIcon><DeleteIcon color="error" fontSize="small" /></ListItemIcon>
                           <ListItemText>Xóa</ListItemText>
                         </MenuItem>
@@ -151,4 +153,4 @@ const StudentTable = ({
   );
 };
 
-export default StudentTable;
+export default ExamQuizTable;

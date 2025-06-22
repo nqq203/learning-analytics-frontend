@@ -3,7 +3,11 @@ import {
   TextField,
   IconButton,
   InputAdornment,
-  CircularProgress
+  CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from "@mui/material";
 import {
   ActionButton,
@@ -15,8 +19,14 @@ import {
   FileDownload,
   Info,
 } from "@mui/icons-material";
+import Menu from '@mui/material/Menu';
+import AddQuizModal from "@/components/StudentManagement/AddQuizModal";
+
+
+import EditExamModal from "@/components/StudentManagement/Update/EditExamModal";
+
 import SearchIcon from "@mui/icons-material/Search";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState,useRef } from "react";
 import EditStudentModal from "@/components/StudentManagement/EditStudentModal";
 import AddStudentModal from "@/components/StudentManagement/AddStudentModal";
 import StudentTable from "@/components/ClassManagement/StudentTable";
@@ -28,6 +38,48 @@ import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { clearStudentList, setPageDefault } from "@/redux/slice/dataSlice";
 import ConfirmDialog from "@/components/ClassManagement/ConfirmDialog";
+import ExamQuizTable from "@/components/StudentManagement/ExamQuizTable";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import styled from "styled-components";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+
+
+
+
+
+const LearningOutComeItemsContainer = styled.div`
+  display:flex;
+  flex-direction:row;
+  gap:20px;
+`
+
+const LearningOutComeTabButtons = styled.div`
+  display:flex;
+  flex-direction:row;
+  padding:1rem;
+  font-weight:bold;
+
+  // color:gray;
+  // border: ${({ active }) => (active ? "1px solid gray" : "transparent")};
+  
+
+  color: ${({ active }) => (active ? "var(--blue-800)" : "gray")};
+  border: 2px solid ${({ active }) => (active ? "var(--blue-800)" : "transparent")};
+
+
+  border-left:none;
+  border-right:none;
+  border-top:none;
+  cursor:pointer;
+
+  // &:hover{
+  //   color: var(--blue-300);
+  // }
+
+  
+`
+
 
 const InfoColumns = [
   { id: "identificationCode", label: "MSSV", align: "center" },
@@ -52,14 +104,174 @@ const GradeColumns = [
   { id: "updatedDate", label: "Cập nhật", align: "center" },
 ];
 
+const studentsAssignments = [
+  { identificationCode: "ST001", A1: 0,   A2: 0,  A3: 3,  A4: 0,  A5: 6.5,studentId:1 },
+  { identificationCode: "ST002", A1: 9,   A2: 6,  A3: 0,  A4: 0,  A5: 9,studentId:2 },
+  { identificationCode: "ST003", A1: 8,   A2: 6,  A3: 0,  A4: 0,  A5: 0,studentId:3 },
+  { identificationCode: "ST004", A1: 8,   A2: 0,  A3: 5,  A4: 7,  A5: 9,studentId:4 },
+  { identificationCode: "ST005", A1: 8.5, A2: 0,  A3: 0,  A4: 0,  A5: 8,studentId:5 },
+  { identificationCode: "ST006", A1: 6,   A2: 7,  A3: 0,  A4: 0,  A5: 0,studentId:6 },
+  { identificationCode: "ST007", A1: 9,   A2: 10, A3: 6,  A4: 5,  A5: 8,studentId:7 },
+  { identificationCode: "ST008", A1: 8.5, A2: 7,  A3: 6,  A4: 10, A5: 8,studentId:8 },
+  { identificationCode: "ST009", A1: 9.5, A2: 0,  A3: 0,  A4: 0,  A5: 0,studentId:9 },
+  { identificationCode: "ST010", A1: 8.5, A2: 0,  A3: 4,  A4: 8,  A5: 9.5,studentId:10 },
+  { identificationCode: "ST011", A1: 7,   A2: 8,  A3: 3,  A4: 3,  A5: 0,studentId:11 },
+  
+];
 
 
+const quizData = [
+  {
+    identificationCode: "ST001",
+    TimeTaken: "4 mins 27 secs",
+    Grade:7,
+    Q1: 1,
+    Q2 :0,
+    Q3: 1,
+    Q4: 1,
+    Q5: 1,
+    Q6 :0,
+    Q7: 0,
+    Q8: 1,
+    Q9: 1,
+    Q10: 1,
+    studentId:1
+  },
+  {
+    identificationCode: "ST002",
+    TimeTaken: "34 mins 43 secs",
+    Grade:5,
+    Q1: 1,
+    Q2 :0,
+    Q3: 1,
+    Q4: 1,
+    Q5: 1,
+    Q6 :0,
+    Q7: 0,
+    Q8: 0,
+    Q9: 0,
+    Q10: 1,
+    studentId:2
+  },
+  {
+    identificationCode: "ST003",
+    TimeTaken: "34 mins 43 secs",
+    Grade:10,
+    Q1: 1,
+    Q2 :1,
+    Q3: 1,
+    Q4: 1,
+    Q5: 1,
+    Q6 :1,
+    Q7: 1,
+    Q8: 1,
+    Q9: 1,
+    Q10: 1,
+    studentId:3
+  }
+];
+
+const Finalscores = [
+  { identificationCode: "ST001", Final: 4,   Q1: 1.7, Q2: 2, Q3: 2.5, Q4: 10,studentId:1 },
+  { identificationCode: "ST002", Final: 7.5, Q1: 5,   Q2: 1, Q3: 10,  Q4: 3,studentId:2 },
+  { identificationCode: "ST003", Final: 8.5, Q1: 5.8, Q2: 2, Q3: 0,   Q4: 5,studentId:3 },
+  { identificationCode: "ST004", Final: 9.8, Q1: 8.3, Q2: 7, Q3: 0,   Q4: 6,studentId:4 },
+  { identificationCode: "ST005", Final: 5.8, Q1: 5,   Q2: 7, Q3: 3.8, Q4: 3,studentId:5 },
+  { identificationCode: "ST006", Final: 0,   Q1: 0,   Q2: 0, Q3: 0,   Q4: 0,studentId:6 },
+  { identificationCode: "ST007", Final: 5.8, Q1: 6.7, Q2: 7, Q3: 0,   Q4: 4,studentId:7 },
+  { identificationCode: "ST008", Final: 6.3, Q1: 3.3, Q2: 6, Q3: 7.5, Q4: 9,studentId:8 },
+  { identificationCode: "ST009", Final: 7,   Q1: 5,   Q2: 1, Q3: 0,   Q4: 5,studentId:9 }
+];
+
+const MidtermScores = [
+  { identificationCode: "ST001", Final: 4,   Q1: 1.7, Q2: 2, Q3: 2.5, Q4: 10,studentId:1 },
+  { identificationCode: "ST002", Final: 4.5, Q1: 5,   Q2: 1, Q3: 10,  Q4: 3,studentId:2 },
+  { identificationCode: "ST003", Final: 3.5, Q1: 5.8, Q2: 2, Q3: 0,   Q4: 5,studentId:2 },
+  { identificationCode: "ST004", Final: 5.8, Q1: 8.3, Q2: 7, Q3: 0,   Q4: 6,studentId:3 },
+  { identificationCode: "ST005", Final: 4.8, Q1: 5,   Q2: 7, Q3: 3.8, Q4: 3,studentId:4 },
+  { identificationCode: "ST006", Final: 0,   Q1: 0,   Q2: 0, Q3: 0,   Q4: 0,studentId:5 },
+  { identificationCode: "ST007", Final: 4.8, Q1: 6.7, Q2: 7, Q3: 0,   Q4: 4,studentId:6 },
+  { identificationCode: "ST008", Final: 6.3, Q1: 3.3, Q2: 6, Q3: 7.5, Q4: 9,studentId:7 },
+  { identificationCode: "ST009", Final: 3,   Q1: 5,   Q2: 1, Q3: 0,   Q4: 5,   Q4: 6,studentId:8 }
+];
+
+
+const ExamQuizData = [
+  { name: "Quiz1", NumOfQuestion: 10,  Time: "15mins",ExamId:1 },
+  { name: "Quiz2", NumOfQuestion: 10,  Time: "15mins",ExamId:2 },
+  { name: "Quiz3", NumOfQuestion: 10,  Time: "15mins",ExamId:3 },
+  { name: "Quiz4", NumOfQuestion: 10,  Time: "15mins",ExamId:4 },
+  { name: "Quiz5", NumOfQuestion: 10,  Time: "15mins",ExamId:5 },
+];
+
+const ExamAssignmentData = [
+  { name: "Bài 1",  Time: "15mins",ExamId:1 },
+  { name: "Bài 2",  Time: "15mins",ExamId:2 },
+  { name: "Bài 3",  Time: "15mins",ExamId:3 },
+  { name: "Bài 4",  Time: "15mins",ExamId:4 },
+  { name: "Bài 5",  Time: "15mins",ExamId:5 },
+];
+
+
+const ExamMidtermData = [
+  { name: "Câu 1",  Time: "15mins",ExamId:1 },
+  { name: "Câu 2",  Time: "15mins",ExamId:2 },
+  { name: "Câu 3",  Time: "15mins",ExamId:3 },
+  { name: "Câu 4",  Time: "15mins",ExamId:4 },
+  { name: "Câu 5",  Time: "15mins",ExamId:5 },
+];
+
+const ExamFinalData = [
+  { name: "Câu 1",  Time: "15mins",ExamId:1 },
+  { name: "Câu 2",  Time: "15mins",ExamId:2 },
+  { name: "Câu 3",  Time: "15mins",ExamId:3 },
+  { name: "Câu 4",  Time: "15mins",ExamId:4 },
+  { name: "Câu 5",  Time: "15mins",ExamId:5 },
+];
+
+
+const ExamUpdateData = 
+  {
+    name:"Quiz1",
+    info:[
+    {
+      MSSV: "ST001",
+      name: "Nguyễn Văn A",
+      time: "20 phút",
+      scores: {
+        "Câu 1": 8,
+        "Câu 2": 9,
+      },
+    },
+    {
+      MSSV: "ST002",
+      name: "Trần Thị B",
+      time: "22 phút",
+      scores: {
+        "Câu 1": 7,
+        "Câu 2": 8,
+      },
+    },
+  ]
+  }
+;
 
 const academicYear = ["2014-2018", "2015-2019", "2021-2025", "2022-2026"]
 export default function StudentDetailView({ onBack }) {
+  const [MiniTab,setMiniTab] = useState(1);
   const [className, setClassName] = useState("21CLC05");
   const [subject, setSubject] = useState("Cơ sở dữ liệu");
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Thêm sv
+  const [isAddModalQuizOpen,setIsAddModalQuizOpen] = useState(false) //Thêm Quiz
+  const [isAddModalAssignmentOpen,setIsAddModalAssignmentOpen] = useState(false) //Thêm Assignment
+  const [isAddModalMidtermOpen,setIsAddModalMidtermOpen] = useState(false) //Thêm Midterm
+  const [isAddModalFinalOpen,setIsAddModalFinalOpen] = useState(false) //Thêm Final
+
+
+  const [isEditExamModal, setIsExamModal] = useState(false);
+  const [EditExamType,setEditExamType] = useState("");
+
   const [openEditModal, setOpenEditModal] = useState(false); // Edit svs
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
@@ -68,6 +280,111 @@ export default function StudentDetailView({ onBack }) {
   const dispatch = useDispatch();
   const router = useRouter();
   const { classId } = router.query;
+
+  //Dropdown
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+  const buttonRef = useRef(null); 
+
+  const handleClickAddQuiz = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const handleSelectQuizType = (type) => {
+    console.log("Loại bài kiểm tra được chọn:", type);
+    if(type=="Quiz"){
+      setIsAddModalQuizOpen(true);
+    }
+    else if(type=="Assignment"){
+      setIsAddModalAssignmentOpen(true);
+    }
+    else if(type=="Midterm"){
+      setIsAddModalMidtermOpen(true);
+    }
+    else if(type=="Final"){
+      setIsAddModalFinalOpen(true);
+    }
+    
+    handleCloseMenu();
+  };
+  //e Dropdown
+
+
+  //Tạo header
+
+  const mapKeyToLabel = (key) => {
+    if (key === "identificationCode") return "MSSV";
+    if (key === "Final") return "Điểm tổng";
+    if (key === "TimeTaken") return "Thời gian thực hiện";
+    if (key === "Grade") return "Điểm tổng";
+    if (key === "name") return "Tên nội dung";
+    if (key === "NumOfQuestion") return "Số câu hỏi";
+    if (key === "Time") return "Thời gian";
+    if (/^Q\d+$/.test(key)) return `Câu ${key.slice(1)} (điểm)`;
+    if (/^A\d+$/.test(key)) return `Bài ${key.slice(1)} (điểm)`;
+    return key; // fallback
+  };
+
+  const SetHeader = (filteredRows)=>{
+
+    const rawKeys =  Object.keys(
+    filteredRows.reduce((a, b) =>
+      Object.keys(a).length > Object.keys(b).length ? a : b
+    )
+  ).filter(key => key !== "studentId" && key!="ExamId");
+
+    return rawKeys.map((key) => ({
+          id: key,
+          key:key,
+          label: mapKeyToLabel(key),
+          align:"center"
+        }));
+  }
+
+
+  const ColExamMidtermData = useMemo(()=>{
+     return SetHeader(ExamMidtermData);
+  },[ExamMidtermData])
+
+  const ColExamFinalData = useMemo(()=>{
+     return SetHeader(ExamFinalData);
+  },[ExamFinalData])
+
+
+  const ColExamAssignmentData = useMemo(()=>{
+     return SetHeader(ExamAssignmentData);
+  },[ExamAssignmentData])
+
+
+  const ColExamQuizData = useMemo(()=>{
+     return SetHeader(ExamQuizData);
+  },[ExamQuizData])
+
+  const ColStudentsAssignments = useMemo(() => {
+      return SetHeader(studentsAssignments);
+   }, [studentsAssignments]);
+
+   const ColQuizData = useMemo(() => {
+      return SetHeader(quizData);
+   }, [quizData]);
+
+   const ColFinalscores = useMemo(() => {
+      return SetHeader(Finalscores);
+   }, [Finalscores]);
+
+   const ColMidtermScores = useMemo(() => {
+      return SetHeader(MidtermScores);
+   }, [MidtermScores]);
+
+  
+  //e Tạo header
+
+
+
   const userId = useMemo(() => {
     if (!accessToken) return null;
     try {
@@ -81,7 +398,11 @@ export default function StudentDetailView({ onBack }) {
   const [search, setSearch] = useState("");
   const [mssv, setMssv] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [tab, setTab] = useState(0);
 
+  const handleTabChange = (e, newIdx) => {
+    setTab(newIdx);
+  }
   // trigger a fresh load with the current search term
   const handleSearch = () => {
     dispatch(clearStudentList());
@@ -106,8 +427,21 @@ export default function StudentDetailView({ onBack }) {
   };
 
   const handleEditClick = (student) => {
+    console.log("studentId: ",student)
     setSelectedStudent(student);
     setOpenEditModal(true);
+  };
+
+  const handleEditExamClick= (examId,mode)=>{
+
+    setIsExamModal(true);
+    setEditExamType(mode);
+    
+  }
+
+  const handleDeleteRequestExam = (examId,mode) => {
+      console.log(`XOA EXAM ${examId} MODE: ${mode}`)
+      
   };
 
   const handleUpdateStudent = async () => {
@@ -130,6 +464,8 @@ export default function StudentDetailView({ onBack }) {
   };
 
   const handleDeleteRequest = (studentId, identificationCode) => {
+    console.log("studentId: ",studentId)
+    console.log("identificationCode: ",identificationCode)
     setSelectedStudent(studentId);
     setMssv(identificationCode);
     setConfirmOpen(true);
@@ -246,25 +582,43 @@ export default function StudentDetailView({ onBack }) {
           >
             Thêm
           </ActionButton>
+
           <ActionButton
-            variant={showSummary ? "outlined" : "contained"}
+            variant="contained"
+            ref={buttonRef}
+            style={{ width: "15%", fontWeight: "700", fontSize: "14px" }}
             color="primary"
-            startIcon={<Info />}
-            onClick={handleToggleSummary}
-            disabled={loading}
-            sx={{
-              ...(showSummary && {
-                bgcolor: "white",
-                color: "#1976D2",
-                borderColor: "#1976D2",
-                "&:hover": {
-                  bgcolor: "#e3f2fd",
-                },
-              }),
+            startIcon={<Add />}
+            // disabled={loading}
+            endIcon={<KeyboardArrowDownIcon />}
+            onClick={handleClickAddQuiz}
+          >
+            Thêm Bài Kiểm Tra
+          </ActionButton>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={openMenu}
+            onClose={handleCloseMenu}
+            
+            PaperProps={{
+              style: {
+                width: buttonRef.current ? buttonRef.current.offsetWidth : undefined,
+              },
             }}
           >
-            {showSummary ? "Tổng quan" : "Chi tiết"}
-          </ActionButton>
+            <MenuItem onClick={() => handleSelectQuizType("Quiz")}>Quiz</MenuItem>
+            <MenuItem onClick={() => handleSelectQuizType("Assignment")}>Assignment</MenuItem>
+            <MenuItem onClick={() => handleSelectQuizType("Midterm")}>Midterm</MenuItem>
+            <MenuItem onClick={() => handleSelectQuizType("Final")}>Final</MenuItem>
+          </Menu>
+
+
+          
+
+         
+
+
           <ActionButton
             style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
             variant="contained"
@@ -277,22 +631,77 @@ export default function StudentDetailView({ onBack }) {
           </ActionButton>
         </div>
       </Header>
-      <Box sx={{ p: 2 }}>
-        <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}
+      
+      <Box  sx={{
+              p: 2,
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center", // tùy chỉnh nếu cần căn chỉnh dọc
+            }}  >
+        <span style={{ fontSize: "20px", fontWeight: "700" }}
         >
           Số lượng sinh viên: {showSummary ? totalGrade : totalInformation} &nbsp;&nbsp;&nbsp;
         </span>
+
+            { (tab==3 && MiniTab==1) &&( 
+              <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
+                      <InputLabel id="academic-year-label">Chọn bài kiểm tra</InputLabel>
+                      <Select
+                        labelId="academic-year-label"
+                        label="Chọn khóa"
+                        // onChange={(e) => handleChangeAcademicYear(e.target.value)}
+                      >
+                        <MenuItem value="">Tất cả</MenuItem>
+                        
+                      </Select>
+              </FormControl>
+        ) }
+        
+      
       </Box>
+      
+        <LearningOutComeItemsContainer>
+            <LearningOutComeTabButtons active={MiniTab === 1} onClick={()=>{setMiniTab(1)}}>
+              SINH VIÊN
+            </LearningOutComeTabButtons>
+
+
+            <LearningOutComeTabButtons active={MiniTab === 2} onClick={()=>{setMiniTab(2)}}>
+              BÀI KIỂM TRA
+            </LearningOutComeTabButtons>
+          </LearningOutComeItemsContainer>
+
+      {MiniTab ===1 &&(
+        <>
+        <Tabs
+                value={tab}
+                onChange={handleTabChange}
+                indicatorColor="primary"
+                textColor="primary"
+                sx={{ marginTop: 2 }}
+              >
+                <Tab label="Thông tin" onClick={()=>setShowSummary(false)}/>
+                <Tab label="Tổng kết"   onClick={()=>setShowSummary(true)}/>
+                <Tab label="Assignment"/>
+                <Tab label="Quiz"/>
+                <Tab label="Giữa kỳ"/>
+                <Tab label="Cuối kỳ"/>
+              </Tabs>
+
+
       <div style={{ position: "relative", marginTop: 16 }}>
-        <Box position="relative">
+        {tab === 0  &&(
+          <Box position="relative">  
           <StudentTable
-            filteredRows={showSummary ? studentsGrade : studentsInformation}
-            columns={showSummary ? GradeColumns : InfoColumns}
+            filteredRows={studentsInformation}
+            columns={InfoColumns}
             handleDelete={handleDeleteRequest}
             handleEdit={handleEditClick}
             onLoadMore={handleLoadMore}
             hasMore={hasMore}
           />
+
           {loading && (
             <Box
               position="absolute"
@@ -310,7 +719,326 @@ export default function StudentDetailView({ onBack }) {
             </Box>
           )}
         </Box>
+        )
+        }
+
+        {tab === 1  &&(
+          <Box position="relative">  
+          <StudentTable
+            filteredRows={studentsGrade}
+            columns={GradeColumns}
+            handleDelete={handleDeleteRequest}
+            handleEdit={handleEditClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+        {tab === 2  &&(
+          <Box position="relative">  
+          <StudentTable
+            filteredRows={studentsAssignments}
+            columns={ColStudentsAssignments}
+            handleDelete={handleDeleteRequest}
+            handleEdit={handleEditClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+        {tab === 3  &&(
+          <Box position="relative">  
+          <StudentTable
+            filteredRows={quizData}
+            columns={ColQuizData}
+            handleDelete={handleDeleteRequest}
+            handleEdit={handleEditClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+
+        {tab === 4  &&(
+          <Box position="relative">  
+          <StudentTable
+            filteredRows={MidtermScores}
+            columns={ColMidtermScores}
+            handleDelete={handleDeleteRequest}
+            handleEdit={handleEditClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+        {tab === 5  &&(
+          <Box position="relative">  
+          <StudentTable
+            filteredRows={Finalscores}
+            columns={ColFinalscores}
+            handleDelete={handleDeleteRequest}
+            handleEdit={handleEditClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+
+        
       </div>
+      </>
+      )}
+      
+
+      {MiniTab ===2 &&(
+        <>
+        <Tabs
+                value={tab}
+                onChange={handleTabChange}
+                indicatorColor="primary"
+                textColor="primary"
+                sx={{ marginTop: 2 }}
+              >
+                <Tab label="Assignment"/>
+                <Tab label="Quiz"/>
+                <Tab label="Giữa kỳ"/>
+                <Tab label="Cuối kỳ"/>
+              </Tabs>
+
+
+      <div style={{ position: "relative", marginTop: 16 }}>
+
+        {tab === 0  &&(
+          <Box position="relative">  
+          <ExamQuizTable
+            filteredRows={ExamAssignmentData}
+            columns={ColExamAssignmentData}
+            handleDelete={handleDeleteRequestExam}
+            handleEdit={handleEditExamClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+            mode="Assignment"
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+              
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+        {tab === 1  &&(
+          <Box position="relative">  
+          <ExamQuizTable
+            filteredRows={ExamQuizData}
+            columns={ColExamQuizData}
+            handleDelete={handleDeleteRequestExam}
+            handleEdit={handleEditExamClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+            mode="Quiz"
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+
+        {tab === 2  &&(
+          <Box position="relative">  
+          <ExamQuizTable
+            filteredRows={ExamMidtermData}
+            columns={ColExamMidtermData}
+            handleDelete={handleDeleteRequestExam}
+            handleEdit={handleEditExamClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+            mode="Giữa kỳ"
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+        {tab === 3  &&(
+          <Box position="relative">  
+          <StudentTable
+            filteredRows={ExamFinalData}
+            columns={ColExamFinalData}
+            handleDelete={handleDeleteRequestExam}
+            handleEdit={handleEditExamClick}
+            onLoadMore={handleLoadMore}
+            hasMore={hasMore}
+            mode="Cuối kỳ"
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+
+        
+      </div>
+      </>
+      )}
+      
       {importFile &&
         <ImportFileModal
           open={importFile}
@@ -333,6 +1061,40 @@ export default function StudentDetailView({ onBack }) {
         onAddStudent={handleAddNewStudent}
         mode="add"
       />
+
+      <AddQuizModal
+        open={isAddModalQuizOpen}
+        onClose={() => setIsAddModalQuizOpen(false)}
+        mode="Quiz"
+      />
+
+      <AddQuizModal
+        open={isAddModalAssignmentOpen}
+        onClose={() => setIsAddModalAssignmentOpen(false)}
+        mode="Assignment"
+      />
+
+      <AddQuizModal
+        open={isAddModalMidtermOpen}
+        onClose={() => setIsAddModalMidtermOpen(false)}
+        mode="Midterm"
+      />
+
+      <AddQuizModal
+        open={isAddModalFinalOpen}
+        onClose={() => setIsAddModalFinalOpen(false)}
+        mode="Final"
+      />
+
+      <EditExamModal
+         open={isEditExamModal}
+        onClose={() => setIsExamModal(false)}
+        mode={EditExamType}
+        ExamUpdateData={ExamUpdateData}
+        
+      />
+
+      
       {student && <EditStudentModal
         open={openEditModal}
         onClose={handleCloseEdit}
@@ -352,8 +1114,15 @@ export default function StudentDetailView({ onBack }) {
           { key: 'projectGrade', label: 'Đồ án' },
           { key: 'practiceGrade', label: 'Thực hành' },
           { key: 'assignmentQuizGrade', label: 'Quiz/Assignment' },
+          
           { key: 'totalGrade', label: 'Tổng kết' },
         ]}
+        assignmentFields ={ColStudentsAssignments.filter(item=> item.label !="MSSV")}
+        QuizFields = {ColQuizData.filter(item=> item.label !="MSSV")}
+        MidTermFields = {ColFinalscores.filter(item=> item.label !="MSSV")}
+        FinalFields = {ColMidtermScores.filter(item=> item.label !="MSSV")}
+
+
         entityData={student}
       />}
       <ConfirmDialog
