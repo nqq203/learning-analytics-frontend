@@ -26,6 +26,10 @@ import { clearStudentList } from '@/redux/slice/dataSlice';
 import { fetchStudentList } from '@/redux/thunk/dataThunk';
 import { TableWrapper } from '@/components/Analytics/Styles/Styles';
 import PredictModal from '@/components/PredictionAchievements/PredictModal';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 
 export default function StudentListPage() {
   const router = useRouter();
@@ -37,7 +41,35 @@ export default function StudentListPage() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState(new Set());
   const [modalOpen, setModalOpen] = useState(false);
+  const [weightModalOpen, setWeightModalOpen] = useState(false);
   const containerRef = useRef();
+
+  const [weights, setWeights] = useState({
+    midterm: 25,
+    final: 50,
+    project: 15,
+    practice: 10,
+  });
+  const [weightError, setWeightError] = useState('');
+
+  const handleWeightChange = (field, value) => {
+    const num = Number(value);
+    setWeights(prev => ({ ...prev, [field]: isNaN(num) ? '' : num }));
+  };
+
+  const handleSaveWeights = () => {
+    const total =
+      Number(weights.midterm) +
+      Number(weights.final) +
+      Number(weights.project) +
+      Number(weights.practice);
+    if (total !== 100) {
+      setWeightError('Tổng phần trăm phải bằng 100%');
+      return;
+    }
+    setWeightError('');
+    setWeightModalOpen(false);
+  };
 
   // reload when classId or search changes
   useEffect(() => {
@@ -100,7 +132,7 @@ export default function StudentListPage() {
   // navigate to predict page
   const goPredict = () => {
     if (selected.size === 0) return;
-    setModalOpen(true);
+    setWeightModalOpen(true);
   };
 
   const cellStyle = { fontSize: 16, textAlign: 'center' };
@@ -146,7 +178,7 @@ export default function StudentListPage() {
         <Button
           variant="contained"
           disabled={selected.size === 0}
-          onClick={goPredict}
+          onClick={() => setWeightModalOpen(true)}
         >
           Dự đoán ({selected.size})
         </Button>
@@ -222,6 +254,61 @@ export default function StudentListPage() {
         classId={classId}
         studentIds={Array.from(selected)}
       />
+
+      <Dialog open={weightModalOpen} onClose={() => setWeightModalOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Thiết lập phần trăm điểm</DialogTitle>
+        <DialogContent>
+          <Box display="flex" flexDirection="column" gap={2} mt={1}>
+            <TextField
+              label="Giữa kỳ (%)"
+              type="number"
+              value={weights.midterm}
+              onChange={e => handleWeightChange('midterm', e.target.value)}
+              inputProps={{ min: 0, max: 100 }}
+            />
+            <TextField
+              label="Cuối kỳ (%)"
+              type="number"
+              value={weights.final}
+              onChange={e => handleWeightChange('final', e.target.value)}
+              inputProps={{ min: 0, max: 100 }}
+            />
+            <TextField
+              label="Đồ án (%)"
+              type="number"
+              value={weights.project}
+              onChange={e => handleWeightChange('project', e.target.value)}
+              inputProps={{ min: 0, max: 100 }}
+            />
+            <TextField
+              label="Thực hành (%)"
+              type="number"
+              value={weights.practice}
+              onChange={e => handleWeightChange('practice', e.target.value)}
+              inputProps={{ min: 0, max: 100 }}
+            />
+            {weightError && (
+              <Box color="error.main" fontSize={14}>{weightError}</Box>
+            )}
+            <Box fontSize={13} color="text.secondary">
+              Tổng các phần trăm phải bằng 100%. Ví dụ: Giữa kỳ 25, Cuối kỳ 50, Đồ án 15, Thực hành 10.
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setWeightModalOpen(false)}>Hủy</Button>
+          <Button variant="contained" onClick={() => {
+            const total = Number(weights.midterm) + Number(weights.final) + Number(weights.project) + Number(weights.practice);
+            if (total !== 100) {
+              setWeightError('Tổng phần trăm phải bằng 100%');
+              return;
+            }
+            setWeightError('');
+            setWeightModalOpen(false);
+            setModalOpen(true);
+          }}>Lưu</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
