@@ -1,337 +1,278 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   TextField,
+  Select,
+  MenuItem,
+  InputLabel,
   Button,
+  FormControl,
   Box,
-  IconButton,
-  Typography,
+  Grid,
   Tabs,
   Tab,
-  Grid,
+  Typography,
   Divider,
-} from "@mui/material";
-import { Close } from "@mui/icons-material";
+} from '@mui/material';
+import { Close } from '@mui/icons-material';
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`student-tabpanel-${index}`}
-      aria-labelledby={`student-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
-    </div>
-  );
+function TabPanel({ children, value, index }) {
+  return value === index ? <Box sx={{ p: 2 }}>{children}</Box> : null;
 }
 
-export default function EditStudentModal({ open, onClose, student, onSave }) {
-  const [tabValue, setTabValue] = useState(0);
-  const [editedStudent, setEditedStudent] = useState(student);
+export default function EditStudentModal({
+  open,
+  onClose,
+  onSubmit,
+  title,
+  basicFields = [],
+  gradeFields = [],
+  assignmentFields = [],
+  QuizFields = [],
+  MidTermFields = [],
+  FinalFields = [],
+  entityData = {},
+}) {
+  const [tab, setTab] = useState(0);
+  const [formData, setFormData] = useState({});
+  const [initial, setInitial] = useState({});
 
   useEffect(() => {
-    setEditedStudent(student);
-  }, [student]);
+    // gộp thông tin & điểm
+    const info = entityData.studentInformation || {};
+    const grade = entityData.studentGrade || {};
+    const init = {};
 
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
+    [...basicFields, ...gradeFields].forEach(({ key, value = '' }) => {
+      // init[key] = info[key] ?? grade[key] ?? value
+      init[key] = info[key] ?? grade[key] ?? value;
+    });
+
+    setFormData(init);
+    setInitial(init);
+  }, [basicFields, gradeFields, entityData]);
+
+  const handleChange = (key, val) => {
+    setFormData(prev => ({ ...prev, [key]: val }));
   };
 
-  const handleInputChange = (field, value) => {
-    if (editedStudent) {
-      setEditedStudent({
-        ...editedStudent,
-        [field]: value,
-      });
-    }
-  };
+  // detect any changes
+  const changed = useMemo(
+    () => Object.keys(formData).some(k => formData[k] !== initial[k]),
+    [formData, initial]
+  );
 
   const handleSave = () => {
-    if (editedStudent) {
-      onSave(editedStudent);
-      onClose();
-    }
+    if (!changed) return;
+    const payload = {};
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== initial[key]) payload[key] = formData[key];
+    });
+    onSubmit(payload);
+    onClose();
   };
 
-  if (!editedStudent) return null;
-
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          pb: 1,
-        }}
-      >
-        <Typography variant="h6" component="div" sx={{ fontWeight: "medium" }}>
-          Sửa Sinh Viên
-        </Typography>
-        <IconButton
-          edge="end"
-          color="inherit"
-          onClick={onClose}
-          aria-label="close"
-        >
-          <Close />
-        </IconButton>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h6">{title}</Typography>
+        <Box component={Close} onClick={onClose} sx={{ cursor: 'pointer' }} />
       </DialogTitle>
       <Divider />
-      <DialogContent sx={{ p: 0 }}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            value={tabValue}
-            onChange={handleTabChange}
-            aria-label="student tabs"
-            sx={{ px: 2 }}
-          >
-            <Tab
-              label="THÔNG TIN CƠ BẢN"
-              id="student-tab-0"
-              aria-controls="student-tabpanel-0"
-              sx={{
-                color: tabValue === 0 ? "#2196f3" : "inherit",
-                fontWeight: "medium",
-              }}
-            />
-            <Tab
-              label="ĐIỂM SINH VIÊN"
-              id="student-tab-1"
-              aria-controls="student-tabpanel-1"
-              sx={{
-                color: tabValue === 1 ? "#2196f3" : "inherit",
-                fontWeight: "medium",
-              }}
-            />
-          </Tabs>
-        </Box>
+      <DialogContent>
+        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
+          <Tab label="Thông tin cơ bản" />
+          <Tab label="Điểm sinh viên" />
 
-        <TabPanel value={tabValue} index={0}>
-          <Box sx={{ px: 2, pb: 2 }}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  MSSV:
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={editedStudent.id}
-                  onChange={(e) => handleInputChange("id", e.target.value)}
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Họ và tên:
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={editedStudent.name}
-                  onChange={(e) => handleInputChange("name", e.target.value)}
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Môn học:
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={editedStudent.subject}
-                  onChange={(e) => handleInputChange("subject", e.target.value)}
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Lớp:
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={editedStudent.class}
-                  onChange={(e) => handleInputChange("class", e.target.value)}
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
+          <Tab label="Assignment" />
+          <Tab label="Quiz" />
+          <Tab label="Giữa kỳ"/>
+          <Tab label="Cuối kỳ"/>
+        
+        </Tabs>
 
-              {/* Additional fields */}
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Thông tin A:
+        <TabPanel value={tab} index={0}>
+          <Grid container spacing={2}>
+            {basicFields.map(({ key, label, type = 'text', options = [] }) => (
+              <Grid item xs={6} key={key}>
+                <Typography variant="subtitle2" gutterBottom>
+                  {label}
                 </Typography>
-                <TextField
-                  fullWidth
-                  defaultValue="Thông tin A"
-                  variant="outlined"
-                  size="small"
-                />
+                {type === 'select' ? (
+                  <Select
+                    fullWidth
+                    size="small"
+                    value={formData[key] ?? ''}
+                    onChange={e => handleChange(key, e.target.value)}
+                  >
+                    {options.map((opt, i) => (
+                      <MenuItem key={i} value={opt.value ?? opt[key]}>
+                        {opt.label ?? opt.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                ) : (
+                  <TextField
+                    fullWidth
+                    size="small"
+                    variant="outlined"
+                    value={formData[key] ?? ''}
+                    onChange={e => handleChange(key, e.target.value)}
+                  />
+                )}
               </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Thông tin B:
-                </Typography>
-                <TextField
-                  fullWidth
-                  defaultValue="Thông tin B"
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
-            </Grid>
-          </Box>
+            ))}
+          </Grid>
         </TabPanel>
 
-        <TabPanel value={tabValue} index={1}>
-          <Box sx={{ px: 2, pb: 2 }}>
-            <Grid container spacing={3}>
-              {/* Quiz 1 */}
-              <Grid item xs={12} md={4}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
-                  Quiz 1:
+        <TabPanel value={tab} index={1}>
+          <Grid container spacing={2}>
+            {gradeFields.map(({ key, label }) => (
+              <Grid item xs={6} key={key}>
+                <Typography variant="subtitle2" gutterBottom>
+                  {label}
                 </Typography>
                 <TextField
                   fullWidth
-                  defaultValue="7.5"
-                  variant="outlined"
                   size="small"
-                />
-              </Grid>
-              {/* Quiz 2 */}
-              <Grid item xs={12} md={4}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
-                  Quiz 2:
-                </Typography>
-                <TextField
-                  fullWidth
-                  defaultValue="8.0"
                   variant="outlined"
-                  size="small"
-                />
-              </Grid>
-              {/* Quiz 3 */}
-              <Grid item xs={12} md={4}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
-                  Quiz 3:
-                </Typography>
-                <TextField
-                  fullWidth
-                  defaultValue="9.0"
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
-
-              {/* Divider */}
-              <Grid item xs={12}>
-                <Divider sx={{ my: 2 }} />
-              </Grid>
-
-              {/* Giữa kỳ */}
-              <Grid item xs={12} md={4}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
-                  Giữa kỳ:
-                </Typography>
-                <TextField
-                  fullWidth
-                  defaultValue="8.5"
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
-              {/* Thực hành */}
-              <Grid item xs={12} md={4}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
-                  Thực hành:
-                </Typography>
-                <TextField
-                  fullWidth
-                  defaultValue="8.0"
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
-              {/* Đồ án */}
-              <Grid item xs={12} md={4}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
-                  Đồ án:
-                </Typography>
-                <TextField
-                  fullWidth
-                  defaultValue="9.0"
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
-
-              {/* Divider */}
-              <Grid item xs={12}>
-                <Divider sx={{ my: 2 }} />
-              </Grid>
-
-              {/* Cuối kỳ */}
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
-                  Cuối kỳ:
-                </Typography>
-                <TextField
-                  fullWidth
-                  defaultValue="9.0"
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
-
-              {/* Divider */}
-              <Grid item xs={12}>
-                <Divider sx={{ my: 2 }} />
-              </Grid>
-
-              {/* Tổng kết */}
-              <Grid item xs={12}>
-                <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
-                  Tổng kết:
-                </Typography>
-                <TextField
-                  fullWidth
-                  defaultValue="8.5"
-                  variant="outlined"
-                  size="medium"
-                  InputProps={{
-                    sx: { fontSize: "1.25rem", fontWeight: "bold" },
+                  type="number"              // ← cho phép chỉ nhập số
+                  value={formData[key] ?? ''}
+                  onChange={e => handleChange(key, e.target.value)}
+                  InputProps={{              // nếu muốn chỉ số nguyên, bạn có thể thêm:
+                    inputProps: { step: 0.1 } // hoặc step: 1
                   }}
                 />
               </Grid>
-            </Grid>
-          </Box>
+            ))}
+          </Grid>
         </TabPanel>
 
-        <Box
-          sx={{ display: "flex", justifyContent: "space-between", p: 2, mt: 2 }}
-        >
-          <Button variant="outlined" onClick={onClose} sx={{ width: "48%" }}>
-            ĐÓNG
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSave}
-            sx={{ width: "48%" }}
-          >
-            Sửa thông tin
-          </Button>
-        </Box>
+        <TabPanel value={tab} index={2}>
+          <Grid container spacing={2}>
+
+            
+            {assignmentFields.map(({ key, label }) => (
+              <Grid item xs={6} key={key}>
+                <Typography variant="subtitle2" gutterBottom>
+                  {label}
+                </Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  variant="outlined"
+                  type="number"              // ← cho phép chỉ nhập số
+                  value={formData[key] ?? ''}
+                  onChange={e => handleChange(key, e.target.value)}
+                  InputProps={{              // nếu muốn chỉ số nguyên, bạn có thể thêm:
+                    inputProps: { step: 0.1 } // hoặc step: 1
+                  }}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </TabPanel>
+
+        <TabPanel value={tab} index={3}>
+          <div style={{display:"flex", justifyContent:"flex-end"}}>
+
+          <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
+                                <InputLabel id="academic-year-label">Chọn bài kiểm tra</InputLabel>
+                                <Select
+                                  labelId="academic-year-label"
+                                  label="Chọn khóa"
+                                  // onChange={(e) => handleChangeAcademicYear(e.target.value)}
+                                >
+                                  <MenuItem value="">Tất cả</MenuItem>
+                                  
+                                </Select>
+          </FormControl>
+
+          </div>
+          <Grid container spacing={2}>
+            
+
+
+            {QuizFields.map(({ key, label }) => (
+              <Grid item xs={6} key={key}>
+                <Typography variant="subtitle2" gutterBottom>
+                  {label}
+                </Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  variant="outlined"
+                  type="number"              // ← cho phép chỉ nhập số
+                  value={formData[key] ?? ''}
+                  onChange={e => handleChange(key, e.target.value)}
+                  InputProps={{              // nếu muốn chỉ số nguyên, bạn có thể thêm:
+                    inputProps: { step: 0.1 } // hoặc step: 1
+                  }}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </TabPanel>
+
+
+        <TabPanel value={tab} index={4}>
+          <Grid container spacing={2}>
+            {MidTermFields.map(({ key, label }) => (
+              <Grid item xs={6} key={key}>
+                <Typography variant="subtitle2" gutterBottom>
+                  {label}
+                </Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  variant="outlined"
+                  type="number"              // ← cho phép chỉ nhập số
+                  value={formData[key] ?? ''}
+                  onChange={e => handleChange(key, e.target.value)}
+                  InputProps={{              // nếu muốn chỉ số nguyên, bạn có thể thêm:
+                    inputProps: { step: 0.1 } // hoặc step: 1
+                  }}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </TabPanel>
+
+
+        <TabPanel value={tab} index={5}>
+          <Grid container spacing={2}>
+            {FinalFields.map(({ key, label }) => (
+              <Grid item xs={6} key={key}>
+                <Typography variant="subtitle2" gutterBottom>
+                  {label}
+                </Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  variant="outlined"
+                  type="number"              // ← cho phép chỉ nhập số
+                  value={formData[key] ?? ''}
+                  onChange={e => handleChange(key, e.target.value)}
+                  InputProps={{              // nếu muốn chỉ số nguyên, bạn có thể thêm:
+                    inputProps: { step: 0.1 } // hoặc step: 1
+                  }}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </TabPanel>
+
+        
       </DialogContent>
+
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+        <Button variant="outlined" onClick={onClose}>Đóng</Button>
+        <Button variant="contained" onClick={handleSave} disabled={!changed}>
+          Cập nhật
+        </Button>
+      </Box>
     </Dialog>
   );
 }
