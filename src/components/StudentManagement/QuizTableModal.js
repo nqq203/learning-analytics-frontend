@@ -35,8 +35,10 @@ import { Fragment, use } from "react";
 import { useEffect, useMemo, useState, useRef } from "react";
 
 const QuizTableModal = ({
-  students
+  studentInfo,
+  mode
 }) => {
+  const [quizName, setQuizName] = useState("");
    const [questions, setQuestions] = useState([]);
   const [scores, setScores] = useState({});
   const [times, setTimes] = useState({});
@@ -81,15 +83,71 @@ const QuizTableModal = ({
   };
 
   const handleSave = () => {
-    const result = students.map((student) => ({
-      MSSV: student.MSSV,
-      name: student.name,
-      time: times[student.MSSV] || "",
-      scores: scores[student.MSSV] || {},
-    }));
+      if(mode=="Quiz"){
+          const quizData = studentInfo.map((student) => {
+          const studentScores = scores[student.studentId] || {};
+          const questionsList = questions.map((q, index) => {
+            const rawScore = studentScores[q];
+            const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
+            return {
+              questionNumber: index + 1,
+              score: score,
+            };
+          });
 
-    console.log("Kết quả:", result);
-    alert("Dữ liệu đã được lưu! Xem console log để kiểm tra.");
+          
+          const quizScore = questionsList.reduce((acc, q) => acc + q.score, 0);
+
+            return {
+              studentId: student.studentId,
+              duration: Number(times[student.studentId]) || 0,
+              quizScore,
+              questions: questionsList,
+            };
+          });
+
+          const result = {
+            quizName: quizName,
+            quizData: quizData,
+          };
+
+          console.log("Kết quả:", result);
+          alert("Dữ liệu đã được lưu! Xem console log để kiểm tra.");
+      }
+      else if(mode=="Cuối Kỳ"){
+        const finalData = studentInfo.map((student) => {
+          const studentScores = scores[student.studentId] || {};
+          const questionsList = questions.map((q, index) => {
+            const rawScore = studentScores[q];
+            const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
+            return {
+              questionNumber: index + 1,
+              score: score,
+            };
+          });
+
+          
+          const finalExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
+
+            return {
+              studentId: student.studentId,
+              finalExamScore,
+              questions: questionsList,
+            };
+          });
+
+          const result = {
+            finalExamName: quizName,
+            finalExamData: finalData,
+          };
+
+          console.log("Kết quả:", result);
+          alert("Dữ liệu đã được lưu! Xem console log để kiểm tra.");
+      }
+        
+
+    
+  
   };
 
   
@@ -103,23 +161,13 @@ const QuizTableModal = ({
           <TextField 
           variant="outlined"
                       size="small"
-          placeholder="Nhập tên bài Quiz"/>
+          placeholder="Nhập tên bài Quiz"
+          onChange={(e) => setQuizName(e.target.value)}
+          />
         </div>
 
 
-        {/* <div style={{display:"flex",justifyContent:"flex-end",alignItems:"center"}}>
-
-        <ActionButton
-          onClick={handleAddQuestion}
-          style={{ width: "20%", fontWeight: "700", fontSize: "14px" }}
-          color="primary"
-          variant="outlined"
-          startIcon={<Add />}
-        >
-          Thêm câu hỏi
-        </ActionButton>
-        </div> */}
-
+        
      
 
       
@@ -132,17 +180,14 @@ const QuizTableModal = ({
           maxHeight: "350px",
           overflow: "auto",
         }}
-        // border="1"
-        // cellPadding="8"
-        // cellSpacing="0"
-        // style={{ width: "100%", borderCollapse: "collapse" }}
+        
       >
         <Table stickyHeader>
         <TableHead>
           <TableRow>
             <TableCell>MSSV</TableCell>
-            <TableCell>Họ tên</TableCell>
-            <TableCell>Thời gian làm bài</TableCell>
+            {mode==="Quiz" &&( <TableCell>Thời gian làm bài</TableCell> )}
+            
             {questions.map((q, index) => (
               <TableCell key={index}>
                 {q}
@@ -169,34 +214,30 @@ const QuizTableModal = ({
               <IconButton onClick={handleAddQuestion}>
                         <Add color="primary" alt="Thêm câu hỏi"/>
               </IconButton>
-              {/* <ActionButton
-                onClick={handleAddQuestion}
-                style={{ width: "5%", fontWeight: "600", fontSize: "14px" }}
-                color="primary"
-                variant="outlined"
-                startIcon={<Add />}
-              >
-                
-              </ActionButton> */}
+             
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {students.map((student) => (
-            <TableRow key={student.MSSV}>
-              <TableCell>{student.MSSV}</TableCell>
-              <TableCell>{student.name}</TableCell>
-              <TableCell>
-                <input
-                  type="text"
-                  style={{border:"none",width:"50%"}}
-                  placeholder="Nhập thời gian"
-                  value={times[student.MSSV] || ""}
-                  onChange={(e) =>
-                    handleTimeChange(student.MSSV, e.target.value)
-                  }
-                />
+          {studentInfo.map((student) => (
+            <TableRow key={student.studentId}>
+              <TableCell>{student.identificationCode}</TableCell>
+              {mode==="Quiz" &&(
+                  <TableCell>
+                      <input
+                        type="text"
+                        style={{border:"none",width:"50%"}}
+                        placeholder="Nhập thời gian"
+                        value={times[student.studentId] || ""}
+                        onChange={(e) =>
+                          handleTimeChange(student.studentId, e.target.value)
+                        }
+                      />
               </TableCell>
+
+              )}
+              
+              
               {questions.map((q, index) => (
                 <TableCell key={index}>
                   <input
@@ -205,9 +246,9 @@ const QuizTableModal = ({
                     max="10"
                     placeholder="Nhập điểm"
                     style={{border:"none",width:"100%"}}
-                    value={scores[student.MSSV]?.[q] || ""}
+                    value={scores[student.studentId]?.[q] || ""}
                     onChange={(e) =>
-                      handleScoreChange(student.MSSV, q, e.target.value)
+                      handleScoreChange(student.studentId, q, e.target.value)
                     }
                   />
                 </TableCell>
@@ -220,7 +261,7 @@ const QuizTableModal = ({
       </TableContainer>
       
 
-      {/* <button
+      <button
         onClick={handleSave}
         style={{
           marginTop: "20px",
@@ -234,7 +275,7 @@ const QuizTableModal = ({
         }}
       >
         💾 Lưu
-      </button> */}
+      </button>
     </div>
   );
 };

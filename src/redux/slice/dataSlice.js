@@ -31,6 +31,11 @@ import {
     updateStudent,
     fetchStudentDetail,
     deleteStudentFromClass,
+
+    fetchAllExam,
+    
+    fetchExamDetail,
+    createExam
 } from "../thunk/dataThunk";
 
 const initialState = {
@@ -67,6 +72,16 @@ const initialState = {
     totalInformation: 0,
     totalGrade: 0,
     type: null,
+
+    assignments:[],
+    finalExams:[],
+    quizzes:[],
+    loadingExam: false,
+    
+    activities:[],
+    examInfo:null,
+    createFinalExam:[]
+
 }
 
 const dataSlice = createSlice({
@@ -701,6 +716,79 @@ const dataSlice = createSlice({
                 state.success = action.payload.success;
             })
             .addCase(deleteStudentFromClass.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+
+            .addCase(fetchAllExam.pending, (state, action) => {
+                state.loadingExam = true;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(fetchAllExam.fulfilled, (state, action) => {
+                state.loadingExam = false;
+
+                state.assignments = action.payload.data.assignments;
+                state.finalExams = action.payload.data.finalExams;
+                state.quizzes = action.payload.data.quizzes;
+
+
+                // state.totalCourses = action.payload.data.totalRecords;
+                state.code = action.payload.code;
+                state.message = action.payload.message;
+                state.success = action.payload.success;
+            })
+            .addCase(fetchAllExam.rejected, (state, action) => {
+                state.loadingExam = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+
+
+            .addCase(fetchExamDetail.pending, (state, action) => {
+                state.loading = true;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(fetchExamDetail.fulfilled, (state, action) => {
+                state.loading = false;
+                state.activities = action.payload.data.activities;
+                
+                if(action.payload.data.quiz) state.examInfo = action.payload.data.quiz;
+                
+                if(action.payload.data.finalExam) state.examInfo = action.payload.data.finalExam;
+
+                if(action.payload.data.assignment) state.examInfo = action.payload.data.assignment;
+
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+            })
+            .addCase(fetchExamDetail.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+
+            .addCase(createExam.pending, (state, action) => {
+                state.loading = true;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(createExam.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+            })
+            .addCase(createExam.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action?.payload?.error || action?.error?.message;
                 state.message = action?.payload?.message || action?.message || action?.payload;

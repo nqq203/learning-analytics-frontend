@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+
 import {
   Dialog,
   DialogTitle,
@@ -14,11 +15,19 @@ import {
   Divider,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
-import QuizTableModal from "./QuizTableModal";
-import AssignmentTableModal from "./AssignmentTableModal";
 
-export default function AddQuizModal({ open, onClose, onSave,mode,students }) {
+
+import ViewTable from "./ViewTable";
+
+export default function DetailExamModal({ open, onClose, onSave,mode,ExamUpdateData,StudentData,ExamData }) {
+ 
+
+  const ExamName = useMemo(()=>{
+    if(mode=="quiz")              return ExamData.quizName;
+      else if(mode=="assignment")   return ExamData.assignmentName;
+        else if(mode=="final_exam")   return ExamData.finalExamName;
     
+  },[ExamData])
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
@@ -32,7 +41,7 @@ export default function AddQuizModal({ open, onClose, onSave,mode,students }) {
         }}
       >
         <Typography variant="h6" sx={{ fontWeight: "medium" }}>
-          Thêm {mode} Vào Lớp
+          Sửa {mode} 
         </Typography>
         <IconButton onClick={onClose} aria-label="close">
           <Close />
@@ -41,24 +50,12 @@ export default function AddQuizModal({ open, onClose, onSave,mode,students }) {
 
       <Divider />
 
-      <DialogContent sx={{ p: 3 }}>
+      <DialogContent sx={{ p: 3 }}>s
         
-
-            
-            <div style={{paddingInline:"16px"}}>
-                  {mode ==="Assignment"?
-                  <AssignmentTableModal studentInfo={students} mode={mode}> </AssignmentTableModal>
-                  :
-                  <QuizTableModal studentInfo={students} mode={mode}></QuizTableModal>
-                }
-                  
+           <div style={{paddingInline:"16px"}}>
+                  <ViewTable QuizName={ExamName} ExamData={StudentData} type={mode}></ViewTable>
             </div>
-          
-           
-        
-
-        
-
+            
         <Box
           sx={{
             display: "flex",
@@ -67,17 +64,10 @@ export default function AddQuizModal({ open, onClose, onSave,mode,students }) {
             mt: 2,
           }}
         >
-          <Button variant="outlined" onClick={onClose} sx={{ width: "48%" }}>
+          <Button variant="outlined" onClick={onClose} sx={{ width: "100%" }}>
             ĐÓNG
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            // onClick={handleSave}
-            sx={{ width: "48%" }}
-          >
-            Lưu
-          </Button>
+          
         </Box>
       </DialogContent>
     </Dialog>

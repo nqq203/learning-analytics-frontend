@@ -26,8 +26,9 @@ const ExamQuizTable = ({
   columns,
   handleDelete,
   handleEdit,
+  handleViewInformation,
   onLoadMore,
-  mode,
+  type,
   action = true
 }) => {
   const containerRef = useRef();
@@ -61,6 +62,20 @@ const ExamQuizTable = ({
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
   }, [onLoadMore]);
+
+  const handleDetail = (row)=>{
+    
+    if(type==="Quiz"){
+      handleViewInformation(row.quizId,"quiz");
+    }
+    else if (type ==="Assignment"){
+      
+      handleViewInformation(row.assignmentId,"assignment");
+    }
+    else if(type==="Cuối kỳ"){
+      handleViewInformation(row.finalExamId,"final_exam");
+    }
+  }
 
   const cellStyle = {
     fontSize: "16px",
@@ -124,14 +139,25 @@ const ExamQuizTable = ({
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
                       >
-                        <MenuItem onClick={() => { handleEdit(row.ExamId,mode); handleMenuClose(); }}>
+
+                        <MenuItem onClick={()=>{
+                          handleDetail(row);
+                          handleMenuClose();
+                        }} >
+                          <ListItemIcon><VisibilityIcon color="primary" fontSize="small" /></ListItemIcon>
+                          <ListItemText>Xem thông tin bài kiểm tra</ListItemText>
+                        </MenuItem>
+
+                        <MenuItem onClick={() => { handleEdit(row.ExamId,type); handleMenuClose(); }}>
                           <ListItemIcon><EditIcon color="primary" fontSize="small" /></ListItemIcon>
                           <ListItemText>Chỉnh sửa</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={() => { handleDelete(row.ExamId, mode); handleMenuClose(); }}>
+                        <MenuItem onClick={() => { handleDelete(row.ExamId, type); handleMenuClose(); }}>
                           <ListItemIcon><DeleteIcon color="error" fontSize="small" /></ListItemIcon>
                           <ListItemText>Xóa</ListItemText>
                         </MenuItem>
+
+
                       </Menu>
                     </TableCell>
                   )}
