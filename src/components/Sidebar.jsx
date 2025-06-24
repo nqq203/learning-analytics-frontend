@@ -332,7 +332,7 @@ const Sidebar = ({
                   "/analytics/reports-and-statistics"
                 )}
               >
-                THEO SINH VIÊN
+                THEO LỚP
               </NavText>
             </SubNavItem>
           </Link>
@@ -356,7 +356,7 @@ const Sidebar = ({
                   "/analytics/learning-outcome"
                 )}
               >
-                THEO LỚP
+                THEO SINH VIÊN
               </NavText>
             </SubNavItem>
           </Link>
