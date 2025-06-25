@@ -7,6 +7,8 @@ import learningoutcomeReducer from "./slice/learningoutcomeSlice";
 import fraudDetectionReducer from "./slice/fraudDetectionSlice";
 import dataReducer from "./slice/dataSlice";
 import dashboardReducer from "./slice/dashboardSlice";
+import predictReducer from "./slice/predictSlice";
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -17,5 +19,6 @@ export const store = configureStore({
     fraudDetection: fraudDetectionReducer,
     data: dataReducer,
     dashboard: dashboardReducer,
+    predict: predictReducer,
   },
 });
