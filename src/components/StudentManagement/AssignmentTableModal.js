@@ -7,43 +7,25 @@ import {
   TableHead,
   TableRow,
   Typography,
-  TextField
+  TextField,
+  Box,
+  Button
 } from "@mui/material";
 
-
-import {
-  ActionButton,
-  Container,
-  Header,
-} from "@/components/Analytics/Styles/Styles";
-import {
-  Add,
-  FileDownload,
-  Info,
-} from "@mui/icons-material";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
-import { TableWrapper } from "../Analytics/Styles/Styles";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Fragment, use } from "react";
 import { useEffect, useMemo, useState, useRef } from "react";
 
 const AssignmentTableModal = ({
   studentInfo,
-  mode
+  mode,
+  HandleSaveAssignment,
+  onClose
 }) => {
   const [quizName, setQuizName] = useState("");
    const [questions, setQuestions] = useState([]);
   const [scores, setScores] = useState({});
   const [times, setTimes] = useState({});
 
-
+  
   const handleScoreChange = (mssv, value) => {
     setScores((prev) => ({
         ...prev,
@@ -54,24 +36,7 @@ const AssignmentTableModal = ({
  
 
   const handleSave = () => {
-      
-          const AssignmentData = studentInfo.map((student) => {
-                const studentScores = scores[student.studentId] || {};
-                    return {
-                    studentId: student.studentId,
-                    assignmentScore: studentScores
-                    };
-          });
-
-          const result = {
-            assignmentName: quizName,
-            assignmentData: AssignmentData,
-          };
-
-          console.log("Kết quả:", result);
-          alert("Dữ liệu đã được lưu! Xem console log để kiểm tra.");
-      
-    
+        HandleSaveAssignment(studentInfo,scores,quizName)
   };
 
   
@@ -81,11 +46,11 @@ const AssignmentTableModal = ({
 
       
         <div>
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Tên bài quiz:</Typography>
+          <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Tên bài {mode}:</Typography>
           <TextField 
           variant="outlined"
                       size="small"
-          placeholder="Nhập tên bài Quiz"
+          placeholder="Nhập tên bài"
           onChange={(e) => setQuizName(e.target.value)}
           />
         </div>
@@ -101,7 +66,7 @@ const AssignmentTableModal = ({
        className="TableContainer"
        style={{
           
-          maxHeight: "350px",
+          maxHeight: "550px",
           overflow: "auto",
         }}
         
@@ -145,21 +110,28 @@ const AssignmentTableModal = ({
       </TableContainer>
       
 
-      <button
-        onClick={handleSave}
-        style={{
-          marginTop: "20px",
-          padding: "10px 20px",
-          fontSize: "16px",
-          backgroundColor: "#4CAF50",
-          color: "white",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
-        💾 Lưu
-      </button>
+      <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            
+          }}
+        >
+          <Button variant="outlined" onClick={onClose} sx={{ width: "48%" }}>
+            ĐÓNG
+          </Button>
+          
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={()=>handleSave()}
+            sx={{ width: "48%" }}
+          >
+            LƯU
+          </Button>
+    </Box>
+
+
     </div>
   );
 };

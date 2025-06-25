@@ -53,9 +53,10 @@ export default function ViewTable({ QuizName,ExamData,type }) {
                 <TableCell style={{fontWeight:"bold",fontSize:"12px"}} >MSSV</TableCell>
                 <TableCell style={{fontWeight:"bold",fontSize:"12px"}} >Điểm tổng kết</TableCell>
                 {
-                    type==="quiz"&&(
+                    (type==="quiz" || type ==="final_exam")&&(
                             <>
-                                <TableCell style={{fontWeight:"bold",fontSize:"12px"}} >Thời gian làm bài</TableCell>
+                                {type==="quiz" &&( <TableCell style={{fontWeight:"bold",fontSize:"12px"}} >Thời gian làm bài</TableCell> )}
+                                
                                 {ExamData[0]?.questions?.map((q, index) => (
                                 <TableCell key={index} style={{fontWeight:"bold",fontSize:"12px"}}>
                                     Câu {index+1}
@@ -77,9 +78,10 @@ export default function ViewTable({ QuizName,ExamData,type }) {
                   <TableCell style={{fontSize:"10px"}} >{student.identificationCode}</TableCell>
                   <TableCell style={{fontSize:"11px"}} >{student.activityScore}</TableCell>
                   {
-                    type==="quiz"&&(
+                    (type==="quiz" || type ==="final_exam")&&(
                             <>
-                                <TableCell style={{fontSize:"11px"}} >{student.duration}</TableCell>
+                                {type==="quiz" &&( <TableCell style={{fontSize:"11px"}} >{student.duration}</TableCell> )}
+                                
 
                                 {student?.questions?.map((scoreInfo, index) => (
                                     <TableCell key={index} style={{fontSize:"11px"}} >

@@ -442,10 +442,33 @@ export default function StudentDetailView({ onBack }) {
 
   }
 
+  const handleCreateExam = async (mode,examInfo)=>{
+        try {
+
+            const response = await dispatch(createExam({ instructor_id:userId ,class_id:classId,type:mode,payload:examInfo }));
+
+            if (response.payload.success === true) {
+              toast.success(`Thêm thành công bài kiểm tra vào lớp`);
+              dispatch(clearStudentList());
+              await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: page + 1, amount, search }));
+            } else {
+              toast.error(`Thêm thất bại! Hãy thử lại sau`);
+            }
+
+
+          } catch {
+              toast.error(`Thêm thất bại! Hãy thử lại sau`);
+          } finally {
+            dispatch(fetchAllExam({
+              instructor_id:userId,
+              class_id:classId
+            }))
+          }
+  }
  //OPTION EXAM TABLE HERE
 
   const handleUpdateStudent = async () => {
-
+      
   }
 
   useEffect(() => {
@@ -914,6 +937,7 @@ export default function StudentDetailView({ onBack }) {
         students ={studentsInformation}
         open={isAddModalQuizOpen}
         onClose={() => setIsAddModalQuizOpen(false)}
+        handleCreateExam={handleCreateExam}
         mode="Quiz"
       />
 
@@ -922,6 +946,7 @@ export default function StudentDetailView({ onBack }) {
         open={isAddModalAssignmentOpen}
         onClose={() => setIsAddModalAssignmentOpen(false)}
         mode="Assignment"
+        handleCreateExam={handleCreateExam}
       />
 
       <AddQuizModal
@@ -929,6 +954,7 @@ export default function StudentDetailView({ onBack }) {
         open={isAddModalFinalOpen}
         onClose={() => setIsAddModalFinalOpen(false)}
         mode="Cuối Kỳ"
+        handleCreateExam={handleCreateExam}
       />
 
       <DetailExamModal
@@ -937,7 +963,7 @@ export default function StudentDetailView({ onBack }) {
         mode={ViewDetailExamType}
         StudentData={activities}
         ExamData={examInfo}
-        ExamUpdateData={ExamUpdateData}
+        
       >
       </DetailExamModal>
       

@@ -19,7 +19,7 @@ import { Close } from "@mui/icons-material";
 
 import ViewTable from "./ViewTable";
 
-export default function DetailExamModal({ open, onClose, onSave,mode,ExamUpdateData,StudentData,ExamData }) {
+export default function DetailExamModal({ open, onClose,mode,StudentData,ExamData }) {
  
 
   const ExamName = useMemo(()=>{

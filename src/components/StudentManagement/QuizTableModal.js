@@ -7,36 +7,26 @@ import {
   TableHead,
   TableRow,
   Typography,
-  TextField
+  TextField,
+  Box,
+  Button
 } from "@mui/material";
 
-
-import {
-  ActionButton,
-  Container,
-  Header,
-} from "@/components/Analytics/Styles/Styles";
 import {
   Add,
   FileDownload,
   Info,
 } from "@mui/icons-material";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
+
 import IconButton from '@mui/material/IconButton';
-import { TableWrapper } from "../Analytics/Styles/Styles";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Fragment, use } from "react";
+
 import { useEffect, useMemo, useState, useRef } from "react";
 
 const QuizTableModal = ({
   studentInfo,
-  mode
+  mode,
+  HandleSaveExam,
+  onClose
 }) => {
   const [quizName, setQuizName] = useState("");
    const [questions, setQuestions] = useState([]);
@@ -83,71 +73,7 @@ const QuizTableModal = ({
   };
 
   const handleSave = () => {
-      if(mode=="Quiz"){
-          const quizData = studentInfo.map((student) => {
-          const studentScores = scores[student.studentId] || {};
-          const questionsList = questions.map((q, index) => {
-            const rawScore = studentScores[q];
-            const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
-            return {
-              questionNumber: index + 1,
-              score: score,
-            };
-          });
-
-          
-          const quizScore = questionsList.reduce((acc, q) => acc + q.score, 0);
-
-            return {
-              studentId: student.studentId,
-              duration: Number(times[student.studentId]) || 0,
-              quizScore,
-              questions: questionsList,
-            };
-          });
-
-          const result = {
-            quizName: quizName,
-            quizData: quizData,
-          };
-
-          console.log("Kết quả:", result);
-          alert("Dữ liệu đã được lưu! Xem console log để kiểm tra.");
-      }
-      else if(mode=="Cuối Kỳ"){
-        const finalData = studentInfo.map((student) => {
-          const studentScores = scores[student.studentId] || {};
-          const questionsList = questions.map((q, index) => {
-            const rawScore = studentScores[q];
-            const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
-            return {
-              questionNumber: index + 1,
-              score: score,
-            };
-          });
-
-          
-          const finalExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
-
-            return {
-              studentId: student.studentId,
-              finalExamScore,
-              questions: questionsList,
-            };
-          });
-
-          const result = {
-            finalExamName: quizName,
-            finalExamData: finalData,
-          };
-
-          console.log("Kết quả:", result);
-          alert("Dữ liệu đã được lưu! Xem console log để kiểm tra.");
-      }
-        
-
-    
-  
+     HandleSaveExam(mode,studentInfo,scores,questions,times,quizName)
   };
 
   
@@ -157,13 +83,15 @@ const QuizTableModal = ({
 
       
         <div>
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Tên bài quiz:</Typography>
+          <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Tên bài {mode}:</Typography>
+
           <TextField 
           variant="outlined"
                       size="small"
-          placeholder="Nhập tên bài Quiz"
+          placeholder="Nhập tên bài"
           onChange={(e) => setQuizName(e.target.value)}
           />
+          
         </div>
 
 
@@ -177,7 +105,7 @@ const QuizTableModal = ({
        className="TableContainer"
        style={{
           
-          maxHeight: "350px",
+          maxHeight: "550px",
           overflow: "auto",
         }}
         
@@ -260,22 +188,32 @@ const QuizTableModal = ({
       </Table>
       </TableContainer>
       
+          
 
-      <button
-        onClick={handleSave}
-        style={{
-          marginTop: "20px",
-          padding: "10px 20px",
-          fontSize: "16px",
-          backgroundColor: "#4CAF50",
-          color: "white",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
-        💾 Lưu
-      </button>
+
+      <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            
+          }}
+        >
+          <Button variant="outlined" onClick={onClose} sx={{ width: "48%" }}>
+            ĐÓNG
+          </Button>
+          
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={()=>handleSave()}
+            sx={{ width: "48%" }}
+          >
+            LƯU
+          </Button>
+        </Box>
+
+
+      
     </div>
   );
 };
