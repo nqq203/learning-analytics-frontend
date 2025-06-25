@@ -1,97 +1,144 @@
-import React, { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  TextField,
-  Button,
-  Box,
-  IconButton,
-  Typography,
-  Tabs,
-  Tab,
-  Grid,
-  Divider,
-} from "@mui/material";
-import { Close } from "@mui/icons-material";
-import QuizTableModal from "./QuizTableModal";
-import ExamTableModal from "./ExamTableModal";
+  import React, { useState, useEffect } from "react";
+  import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    TextField,
+    Button,
+    Box,
+    IconButton,
+    Typography,
+    Tabs,
+    Tab,
+    Grid,
+    Divider,
+  } from "@mui/material";
+  import { Close } from "@mui/icons-material";
+  import QuizTableModal from "./QuizTableModal";
+  import AssignmentTableModal from "./AssignmentTableModal";
 
-const students = [
-  { MSSV: "ST001", name: "Nguyễn Văn A" },
-  { MSSV: "ST002", name: "Trần Thị B" },
-  { MSSV: "ST003", name: "Lê Văn C" },
-  { MSSV: "ST004", name: "Phạm Thị D" },
-  { MSSV: "ST005", name: "Hoàng Văn E" },
-  { MSSV: "ST006", name: "Đỗ Thị F" },
-  { MSSV: "ST007", name: "Vũ Văn G" },
-  { MSSV: "ST008", name: "Bùi Thị H" },
-  { MSSV: "ST009", name: "Đặng Văn I" },
-];
-
-export default function AddQuizModal({ open, onClose, onSave,mode }) {
+  export default function AddQuizModal({ open, onClose, onSave,mode,students,handleCreateExam }) {
     
+    const HandleSaveAssignment = (studentInfo,scores,quizName)=>{
+      const AssignmentData = studentInfo.map((student) => {
+                  const studentScores = scores[student.studentId] || {};
+                      return {
+                      studentId: student.studentId,
+                      assignmentScore: studentScores
+                      };
+            });
 
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
-      <DialogTitle
-        sx={{
-          
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          pb: 1,
-        }}
-      >
-        <Typography variant="h6" sx={{ fontWeight: "medium" }}>
-          Thêm {mode} Vào Lớp
-        </Typography>
-        <IconButton onClick={onClose} aria-label="close">
-          <Close />
-        </IconButton>
-      </DialogTitle>
+            const result = {
+              assignmentName: quizName,
+              assignmentData: AssignmentData,
+            };
 
-      <Divider />
+            
+            
+      handleCreateExam("assignment",result)
+    }
 
-      <DialogContent sx={{ p: 3 }}>
-        
+    const HandleSaveExam = (mode,studentInfo,scores,questions,times,quizName)=>{
+      if(mode=="Quiz"){
+            const quizData = studentInfo.map((student) => {
+            const studentScores = scores[student.studentId] || {};
+            const questionsList = questions.map((q, index) => {
+              const rawScore = studentScores[q];
+              const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
+              return {
+                questionNumber: index + 1,
+                score: score,
+              };
+            });
 
-            {mode=="Quiz"?
-            <div style={{paddingInline:"16px"}}>
-                  <QuizTableModal students={students}></QuizTableModal>
-            </div>
-          :  
+            
+            const quizScore = questionsList.reduce((acc, q) => acc + q.score, 0);
 
-          <div style={{paddingInline:"16px"}}>
-                  <ExamTableModal students={students} mode={mode}></ExamTableModal>
-            </div>
-          }
+              return {
+                studentId: student.studentId,
+                duration: Number(times[student.studentId]) || 0,
+                quizScore,
+                questions: questionsList,
+              };
+            });
+
+            const result = {
+              quizName: quizName,
+              quizData: quizData,
+            };
+
+            console.log("Kết quả:", result);
+            
+            handleCreateExam("quiz",result)
+        }
+        else if(mode=="Cuối Kỳ"){
+          const finalData = studentInfo.map((student) => {
+            const studentScores = scores[student.studentId] || {};
+            const questionsList = questions.map((q, index) => {
+              const rawScore = studentScores[q];
+              const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
+              return {
+                questionNumber: index + 1,
+                score: score,
+              };
+            });
+
+            
+            const finalExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
+
+              return {
+                studentId: student.studentId,
+                finalExamScore,
+                questions: questionsList,
+              };
+            });
+
+            const result = {
+              finalExamName: quizName,
+              finalExamData: finalData,
+            };
+
+            console.log("Kết quả:", result);
            
-        
+            handleCreateExam("final_exam",result)
+        }
+    }
 
-        
-
-        <Box
+    return (
+      <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
+        <DialogTitle
           sx={{
+            
             display: "flex",
             justifyContent: "space-between",
-            p: 2,
-            mt: 2,
+            alignItems: "center",
+            pb: 1,
           }}
         >
-          <Button variant="outlined" onClick={onClose} sx={{ width: "48%" }}>
-            ĐÓNG
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            // onClick={handleSave}
-            sx={{ width: "48%" }}
-          >
-            Lưu
-          </Button>
-        </Box>
-      </DialogContent>
-    </Dialog>
-  );
-}
+          <Typography variant="h6" sx={{ fontWeight: "medium" }}>
+            Thêm bài {mode} Vào Lớp
+          </Typography>
+          <IconButton onClick={onClose} aria-label="close">
+            <Close />
+          </IconButton>
+        </DialogTitle>
+
+        <Divider />
+
+        <DialogContent sx={{ p: 3 }}>
+          
+
+              
+              <div style={{paddingInline:"16px"}}>
+                    {mode ==="Assignment"?
+                    <AssignmentTableModal studentInfo={students} mode={mode} HandleSaveAssignment={HandleSaveAssignment} onClose={onClose} > </AssignmentTableModal>
+                    :
+                    <QuizTableModal studentInfo={students} mode={mode} HandleSaveExam={HandleSaveExam} onClose={onClose}></QuizTableModal>
+                  }
+                    
+              </div>
+            
+        </DialogContent>
+      </Dialog>
+    );
+  }
