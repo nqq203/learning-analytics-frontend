@@ -447,3 +447,32 @@ export const createExam = createAsyncThunk(
     }
 );
 
+export const updateExam = createAsyncThunk(
+    "data/updateExam",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.updateExam(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+
+export const deleteExam = createAsyncThunk(
+    "data/deleteExam",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.deleteExam(data);
+            console.log("Response original data: ", response.data)
+            console.log("Response original response: ", response)
+            return response.data;
+        } catch (err) {
+            console.log("payload: ",payload);
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
+

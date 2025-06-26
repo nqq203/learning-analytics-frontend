@@ -21,7 +21,7 @@
     
     const HandleSaveAssignment = (studentInfo,scores,quizName)=>{
       const AssignmentData = studentInfo.map((student) => {
-                  const studentScores = scores[student.studentId] || {};
+                  const studentScores = scores[student.studentId] || 0;
                       return {
                       studentId: student.studentId,
                       assignmentScore: studentScores
@@ -36,6 +36,7 @@
             
             
       handleCreateExam("assignment",result)
+      onClose();
     }
 
     const HandleSaveExam = (mode,studentInfo,scores,questions,times,quizName)=>{
@@ -70,6 +71,7 @@
             console.log("Kết quả:", result);
             
             handleCreateExam("quiz",result)
+            onClose();
         }
         else if(mode=="Cuối Kỳ"){
           const finalData = studentInfo.map((student) => {
@@ -101,6 +103,7 @@
             console.log("Kết quả:", result);
            
             handleCreateExam("final_exam",result)
+            onClose();
         }
     }
 

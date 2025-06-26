@@ -7,10 +7,10 @@ import {
   TableHead,
   TableRow,
   Typography,
-  TextField
+  TextField,
+  Box,
+  Button
 } from "@mui/material";
-
-
 
 import {
   Add,
@@ -22,52 +22,100 @@ import IconButton from '@mui/material/IconButton';
 
 import { useEffect, useMemo, useState, useRef } from "react";
 
+const UpdateExamTable = ({
+  studentInfo,
+  mode,
+  HandleSaveExam,
+  onClose,
+  examData
+}) => {
+    useEffect(()=>{
+      console.log("examData: ",examData)
+      console.log("studentInfo: ",studentInfo)
 
-export default function UpdateExamTable({ data,QuizName }) {
-  const [questions, setQuestions] = useState([]);
-  const [scores, setScores] = useState({});
-  const [times, setTimes] = useState({});
+    },[studentInfo,examData])
 
-  // Khởi tạo dữ liệu ban đầu từ props
-  useEffect(() => {
-    if (data && data.length > 0) {
-      // Tổng hợp tất cả câu hỏi xuất hiện trong data
-      const allQuestions = new Set();
-      const newScores = {};
-      const newTimes = {};
+   
+    const [scores, setScores] = useState({});
+    const [questions, setQuestions] = useState([]);
+    const [times, setTimes] = useState({});
+    const [quizName, setQuizName] = useState();
 
-      data.forEach((student) => {
-        newTimes[student.MSSV] = student.time || "";
-        newScores[student.MSSV] = student.scores || {};
+    useEffect(()=>{
+      if(examData) setQuizName(mode=="quiz"? examData.quizName : examData.finalExamName)
+    },[examData])
 
-        Object.keys(student.scores || {}).forEach((q) =>
-          allQuestions.add(q)
-        );
-      });
+    useEffect(()=>{
+      if(mode=="quiz"){
+        studentInfo.map((item)=>{
+          setTimes((prev) => ({
+            ...prev,
+            [item.studentId]: item.duration,
+          }));
+        })
 
-      setQuestions(Array.from(allQuestions));
-      setScores(newScores);
-      setTimes(newTimes);
-    }
-  }, [data]);
+        if (studentInfo[0]?.questions) {
+          const newQuestions = studentInfo[0].questions.map((item, index) => `Câu ${index + 1}`);
+          setQuestions(newQuestions);
+        }
+
+        studentInfo?.map((student)=>{
+            student.questions.map((q,index)=>{
+                const questionIntial = `Câu ${index + 1}`;
+                setScores((prev) => ({
+                  ...prev,
+                  [student.studentId]: {
+                    ...prev[student.studentId],
+                    [questionIntial]: q.score,
+                  },
+                }));
+            })
+        })
+
+      }
+      else{
+        if (studentInfo[0]?.questions) {
+          const newQuestions = studentInfo[0].questions.map((item, index) => `Câu ${index + 1}`);
+          setQuestions(newQuestions);
+        }
+
+
+        studentInfo?.map((student)=>{
+            student.questions.map((q,index)=>{
+                const questionIntial = `Câu ${index + 1}`;
+                setScores((prev) => ({
+                  ...prev,
+                  [student.studentId]: {
+                    ...prev[student.studentId],
+                    [questionIntial]: q.score,
+                  },
+                }));
+            })
+        })
+
+      }
+    },[studentInfo])
+    
 
   const handleAddQuestion = () => {
     const newQuestion = `Câu ${questions.length + 1}`;
-    setQuestions((prev) => [...prev, newQuestion]);
+    setQuestions([...questions, newQuestion]);
   };
 
   const handleDeleteQuestion = (questionToDelete) => {
     if (!window.confirm(`Bạn có chắc chắn muốn xoá "${questionToDelete}"?`)) return;
 
+    // Xoá khỏi danh sách câu hỏi
     setQuestions((prev) => prev.filter((q) => q !== questionToDelete));
 
+    // Xoá điểm của câu hỏi đó trong từng sinh viên
     setScores((prev) => {
-      const updated = {};
+      const updatedScores = {};
       for (const mssv in prev) {
-        const { [questionToDelete]: _, ...rest } = prev[mssv] || {};
-        updated[mssv] = rest;
+        const { [questionToDelete]: _, ...restScores } = prev[mssv] || {};
+        updatedScores[mssv] = restScores;
       }
-      return updated;
+      return updatedScores;
     });
   };
 
@@ -89,138 +137,150 @@ export default function UpdateExamTable({ data,QuizName }) {
   };
 
   const handleSave = () => {
-    const result = data.map((student) => ({
-      MSSV: student.MSSV,
-      name: student.name,
-      time: times[student.MSSV] || "",
-      scores: scores[student.MSSV] || {},
-    }));
-    console.log("Kết quả:", result);
-    alert("Dữ liệu đã được lưu! Kiểm tra console log.");
+     HandleSaveExam(mode,studentInfo,scores,questions,times,quizName)
   };
 
+  
+
   return (
-    <div style={{display:"flex",flexDirection:"column",gap:"1rem"}}>
-    
-             <div>
-                      <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Tên bài kiểm tra:</Typography>
-                      <TextField 
-                      variant="outlined"
-                      value={QuizName}
+    <div style={{display:"flex",flexDirection:"column",gap:"1rem", fontFamily: "Arial" }}>
+
+      
+        <div>
+          <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Tên bài {mode}:</Typography>
+
+          <TextField 
+          variant="outlined"
                       size="small"
-                      placeholder="Nhập tên"/>
-            </div>
-    
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Điểm học sinh:</Typography>
-    
-          {/* <button onClick={handleAddQuestion}>➕ Thêm câu hỏi</button> */}
-            <TableContainer
-            component={Paper}
-                   className="TableContainer"
-                   style={{
-                      
-                      maxHeight: "350px",
-                      overflow: "auto",
-                    }}
+          placeholder="Nhập tên bài"
+          value={quizName}
+          onChange={(e) => setQuizName(e.target.value)}
+          />
+          
+        </div>
+
+
+        
+     
+
+      
+      <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Nhập điểm cho học sinh:</Typography>
+      <TableContainer
+       component={Paper}
+       className="TableContainer"
+       style={{
+          
+          maxHeight: "550px",
+          overflow: "auto",
+        }}
+        
+      >
+        <Table stickyHeader>
+        <TableHead>
+          <TableRow>
+            <TableCell style={{fontWeight:"bold",fontSize:"12px"}} >MSSV</TableCell>
+            {mode==="quiz" &&( <TableCell style={{fontWeight:"bold",fontSize:"12px"}} >Thời gian làm bài</TableCell> )}
             
-            >
-          <Table stickyHeader
-           
-          >
-            <TableHead>
-              <TableRow>
-                <TableCell>MSSV</TableCell>
-                <TableCell>Họ tên</TableCell>
-                <TableCell>Thời gian làm bài</TableCell>
-                {questions.map((q, index) => (
-                  <TableCell key={index}>
-                    {q}
-                    <button
-                      onClick={() => handleDeleteQuestion(q)}
-                      style={{
-                        marginLeft: "6px",
-                        color: "white",
-                        backgroundColor: "red",
-                        border: "none",
-                        borderRadius: "50%",
-                        width: "20px",
-                        height: "20px",
-                        cursor: "pointer",
-                      }}
-                      title={`Xoá ${q}`}
-                    >
-                      ×
-                    </button>
-                  </TableCell>
-                ))}
-    
-                <TableCell>
-                              <IconButton onClick={handleAddQuestion}>
-                                        <Add color="primary" alt="Thêm câu hỏi"/>
-                              </IconButton>
-                              
-                            </TableCell>
-    
-    
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.map((student) => (
-                <TableRow key={student.MSSV}>
-                  <TableCell>{student.MSSV}</TableCell>
-                  <TableCell>{student.name}</TableCell>
-                  <TableCell>
-                    <input
-                      type="text"
-                      style={{border:"none",width:"50%"}}
-                      placeholder="Nhập thời gian"
-                      value={times[student.MSSV] || ""}
-                      onChange={(e) =>
-                        handleTimeChange(student.MSSV, e.target.value)
-                      }
-                    />
-                  </TableCell>
-                  {questions.map((q, index) => (
-                    <TableCell key={index}>
+            {questions.map((q, index) => (
+              <TableCell key={index} style={{fontWeight:"bold",fontSize:"12px"}} >
+                {q}
+                <button
+                  onClick={() => handleDeleteQuestion(q)}
+                  style={{
+                    marginLeft: "6px",
+                    color: "white",
+                    backgroundColor: "red",
+                    border: "none",
+                    borderRadius: "50%",
+                    width: "20px",
+                    height: "20px",
+                    cursor: "pointer",
+                  }}
+                  title={`Xoá ${q}`}
+                >
+                  ×
+                </button>
+              </TableCell>
+            ))}
+
+            <TableCell style={{fontWeight:"bold",fontSize:"12px"}}>
+              <IconButton onClick={handleAddQuestion}>
+                        <Add color="primary" alt="Thêm câu hỏi"/>
+              </IconButton>
+             
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {studentInfo?.map((student) => (
+            <TableRow key={student.studentId}>
+              <TableCell style={{fontSize:"10px"}} >{student.identificationCode}</TableCell>
+              {mode==="quiz" &&(
+                  <TableCell style={{fontSize:"10px"}} >
                       <input
-                        type="number"
-                        min="0"
-                        max="10"
-                        placeholder="Nhập điểm"
-                        style={{border:"none",width:"100%"}}
-                        value={scores[student.MSSV]?.[q] || ""}
+                        type="text"
+                        style={{border:"none",width:"50%"}}
+                        placeholder="Nhập thời gian"
+                        value={times[student.studentId] || ""}
                         onChange={(e) =>
-                          handleScoreChange(student.MSSV, q, e.target.value)
+                          handleTimeChange(student.studentId, e.target.value)
                         }
                       />
-                    </TableCell>
-                  ))}
+              </TableCell>
 
-                  <TableCell></TableCell>
-
-                  
-                </TableRow>
+              )}
+              
+              
+              {questions.map((q, index) => (
+                <TableCell key={index} style={{fontSize:"10px"}} >
+                  <input
+                    type="number"
+                    min="0"
+                    max="10"
+                    placeholder="Nhập điểm"
+                    style={{border:"none",width:"100%"}}
+                    value={scores[student.studentId]?.[q] || ""}
+                    onChange={(e) =>
+                      handleScoreChange(student.studentId, q, e.target.value)
+                    }
+                  />
+                </TableCell>
               ))}
-            </TableBody>
-    
-          </Table>
-              </TableContainer>
-          {/* <button
-            onClick={handleSave}
-            style={{
-              marginTop: "20px",
-              padding: "10px 20px",
-              fontSize: "16px",
-              backgroundColor: "#4CAF50",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-            }}
+              <TableCell style={{fontSize:"10px"}} ></TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      </TableContainer>
+      
+          
+
+
+      <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            
+          }}
+        >
+          <Button variant="outlined" onClick={onClose} sx={{ width: "48%" }}>
+            ĐÓNG
+          </Button>
+          
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={()=>handleSave()}
+            sx={{ width: "48%" }}
           >
-            💾 Lưu
-          </button> */}
-        </div>
+            LƯU
+          </Button>
+        </Box>
+
+
+      
+    </div>
   );
-}
+};
 
-
+export default UpdateExamTable;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import {
   Dialog,
@@ -15,24 +15,103 @@ import {
   Divider,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
+import UpdateAssignTableModal from "./UpdateAssignTableModal";
 import UpdateExamTable from "./UpdateExamTable";
-import ExamTableModal from "../ExamTableModal";
-const students = [
-  { MSSV: "ST001", name: "Nguyễn Văn A" },
-  { MSSV: "ST002", name: "Trần Thị B" },
-  { MSSV: "ST003", name: "Lê Văn C" },
-  { MSSV: "ST004", name: "Phạm Thị D" },
-  { MSSV: "ST005", name: "Hoàng Văn E" },
-  { MSSV: "ST006", name: "Đỗ Thị F" },
-  { MSSV: "ST007", name: "Vũ Văn G" },
-  { MSSV: "ST008", name: "Bùi Thị H" },
-  { MSSV: "ST009", name: "Đặng Văn I" },
-];
+export default function EditExamModal({ open, onClose,mode,StudentData,ExamData }) {
 
-export default function EditExamModal({ open, onClose, onSave,mode,ExamUpdateData }) {
+  const HandleSaveAssignment = (studentInfo,scores,quizName)=>{
+      const AssignmentData = studentInfo.map((student) => {
+                  const studentScores = scores[student.studentId] || {};
+                      return {
+                      activityId: student.activityId,
+                      assignmentScore: studentScores
+                      };
+            });
+
+            const result = {
+              assignmentName: quizName,
+              assignmentData: AssignmentData,
+            };
+
+            
+            console.log("result ne: ",result)
+      // handleCreateExam("assignment",result)
+    }
+
+    const HandleSaveExam = (mode,studentInfo,scores,questions,times,quizName)=>{
+      if(mode=="Quiz"){
+            const quizData = studentInfo.map((student) => {
+            const studentScores = scores[student.studentId] || {};
+            const questionsList = questions.map((q, index) => {
+              const rawScore = studentScores[q];
+              const score = Number(rawScore) || 0; 
+              return {
+                questionNumber: index + 1,
+                score: score,
+              };
+            });
+
+            
+            const quizScore = questionsList.reduce((acc, q) => acc + q.score, 0);
+
+              return {
+                studentId: student.studentId,
+                duration: Number(times[student.studentId]) || 0,
+                quizScore,
+                questions: questionsList,
+              };
+            });
+
+            const result = {
+              quizName: quizName,
+              quizData: quizData,
+            };
+
+            console.log("Kết quả:", result);
+            
+            // handleCreateExam("quiz",result)
+        }
+        else if(mode=="Cuối Kỳ"){
+          const finalData = studentInfo.map((student) => {
+            const studentScores = scores[student.studentId] || {};
+            const questionsList = questions.map((q, index) => {
+              const rawScore = studentScores[q];
+              const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
+              return {
+                questionNumber: index + 1,
+                score: score,
+              };
+            });
+
+            
+            const finalExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
+
+              return {
+                studentId: student.studentId,
+                finalExamScore,
+                questions: questionsList,
+              };
+            });
+
+            const result = {
+              finalExamName: quizName,
+              finalExamData: finalData,
+            };
+
+            console.log("Kết quả:", result);
+           
+            // handleCreateExam("final_exam",result)
+        }
+    }
 
 
-    
+  const ExamName = useMemo(()=>{
+    if(mode=="quiz")              return ExamData?.quizName;
+      else if(mode=="assignment")   return ExamData?.assignmentName;
+        else if(mode=="final_exam")   return ExamData?.finalExamName;
+    return ""
+  },[mode])
+
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
@@ -57,44 +136,29 @@ export default function EditExamModal({ open, onClose, onSave,mode,ExamUpdateDat
 
       <DialogContent sx={{ p: 3 }}>
         
-           <div style={{paddingInline:"16px"}}>
-                  <UpdateExamTable data={ExamUpdateData.info} Quizame={ExamUpdateData.name}></UpdateExamTable>
-            </div>
-            {/* {mode=="Quiz"?
-            <div style={{paddingInline:"16px"}}>
-                  <UpdateExamTable data={ExamUpdateData.info} Quizame={ExamUpdateData.name}></UpdateExamTable>
-            </div>
-          :  
-
           <div style={{paddingInline:"16px"}}>
-                  <ExamTableModal students={students} mode={mode}></ExamTableModal>
-            </div>
-          } */}
-           
-        
-
-        
-
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            p: 2,
-            mt: 2,
-          }}
-        >
-          <Button variant="outlined" onClick={onClose} sx={{ width: "48%" }}>
-            ĐÓNG
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            // onClick={handleSave}
-            sx={{ width: "48%" }}
-          >
-            Lưu
-          </Button>
-        </Box>
+                    {mode ==="assignment"?
+                    <UpdateAssignTableModal 
+                      studentInfo={StudentData} 
+                      mode={mode} 
+                      HandleSaveAssignment={HandleSaveAssignment} 
+                      onClose={onClose}
+                      
+                      examData={ExamData}
+                      > </UpdateAssignTableModal>
+                    :
+                    <UpdateExamTable 
+                      studentInfo={StudentData} 
+                      examData={ExamData}
+                      mode={mode} 
+                      HandleSaveExam={HandleSaveExam} 
+                      onClose={onClose}
+                      
+                    ></UpdateExamTable>
+                  }
+                    
+              </div>
+            
       </DialogContent>
     </Dialog>
   );

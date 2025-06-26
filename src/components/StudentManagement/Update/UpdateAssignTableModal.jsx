@@ -11,21 +11,36 @@ import {
   Box,
   Button
 } from "@mui/material";
-import { toast } from "react-toastify";
+
 import { useEffect, useMemo, useState, useRef } from "react";
 
-const AssignmentTableModal = ({
+const UpdateAssignTableModal = ({
   studentInfo,
   mode,
   HandleSaveAssignment,
-  onClose
+  onClose,
+  examData
 }) => {
-  const [quizName, setQuizName] = useState("");
-   const [questions, setQuestions] = useState([]);
-  const [scores, setScores] = useState({});
-  const [times, setTimes] = useState({});
 
-  
+    const [questions, setQuestions] = useState([]);
+    const [scores, setScores] = useState({});
+    const [times, setTimes] = useState({});
+    const [quizName, setQuizName] = useState(examData.assignmentName);
+    useEffect(()=>{
+      setQuizName(examData.assignmentName)
+    },[examData])
+    
+    useEffect(()=>{
+      studentInfo.map((item)=>{
+        setScores((prev) => ({
+        ...prev,
+        [item.studentId]: parseFloat(item.activityScore) || 0, // chuyển thành số, fallback về 0 nếu không hợp lệ
+        }));
+      })
+      
+    },[studentInfo])
+
+
   const handleScoreChange = (mssv, value) => {
     setScores((prev) => ({
         ...prev,
@@ -33,17 +48,10 @@ const AssignmentTableModal = ({
         }));
   };
 
- 
 
   const handleSave = () => {
-        if(quizName.trim() === "" || Object.keys(scores).length === 0) {
-          toast.error(`Vui lòng nhập tên assignment và điểm của Assignment`);
-        }
-        else  {
-          HandleSaveAssignment(studentInfo,scores,quizName)
-        }
+        HandleSaveAssignment(studentInfo,scores,quizName)
   };
-
   
 
   return (
@@ -56,6 +64,7 @@ const AssignmentTableModal = ({
           variant="outlined"
                       size="small"
           placeholder="Nhập tên bài"
+          value={quizName}
           onChange={(e) => setQuizName(e.target.value)}
           />
         </div>
@@ -141,4 +150,4 @@ const AssignmentTableModal = ({
   );
 };
 
-export default AssignmentTableModal;
+export default UpdateAssignTableModal;

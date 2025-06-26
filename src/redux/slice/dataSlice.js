@@ -35,7 +35,9 @@ import {
     fetchAllExam,
     
     fetchExamDetail,
-    createExam
+    createExam,
+    updateExam,
+    deleteExam
 } from "../thunk/dataThunk";
 
 const initialState = {
@@ -789,6 +791,46 @@ const dataSlice = createSlice({
                 state.success = action.payload.success;
             })
             .addCase(createExam.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+
+
+            .addCase(deleteExam.pending, (state, action) => {
+                state.loading = true;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(deleteExam.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+                
+            })
+            .addCase(deleteExam.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+
+            .addCase(updateExam.pending, (state, action) => {
+                state.loading = true;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(updateExam.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload.message;
+                state.code = action.payload.code;
+                state.success = action.payload.success;
+            })
+            .addCase(updateExam.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action?.payload?.error || action?.error?.message;
                 state.message = action?.payload?.message || action?.message || action?.payload;

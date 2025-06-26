@@ -29,6 +29,7 @@ export default function DetailExamModal({ open, onClose,mode,StudentData,ExamDat
     
   },[ExamData])
 
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
       <DialogTitle
@@ -41,7 +42,7 @@ export default function DetailExamModal({ open, onClose,mode,StudentData,ExamDat
         }}
       >
         <Typography variant="h6" sx={{ fontWeight: "medium" }}>
-          Sửa {mode} 
+          Xem chi tiết bài {mode} 
         </Typography>
         <IconButton onClick={onClose} aria-label="close">
           <Close />
@@ -50,7 +51,7 @@ export default function DetailExamModal({ open, onClose,mode,StudentData,ExamDat
 
       <Divider />
 
-      <DialogContent sx={{ p: 3 }}>s
+      <DialogContent sx={{ p: 3 }}>
         
            <div style={{paddingInline:"16px"}}>
                   <ViewTable QuizName={ExamName} ExamData={StudentData} type={mode}></ViewTable>
