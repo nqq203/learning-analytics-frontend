@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect, Fragment, useMemo } from "react";
 import {
   Container,
   ActionButton,
@@ -15,6 +15,7 @@ import {
   MenuItem,
   Grid,
   TextField,
+  CircularProgress,
 } from "@mui/material";
 import AnalyticConfig from "@/components/Analytics/Config/AnalyticConfig";
 import { PieChartAnalytics } from "@/components/Analytics/Charts/PieChart";
@@ -30,6 +31,8 @@ import {
   fetchStudentsDetails,
 } from "@/redux/thunk/analyticsThunk";
 import { useRouter } from "next/router";
+import { jwtDecode } from "jwt-decode";
+import { fetchClassDetail } from "@/redux/thunk/dataThunk";
 
 const StudentAnalytics = () => {
   const router = useRouter();
@@ -44,7 +47,29 @@ const StudentAnalytics = () => {
   const { classId } = router.query;
   const [data, setData] = useState([]);
   const [className, setClassName] = useState("");
-  const [subjectName, setSubjectName] = useState("");
+  const [courseName, setCourseName] = useState("");
+  const { accessToken } = useSelector((state) => state.auth);
+  const { _class } = useSelector((state) => state.data);
+
+  const userId = useMemo(() => {
+    if (!accessToken) return null;
+    try {
+      const { sub } = jwtDecode(accessToken);
+      return sub;
+    } catch {
+      return null;
+    }
+  }, [accessToken]);
+
+  useEffect(() => {
+    dispatch(fetchClassDetail({ instructorId: userId, classId: classId }));
+  }, [userId]);
+
+  useEffect(() => {
+    if (!_class) return;
+    setClassName(_class?.className);
+    setCourseName(_class?.courseName);
+  }, [_class]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -214,7 +239,7 @@ const StudentAnalytics = () => {
           <TextField
             variant="outlined"
             label="Môn học"
-            value={"Cở sở dữ liệu"}
+            value={courseName || <CircularProgress />}
             style={{ width: "20%", minWidth: 250 }}
             size="small"
             disabled
@@ -222,7 +247,7 @@ const StudentAnalytics = () => {
           <TextField
             variant="outlined"
             label="Lớp"
-            value={"21CLC05"}
+            value={className || <CircularProgress />}
             style={{ width: "20%", minWidth: 250 }}
             size="small"
             disabled
