@@ -5,34 +5,56 @@ import {
   Typography,
   useTheme,
   Box,
+  Paper,
+  Chip,
 } from "@mui/material";
 import SchoolIcon from "@mui/icons-material/School";
 import ClassIcon from "@mui/icons-material/Class";
 import PeopleIcon from "@mui/icons-material/People";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import { grey } from "@mui/material/colors";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 
 const cardData = [
   {
-    title: "Số lượng môn",
+    title: "Academic Subjects",
+    subtitle: "Total Courses",
     valueKey: "subjects",
-    icon: <SchoolIcon fontSize="small" />,
+    icon: <SchoolIcon fontSize="medium" />,
+    color: "#3b82f6",
+    bgColor: "#dbeafe",
+    trend: "+12%",
+    trendUp: true,
   },
   {
-    title: "Số lớp",
+    title: "Class Sections",
+    subtitle: "Active Classes",
     valueKey: "classes",
-    icon: <ClassIcon fontSize="small" />,
+    icon: <ClassIcon fontSize="medium" />,
+    color: "#10b981",
+    bgColor: "#d1fae5",
+    trend: "+8%",
+    trendUp: true,
   },
   {
-    title: "Số sinh viên",
+    title: "Student Population",
+    subtitle: "Enrolled Students",
     valueKey: "students",
-    icon: <PeopleIcon fontSize="small" />,
+    icon: <PeopleIcon fontSize="medium" />,
+    color: "#8b5cf6",
+    bgColor: "#ede9fe",
+    trend: "+15%",
+    trendUp: true,
   },
   {
-    title: "Tỉ lệ SV có nguy cơ rớt",
+    title: "Risk Assessment",
+    subtitle: "At-Risk Students",
     valueKey: "dropoutRate",
     isPercentage: true,
-    icon: <WarningAmberIcon fontSize="small" />,
+    icon: <WarningAmberIcon fontSize="medium" />,
+    color: "#f59e0b",
+    bgColor: "#fef3c7",
+    trend: "-5%",
+    trendUp: false,
   },
 ];
 
@@ -41,51 +63,127 @@ export function DashboardCards({ data }) {
   return (
     <Grid container spacing={3}>
       {cardData.map((item, index) => (
-        <Grid item xs={12} sm={6} md={3} key={index}>
-          <Card
+        <Grid item xs={12} sm={6} lg={3} key={index}>
+          <Paper
+            elevation={0}
             sx={{
               height: "100%",
-              border: "1px solid",
-              borderColor: "#bbdefb",
-              borderRadius: 2,
-              boxShadow: "none",
-              transition: "box-shadow 0.3s ease",
+              border: "1px solid #e2e8f0",
+              borderRadius: 3,
+              background: "white",
+              transition: "all 0.3s ease",
+              position: "relative",
+              overflow: "hidden",
               "&:hover": {
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                transform: "translateY(-4px)",
+                "& .card-icon": {
+                  transform: "scale(1.1)",
+                },
+              },
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: "4px",
+                background: `linear-gradient(90deg, ${item.color} 0%, ${item.color}80 100%)`,
               },
             }}
           >
             <CardContent sx={{ p: 3, position: "relative" }}>
               <Box
+                className="card-icon"
                 sx={{
                   position: "absolute",
-                  top: 12,
-                  right: 12,
-                  color: theme.palette.primary.main,
+                  top: 16,
+                  right: 16,
+                  width: 48,
+                  height: 48,
+                  borderRadius: 2,
+                  background: item.bgColor,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: item.color,
+                  transition: "all 0.3s ease",
                 }}
               >
                 {item.icon}
               </Box>
 
-              {/* Title */}
-              <Typography
-                variant="subtitle1"
-                fontWeight={600}
-                sx={{ color: grey[700] }}
-              >
-                {item.title}
-              </Typography>
+              <Box sx={{ pr: 6 }}>
+                <Typography
+                  variant="h6"
+                  fontWeight="600"
+                  sx={{ 
+                    color: "#1e293b",
+                    mb: 0.5,
+                    fontSize: "1rem"
+                  }}
+                >
+                  {item.title}
+                </Typography>
 
-              {/* Value */}
-              <Typography variant="h4" sx={{ mt: 1, color: "#000" }}>
-                {data?.[item.valueKey] !== undefined
-                  ? item.isPercentage
-                    ? `${data[item.valueKey]}%`
-                    : data[item.valueKey]
-                  : "--"}
-              </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ 
+                    color: "#64748b",
+                    mb: 2,
+                    fontSize: "0.875rem"
+                  }}
+                >
+                  {item.subtitle}
+                </Typography>
+
+                <Typography 
+                  variant="h3" 
+                  fontWeight="700"
+                  sx={{ 
+                    color: "#0f172a",
+                    mb: 1,
+                    fontSize: { xs: "1.8rem", md: "2.2rem" },
+                    letterSpacing: "-0.02em"
+                  }}
+                >
+                  {data?.[item.valueKey] !== undefined
+                    ? item.isPercentage
+                      ? `${data[item.valueKey]}%`
+                      : data[item.valueKey].toLocaleString()
+                    : "--"}
+                </Typography>
+
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Chip
+                    icon={<TrendingUpIcon sx={{ fontSize: "1rem" }} />}
+                    label={item.trend}
+                    size="small"
+                    sx={{
+                      bgcolor: item.trendUp ? "#dcfce7" : "#fee2e2",
+                      color: item.trendUp ? "#166534" : "#dc2626",
+                      fontWeight: 500,
+                      fontSize: "0.75rem",
+                      height: "24px",
+                      "& .MuiChip-icon": {
+                        color: "inherit",
+                        fontSize: "1rem",
+                      },
+                    }}
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ 
+                      color: "#64748b",
+                      fontSize: "0.75rem"
+                    }}
+                  >
+                    vs last month
+                  </Typography>
+                </Box>
+              </Box>
             </CardContent>
-          </Card>
+          </Paper>
         </Grid>
       ))}
     </Grid>
