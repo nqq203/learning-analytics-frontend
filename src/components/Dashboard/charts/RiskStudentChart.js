@@ -1,4 +1,13 @@
-import { Box, Card, CardContent, Typography, useTheme } from "@mui/material";
+import { 
+  Box, 
+  Card, 
+  CardContent, 
+  Typography, 
+  useTheme,
+  Paper,
+  Divider,
+  Chip,
+} from "@mui/material";
 import {
   BarChart as RechartsBarChart,
   Bar,
@@ -9,13 +18,55 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
+import WarningIcon from "@mui/icons-material/Warning";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const CustomBarChartYAxisLabel = ({ x, y, payload }) => {
   return (
-    <text x={x} y={y} dy={4} textAnchor="end" fill="#666">
+    <text x={x} y={y} dy={4} textAnchor="end" fill="#64748b" fontSize="12">
       {payload?.value ?? ""}
     </text>
   );
+};
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <Paper
+        elevation={3}
+        sx={{
+          p: 2,
+          border: "1px solid #e2e8f0",
+          borderRadius: 2,
+          background: "white",
+        }}
+      >
+        <Typography variant="subtitle2" fontWeight="600" color="#1e293b">
+          Môn học: {label}
+        </Typography>
+        <Divider sx={{ my: 1 }} />
+        {payload.map((entry, index) => (
+          <Box key={index} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
+            <Box
+              sx={{
+                width: 12,
+                height: 12,
+                borderRadius: "50%",
+                bgcolor: entry.color,
+              }}
+            />
+            <Typography variant="body2" color="#64748b">
+              {entry.name}:
+            </Typography>
+            <Typography variant="body2" fontWeight="600" color="#0f172a">
+              {entry.value} học sinh
+            </Typography>
+          </Box>
+        ))}
+      </Paper>
+    );
+  }
+  return null;
 };
 
 export function RiskStudentChart({ data = [] }) {
@@ -35,102 +86,138 @@ export function RiskStudentChart({ data = [] }) {
   const maxValue = Math.ceil(maxDataValue / 10) * 10;
 
   return (
-    <Card
-      sx={{
-        height: "100%",
-        border: "1px solid",
-        borderColor: "#bbdefb",
-        borderRadius: 2,
-        boxShadow: "none",
-      }}
-    >
-      <CardContent sx={{ p: 3 }}>
-        {/* Title */}
-        <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 1 }}>
-          <EqualizerIcon color="primary" />
-          <Typography variant="h6" fontWeight="bold">
+    <Box sx={{ height: "100%" }}>
+      {/* Header */}
+      <Box sx={{ mb: 3 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+          <Box
+            sx={{
+              width: 40,
+              height: 40,
+              borderRadius: 2,
+              background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+            }}
+          >
+            <EqualizerIcon />
+          </Box>
+          <Box>
+            <Typography variant="h6" fontWeight="700" color="#1e293b">
             Phân tích khả năng đạt và rớt của học sinh
-          </Typography>
+            </Typography>
+            <Typography variant="body2" color="#64748b">
+            So sánh số lượng học sinh có nguy cơ trượt và có khả năng đạt giữa các môn học.
+            </Typography>
+          </Box>
         </Box>
-        <Typography variant="body2" color="text.secondary">
-          So sánh số lượng học sinh có nguy cơ trượt và học sinh có khả năng đạt
-          giữa các môn học.
-        </Typography>
+      </Box>
 
-        {/* Chart */}
-        <Box sx={{ height: 300 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <RechartsBarChart
-              data={formattedData}
-              margin={{ top: 30, right: 30, left: 20, bottom: 25 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="name"
-                label={{
-                  position: "insideBottomRight",
-                  offset: -10,
-                  style: { fill: "#666" },
-                }}
-                tick={{ fill: "#666" }}
-              />
-              <YAxis
-                domain={[0, maxValue]}
-                ticks={Array.from(
-                  { length: maxValue / 10 + 1 },
-                  (_, i) => i * 10
-                )}
-                tick={CustomBarChartYAxisLabel}
-                axisLine={{ stroke: "#666" }}
-                tickLine={{ stroke: "#666" }}
-              />
-              <Tooltip contentStyle={{ borderRadius: 8 }} />
-              <Bar
-                dataKey="students"
-                name="Sinh viên có khả năng đạt"
-                fill="#93C5FD"
-                barSize={20}
-              />
-              <Bar
-                dataKey="atRisk"
-                name="Sinh viên có nguy cơ rớt"
-                fill="#1E3A8A"
-                barSize={20}
-              />
-            </RechartsBarChart>
-          </ResponsiveContainer>
-        </Box>
+      {/* Chart */}
+      <Box sx={{ height: 320, mb: 3, position: "relative"}}>
+      <Typography
+    variant="subtitle2"
+    sx={{
+      position: "absolute",
+      top: -8,    
+      left: 10,    
+      fontSize: 12,
+      color: "#64748b",
+      zIndex: 1,
+      fontWeight: "bold",
+    }}
+  >
+    Số lượng sinh viên
+  </Typography>
+        <ResponsiveContainer width="100%" height="100%">
+          <RechartsBarChart
+            data={formattedData}
+            margin={{ top: 35, right: 30, left: 20, bottom: 25 }}
+          >
+            <CartesianGrid 
+              strokeDasharray="3 3" 
+              stroke="#e2e8f0"
+              opacity={0.6}
+            />
+            <XAxis
+              dataKey="name"
+              label={{
+                value: "Môn học",
+                position: "insideBottomRight",
+                offset: -2,
+                style: { fill: "#64748b", fontSize: 12, fontWeight: "bold" },
+              }}
+              tick={false}
+              axisLine={{ stroke: "#e2e8f0" }}
+              tickLine={{ stroke: "#e2e8f0" }}
+            />
 
-        {/* Legend */}
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 4,
-            mt: 2,
-            justifyContent: "center",
-          }}
-        >
-          <LegendItem color="#93C5FD" label="Sinh viên có khả năng đạt" />
-          <LegendItem color="#1E3A8A" label="Sinh viên có nguy cơ rớt" />
-        </Box>
-      </CardContent>
-    </Card>
-  );
-}
+            
+            <YAxis
+              domain={[0, maxValue]}
+              ticks={Array.from(
+                { length: maxValue / 10 + 1 },
+                (_, i) => i * 10
+              )}
+              tick={CustomBarChartYAxisLabel}
+              axisLine={{ stroke: "#e2e8f0" }}
+              tickLine={{ stroke: "#e2e8f0" }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar
+              dataKey="students"
+              name="Sinh viên có khả năng đạt"
+              fill="#10b981"
+              barSize={24}
+              radius={[4, 4, 0, 0]}
+            />
+            <Bar
+              dataKey="atRisk"
+              name="Sinh viên có nguy cơ rớt"
+              fill="#ef4444"
+              barSize={24}
+              radius={[4, 4, 0, 0]}
+            />
+          </RechartsBarChart>
+        </ResponsiveContainer>
+      </Box>
 
-function LegendItem({ color, label }) {
-  return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      {/* Legend */}
       <Box
         sx={{
-          width: 12,
-          height: 12,
-          borderRadius: 1,
-          bgcolor: color,
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 2,
+          justifyContent: "center",
         }}
-      />
-      <Typography variant="caption">{label}</Typography>
+      >
+        <Chip
+          icon={<CheckCircleIcon sx={{ fontSize: "1rem" }} />}
+          label="Sinh viên có khả năng đạt"
+          sx={{
+            bgcolor: "#d1fae5",
+            color: "#166534",
+            fontWeight: 500,
+            "& .MuiChip-icon": {
+              color: "inherit",
+            },
+          }}
+        />
+        <Chip
+          icon={<WarningIcon sx={{ fontSize: "1rem" }} />}
+          label="Sinh viên có nguy cơ rớt"
+          sx={{
+            bgcolor: "#fee2e2",
+            color: "#dc2626",
+            fontWeight: 500,
+            "& .MuiChip-icon": {
+              color: "inherit",
+            },
+          }}
+        />
+      </Box>
     </Box>
   );
 }
