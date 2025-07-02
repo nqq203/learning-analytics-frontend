@@ -154,7 +154,7 @@ export function DashboardCards({ data }) {
                     : "--"}
                 </Typography>
 
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                {/* <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <Chip
                     icon={<TrendingUpIcon sx={{ fontSize: "1rem" }} />}
                     label={item.trend}
@@ -180,7 +180,7 @@ export function DashboardCards({ data }) {
                   >
                     so với tháng trước
                   </Typography>
-                </Box>
+                </Box> */}
               </Box>
             </CardContent>
           </Paper>
