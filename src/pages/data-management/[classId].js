@@ -490,6 +490,10 @@ export default function StudentDetailView({ onBack }) {
       };
 
   const handleEditExam = async (examId,type,payload)=>{
+    
+        console.log("examId: ",examId)
+        console.log("type: ",type)
+        console.log("payload: ",payload)
        try {
             const response = await dispatch(updateExam({ examId:examId, type: type,payload:payload }));
 

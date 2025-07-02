@@ -39,7 +39,9 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
     }
 
   const HandleSaveExam = (mode,studentInfo,scores,questions,times,quizName)=>{
-      if(mode=="Quiz"){
+    
+    console.log("mode: ",mode)
+      if(mode=="quiz"){
             const quizData = studentInfo.map((student) => {
             const studentScores = scores[student.studentId] || {};
             const questionsList = questions.map((q, index) => {
@@ -68,10 +70,10 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
             };
 
             // console.log("Kết quả:", result);
-            // handleUpdateExam(ExamData.quizId,mode,result)
+            handleUpdateExam(ExamData.quizId,mode,result)
            
         }
-        else if(mode=="Cuối Kỳ"){
+        else if(mode=="final_exam"){
           const finalData = studentInfo.map((student) => {
             const studentScores = scores[student.studentId] || {};
             const questionsList = questions.map((q, index) => {

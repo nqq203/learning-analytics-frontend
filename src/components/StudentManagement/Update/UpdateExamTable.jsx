@@ -29,11 +29,11 @@ const UpdateExamTable = ({
   onClose,
   examData
 }) => {
-    useEffect(()=>{
-      console.log("examData: ",examData)
-      console.log("studentInfo: ",studentInfo)
+    // useEffect(()=>{
+    //   console.log("examData: ",examData)
+    //   console.log("studentInfo: ",studentInfo)
 
-    },[studentInfo,examData])
+    // },[studentInfo,examData])
 
    
     const [scores, setScores] = useState({});
@@ -137,6 +137,7 @@ const UpdateExamTable = ({
   };
 
   const handleSave = () => {
+   
      HandleSaveExam(mode,studentInfo,scores,questions,times,quizName)
   };
 
