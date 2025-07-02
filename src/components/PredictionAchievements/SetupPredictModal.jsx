@@ -134,10 +134,10 @@ export default function SetupPredictModal({
             const students = selectedStudents.map((s) => {
               const scores = {};
               if (
-                s.assignmentQuizGrade !== undefined &&
-                s.assignmentQuizGrade !== null
+                s.assignmentQuiz !== undefined &&
+                s.assignmentQuiz !== null
               )
-                scores.assignmentQuizGrade = s.assignmentQuizGrade;
+                scores.assignmentQuiz = s.assignmentQuiz;
               if (s.midtermGrade !== undefined && s.midtermGrade !== null)
                 scores.midterm = s.midtermGrade;
               if (s.finalGrade !== undefined && s.finalGrade !== null)

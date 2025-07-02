@@ -164,7 +164,7 @@ export default function PredictResultModal({
                                 </IconButton>
                               </TableCell>
                               <TableCell align="center">
-                                {studentIdToCode[s.studentId] || s.studentId}
+                                {s.identificationCode}
                               </TableCell>
                               <TableCell
                                 align="center"
