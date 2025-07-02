@@ -17,9 +17,10 @@ import {
 import { Close } from "@mui/icons-material";
 import UpdateAssignTableModal from "./UpdateAssignTableModal";
 import UpdateExamTable from "./UpdateExamTable";
-export default function EditExamModal({ open, onClose,mode,StudentData,ExamData }) {
+export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,handleUpdateExam }) {
 
   const HandleSaveAssignment = (studentInfo,scores,quizName)=>{
+    console.log("ExamData: ",ExamData)
       const AssignmentData = studentInfo.map((student) => {
                   const studentScores = scores[student.studentId] || {};
                       return {
@@ -33,12 +34,11 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData 
               assignmentData: AssignmentData,
             };
 
-            
-            console.log("result ne: ",result)
+            handleUpdateExam(ExamData.assignmentId,mode,result)
       // handleCreateExam("assignment",result)
     }
 
-    const HandleSaveExam = (mode,studentInfo,scores,questions,times,quizName)=>{
+  const HandleSaveExam = (mode,studentInfo,scores,questions,times,quizName)=>{
       if(mode=="Quiz"){
             const quizData = studentInfo.map((student) => {
             const studentScores = scores[student.studentId] || {};
@@ -67,9 +67,9 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData 
               quizData: quizData,
             };
 
-            console.log("Kết quả:", result);
-            
-            // handleCreateExam("quiz",result)
+            // console.log("Kết quả:", result);
+            // handleUpdateExam(ExamData.quizId,mode,result)
+           
         }
         else if(mode=="Cuối Kỳ"){
           const finalData = studentInfo.map((student) => {
@@ -99,7 +99,7 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData 
             };
 
             console.log("Kết quả:", result);
-           
+            handleUpdateExam(ExamData.finalExamId,mode,result)
             // handleCreateExam("final_exam",result)
         }
     }

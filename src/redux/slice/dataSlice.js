@@ -37,7 +37,8 @@ import {
     fetchExamDetail,
     createExam,
     updateExam,
-    deleteExam
+    deleteExam,
+    fetchAllStudent
 } from "../thunk/dataThunk";
 
 const initialState = {
@@ -82,7 +83,8 @@ const initialState = {
     
     activities:[],
     examInfo:null,
-    createFinalExam:[]
+    createFinalExam:[],
+    allStudents:[],
 
 }
 
@@ -831,6 +833,29 @@ const dataSlice = createSlice({
                 state.success = action.payload.success;
             })
             .addCase(updateExam.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+            })
+            
+            .addCase(fetchAllStudent.pending, (state, action) => {
+                // state.loadingExam = true;
+                state.code = 0;
+                state.message = null;
+                state.error = null;
+            })
+            .addCase(fetchAllStudent.fulfilled, (state, action) => {
+                // state.loadingExam = false;
+
+                state.allStudents = action.payload.data.items;
+                
+
+                state.code = action.payload.code;
+                state.message = action.payload.message;
+                state.success = action.payload.success;
+            })
+            .addCase(fetchAllStudent.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action?.payload?.error || action?.error?.message;
                 state.message = action?.payload?.message || action?.message || action?.payload;

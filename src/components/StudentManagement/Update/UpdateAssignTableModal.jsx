@@ -25,9 +25,12 @@ const UpdateAssignTableModal = ({
     const [questions, setQuestions] = useState([]);
     const [scores, setScores] = useState({});
     const [times, setTimes] = useState({});
-    const [quizName, setQuizName] = useState(examData.assignmentName);
+    const [quizName, setQuizName] = useState("");
     useEffect(()=>{
-      setQuizName(examData.assignmentName)
+      if(examData?.assignmentName){
+           setQuizName(examData.assignmentName)
+      }
+     
     },[examData])
     
     useEffect(()=>{

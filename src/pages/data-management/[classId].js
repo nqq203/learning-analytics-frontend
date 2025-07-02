@@ -32,7 +32,7 @@ import AddStudentModal from "@/components/StudentManagement/AddStudentModal";
 import StudentTable from "@/components/ClassManagement/StudentTable";
 import { useDispatch, useSelector } from "react-redux";
 import ImportFileModal from "@/components/ClassManagement/ImportFileModal";
-import { deleteStudentFromClass, fetchAllFaculties, fetchAllMajors, fetchAllPrograms, fetchStudentDetail, fetchStudentList, processFilePartly, processStudentData,fetchAllExam,fetchExamDetail,createExam,deleteExam,updateExam } from "@/redux/thunk/dataThunk";
+import { deleteStudentFromClass, fetchAllFaculties, fetchAllMajors, fetchAllPrograms, fetchStudentDetail, fetchStudentList, processFilePartly, processStudentData,fetchAllExam,fetchExamDetail,createExam,deleteExam,updateExam,fetchAllStudent } from "@/redux/thunk/dataThunk";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
@@ -261,7 +261,14 @@ export default function StudentDetailView({ onBack }) {
   const openMenu = Boolean(anchorEl);
   const buttonRef = useRef(null); 
 
-  const handleClickAddQuiz = (event) => {
+  const handleClickAddQuiz =  (event) => {
+    
+    dispatch(fetchAllStudent({classId,
+        type:"information",
+        page:1,
+        amount:totalInformation,
+        search:""}
+      ))
     setAnchorEl(event.currentTarget);
   };
 
@@ -270,7 +277,14 @@ export default function StudentDetailView({ onBack }) {
   };
 
   const handleSelectQuizType = (type) => {
-    console.log("Loại bài kiểm tra được chọn:", type);
+
+    dispatch(fetchAllStudent({classId,
+        type:"information",
+        page:1,
+        amount:totalInformation,
+        search:""}
+      ))
+
     if(type=="Quiz"){
       setIsAddModalQuizOpen(true);
     }
@@ -297,15 +311,13 @@ export default function StudentDetailView({ onBack }) {
       return null;
     }
   }, [accessToken]);
-  const { loading, totalGrade, totalInformation, studentsInformation, studentsGrade, hasMore, page, amount, faculties, programs, majors, student, assignments,finalExams,quizzes, activities,examInfo } = useSelector(state => state.data);
+  const { loading, totalGrade, totalInformation, studentsInformation, studentsGrade, hasMore, page, amount, faculties, programs, majors, student, assignments,finalExams,quizzes, activities,examInfo,allStudents } = useSelector(state => state.data);
   const [search, setSearch] = useState("");
   const [mssv, setMssv] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmExamOpen, setConfirmExamOpen] = useState(false);
   const [tab, setTab] = useState(0);
   const [secondTab, setSecondTab] = useState(0);
-
-  
 
   const StudentScoreExam = useMemo(()=>{
       return activities
@@ -476,6 +488,24 @@ export default function StudentDetailView({ onBack }) {
             toast.error(`Xóa thất bại! Hãy thử lại sau`);
           }
       };
+
+  const handleEditExam = async (examId,type,payload)=>{
+       try {
+            const response = await dispatch(updateExam({ examId:examId, type: type,payload:payload }));
+
+            if (response?.type?.includes("fulfilled") && response.payload?.success) {
+              toast.success(`Sửa thành công bài kiểm tra khỏi lớp`);
+              setConfirmExamOpen(false);
+              await dispatch(fetchAllExam({ instructor_id: userId, class_id: classId }));
+            } else {
+              console.warn("Response bị rejected hoặc không success:", response);
+              toast.error(`Xóa thất bại! Hãy thử lại sau`);
+            }
+          } catch (err) {
+            console.error("Lỗi trong handleDeleteRequestExam:", err);
+            toast.error(`Xóa thất bại! Hãy thử lại sau`);
+          }
+  }
 
   const handleViewInformationExam = (examId,type)=>{
       
@@ -693,7 +723,8 @@ export default function StudentDetailView({ onBack }) {
           >
             <MenuItem onClick={() => handleSelectQuizType("Quiz")}>Quiz</MenuItem>
             <MenuItem onClick={() => handleSelectQuizType("Assignment")}>Assignment</MenuItem>
-            <MenuItem onClick={() => handleSelectQuizType("Final")}>Final</MenuItem>
+            <MenuItem onClick={() => handleSelectQuizType("Midterm")}>Giữa Kỳ</MenuItem>
+            <MenuItem onClick={() => handleSelectQuizType("Final")}>Cuối Kỳ</MenuItem>
           </Menu>
 
 
@@ -844,6 +875,7 @@ export default function StudentDetailView({ onBack }) {
               >
                 <Tab label="Assignment"/>
                 <Tab label="Quiz"/>
+                <Tab label="Giữa kỳ"/>
                 <Tab label="Cuối kỳ"/>
               </Tabs>
 
@@ -918,8 +950,41 @@ export default function StudentDetailView({ onBack }) {
         }
 
 
-
         {secondTab === 2  &&(
+          <Box position="relative">  
+          <ExamQuizTable
+            filteredRows={finalExams}
+            columns={ColExamFinalData}
+            handleDelete={handleDeleteExam}
+            handleEdit={handleEditExamClick}
+            onLoadMore={handleLoadMore}
+            handleViewInformation = {handleViewInformationExam}
+            hasMore={hasMore}
+            type="Giữa kỳ"
+          />
+
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" />
+            </Box>
+          )}
+        </Box>
+        )
+        }
+
+
+        {secondTab === 3  &&(
           <Box position="relative">  
           <ExamQuizTable
             filteredRows={finalExams}
@@ -982,7 +1047,7 @@ export default function StudentDetailView({ onBack }) {
       />
 
       <AddQuizModal
-        students ={studentsInformation}
+        students ={allStudents}
         open={isAddModalQuizOpen}
         onClose={() => setIsAddModalQuizOpen(false)}
         handleCreateExam={handleCreateExam}
@@ -990,7 +1055,7 @@ export default function StudentDetailView({ onBack }) {
       />
 
       <AddQuizModal
-        students ={studentsInformation}
+        students ={allStudents}
         open={isAddModalAssignmentOpen}
         onClose={() => setIsAddModalAssignmentOpen(false)}
         mode="Assignment"
@@ -998,10 +1063,21 @@ export default function StudentDetailView({ onBack }) {
       />
 
       <AddQuizModal
-        students ={studentsInformation}
+        students ={allStudents}
         open={isAddModalFinalOpen}
         onClose={() => setIsAddModalFinalOpen(false)}
         mode="Cuối Kỳ"
+        handleCreateExam={handleCreateExam}
+      />
+
+
+      <AddQuizModal
+        students ={allStudents}
+
+        open={isAddModalMidtermOpen}
+        onClose={() => setIsAddModalMidtermOpen(false)}
+
+        mode="Giữa Kỳ"
         handleCreateExam={handleCreateExam}
       />
 
@@ -1015,6 +1091,7 @@ export default function StudentDetailView({ onBack }) {
       >
       </DetailExamModal>
       
+
       <EditExamModal
 
         open={isEditExamModal}
@@ -1022,6 +1099,7 @@ export default function StudentDetailView({ onBack }) {
         mode={EditExamType}
         StudentData={activities}
         ExamData={examInfo}
+        handleUpdateExam = {handleEditExam}
       ></EditExamModal>
 
       

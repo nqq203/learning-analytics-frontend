@@ -476,3 +476,15 @@ export const deleteExam = createAsyncThunk(
     }
 );
 
+export const fetchAllStudent = createAsyncThunk(
+    "data/fetchAllStudent",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.fetchStudentList(data);
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+);
