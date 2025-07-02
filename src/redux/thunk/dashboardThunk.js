@@ -3,9 +3,9 @@ import { dashboardApi } from "../api/dashboard";
 
 export const fetchSummaryThunk = createAsyncThunk(
   "dashboard/fetchSummary",
-  async (_, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
-      const response = await dashboardApi.fetchSummary();
+      const response = await dashboardApi.fetchSummary(data);
       console.log("📥 API response:", response.data); 
       return response.data.data;
     } catch (error) {
