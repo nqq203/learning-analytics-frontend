@@ -16,8 +16,8 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 
 const cardData = [
   {
-    title: "Academic Subjects",
-    subtitle: "Total Courses",
+    title: "Môn Học",
+    subtitle: "Tổng số môn học",
     valueKey: "subjects",
     icon: <SchoolIcon fontSize="medium" />,
     color: "#3b82f6",
@@ -26,8 +26,8 @@ const cardData = [
     trendUp: true,
   },
   {
-    title: "Class Sections",
-    subtitle: "Active Classes",
+    title: "Học Phần / Lớp",
+    subtitle: "Các lớp học phần",
     valueKey: "classes",
     icon: <ClassIcon fontSize="medium" />,
     color: "#10b981",
@@ -36,8 +36,8 @@ const cardData = [
     trendUp: true,
   },
   {
-    title: "Student Population",
-    subtitle: "Enrolled Students",
+    title: "Tổng Số Sinh Viên",
+    subtitle: "Sinh Viên Đang Theo Học",
     valueKey: "students",
     icon: <PeopleIcon fontSize="medium" />,
     color: "#8b5cf6",
@@ -46,8 +46,8 @@ const cardData = [
     trendUp: true,
   },
   {
-    title: "Risk Assessment",
-    subtitle: "At-Risk Students",
+    title: "Tỷ Lệ Rớt Môn",
+    subtitle: "Tỷ lệ sinh viên rớt môn",
     valueKey: "dropoutRate",
     isPercentage: true,
     icon: <WarningAmberIcon fontSize="medium" />,
@@ -178,7 +178,7 @@ export function DashboardCards({ data }) {
                       fontSize: "0.75rem"
                     }}
                   >
-                    vs last month
+                    so với tháng trước
                   </Typography>
                 </Box>
               </Box>

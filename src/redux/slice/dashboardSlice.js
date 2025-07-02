@@ -29,6 +29,7 @@ const dashboardSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchSummaryThunk.fulfilled, (state, action) => {
+        state.loading = false;
         console.log("Payload from fetchSummaryThunk:", action.payload);
         const {
           academicRankData,
@@ -36,6 +37,7 @@ const dashboardSlice = createSlice({
           riskStudentData,
           spendingTimeChartData,
           subjects,
+          cardData,
         } = action.payload ?? {};
 
         state.academicRankData = academicRankData ?? [];
@@ -43,20 +45,28 @@ const dashboardSlice = createSlice({
         state.riskStudentData = riskStudentData ?? [];
         state.spendingTimeChartData = spendingTimeChartData ?? [];
         state.subjects = Array.isArray(subjects) ? subjects : [];
+        state.cardsData = cardData ?? null;
       })
-      .addCase(fetchDashboardCardsThunk.fulfilled, (state, action) => {
-        state.cardsData = action.payload;
+      .addCase(fetchSummaryThunk.rejected, (state, action) => {
         state.loading = false;
-      })
-      .addCase(fetchDashboardCardsThunk.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchDashboardCardsThunk.rejected, (state, action) => {
-        state.loading = false;
-        state.error =
-          action.error?.message || "Không thể tải dữ liệu thống kê.";
+        state.error = action?.payload?.error || action?.error?.message;
+        state.message =
+          action?.payload?.message || action?.message || action?.payload;
+        state.code = action?.payload?.code || action?.code;
       });
+    // .addCase(fetchDashboardCardsThunk.fulfilled, (state, action) => {
+    //   state.cardsData = action.payload;
+    //   state.loading = false;
+    // })
+    // .addCase(fetchDashboardCardsThunk.pending, (state) => {
+    //   state.loading = true;
+    //   state.error = null;
+    // })
+    // .addCase(fetchDashboardCardsThunk.rejected, (state, action) => {
+    //   state.loading = false;
+    //   state.error =
+    //     action.error?.message || "Không thể tải dữ liệu thống kê.";
+    // });
 
     // Avg Score Chart
     //   .addCase(fetchAvgScoreChartThunk.pending, (state) => {
