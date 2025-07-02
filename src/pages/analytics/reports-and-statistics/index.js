@@ -227,7 +227,7 @@ const ClassesList = () => {
               onChange={handleSubjectChange}
             >
               <MenuItem value="">
-                <em>None</em>
+                <em>Tất cả</em>
               </MenuItem>
               {subjectOptions.map((subject) => (
                 <MenuItem key={subject.id} value={subject.id}>
@@ -245,7 +245,7 @@ const ClassesList = () => {
               onChange={handleClassChange}
             >
               <MenuItem value="">
-                <em>None</em>
+                <em>Tất cả</em>
               </MenuItem>
               {classOptions.map((cls) => (
                 <MenuItem key={`${cls.id}-${cls.name}`} value={cls.id}>

@@ -153,34 +153,6 @@ export function DashboardCards({ data }) {
                       : data[item.valueKey].toLocaleString()
                     : "--"}
                 </Typography>
-
-                {/* <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Chip
-                    icon={<TrendingUpIcon sx={{ fontSize: "1rem" }} />}
-                    label={item.trend}
-                    size="small"
-                    sx={{
-                      bgcolor: item.trendUp ? "#dcfce7" : "#fee2e2",
-                      color: item.trendUp ? "#166534" : "#dc2626",
-                      fontWeight: 500,
-                      fontSize: "0.75rem",
-                      height: "24px",
-                      "& .MuiChip-icon": {
-                        color: "inherit",
-                        fontSize: "1rem",
-                      },
-                    }}
-                  />
-                  <Typography
-                    variant="caption"
-                    sx={{ 
-                      color: "#64748b",
-                      fontSize: "0.75rem"
-                    }}
-                  >
-                    so với tháng trước
-                  </Typography>
-                </Box> */}
               </Box>
             </CardContent>
           </Paper>
