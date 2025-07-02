@@ -19,7 +19,7 @@ import {
 } from "@mui/icons-material";
 
 import IconButton from '@mui/material/IconButton';
-
+import { toast } from "react-toastify";
 import { useEffect, useMemo, useState, useRef } from "react";
 
 const QuizTableModal = ({
@@ -73,6 +73,10 @@ const QuizTableModal = ({
   };
 
   const handleSave = () => {
+    if(quizName.trim() === "" || Object.keys(questions).length === 0) {
+      toast.error(`Vui lòng nhập tên và câu hỏi của bài kiểm tra`);
+    }
+    else
      HandleSaveExam(mode,studentInfo,scores,questions,times,quizName)
   };
 
