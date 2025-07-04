@@ -216,6 +216,8 @@ const UpdateExamTable = ({
           {studentInfo?.map((student) => (
             <TableRow key={student.studentId}>
               <TableCell style={{fontSize:"10px"}} >{student.identificationCode}</TableCell>
+
+              
               {mode==="quiz" &&(
                   <TableCell style={{fontSize:"10px"}} >
                       <input
