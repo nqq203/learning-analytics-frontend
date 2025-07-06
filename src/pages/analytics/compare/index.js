@@ -1,11 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  ActionButton,
-  Container,
-  Header,
-} from "@/components/Analytics/Styles/Styles";
-
-import {
   Card,
   CardContent,
   Select,
@@ -23,13 +17,14 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Chip,
 } from "@mui/material";
 import CompareResult from "../compare/compareResult/CompareResult";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
 import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk } from "@/redux/thunk/compareThunk";
-import { TableWrapper } from "@/components/Analytics/Styles/Styles";
+import PageHeader from "@/components/CommonStyles/PageHeader";
 const Compare = () => {
   const [criteria, setCriteria] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -156,192 +151,182 @@ const Compare = () => {
   }
 
   return (
-    
+    <Box sx={{ p: { xs: 2, md: 4 } }}>
+      <PageHeader
+        title="So sánh kết quả"
+        subtitle="So sánh hiệu quả học tập giữa các lớp và khóa học"
+        icon="analytics"
+        variant="analytics"
+        stats={[
+          { label: "Tổng lớp", value: rows.length },
+          { label: "Đã chọn", value: selectedRows.length },
+        ]}
+      />
 
-      <Container>
-      <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%", justifyContent:"space-between" }}>
-        
-          <FormControl 
-          style={{ width: "38%", minWidth: 250 }}  
-          size="small">
-            <InputLabel>Tiêu chí</InputLabel>
-            <Select label="Tiêu chí" value={criteria} onChange={handleCriteriaChange}>
-              <MenuItem value="class">Theo Lớp</MenuItem>
-              <MenuItem value="course">Theo Khóa</MenuItem>
-            </Select>
-          </FormControl>
-        
+      {/* Controls */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          mb: 3,
+          border: '1px solid #e5e7eb',
+          borderRadius: 2,
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+        }}
+      >
+        <Grid container spacing={3} alignItems="center">
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Tiêu chí</InputLabel>
+              <Select label="Tiêu chí" value={criteria} onChange={handleCriteriaChange}>
+                <MenuItem value="class">Theo Lớp</MenuItem>
+                <MenuItem value="course">Theo Khóa</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
 
-        
-          <FormControl 
-          style={{ width: "38%", minWidth: 250 }}  
-          size="small">
-            <InputLabel>Môn học</InputLabel>
-            <Select
-              label="Môn học"
-              value={selectedSubject}
-              disabled={!criteria}
-              onChange={handleSubjectChange}
-            >
-              {[...new Set(rows.map((item) => item.courseName))].map((subject) => (
-                <MenuItem key={subject} value={subject}>
-                  {subject}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        
-
-        
-          <Button
-            style={{ width: "25%", minWidth: 250 }} 
-            variant="contained"
-            color="primary"
-            disabled={!isCompareEnabled()}
-            onClick={handleCompareClick}
-          >
-            So sánh
-          </Button>
-        
-        </div>
-      </Header>
-      
-
-
-      
-        <div style={{ display: "flex", flexDirection: "column" }}>
-
-            <span 
-              style={{ 
-                paddingLeft: "20px", 
-                paddingTop: "20px", 
-                fontSize: "20px", 
-                fontWeight: "700" }}
-            >
-              Tổng số lớp hiển thị: {rows.length}
-            </span>
-
-          <Box position="relative">
-            <TableWrapper className="scroll-view">
-
-              <TableContainer
-              
-              component={Paper} 
-              className="TableContainer"
-              style={{ maxHeight: "550px", overflow: "auto" }}
-              
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Môn học</InputLabel>
+              <Select
+                label="Môn học"
+                value={selectedSubject}
+                disabled={!criteria}
+                onChange={handleSubjectChange}
               >
-                <Table stickyHeader>
-                  
-                  <TableHead>
-                    <TableRow>
-                      <TableCell
-                      style={{ ...headerCellStyle, textAlign: "center" }}
-                      > STT </TableCell>
+                {[...new Set(rows.map((item) => item.courseName))].map((subject) => (
+                  <MenuItem key={subject} value={subject}>
+                    {subject}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
 
-                      <TableCell
-                      style={{ ...headerCellStyle, textAlign: "center" }}
-                      > Môn </TableCell>
+          <Grid item xs={12} md={4}>
+            <Button
+              fullWidth
+              variant="contained"
+              disabled={!isCompareEnabled()}
+              onClick={handleCompareClick}
+              sx={{
+                bgcolor: '#1e3a8a',
+                '&:hover': {
+                  bgcolor: '#1e40af',
+                },
+                '&:disabled': {
+                  bgcolor: '#9ca3af',
+                },
+              }}
+            >
+              So sánh ({selectedRows.length})
+            </Button>
+          </Grid>
+        </Grid>
 
-                      <TableCell
-                      style={{ ...headerCellStyle, textAlign: "center" }}
-                      > Lớp </TableCell>
-
-
-                      <TableCell
-                      style={{ ...headerCellStyle, textAlign: "center" }}
-                      > Khóa </TableCell>
-
-
-                      <TableCell
-                      style={{ ...headerCellStyle, textAlign: "center" }}
-                      > Số sinh viên </TableCell>
-
-
-                      <TableCell
-                      style={{ ...headerCellStyle, textAlign: "center" }}
-                      > Tỷ lệ đậu (%) </TableCell>
-
-
-                      {
-                        criteria && <TableCell
-                        style={{ ...headerCellStyle, textAlign: "center" }}
-                        > Chọn </TableCell>
-                      
-                      }
-                    </TableRow>
-                  </TableHead>
-
-
-                  <TableBody>
-                    {rows
-                      .filter(item => selectedSubject === "" || item.courseName === selectedSubject)
-                      .map((item, index) => (
-                        <TableRow
-                          key={item.no}
-                          // style={{
-                          //   backgroundColor: index % 2 === 0 ? "#f9f9f9" : "#fff",
-                          //   transition: "background-color 0.3s ease",
-                          // }}
-                          // onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e3f2fd")}
-                          // onMouseLeave={(e) =>
-                          //   (e.currentTarget.style.backgroundColor = index % 2 === 0 ? "#fff" : "#f9f9f9")
-                          // }
-                        >
-                          <TableCell
-                          style={{ ...cellStyle, textAlign: "center" }}
-                          >
-                            {item.no}</TableCell>
-
-                          <TableCell
-                          style={{ ...cellStyle, textAlign: "center" }}
-                          >
-                            {item.courseName}</TableCell>
-
-                          <TableCell
-                          style={{ ...cellStyle, textAlign: "center" }}
-                          >
-                            {item.className}</TableCell>
-
-                          <TableCell
-                          style={{ ...cellStyle, textAlign: "center" }}
-                          >
-                            {item.academicYear}</TableCell>
-
-                          <TableCell
-                          style={{ ...cellStyle, textAlign: "center" }}
-                          >
-                            {item.totalStudents}</TableCell>
-
-                          <TableCell
-                          style={{ ...cellStyle, textAlign: "center" }}
-                          >
-                            {item.passRate}%</TableCell>
-
-                          {criteria && (
-                            <TableCell 
-                            style={{ ...cellStyle, textAlign: "center" }}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={selectedRows.includes(item.no)}
-                                onChange={() => handleSelectRow(item.no)}
-                              />
-                            </TableCell>
-                          )}
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </TableWrapper>
+        {selectedRows.length > 0 && (
+          <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
+              Đã chọn:
+            </Typography>
+            {selectedRows.map((rowNo) => {
+              const item = rows.find(r => r.no === rowNo);
+              return item ? (
+                <Chip
+                  key={rowNo}
+                  label={`${item.className} (${item.courseName})`}
+                  size="small"
+                  sx={{
+                    bgcolor: '#e0e7ff',
+                    color: '#3730a3',
+                    fontWeight: 500,
+                  }}
+                />
+              ) : null;
+            })}
           </Box>
-        </div>
-      
-      </Container>
-      
-    
+        )}
+      </Paper>
+
+      {/* Table */}
+      <Paper
+        elevation={0}
+        sx={{
+          border: '1px solid #e5e7eb',
+          borderRadius: 2,
+        }}
+      >
+        <Box sx={{ p: 3, borderBottom: '1px solid #e5e7eb' }}>
+          <Typography variant="h6" fontWeight={600} color="text.primary">
+            Tổng số lớp hiển thị: {rows.length}
+          </Typography>
+        </Box>
+
+        <TableContainer sx={{ maxHeight: 550 }}>
+          <Table stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>STT</TableCell>
+                <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>Môn</TableCell>
+                <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>Lớp</TableCell>
+                <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>Khóa</TableCell>
+                <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>Số sinh viên</TableCell>
+                <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>Tỷ lệ đậu (%)</TableCell>
+                {criteria && (
+                  <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>Chọn</TableCell>
+                )}
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {rows
+                .filter(item => selectedSubject === "" || item.courseName === selectedSubject)
+                .map((item, index) => (
+                  <TableRow
+                    key={item.no}
+                    sx={{
+                      '&:hover': {
+                        bgcolor: 'rgba(30, 58, 138, 0.04)',
+                      },
+                    }}
+                  >
+                    <TableCell sx={{ textAlign: "center" }}>{item.no}</TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>{item.courseName}</TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>{item.className}</TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>{item.academicYear}</TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>{item.totalStudents}</TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>
+                      <Chip
+                        label={`${item.passRate}%`}
+                        size="small"
+                        sx={{
+                          bgcolor: item.passRate >= 80 ? '#dcfce7' : item.passRate >= 60 ? '#fef3c7' : '#fee2e2',
+                          color: item.passRate >= 80 ? '#166534' : item.passRate >= 60 ? '#92400e' : '#991b1b',
+                          fontWeight: 600,
+                        }}
+                      />
+                    </TableCell>
+                    {criteria && (
+                      <TableCell sx={{ textAlign: "center" }}>
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.includes(item.no)}
+                          onChange={() => handleSelectRow(item.no)}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            accentColor: '#1e3a8a',
+                          }}
+                        />
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    </Box>
   );
 };
 

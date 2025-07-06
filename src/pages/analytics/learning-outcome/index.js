@@ -1,32 +1,20 @@
-import styled from "styled-components";
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  ActionButton,
-  Container,
-  Header,
-} from "@/components/Analytics/Styles/Styles";
-
-
 import { useRouter } from "next/router";
 import {
-  TextField,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  InputAdornment,
-  IconButton,
-  Select,
   Box,
-  CircularProgress
+  CircularProgress,
+  Paper,
+  Typography,
 } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
 import ClassListLNO from "@/components/LearningOutcome/ClassListLNO";
 import {
   FetchAcademicYearClass,
   fetchFilteredClasses,
 } from "@/redux/thunk/learningoutcomeThunk";
 import { jwtDecode } from "jwt-decode";
+import PageHeader from "@/components/CommonStyles/PageHeader";
+import SearchFilters from "@/components/CommonStyles/SearchFilters";
 
 
 
@@ -132,97 +120,82 @@ const LearningOutcome = () => {
   }, [classes]);
 
   useEffect(() => {
-    if (classID !== "") {
+    if (classID !== "" && typeof classID === 'object') {
+      const { classId, className, courseName } = classID;
+      const params = new URLSearchParams({
+        className: className || '',
+        courseName: courseName || ''
+      });
+      router.push(`/analytics/learning-outcome/student-list/${classId}?${params.toString()}`);
+    } else if (classID !== "") {
       router.push(`/analytics/learning-outcome/student-list/${classID}`);
     }
   }, [classID]);
 
+  const filterOptions = [
+    {
+      key: "academicYear",
+      label: "Khóa",
+      value: chosenAcademicYear,
+      options: academicYear.map(year => ({ value: year, label: year })),
+      minWidth: 180,
+    },
+    {
+      key: "semester",
+      label: "Kỳ",
+      value: chosenSemester,
+      options: semester.map(sem => ({ value: sem, label: sem })),
+      minWidth: 160,
+    },
+  ];
+
   return (
-    <Container>
-      
-        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+    <Box sx={{ p: { xs: 2, md: 4 } }}>
+      <PageHeader
+        title="Kết quả học tập"
+        subtitle="Phân tích và đánh giá kết quả học tập của sinh viên theo chuẩn đầu ra"
+        icon="analytics"
+        variant="analytics"
+        stats={[
+          { label: "Tổng lớp", value: totalRecords },
+          { label: "Khóa học", value: academicYear.length },
+        ]}
+      />
 
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
-            
-              <TextField
-                variant="outlined"
-                label="Tìm kiếm"
-                style={{ width: "55%", minWidth: 200 }}
-                size="small"
-                onChange={(e) => handleSearch(e.target.value)}
-                onKeyDown={handleKeyPress}
-                InputProps={{
-                  
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        sx={{
-                          backgroundColor: "#1976D2",
-                          borderRadius: "0 4px 4px 0",
-                          padding: "10px",
-                          height: "100%",
-                          '&:hover': {
-                            backgroundColor: "#1976d2",
-                        },
-                      }}
-                        onClick={() => handleSearchResult(searchKeyword)}
-                      >
-                        <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  width: "100%",
-                  '& .MuiOutlinedInput-root': {
-                    paddingRight: 0,
-                  },
-                }}
-              />
-           
-            <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
-              <InputLabel id="academic-year-label">Khóa</InputLabel>
-              <Select
-                labelId="academic-year-label"
-                label="Chọn khóa"
-                onChange={(e) => handleChangeAcademicYear(e.target.value)}
-              >
-                <MenuItem value="">Tất cả</MenuItem>
-                {academicYear.map((item, index) => (
-                  <MenuItem value={item} key={index}>
-                    {item}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+      <SearchFilters
+        searchValue={searchKeyword}
+        onSearchChange={handleSearch}
+        onSearch={() => handleSearchResult(searchKeyword)}
+        filters={filterOptions}
+        onFilterChange={(key, value) => {
+          if (key === "academicYear") {
+            handleChangeAcademicYear(value);
+          } else if (key === "semester") {
+            handleChangeSemester(value);
+          }
+        }}
+        onClearFilters={() => {
+          setSearchKeyword("");
+          setSearchResult("");
+          handleChangeAcademicYear("");
+          handleChangeSemester("");
+        }}
+        searchPlaceholder="Tìm kiếm lớp, môn học..."
+      />
 
-            <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
-              <InputLabel id="semester-label">Kỳ</InputLabel>
-              <Select
-                labelId="semester-label"
-                label="Chọn kỳ"
-                onChange={(e) => handleChangeSemester(e.target.value)}
-              >
-                <MenuItem value="">Tất cả</MenuItem>
-                {semester.map((item, index) => (
-                  <MenuItem value={item} key={index}>
-                    {item}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-        </div>
-          
-        </Header>
-
-       
-        
-       <div style={{ display: "flex", flexDirection: "column" }}>
-
-        <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}>
-          Tổng số lớp hiển thị: {totalRecords}
-        </span>
+      {/* Bảng dữ liệu */}
+      <Paper
+        elevation={0}
+        sx={{
+          border: '1px solid #e5e7eb',
+          borderRadius: 2,
+        }}
+      >
+        <Box sx={{ p: 3, borderBottom: '1px solid #e5e7eb' }}>
+          <Typography variant="h6" fontWeight={600} color="text.primary">
+            Tổng số lớp hiển thị: {totalRecords}
+          </Typography>
+        </Box>
 
         <Box position="relative">
           <ClassListLNO
@@ -250,9 +223,8 @@ const LearningOutcome = () => {
             </Box>
           )}
         </Box>
-
-      </div>
-    </Container>
+      </Paper>
+    </Box>
   );
 };
 
