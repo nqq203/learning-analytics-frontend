@@ -86,10 +86,10 @@ export default function EditStudentModal({
           <Tab label="Thông tin cơ bản" />
           <Tab label="Điểm sinh viên" />
 
-          <Tab label="Assignment" />
+          {/* <Tab label="Assignment" />
           <Tab label="Quiz" />
           <Tab label="Giữa kỳ"/>
-          <Tab label="Cuối kỳ"/>
+          <Tab label="Cuối kỳ"/> */}
         
         </Tabs>
 
@@ -150,7 +150,7 @@ export default function EditStudentModal({
           </Grid>
         </TabPanel>
 
-        <TabPanel value={tab} index={2}>
+        {/* <TabPanel value={tab} index={2}>
           <Grid container spacing={2}>
 
             
@@ -262,7 +262,7 @@ export default function EditStudentModal({
               </Grid>
             ))}
           </Grid>
-        </TabPanel>
+        </TabPanel> */}
 
         
       </DialogContent>

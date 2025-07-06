@@ -156,7 +156,20 @@ const dataApi = {
     fetchStudentDetail: ({ studentId, classId }) =>
         axios.get(`${API_URL}/data/students/${studentId}?class_id=${classId}`),
     deleteStudentFromClass: ({ studentId, classId }) =>
-        axios.delete(`${API_URL}/data/students/${studentId}?class_id=${classId}`)
+        axios.delete(`${API_URL}/data/students/${studentId}?class_id=${classId}`),
+
+    fetchAllExam: ({ instructor_id, class_id }) =>
+        axios.get(`${API_URL}/data/exams?instructor_id=${instructor_id}&class_id=${class_id}`),
+    fetchExamDetail: ({ quiz_id,type }) =>
+        axios.get(`${API_URL}/data/exams/${quiz_id}?type=${type}`),
+    createExam: ({ instructor_id,class_id,type,payload }) =>
+        axios.post(`${API_URL}/data/exams?instructor_id=${instructor_id}&class_id=${class_id}&type=${type}`,payload),
+
+    updateExam: ({ examId,type,payload }) =>
+        axios.put(`${API_URL}/data/exams/${examId}?type=${type}`,payload),
+    deleteExam: ({ examId,type }) =>
+        axios.delete(`${API_URL}/data/exams/${examId}?type=${type}`),
+    
 
 }
 

@@ -26,8 +26,9 @@ const ExamQuizTable = ({
   columns,
   handleDelete,
   handleEdit,
+  handleViewInformation,
   onLoadMore,
-  mode,
+  type,
   action = true
 }) => {
   const containerRef = useRef();
@@ -35,9 +36,10 @@ const ExamQuizTable = ({
   const [menuRowId, setMenuRowId] = useState(null);
   const open = Boolean(anchorEl);
   
-  const handleMenuOpen = (event, rowId) => {
+  const handleMenuOpen = (event, row) => {
+    
     setAnchorEl(event.currentTarget);
-    setMenuRowId(rowId);
+    setMenuRowId(row);
   };
 
   const handleMenuClose = () => {
@@ -62,6 +64,45 @@ const ExamQuizTable = ({
     return () => container.removeEventListener("scroll", handleScroll);
   }, [onLoadMore]);
 
+  const handleDetail = (row)=>{
+    if(type==="Quiz"){
+      handleViewInformation(row.quizId,"quiz");
+    }
+    else if (type ==="Assignment"){
+      
+      handleViewInformation(row.assignmentId,"assignment");
+    }
+    else if(type==="Cuối kỳ"){
+      handleViewInformation(row.finalExamId,"final_exam");
+    }
+  }
+
+  const handleUpdateBefore = (row)=>{
+    
+    if(type==="Quiz"){
+      handleEdit(row.quizId,"quiz");
+    }
+    else if (type ==="Assignment"){
+      
+      handleEdit(row.assignmentId,"assignment");
+    }
+    else if(type==="Cuối kỳ"){
+      handleEdit(row.finalExamId,"final_exam");
+    }
+  }
+
+  const handleDeleteBefore= (row)=>{
+      if(type==="Quiz"){
+        handleDelete(row.quizId,"quiz")
+    }
+    else if (type ==="Assignment"){
+      handleDelete(row.assignmentId,"assignment");
+     
+    }
+    else if(type==="Cuối kỳ"){
+      handleDelete(row.finalExamId,"final_exam");
+    }
+  }
   const cellStyle = {
     fontSize: "16px",
     textAlign: "center",
@@ -105,37 +146,51 @@ const ExamQuizTable = ({
           <TableBody>
             {filteredRows?.length > 0 ?
               <Fragment>{filteredRows?.map((row, index) => (
-                <TableRow key={row.ExamId}>
-                  <TableCell style={{ textAlign: "center" }}>{index + 1}</TableCell>
-                  {columns.map((col, idx) => (
-                    <TableCell key={idx} style={{ textAlign: "center" }}>
-                      {row[col.id] || "--"}
-                    </TableCell>
-                  ))}
-                  {action && (
-                    <TableCell style={{ textAlign: "center" }}>
-                      <IconButton onClick={(e) => handleMenuOpen(e, row.ExamId)}>
-                        <MoreVertIcon />
-                      </IconButton>
-                      <Menu
-                        anchorEl={anchorEl}
-                        open={open && menuRowId === row.ExamId}
-                        onClose={handleMenuClose}
-                        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-                      >
-                        <MenuItem onClick={() => { handleEdit(row.ExamId,mode); handleMenuClose(); }}>
-                          <ListItemIcon><EditIcon color="primary" fontSize="small" /></ListItemIcon>
-                          <ListItemText>Chỉnh sửa</ListItemText>
-                        </MenuItem>
-                        <MenuItem onClick={() => { handleDelete(row.ExamId, mode); handleMenuClose(); }}>
-                          <ListItemIcon><DeleteIcon color="error" fontSize="small" /></ListItemIcon>
-                          <ListItemText>Xóa</ListItemText>
-                        </MenuItem>
-                      </Menu>
-                    </TableCell>
-                  )}
-                </TableRow>
+                  <TableRow key={row.ExamId}>
+                    <TableCell style={{ textAlign: "center" }}>{index + 1}</TableCell>
+                    {columns.map((col, idx) => (
+                      <TableCell key={idx} style={{ textAlign: "center" }}>
+                        {row[col.id] || "--"}
+                      </TableCell>
+                    ))}
+                    {action && (
+                      <TableCell style={{ textAlign: "center" }}>
+                        <IconButton onClick={(e) => handleMenuOpen(e, row)}>
+                          <MoreVertIcon />
+                        </IconButton>
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={open && menuRowId === row}
+                          onClose={handleMenuClose}
+                          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                          transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+                        >
+
+                          <MenuItem onClick={()=>{
+                            handleDetail(row);
+                            handleMenuClose();
+                          }} >
+                            <ListItemIcon><VisibilityIcon color="primary" fontSize="small" /></ListItemIcon>
+                            <ListItemText>Xem thông tin bài kiểm tra</ListItemText>
+                          </MenuItem>
+
+                          <MenuItem onClick={() => { 
+                            handleUpdateBefore(row); 
+                            handleMenuClose(); }}>
+                            <ListItemIcon><EditIcon color="primary" fontSize="small" /></ListItemIcon>
+                            <ListItemText>Chỉnh sửa</ListItemText>
+                          </MenuItem>
+
+                          <MenuItem onClick={() => { handleDeleteBefore(row); handleMenuClose(); }}>
+                            <ListItemIcon><DeleteIcon color="error" fontSize="small" /></ListItemIcon>
+                            <ListItemText>Xóa</ListItemText>
+                          </MenuItem>
+
+
+                        </Menu>
+                      </TableCell>
+                    )}
+                  </TableRow>
               ))}</Fragment> :
               <TableRow>
                 <TableCell

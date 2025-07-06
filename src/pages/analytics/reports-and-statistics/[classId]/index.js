@@ -18,6 +18,8 @@ import {
   Box,
   CircularProgress,
   InputAdornment,
+  Typography,
+  Paper,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import NonInfiniteAnalyticsTable from "@/components/Analytics/Table/NonInfiniteTable";
@@ -30,13 +32,14 @@ import { useDispatch, useSelector } from "react-redux";
 const StudentsList = () => {
   const router = useRouter();
   const { loading } = useSelector((state) => state.analytics);
-  const { classId } = router.query;
+  const { classId, className, courseName } = router.query;
   const [search, setSearch] = useState("");
   const [sortOption, setSortOption] = useState("studentId");
   const [buttonVariant, setButtonVariant] = useState("contained");
-  const [buttonContent, setButtonContent] = useState("chi tiết");
+  const [buttonContent, setButtonContent] = useState("Chi tiết");
   const [rows, setRows] = useState([]);
   const [columns, setColumns] = useState([]);
+  const [classInfo, setClassInfo] = useState({ className: "", subjectName: "" });
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -47,6 +50,14 @@ const StudentsList = () => {
       if (buttonVariant === "contained") {
         const response = await dispatch(fetchStudents({ classId })).unwrap();
         setRows(response?.data?.studentList || []);
+        
+        if (response?.data?.className) {
+          setClassInfo({
+            className: response.data.className,
+            subjectName: response.data.subjectName || "Chưa có thông tin môn học"
+          });
+        }
+        
         setColumns([
           { id: "studentId", label: "MSSV", align: "left" },
           { id: "fullName", label: "Họ và tên", align: "left" },
@@ -59,6 +70,14 @@ const StudentsList = () => {
           fetchStudentsDetails({ classId })
         ).unwrap();
         setRows(response?.data?.studentList || []);
+        
+        if (response?.data?.className) {
+          setClassInfo({
+            className: response.data.className,
+            subjectName: response.data.subjectName || "Chưa có thông tin môn học"
+          });
+        }
+        
         setColumns([
           { id: "studentId", label: "MSSV" },
           { id: "fullName", label: "Họ và tên" },
@@ -75,6 +94,16 @@ const StudentsList = () => {
     };
     fetchData();
   }, [buttonVariant, classId, dispatch]);
+
+  // Set class info from URL parameters
+  useEffect(() => {
+    if (className || courseName) {
+      setClassInfo({
+        className: className || `Lớp ${classId}`,
+        subjectName: courseName || "Chưa có thông tin môn học"
+      });
+    }
+  }, [className, courseName, classId]);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -116,11 +145,11 @@ const StudentsList = () => {
 
   const handleViewDetail = () => {
     if (buttonVariant === "contained") {
-      setButtonContent("tổng quan");
+      setButtonContent("Tổng quan");
       setButtonVariant("outlined");
       return;
     }
-    setButtonContent("chi tiết");
+    setButtonContent("Chi tiết");
     setButtonVariant("contained");
   };
 
@@ -139,6 +168,37 @@ const StudentsList = () => {
 
   return (
     <Container>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 2,
+          mb: 2,
+          background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+          border: "1px solid #e2e8f0",
+          borderRadius: "8px",
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            color: "#1e3a8a",
+            fontWeight: 600,
+            mb: 1,
+          }}
+        >
+          {classInfo.className || `Lớp ${classId}`}
+        </Typography>
+        <Typography
+          variant="body1"
+          sx={{
+            color: "#64748b",
+            fontWeight: 500,
+          }}
+        >
+          {classInfo.subjectName}
+        </Typography>
+      </Paper>
+
       <Header style={{ alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
         <div
           style={{
@@ -177,17 +237,12 @@ const StudentsList = () => {
                   <IconButton
                     onClick={handleSearch}
                     sx={{
-                      backgroundColor: "#1976D2",
                       borderRadius: "0 4px 4px 0",
                       padding: "10px",
                       height: "100%",
-                      "&:hover": {
-                        backgroundColor: "#1976D2",
-                        marginRight: 0,
-                      },
                     }}
                   >
-                    <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
+                    <SearchIcon sx={{ color: "#1e3a8a", fontSize: "20px" }} />
                   </IconButton>
                 </InputAdornment>
               ),

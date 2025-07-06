@@ -12,18 +12,20 @@ import {
   Divider,
   Chip,
   Avatar,
+  Card,
+  CircularProgress,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFilter } from "@/context/FilterContext";
-import { 
-  FilterAlt, 
-  School, 
-  TrendingUp, 
+import {
+  FilterAlt,
+  School,
+  TrendingUp,
   Assessment,
   Book,
   Group,
-  Warning
+  Warning,
 } from "@mui/icons-material";
 
 import { AvgScoreChart } from "@/components/Dashboard/charts/AvgScoreChart";
@@ -35,35 +37,79 @@ import {
   fetchDashboardCardsThunk,
   fetchSummaryThunk,
 } from "@/redux/thunk/dashboardThunk";
+import { jwtDecode } from "jwt-decode";
+import { fetchAcademicyear, fetchAllCourses } from "@/redux/thunk/dataThunk";
 
 export default function DashboardPage() {
   const { showFilters } = useFilter();
   const dispatch = useDispatch();
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
+  const { courses, academicYears } = useSelector((state) => state.data);
+
+  const { accessToken } = useSelector((state) => state.auth);
+  const userId = useMemo(() => {
+    if (!accessToken) return null;
+    try {
+      const { sub } = jwtDecode(accessToken);
+      return sub;
+    } catch {
+      return null;
+    }
+  }, [accessToken]);
 
   useEffect(() => {
-    dispatch(fetchSummaryThunk());
-    dispatch(fetchDashboardCardsThunk());
-  }, [dispatch]);
+    dispatch(
+      fetchSummaryThunk({
+        instructorId: userId,
+        courseId: null,
+        academicYear: null,
+      })
+    );
+    dispatch(fetchAllCourses({ instructorId: userId }));
+    dispatch(fetchAcademicyear({ instructorId: userId }));
+    // dispatch(fetchDashboardCardsThunk());
+  }, [dispatch, userId]);
 
-  const { academicRankData, avgScoreChart, riskStudentData } = useSelector(
-    (state) => state.dashboard
-  );
+  useEffect(() => {
+    if (!selectedSubject && !selectedYear) {
+      dispatch(
+        fetchSummaryThunk({
+          instructorId: userId,
+          courseId: null,
+          academicYear: null,
+        })
+      );
+      return;
+    }
+    dispatch(
+      fetchSummaryThunk({
+        instructorId: userId,
+        courseId: selectedSubject,
+        academicYear: selectedYear,
+      })
+    );
+  }, [selectedSubject, selectedYear]);
 
-  const { cardsData } = useSelector((state) => state.dashboard);
+  const {
+    academicRankData,
+    avgScoreChart,
+    riskStudentData,
+    cardsData,
+    loading,
+  } = useSelector((state) => state.dashboard);
+
   const theme = useTheme();
 
-  const subjects = ["Tất cả"];
-  const years = ["Tất cả", "2024", "2023", "2022", "2021"];
-
   return (
-    <Box sx={{ 
-      minHeight: "100vh", 
-      background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
-      p: { xs: 2, md: 4 }
-    }}>
-      <Paper 
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+        p: { xs: 2, md: 4 },
+      }}
+    >
+      <Paper
         elevation={0}
         sx={{
           background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)",
@@ -83,46 +129,48 @@ export default function DashboardPage() {
             background: "rgba(255,255,255,0.1)",
             borderRadius: "50%",
             transform: "translate(50%, -50%)",
-          }
+          },
         }}
       >
         <Box sx={{ position: "relative", zIndex: 1 }}>
-          <Box sx={{ 
-            display: "flex", 
-            alignItems: "center", 
-            mb: 2,
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: 2
-          }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              mb: 2,
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: 2,
+            }}
+          >
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Avatar 
-                sx={{ 
-                  bgcolor: "rgba(255,255,255,0.2)", 
+              <Avatar
+                sx={{
+                  bgcolor: "rgba(255,255,255,0.2)",
                   mr: 2,
                   width: 56,
-                  height: 56
+                  height: 56,
                 }}
               >
                 <School sx={{ fontSize: 28 }} />
               </Avatar>
               <Box>
-                <Typography 
-                  variant="h3" 
+                <Typography
+                  variant="h3"
                   fontWeight="700"
-                  sx={{ 
+                  sx={{
                     fontSize: { xs: "1.8rem", md: "2.5rem" },
-                    letterSpacing: "-0.02em"
+                    letterSpacing: "-0.02em",
                   }}
                 >
                   Learning Analytics Dashboard
                 </Typography>
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
+                <Typography
+                  variant="h6"
+                  sx={{
                     opacity: 0.9,
                     fontWeight: 300,
-                    mt: 0.5
+                    mt: 0.5,
                   }}
                 >
                   Giám sát tiến trình học tập và hiệu quả môn học của sinh viên.
@@ -131,15 +179,17 @@ export default function DashboardPage() {
             </Box>
 
             {/* Selectors */}
-            <Box sx={{ 
-              display: "flex", 
-              gap: 2, 
-              flexWrap: "wrap",
-              minWidth: { xs: "100%", md: "auto" }
-            }}>
-              <FormControl 
-                size="small" 
-                sx={{ 
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                flexWrap: "wrap",
+                minWidth: { xs: "100%", md: "auto" },
+              }}
+            >
+              <FormControl
+                size="small"
+                sx={{
                   minWidth: 120,
                   "& .MuiOutlinedInput-root": {
                     bgcolor: "rgba(255,255,255,0.1)",
@@ -170,18 +220,24 @@ export default function DashboardPage() {
                   value={selectedSubject}
                   label="Môn"
                   onChange={(e) => setSelectedSubject(e.target.value)}
+                  sx={{
+                    width: "200px",
+                  }}
                 >
-                  {subjects.map((subject) => (
-                    <MenuItem key={subject} value={subject}>
-                      {subject}
+                  <MenuItem key="all" value="">
+                    Tất cả
+                  </MenuItem>
+                  {courses?.map((course) => (
+                    <MenuItem key={course.courseId} value={course.courseId}>
+                      {course.courseName}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
 
-              <FormControl 
-                size="small" 
-                sx={{ 
+              <FormControl
+                size="small"
+                sx={{
                   minWidth: 120,
                   "& .MuiOutlinedInput-root": {
                     bgcolor: "rgba(255,255,255,0.1)",
@@ -213,7 +269,10 @@ export default function DashboardPage() {
                   label="Khóa"
                   onChange={(e) => setSelectedYear(e.target.value)}
                 >
-                  {years.map((year) => (
+                  <MenuItem key="all" value="">
+                    Tất cả
+                  </MenuItem>
+                  {academicYears?.map((year) => (
                     <MenuItem key={year} value={year}>
                       {year}
                     </MenuItem>
@@ -229,26 +288,26 @@ export default function DashboardPage() {
       {cardsData && (
         <Box sx={{ mb: 5 }}>
           <Box sx={{ mb: 3 }}>
-            <Typography 
-              variant="h5" 
+            <Typography
+              variant="h5"
               fontWeight="600"
-              sx={{ 
+              sx={{
                 color: "#1e293b",
                 mb: 1,
                 display: "flex",
                 alignItems: "center",
-                gap: 1
+                gap: 1,
               }}
             >
               <Assessment sx={{ color: "#3b82f6" }} />
-              Institutional Overview
+              Tổng Quan
             </Typography>
-            <Typography 
-              variant="body1" 
+            <Typography
+              variant="body1"
               color="text.secondary"
               sx={{ color: "#64748b" }}
             >
-              Key metrics and performance indicators across all academic departments
+              Các số liệu chính và chỉ số hiệu suất trên tất cả các khoá học
             </Typography>
           </Box>
           <DashboardCards
@@ -264,11 +323,10 @@ export default function DashboardPage() {
 
       {/* Charts */}
       <Box sx={{ width: "100%" }}>
-
         {/* Top charts */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
           <Grid item xs={12} lg={6}>
-            <Paper 
+            <Paper
               elevation={0}
               sx={{
                 p: 3,
@@ -279,15 +337,15 @@ export default function DashboardPage() {
                 transition: "all 0.3s ease",
                 "&:hover": {
                   boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-                  transform: "translateY(-2px)"
-                }
+                  transform: "translateY(-2px)",
+                },
               }}
             >
               <AvgScoreChart data={avgScoreChart} />
             </Paper>
           </Grid>
           <Grid item xs={12} lg={6}>
-            <Paper 
+            <Paper
               elevation={0}
               sx={{
                 p: 3,
@@ -298,8 +356,8 @@ export default function DashboardPage() {
                 transition: "all 0.3s ease",
                 "&:hover": {
                   boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-                  transform: "translateY(-2px)"
-                }
+                  transform: "translateY(-2px)",
+                },
               }}
             >
               <RiskStudentChart data={riskStudentData} />
@@ -310,7 +368,7 @@ export default function DashboardPage() {
         {/* Bottom chart */}
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <Paper 
+            <Paper
               elevation={0}
               sx={{
                 p: 3,
@@ -320,8 +378,8 @@ export default function DashboardPage() {
                 transition: "all 0.3s ease",
                 "&:hover": {
                   boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-                  transform: "translateY(-2px)"
-                }
+                  transform: "translateY(-2px)",
+                },
               }}
             >
               <AcademicRankChart data={academicRankData} />
@@ -329,7 +387,6 @@ export default function DashboardPage() {
           </Grid>
         </Grid>
       </Box>
-
     </Box>
   );
 }

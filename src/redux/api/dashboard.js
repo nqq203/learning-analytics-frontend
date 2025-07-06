@@ -14,9 +14,28 @@ const handleDashboardApiError = (error) => {
 
 const dashboardApi = {
   fetchStatsCards: () => axios.get(`${API_URL}/dashboard/cards`),
-  fetchSummary: () => axios.get(`${API_URL}/dashboard/summary`),
+  fetchSummary: ({ instructorId, courseId, academicYear }) => {
+    if (courseId) {
+      return axios.get(
+        `${API_URL}/dashboard/summary?instructor_id=${instructorId}&course_id=${courseId}`
+      );
+    } else if (academicYear) {
+      return axios.get(
+        `${API_URL}/dashboard/summary?instructor_id=${instructorId}&academic_year=${academicYear}`
+      );
+    } else if (courseId && academicYear) {
+      return axios.get(
+        `${API_URL}/dashboard/summary?instructor_id=${instructorId}&course_id=${courseId}&academic_year=${academicYear}`
+      );
+    } else {
+      return axios.get(
+        `${API_URL}/dashboard/summary?instructor_id=${instructorId}`
+      );
+    }
+  },
   fetchAvgScoreChart: () => axios.get(`${API_URL}/dashboard/avg_score_chart`),
-  fetchAcademicRankData: () => axios.get(`${API_URL}/dashboard/academic_rank_data`),
+  fetchAcademicRankData: () =>
+    axios.get(`${API_URL}/dashboard/academic_rank_data`),
   fetchSubjects: () => axios.get(`${API_URL}/dashboard/subjects`),
 };
 

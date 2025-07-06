@@ -1,4 +1,3 @@
-// src/components/ClassManagement/ClassViewTable.jsx
 import React, { useEffect, useRef } from 'react';
 import {
     Paper,

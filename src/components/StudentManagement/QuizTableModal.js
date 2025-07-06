@@ -7,36 +7,28 @@ import {
   TableHead,
   TableRow,
   Typography,
-  TextField
+  TextField,
+  Box,
+  Button
 } from "@mui/material";
 
-
-import {
-  ActionButton,
-  Container,
-  Header,
-} from "@/components/Analytics/Styles/Styles";
 import {
   Add,
   FileDownload,
   Info,
 } from "@mui/icons-material";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
+
 import IconButton from '@mui/material/IconButton';
-import { TableWrapper } from "../Analytics/Styles/Styles";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Fragment, use } from "react";
+import { toast } from "react-toastify";
 import { useEffect, useMemo, useState, useRef } from "react";
 
 const QuizTableModal = ({
-  students
+  studentInfo,
+  mode,
+  HandleSaveExam,
+  onClose
 }) => {
+  const [quizName, setQuizName] = useState("");
    const [questions, setQuestions] = useState([]);
   const [scores, setScores] = useState({});
   const [times, setTimes] = useState({});
@@ -81,15 +73,11 @@ const QuizTableModal = ({
   };
 
   const handleSave = () => {
-    const result = students.map((student) => ({
-      MSSV: student.MSSV,
-      name: student.name,
-      time: times[student.MSSV] || "",
-      scores: scores[student.MSSV] || {},
-    }));
-
-    console.log("Kết quả:", result);
-    alert("Dữ liệu đã được lưu! Xem console log để kiểm tra.");
+    if(quizName.trim() === "" || Object.keys(questions).length === 0) {
+      toast.error(`Vui lòng nhập tên và câu hỏi của bài kiểm tra`);
+    }
+    else
+     HandleSaveExam(mode,studentInfo,scores,questions,times,quizName)
   };
 
   
@@ -99,27 +87,19 @@ const QuizTableModal = ({
 
       
         <div>
-          <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Tên bài quiz:</Typography>
+          <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>Tên bài {mode}:</Typography>
+
           <TextField 
           variant="outlined"
                       size="small"
-          placeholder="Nhập tên bài Quiz"/>
+          placeholder="Nhập tên bài"
+          onChange={(e) => setQuizName(e.target.value)}
+          />
+          
         </div>
 
 
-        {/* <div style={{display:"flex",justifyContent:"flex-end",alignItems:"center"}}>
-
-        <ActionButton
-          onClick={handleAddQuestion}
-          style={{ width: "20%", fontWeight: "700", fontSize: "14px" }}
-          color="primary"
-          variant="outlined"
-          startIcon={<Add />}
-        >
-          Thêm câu hỏi
-        </ActionButton>
-        </div> */}
-
+        
      
 
       
@@ -129,20 +109,17 @@ const QuizTableModal = ({
        className="TableContainer"
        style={{
           
-          maxHeight: "350px",
+          maxHeight: "550px",
           overflow: "auto",
         }}
-        // border="1"
-        // cellPadding="8"
-        // cellSpacing="0"
-        // style={{ width: "100%", borderCollapse: "collapse" }}
+        
       >
         <Table stickyHeader>
         <TableHead>
           <TableRow>
             <TableCell>MSSV</TableCell>
-            <TableCell>Họ tên</TableCell>
-            <TableCell>Thời gian làm bài</TableCell>
+            {mode==="Quiz" &&( <TableCell>Thời gian làm bài</TableCell> )}
+            
             {questions.map((q, index) => (
               <TableCell key={index}>
                 {q}
@@ -169,34 +146,30 @@ const QuizTableModal = ({
               <IconButton onClick={handleAddQuestion}>
                         <Add color="primary" alt="Thêm câu hỏi"/>
               </IconButton>
-              {/* <ActionButton
-                onClick={handleAddQuestion}
-                style={{ width: "5%", fontWeight: "600", fontSize: "14px" }}
-                color="primary"
-                variant="outlined"
-                startIcon={<Add />}
-              >
-                
-              </ActionButton> */}
+             
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {students.map((student) => (
-            <TableRow key={student.MSSV}>
-              <TableCell>{student.MSSV}</TableCell>
-              <TableCell>{student.name}</TableCell>
-              <TableCell>
-                <input
-                  type="text"
-                  style={{border:"none",width:"50%"}}
-                  placeholder="Nhập thời gian"
-                  value={times[student.MSSV] || ""}
-                  onChange={(e) =>
-                    handleTimeChange(student.MSSV, e.target.value)
-                  }
-                />
+          {studentInfo.map((student) => (
+            <TableRow key={student.studentId}>
+              <TableCell>{student.identificationCode}</TableCell>
+              {mode==="Quiz" &&(
+                  <TableCell>
+                      <input
+                        type="text"
+                        style={{border:"none",width:"50%"}}
+                        placeholder="Nhập thời gian"
+                        value={times[student.studentId] || ""}
+                        onChange={(e) =>
+                          handleTimeChange(student.studentId, e.target.value)
+                        }
+                      />
               </TableCell>
+
+              )}
+              
+              
               {questions.map((q, index) => (
                 <TableCell key={index}>
                   <input
@@ -205,9 +178,9 @@ const QuizTableModal = ({
                     max="10"
                     placeholder="Nhập điểm"
                     style={{border:"none",width:"100%"}}
-                    value={scores[student.MSSV]?.[q] || ""}
+                    value={scores[student.studentId]?.[q] || ""}
                     onChange={(e) =>
-                      handleScoreChange(student.MSSV, q, e.target.value)
+                      handleScoreChange(student.studentId, q, e.target.value)
                     }
                   />
                 </TableCell>
@@ -219,22 +192,32 @@ const QuizTableModal = ({
       </Table>
       </TableContainer>
       
+          
 
-      {/* <button
-        onClick={handleSave}
-        style={{
-          marginTop: "20px",
-          padding: "10px 20px",
-          fontSize: "16px",
-          backgroundColor: "#4CAF50",
-          color: "white",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
-        💾 Lưu
-      </button> */}
+
+      <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            
+          }}
+        >
+          <Button variant="outlined" onClick={onClose} sx={{ width: "48%" }}>
+            ĐÓNG
+          </Button>
+          
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={()=>handleSave()}
+            sx={{ width: "48%" }}
+          >
+            LƯU
+          </Button>
+        </Box>
+
+
+      
     </div>
   );
 };

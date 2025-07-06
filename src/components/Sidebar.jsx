@@ -15,8 +15,10 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Collapse } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import Link from "next/link";
+import { Button } from "@mui/material";
+import { logout } from "@/redux/thunk/authThunk";
+import LogoutIcon from '@mui/icons-material/Logout';
 
-// Styled Components
 const SidebarWrapper = styled.div`
   z-index: 1100;
   width: ${({ $isMobile, $collapsed }) =>
@@ -59,7 +61,6 @@ const ToggleButton = styled.div`
   color: var(--blue-700);
 `;
 
-// Create a styled anchor tag for our navigation item
 const NavItem = styled.div`
   display: flex;
   align-items: center;
@@ -216,6 +217,19 @@ const Sidebar = ({
     if (!collapsed) {
       setOpenStatistic(false);
       setOpenPrediction(false);
+    }
+  };
+
+  const handleProfileClick = () => {
+    router.push("/profile");
+  };
+  const handleLogoutClick = async () => {
+    try {
+      await dispatch(logout());
+      router.replace("/login");
+    } catch (error) {
+      console.error(error);
+      toast.error("Logout failed, something went wrong");
     }
   };
 
@@ -498,7 +512,7 @@ const Sidebar = ({
       {/* Section Avatar & User Name ở Bottom */}
       <UserProfileSection>
         <Divider />
-        <AvatarContainer onClick={() => router.push("/profile")}>
+        <AvatarContainer onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
           <AvatarImage
             src={user?.avatar || "/images/avatar.png"}
             alt="Avatar"
@@ -508,6 +522,40 @@ const Sidebar = ({
             {user?.fullName || "User Name"}
           </UserName>
         </AvatarContainer>
+        <Button
+          variant="outlined"
+          color="error"
+          fullWidth
+          onClick={handleLogoutClick}
+          startIcon={<LogoutIcon />}
+          sx={{
+            mt: 2,
+            fontWeight: 600,
+            textTransform: 'none',
+            letterSpacing: 0.5,
+            borderColor: 'error.main',
+            color: 'error.main',
+            backgroundColor: '#fff',
+            '&:hover': {
+              backgroundColor: 'error.main',
+              color: '#fff',
+              borderColor: 'error.main',
+            },
+            '& .MuiButton-startIcon': {
+              marginRight: collapsed ? 0 : 1,
+            },
+            '& .MuiButton-label': {
+              display: collapsed ? 'none' : 'block',
+            },
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            minWidth: collapsed ? '40px' : 'auto',
+            width: collapsed ? '40px' : '100%',
+            height: collapsed ? '40px' : 'auto',
+            borderRadius: collapsed ? '50%' : 1,
+          }}
+        >
+          {!collapsed && "Đăng xuất"}
+        </Button>
       </UserProfileSection>
     </SidebarWrapper>
   );

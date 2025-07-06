@@ -1,20 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ActionButton,
-  Container,
-  Header,
-} from "@/components/Analytics/Styles/Styles";
-import {
-  TextField,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  IconButton,
   Box,
   CircularProgress,
+  Paper,
+  Typography,
+  TextField,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import AnalyticsTable from "@/components/Analytics/Table/Table";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,8 +15,10 @@ import {
   fetchClassesByLecturer,
   searchClasses,
 } from "@/redux/thunk/analyticsThunk";
-import InputAdornment from "@mui/material/InputAdornment";
 import { jwtDecode } from "jwt-decode";
+import PageHeader from "@/components/CommonStyles/PageHeader";
+import SearchFilters from "@/components/CommonStyles/SearchFilters";
+import SearchIcon from "@mui/icons-material/Search";
 
 const ClassesList = () => {
   const { totalRecords, classes, loading } = useSelector(
@@ -98,8 +93,12 @@ const ClassesList = () => {
     updateFilter("search", e.target.value);
   };
 
-  const handleViewClass = (classId) => {
-    router.push(`/analytics/reports-and-statistics/${classId}`);
+  const handleViewClass = (classId, className, courseName) => {
+    const params = new URLSearchParams({
+      className: className || '',
+      courseName: courseName || ''
+    });
+    router.push(`/analytics/reports-and-statistics/${classId}?${params.toString()}`);
   };
 
   useEffect(() => {
@@ -162,6 +161,17 @@ const ClassesList = () => {
     updateFilter("search", search);
   };
 
+  const handleClearFilters = () => {
+    setSearch("");
+    setFilterSubject("");
+    setFilterClass("");
+    setFilters({
+      search: "",
+      subject: "",
+      className: "",
+    });
+  };
+
   const columns = [
     { id: "courseName", label: "Môn học", align: "left" },
     { id: "className", label: "Lớp", align: "left" },
@@ -170,104 +180,74 @@ const ClassesList = () => {
     { id: "passRate", label: "Tỷ lệ đậu (%)", align: "center" },
   ];
 
+  const filterOptions = [
+    {
+      key: "subject",
+      label: "Môn học",
+      value: filterSubject,
+      options: subjectOptions.map(subject => ({
+        value: subject.id,
+        label: subject.name
+      })),
+      minWidth: 200,
+    },
+    {
+      key: "className",
+      label: "Lớp",
+      value: filterClass,
+      options: classOptions.map(cls => ({
+        value: cls.id,
+        label: cls.name
+      })),
+      minWidth: 180,
+    },
+  ];
+
   return (
-    <Container>
-      <Header style={{ alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            width: "100%",
-          }}
-        >
-          <TextField
-            variant="outlined"
-            label="Tìm kiếm"
-            value={search}
-            onChange={handleSearchChange}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSearch();
-            }}
-            style={{ width: "55%", minWidth: 200 }}
-            size="small"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handleSearch}
-                    sx={{
-                      backgroundColor: "#1976D2",
-                      borderRadius: "0 4px 4px 0",
-                      padding: "10px",
-                      height: "100%",
-                      "&:hover": {
-                        backgroundColor: "#1976d2",
-                      },
-                    }}
-                  >
-                    <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              width: "100%",
-              "& .MuiOutlinedInput-root": {
-                paddingRight: 0,
-              },
-            }}
-          />
+    <Box sx={{ p: { xs: 2, md: 4 } }}>
+      <PageHeader
+        title="Thống kê & Báo cáo"
+        subtitle="Phân tích dữ liệu học tập theo lớp"
+        icon="analytics"
+        variant="analytics"
+        stats={[
+          { label: "Tổng lớp", value: totalStudents },
+          { label: "Môn học", value: subjectOptions.length },
+        ]}
+      />
 
-          <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
-            <InputLabel>Môn học</InputLabel>
-            <Select
-              label="Môn học"
-              value={filters.subject}
-              onChange={handleSubjectChange}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {subjectOptions.map((subject) => (
-                <MenuItem key={subject.id} value={subject.id}>
-                  {subject.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+      <SearchFilters
+        searchValue={search}
+        onSearchChange={setSearch}
+        onSearch={handleSearch}
+        filters={filterOptions}
+        onFilterChange={(key, value) => {
+          if (key === "subject") {
+            setFilterSubject(value);
+            updateFilter("subject", value);
+          } else if (key === "className") {
+            setFilterClass(value);cl
+            updateFilter("className", value);
+          }
+        }}
+        onClearFilters={handleClearFilters}
+        searchPlaceholder="Tìm kiếm lớp, môn học..."
+      />
 
-          <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
-            <InputLabel>Lớp</InputLabel>
-            <Select
-              label="Lớp"
-              value={filters.className}
-              onChange={handleClassChange}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {classOptions.map((cls) => (
-                <MenuItem key={`${cls.id}-${cls.name}`} value={cls.id}>
-                  {cls.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </div>
-      </Header>
-
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <span
-          style={{
-            paddingLeft: "20px",
-            paddingTop: "20px",
-            fontSize: "20px",
-            fontWeight: "700",
-          }}
-        >
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          border: '1px solid #e5e7eb',
+          borderRadius: 2,
+        }}
+      >
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h6" fontWeight={600} color="text.primary">
           Tổng số lớp hiển thị: {totalRecords}
-        </span>
+          </Typography>
+        </Box>
+
         <Box position="relative">
           <AnalyticsTable
             filteredRows={rows}
@@ -294,8 +274,8 @@ const ClassesList = () => {
             </Box>
           )}
         </Box>
-      </div>
-    </Container>
+      </Paper>
+    </Box>
   );
 };
 

@@ -15,7 +15,10 @@ import {
   Box,
   Link,
   CircularProgress,
+  Chip,
+  Divider,
 } from "@mui/material";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ScoreComparisonCharts from "@/components/CompareResults/charts/ScoreComparisonCharts";
 
 const CompareResult = ({
@@ -31,29 +34,72 @@ const CompareResult = ({
   
 if (loading) {
   return (
-    <Card sx={{ mt: 4, maxWidth: 800, mx: "auto", py: 5, textAlign: "center" }}>
-      <CircularProgress color="primary" />
-      <Typography sx={{ mt: 2 }}>Đang tải dữ liệu...</Typography>
-    </Card>
+    <Box 
+      sx={{ 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '60vh',
+        background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+        borderRadius: 3,
+        p: 4
+      }}
+    >
+      <CircularProgress 
+        size={60} 
+        sx={{ color: '#1e3a8a', mb: 2 }} 
+      />
+      <Typography 
+        variant="h6" 
+        sx={{ 
+          color: '#64748b',
+          fontWeight: 500 
+        }}
+      >
+        Đang tải dữ liệu so sánh...
+      </Typography>
+    </Box>
   );
 }
 
 if (!loading && !data) {
   return (
-    <Card sx={{ mt: 4, maxWidth: 800, mx: "auto" }}>
-      <CardContent>
-        <Typography>Không có dữ liệu để hiển thị.</Typography>
+    <Card sx={{ 
+      mt: 4, 
+      maxWidth: 800, 
+      mx: "auto",
+      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+      border: '1px solid #e2e8f0',
+      borderRadius: 3
+    }}>
+      <CardContent sx={{ textAlign: 'center', py: 4 }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            color: '#64748b',
+            mb: 2 
+          }}
+        >
+          Không có dữ liệu để hiển thị
+        </Typography>
         <Link
           component="button"
           variant="body2"
           onClick={onBack}
           sx={{
-            mt: 2,
-            display: "inline-block",
-            color: "#1976d2",
-            textDecoration: "underline",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 1,
+            color: "#1e3a8a",
+            textDecoration: "none",
+            fontWeight: 500,
+            "&:hover": {
+              textDecoration: "underline",
+            },
           }}
         >
+          <ArrowBackIcon fontSize="small" />
           Quay lại
         </Link>
       </CardContent>
@@ -67,7 +113,6 @@ if (!loading && !data) {
 
   const safeData = data || {};
   // Chuyển đổi dữ liệu và xử lý null hoặc NaN thành 0
-  // console.log("sanitizedData", sanitizedData);
   const sanitizedData = Object.values(safeData).map((item) => ({
     ...item,
     midtermAvg: Number(item.midtermAvg) || 0,
@@ -87,108 +132,178 @@ if (!loading && !data) {
   }));
 
   return (
-    <Card sx={{ mt: 4, maxWidth: 1400, mx: "auto", borderRadius: 3, boxShadow: 3 }}>
-      <CardContent>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Link
-            component="button"
-            variant="body2"
-            onClick={onBack}
-            sx={{ color: "#1976d2", textDecoration: "underline" }}
-          >
-            Quay lại
-          </Link>
-          <Typography variant="h6" fontWeight={600} sx={{ flexGrow: 1, textAlign: "center" }}>
-            Kết quả so sánh
-          </Typography>
-          <Box width="64px" />
-        </Box>
+    <Box sx={{ 
+      p: { xs: 2, md: 4 },
+      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+      minHeight: '100vh'
+    }}>
+      <Card sx={{ 
+        maxWidth: 1400, 
+        mx: "auto", 
+        borderRadius: 3, 
+        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+        border: '1px solid #e2e8f0',
+        overflow: 'hidden'
+      }}>
+        <CardContent sx={{ p: 0 }}>
+          {/* Header */}
+          <Box sx={{
+            background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+            color: 'white',
+            p: 3,
+            position: 'relative'
+          }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Link
+                component="button"
+                variant="body2"
+                onClick={onBack}
+                sx={{ 
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 1,
+                  color: "white",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                  "&:hover": {
+                    textDecoration: "underline",
+                  },
+                }}
+              >
+                <ArrowBackIcon fontSize="small" />
+                Quay lại
+              </Link>
+              <Typography 
+                variant="h5" 
+                sx={{ 
+                  fontWeight: 700,
+                  textAlign: "center",
+                  flexGrow: 1 
+                }}
+              >
+                Kết quả so sánh
+              </Typography>
+              <Box width="64px" />
+            </Box>
+          </Box>
 
-        <Typography variant="body1">
-          <strong>Tiêu chí: </strong>
-          {mode === "class" ? "Theo Lớp" : "Theo Khóa"}
-        </Typography>
-        <Typography variant="body1">
-          <strong>Môn học: </strong>
-          {course || "Tất cả"}
-        </Typography>
-        <Typography variant="body1" gutterBottom>
-          <strong>{mode === "class" ? "Lớp đã chọn" : "Khóa đã chọn"}: </strong>
-          {selectedItems?.length ? selectedItems.join(", ") : "Không có"}
-        </Typography>
+          {/* Content */}
+          <Box sx={{ p: 3 }}>
+            {/* Bảng dữ liệu */}
+            <Paper sx={{ 
+              mb: 4,
+              border: '1px solid #e2e8f0',
+              borderRadius: 2,
+              overflow: 'hidden'
+            }}>
+              <TableContainer>
+                <Table size="small" aria-label="comparison table">
+                  <TableHead>
+                    <TableRow sx={{ bgcolor: '#f1f5f9' }}>
+                      <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>
+                        {mode === "class" ? "Tên lớp" : "Khóa"}
+                      </TableCell>
+                      {mode === "class" && (
+                        <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>
+                          Tên môn học
+                        </TableCell>
+                      )}
+                      <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>Giữa kỳ</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>Thực hành</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>Đồ án</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>Cuối kỳ</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>Trung bình</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>Số SV</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {sanitizedData.map((item, index) => (
+                      <TableRow
+                        key={index}
+                        sx={{
+                          bgcolor: index % 2 === 0 ? "#f8fafc" : "white",
+                          "&:hover": { 
+                            bgcolor: "#e0f2fe",
+                            transform: "scale(1.01)",
+                            transition: "all 0.2s ease-in-out"
+                          },
+                        }}
+                      >
+                        <TableCell sx={{ fontWeight: 600, color: '#1e3a8a' }}>
+                          {mode === "class"
+                            ? item.className || "N/A"
+                            : item.className?.match(/K\d+/)?.[0] || "N/A"}
+                        </TableCell>
+                        {mode === "class" && (
+                          <TableCell sx={{ color: '#64748b' }}>
+                            {item.courseName || "N/A"}
+                          </TableCell>
+                        )}
+                        <TableCell sx={{ fontWeight: 500 }}>{item.midtermAvg.toFixed(2)}</TableCell>
+                        <TableCell sx={{ fontWeight: 500 }}>{item.practiceAvg.toFixed(2)}</TableCell>
+                        <TableCell sx={{ fontWeight: 500 }}>{item.projectAvg.toFixed(2)}</TableCell>
+                        <TableCell sx={{ fontWeight: 500 }}>{item.finalAvg.toFixed(2)}</TableCell>
+                        <TableCell sx={{ fontWeight: 600, color: '#059669' }}>
+                          {item.totalAvg.toFixed(2)}
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: 500, color: '#dc2626' }}>
+                          {item.totalStudents}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
 
-        {/* Bảng dữ liệu */}
-        <TableContainer component={Paper} sx={{ mt: 2 }}>
-          <Table size="small" aria-label="comparison table">
-            <TableHead>
-              <TableRow sx={{ bgcolor: "primary.light" }}>
-                <TableCell><strong>{mode === "class" ? "Tên lớp" : "Khóa"}</strong></TableCell>
-                {mode === "class" && <TableCell><strong>Tên môn học</strong></TableCell>}
-                <TableCell><strong>Giữa kỳ</strong></TableCell>
-                <TableCell><strong>Thực hành</strong></TableCell>
-                <TableCell><strong>Đồ án</strong></TableCell>
-                <TableCell><strong>Cuối kỳ</strong></TableCell>
-                <TableCell><strong>Trung bình</strong></TableCell>
-                <TableCell><strong>Số SV</strong></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {sanitizedData.map((item, index) => (
-                <TableRow
-                  key={index}
+            {/* Biểu đồ */}
+            <Paper sx={{ 
+              border: '1px solid #e2e8f0',
+              borderRadius: 2,
+              overflow: 'hidden'
+            }}>
+              <Box sx={{ p: 2 }}>
+                <Tabs
+                  value={chartType}
+                  onChange={handleChangeTab}
+                  centered
+                  indicatorColor="primary"
+                  textColor="primary"
                   sx={{
-                    bgcolor: index % 2 === 0 ? "grey.100" : "common.white",
-                    "&:hover": { bgcolor: "#e3f2fd" },
+                    '& .MuiTab-root': {
+                      fontWeight: 600,
+                      color: '#64748b',
+                      '&.Mui-selected': {
+                        color: '#1e3a8a',
+                      },
+                    },
+                    '& .MuiTabs-indicator': {
+                      backgroundColor: '#1e3a8a',
+                    },
                   }}
                 >
-                  <TableCell>
-                    {mode === "class"
-                      ? item.className || "N/A"
-                      : item.className?.match(/K\d+/)?.[0] || "N/A"}
-                  </TableCell>
-                  {mode === "class" && (
-                    <TableCell>{item.courseName || "N/A"}</TableCell>
-                  )}
-                  <TableCell>{item.midtermAvg}</TableCell>
-                  <TableCell>{item.practiceAvg}</TableCell>
-                  <TableCell>{item.projectAvg}</TableCell>
-                  <TableCell>{item.finalAvg}</TableCell>
-                  <TableCell>{item.totalAvg}</TableCell>
-                  <TableCell>{item.totalStudents}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                  <Tab label="Biểu đồ Cột" value="bar" />
+                  <Tab label="Biểu đồ Radar" value="radar" />
+                  <Tab label="Biểu đồ Tròn" value="pie" />
+                </Tabs>
 
-        {/* Biểu đồ */}
-        <Box sx={{ width: "100%", mt: 4 }}>
-          <Tabs
-            value={chartType}
-            onChange={handleChangeTab}
-            centered
-            indicatorColor="primary"
-            textColor="primary"
-          >
-            <Tab label="Biểu đồ Cột" value="bar" />
-            <Tab label="Biểu đồ Radar" value="radar" />
-            <Tab label="Biểu đồ Tròn" value="pie" />
-          </Tabs>
-
-          <Box sx={{ mt: 2 }}>
-            <ScoreComparisonCharts
-              chartType={chartType}
-              data={chartData}
-              getDisplayName={(item) => item.name}
-              getClassColor={(index) => {
-                const colors = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#8dd1e1"];
-                return colors[index % colors.length];
-              }}
-            />
+                <Box sx={{ mt: 3, minHeight: '400px' }}>
+                  <ScoreComparisonCharts
+                    chartType={chartType}
+                    data={chartData}
+                    getDisplayName={(item) => item.name}
+                    getClassColor={(index) => {
+                      const colors = ["#1e3a8a", "#059669", "#dc2626", "#f59e0b", "#8b5cf6"];
+                      return colors[index % colors.length];
+                    }}
+                  />
+                </Box>
+              </Box>
+            </Paper>
           </Box>
-        </Box>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
 
