@@ -46,9 +46,8 @@ export default function ClassListLNO({TableHeader,TableContent,setClassID,onScro
         ...cellStyle,
         fontWeight: "700",
     };
-    const handleClick=(Classid)=>{
-        setClassID(Classid);
-
+    const handleClick=(Classid, className, courseName)=>{
+        setClassID({ classId: Classid, className, courseName });
     }
     const renderCell = (value) => {
         return value !== null && value !== undefined && value !== "" ? value : "--";
@@ -119,7 +118,7 @@ export default function ClassListLNO({TableHeader,TableContent,setClassID,onScro
                                             <VisibilityIcon
                                             color="primary"
                                             style={{ cursor: "pointer" }}
-                                            onClick={()=>handleClick(row.id) }
+                                            onClick={()=>handleClick(row.id, row.className, row.courseName) }
                                             />
                                                
                                         </TableCell>

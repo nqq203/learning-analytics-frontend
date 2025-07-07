@@ -11,7 +11,8 @@ import {
   Select,
   MenuItem,
   CircularProgress,
-  Button
+  Button,
+  Paper,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { Add } from '@mui/icons-material';
@@ -22,6 +23,8 @@ import { clearClassList } from '@/redux/slice/dataSlice';
 import { fetchAcademicyear, fetchClassList, fetchSemester } from '@/redux/thunk/dataThunk';
 import ClassViewTable from '@/components/PredictionAchievements/ClassList';
 import { Divider } from '@mui/material';
+import PageHeader from '@/components/CommonStyles/PageHeader';
+import SearchFilters from '@/components/CommonStyles/SearchFilters';
 
 export default function PredictArchievement() {
   const dispatch = useDispatch();
@@ -97,98 +100,92 @@ export default function PredictArchievement() {
     dispatch(fetchSemester({ instructorId: userId }));
   }, [userId]);
 
+  const filterOptions = [
+    {
+      key: "academicYear",
+      label: "Khóa",
+      value: yearFilter,
+      options: academicYears.map(year => ({ value: year, label: year })),
+      minWidth: 180,
+    },
+    {
+      key: "semester",
+      label: "Kỳ",
+      value: semFilter,
+      options: semesters.map(sem => ({ value: sem, label: sem })),
+      minWidth: 160,
+    },
+  ];
+
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Search & Filters */}
-      <Box display="flex" alignItems="center" gap={2} flexWrap="wrap" mb={2}>
-        <TextField
-          variant="outlined"
-          placeholder="Tìm kiếm lớp..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && doSearch()}
-          size="small"
-          sx={{ flex: 1, minWidth: 300 }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={doSearch}>
-                  <SearchIcon />
-                </IconButton>
-              </InputAdornment>
-            )
-          }}
-        />
-
-        <FormControl size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>Khóa</InputLabel>
-          <Select
-            value={yearFilter}
-            label="Khóa"
-            onChange={e => setYearFilter(e.target.value)}
-          >
-            <MenuItem value="">Tất cả</MenuItem>
-            {academicYears.map(y => (
-              <MenuItem key={y} value={y}>{y}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl size="small" sx={{ minWidth: 160 }}>
-          <InputLabel>Kỳ</InputLabel>
-          <Select
-            value={semFilter}
-            label="Kỳ"
-            onChange={e => setSemFilter(e.target.value)}
-          >
-            <MenuItem value="">Tất cả</MenuItem>
-            {semesters.map(s => (
-              <MenuItem key={s} value={s}>{s}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
-
-      <Divider
-        sx={{
-          my: 2,
-          borderBottomWidth: 1.5,
-          borderColor: '#ccc'
-        }}
+    <Box sx={{ p: { xs: 2, md: 4 } }}>
+      <PageHeader
+        title="Dự đoán thành tích"
+        subtitle="Phân tích và dự đoán kết quả học tập của sinh viên"
+        icon="prediction"
+        variant="prediction"
+        stats={[
+          { label: "Tổng lớp", value: totalRecords },
+          { label: "Khóa học", value: academicYears.length },
+        ]}
       />
-      {/* Tổng số lớp */}
-      <Box mb={2} fontWeight={600}>
-        Tổng số lớp: {totalRecords}
-      </Box>
+
+      <SearchFilters
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        onSearch={doSearch}
+        filters={filterOptions}
+        onFilterChange={(key, value) => {
+          if (key === "academicYear") {
+            setYearFilter(value);
+          } else if (key === "semester") {
+            setSemFilter(value);
+          }
+        }}
+        onClearFilters={() => {
+          setSearchTerm("");
+          setYearFilter("");
+          setSemFilter("");
+        }}
+        searchPlaceholder="Tìm kiếm lớp..."
+      />
 
       {/* Bảng lớp */}
-      <Box position="relative">
-        <ClassViewTable
-          filteredRows={classList}
-          columns={[
-            { id: 'classId', label: 'ID', align: 'center' },
-            { id: 'className', label: 'Tên lớp', align: 'center' },
-            { id: 'courseCode', label: 'Mã khóa học', align: 'center' },
-            { id: 'courseName', label: 'Tên khóa học', align: 'center' },
-            { id: 'academicYear', label: 'Khóa', align: 'center' },
-            { id: 'semester', label: 'Kỳ', align: 'center' },
-          ]}
-          onLoadMore={handleLoadMore}
-          onView={onView}
-        />
-        {loading && (
-          <Box
-            position="absolute"
-            inset={0}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            bgcolor="rgba(255,255,255,0.6)"
-          >
-            <CircularProgress />
-          </Box>
-        )}
-      </Box>
+      <Paper
+        elevation={0}
+        sx={{
+          border: '1px solid #e5e7eb',
+          borderRadius: 2,
+        }}
+      >
+        <Box position="relative">
+          <ClassViewTable
+            filteredRows={classList}
+            columns={[
+              { id: 'classId', label: 'ID', align: 'center' },
+              { id: 'className', label: 'Tên lớp', align: 'center' },
+              { id: 'courseCode', label: 'Mã khóa học', align: 'center' },
+              { id: 'courseName', label: 'Tên khóa học', align: 'center' },
+              { id: 'academicYear', label: 'Khóa', align: 'center' },
+              { id: 'semester', label: 'Kỳ', align: 'center' },
+            ]}
+            onLoadMore={handleLoadMore}
+            onView={onView}
+          />
+          {loading && (
+            <Box
+              position="absolute"
+              inset={0}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.6)"
+            >
+              <CircularProgress />
+            </Box>
+          )}
+        </Box>
+      </Paper>
     </Box>
   );
 }

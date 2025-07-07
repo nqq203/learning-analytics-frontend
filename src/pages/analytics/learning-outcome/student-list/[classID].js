@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import StudentListLNO from "@/components/LearningOutcome/StudentListLNO";
 import { useRouter } from "next/router";
-import { TextField, FormControl, InputAdornment, IconButton, Box, CircularProgress } from "@mui/material";
+import { TextField, FormControl, InputAdornment, IconButton, Box, CircularProgress, Typography, Paper } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import { fetchStudentSearch } from "@/redux/thunk/learningoutcomeThunk";
 import { jwtDecode } from "jwt-decode";
@@ -31,12 +31,13 @@ const StudentContainerLNO = () => {
   const { studentsOverview, totalRecords, loading } = useSelector(state => state.learningoutcome);
   const dispatch = useDispatch();
   const router = useRouter();
-  const { classID } = router.query;
+  const { classID, className, courseName } = router.query;
   const [studentID, setStudentID] = useState("");
   const [amount, setAmount] = useState(10);
   const [page, setPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchResult, setSearchResult] = useState("");
+  const [classInfo, setClassInfo] = useState({ className: "", subjectName: "" });
   
   const [rows, setRows] = useState([]);
   const { accessToken } = useSelector(state => state.auth);
@@ -52,6 +53,14 @@ const StudentContainerLNO = () => {
     }
   }, [accessToken]);
 
+  useEffect(() => {
+    if (className || courseName) {
+      setClassInfo({
+        className: className || `Lớp ${classID}`,
+        subjectName: courseName || "Chưa có thông tin môn học"
+      });
+    }
+  }, [className, courseName, classID]);
   
   const handleLoadMore = () => {
       if (!loading && rows.length < totalRecords) {
@@ -106,6 +115,36 @@ const StudentContainerLNO = () => {
 
   return (
     <Container>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 2,
+          mb: 2,
+          background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+          border: "1px solid #e2e8f0",
+          borderRadius: "8px",
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            color: "#1e3a8a",
+            fontWeight: 600,
+            mb: 1,
+          }}
+        >
+          {classInfo.className || `Lớp ${classID}`}
+        </Typography>
+        <Typography
+          variant="body1"
+          sx={{
+            color: "#64748b",
+            fontWeight: 500,
+          }}
+        >
+          {classInfo.subjectName}
+        </Typography>
+      </Paper>
       
         <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           
@@ -125,17 +164,13 @@ const StudentContainerLNO = () => {
                     <InputAdornment position="end">
                       <IconButton
                         sx={{
-                          backgroundColor: "#1976D2",
                           borderRadius: "0 4px 4px 0",
                           padding: "10px",
                           height: "100%",
-                          '&:hover': {
-                            backgroundColor: "#1976d2",
-                        },
-                      }}
+                        }}
                         onClick={() => handleSearchResult(searchKeyword)}
                       >
-                        <SearchIcon sx={{ color: "white", fontSize: "20px" }} />
+                        <SearchIcon sx={{ color: "#1e3a8a", fontSize: "20px" }} />
                       </IconButton>
                     </InputAdornment>
                   ),

@@ -105,7 +105,7 @@ const AnalyticsTable = ({
                       <VisibilityIcon
                         color="primary"
                         style={{ cursor: "pointer" }}
-                        onClick={() => handleActions(row.classId)}
+                        onClick={() => handleActions(row.classId, row.className, row.courseName)}
                       />
                     </TableCell>
                   )}

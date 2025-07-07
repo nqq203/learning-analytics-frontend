@@ -60,7 +60,7 @@ const RootLayout = ({ children }) => {
             />
             <ComponentWrapper $isCollapsed={isCollapsed}>
                 <Scrollbar style={scrollbarStyle}>
-                    <Header title={title} />
+                    {/* <Header title={title} /> */}
                     {children}
                 </Scrollbar>
             </ComponentWrapper>

@@ -19,6 +19,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Chip,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,10 +37,11 @@ import GradeList from "@/components/PredictionAchievements/GradeList";
 import SetupPredictModal from "@/components/PredictionAchievements/SetupPredictModal";
 import PredictResultModal from "@/components/PredictionAchievements/PredictResultModal";
 import { jwtDecode } from "jwt-decode";
+import PageHeader from "@/components/CommonStyles/PageHeader";
 
 export default function StudentListPage() {
   const router = useRouter();
-  const { classId } = router.query;
+  const { classId, className, courseName } = router.query;
   const dispatch = useDispatch();
 
   const { loading, studentsGrade, page, amount, hasMore } = useSelector(
@@ -165,87 +167,158 @@ export default function StudentListPage() {
   };
 
   return (
-    <Box sx={{ p: 3, position: "relative" }}>
-      <Typography variant="h5" gutterBottom>
-        Lớp: {_class?.className} - ID: {_class?.classId || classId}
-      </Typography>
+    <Box sx={{ 
+      p: { xs: 2, md: 4 },
+      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+      minHeight: '100vh'
+    }}>
 
-      {/* Search + select + predict */}
-      <Box display="flex" alignItems="center" gap={2} mb={2} flexWrap="wrap">
-        <TextField
-          size="small"
-          placeholder="Tìm MSSV…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && dispatch(clearStudentList())}
-          sx={{ flex: 1, minWidth: 240 }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => dispatch(clearStudentList())}>
-                  <SearchIcon />
-                </IconButton>
-              </InputAdornment>
-            ),
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          mb: 3,
+          background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+          border: '1px solid #e2e8f0',
+          borderRadius: 2,
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            color: '#1e3a8a',
+            fontWeight: 600,
+            mb: 1,
           }}
-        />
-
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={allIds.length > 0 && selected.size === allIds.length}
-              indeterminate={selected.size > 0 && selected.size < allIds.length}
-              onChange={toggleAll}
-            />
-          }
-          label="Chọn tất cả"
-        />
-
-        <Button
-          variant="contained"
-          disabled={selected.size === 0}
-          onClick={() => setWeightModalOpen(true)}
         >
-          Dự đoán ({selected.size})
-        </Button>
-      </Box>
+          {className || _class?.className || `Lớp ${classId}`}
+        </Typography>
+        <Typography
+          variant="body1"
+          sx={{
+            color: '#64748b',
+            fontWeight: 500,
+          }}
+        >
+         {/* {courseName || "Chưa có thông tin môn học"}*/} 
+        </Typography>
+      </Paper>
 
-      <Divider sx={{ my: 2, borderColor: "#ccc" }} />
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          mb: 3,
+          border: '1px solid #e5e7eb',
+          borderRadius: 2,
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+        }}
+      >
+        <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
+          <TextField
+            size="small"
+            placeholder="Tìm kiếm MSSV..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && dispatch(clearStudentList())}
+            sx={{ flex: 1, minWidth: 240 }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton 
+                    onClick={() => dispatch(clearStudentList())}
+                    sx={{
+                      color: '#1e3a8a',
+                      '&:hover': {
+                        backgroundColor: 'rgba(30, 58, 138, 0.1)',
+                      },
+                    }}
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={allIds.length > 0 && selected.size === allIds.length}
+                indeterminate={selected.size > 0 && selected.size < allIds.length}
+                onChange={toggleAll}
+                sx={{
+                  color: '#1e3a8a',
+                  '&.Mui-checked': {
+                    color: '#1e3a8a',
+                  },
+                }}
+              />
+            }
+            label={
+              <Typography sx={{ fontWeight: 500, color: '#374151' }}>
+                Chọn tất cả
+              </Typography>
+            }
+          />
+
+          <Button
+            variant="contained"
+            disabled={selected.size === 0}
+            onClick={() => setWeightModalOpen(true)}
+            sx={{
+              bgcolor: '#7c3aed',
+              '&:hover': {
+                bgcolor: '#6d28d9',
+              },
+              '&:disabled': {
+                bgcolor: '#d1d5db',
+                color: '#9ca3af',
+              },
+              fontWeight: 600,
+              px: 3,
+            }}
+          >
+            Dự đoán ({selected.size})
+          </Button>
+        </Box>
+      </Paper>
 
       {/* Grades table */}
-      <Box position="relative">
-        <GradeList
-          grades={studentsGrade}
-          selected={selected}
-          toggleOne={toggleOne}
-          onLoadMore={handleLoadMore}
-        />
-        {loading && (
-          <Box
-            position="absolute"
-            top={0}
-            left={0}
-            width="100%"
-            height="100%"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            bgcolor="rgba(255,255,255,0.7)"
-            zIndex={10}
-          >
-            <CircularProgress />
-          </Box>
-        )}
-      </Box>
-      {/* <PredictModal
-        open={modalOpen}
-        onClose={() => {
-          if (loading) return;
-          setModalOpen(false);
+      <Paper
+        elevation={0}
+        sx={{
+          border: '1px solid #e5e7eb',
+          borderRadius: 2,
+          overflow: 'hidden',
         }}
-        classId={classId}
-        studentIds={Array.from(selected)}
-      /> */}
+      >
+        <Box position="relative">
+          <GradeList
+            grades={studentsGrade}
+            selected={selected}
+            toggleOne={toggleOne}
+            onLoadMore={handleLoadMore}
+          />
+          {loading && (
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bgcolor="rgba(255,255,255,0.7)"
+              zIndex={10}
+            >
+              <CircularProgress size="50px" sx={{ color: '#1e3a8a' }} />
+            </Box>
+          )}
+        </Box>
+      </Paper>
+
       <SetupPredictModal
         weightModalOpen={weightModalOpen}
         setWeightModalOpen={setWeightModalOpen}
