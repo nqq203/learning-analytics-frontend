@@ -311,7 +311,7 @@ export default function StudentDetailView({ onBack }) {
       return null;
     }
   }, [accessToken]);
-  const { loading, totalGrade, totalInformation, studentsInformation, studentsGrade, hasMore, page, amount, faculties, programs, majors, student, assignments,finalExams,quizzes, activities,examInfo,allStudents } = useSelector(state => state.data);
+  const { loading, totalGrade, totalInformation, studentsInformation, studentsGrade, hasMore, page, amount, faculties, programs, majors, student, assignments,finalExams,quizzes, activities,examInfo,allStudents,midtermExams } = useSelector(state => state.data);
   const [search, setSearch] = useState("");
   const [mssv, setMssv] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -373,7 +373,11 @@ export default function StudentDetailView({ onBack }) {
   }
 
 
-  
+  const ColExamMidtermData = useMemo(()=>{
+      if(midtermExams.length>0) return SetHeader(midtermExams);
+
+      return [];
+  },[midtermExams])
 
   const ColExamFinalData = useMemo(()=>{
       if(finalExams.length>0) return SetHeader(finalExams);
@@ -498,16 +502,18 @@ export default function StudentDetailView({ onBack }) {
             const response = await dispatch(updateExam({ examId:examId, type: type,payload:payload }));
 
             if (response?.type?.includes("fulfilled") && response.payload?.success) {
-              toast.success(`Sửa thành công bài kiểm tra khỏi lớp`);
-              setConfirmExamOpen(false);
+              toast.success(`Sửa thành công bài kiểm tra`);
+              
               await dispatch(fetchAllExam({ instructor_id: userId, class_id: classId }));
+
+              setIsExamModal(false);
             } else {
               console.warn("Response bị rejected hoặc không success:", response);
-              toast.error(`Xóa thất bại! Hãy thử lại sau`);
+              toast.error(`Sửa thất bại! Hãy thử lại sau`);
             }
           } catch (err) {
             console.error("Lỗi trong handleDeleteRequestExam:", err);
-            toast.error(`Xóa thất bại! Hãy thử lại sau`);
+            toast.error(`Sửa thất bại! Hãy thử lại sau`);
           }
   }
 
@@ -957,14 +963,14 @@ export default function StudentDetailView({ onBack }) {
         {secondTab === 2  &&(
           <Box position="relative">  
           <ExamQuizTable
-            filteredRows={finalExams}
-            columns={ColExamFinalData}
+            filteredRows={midtermExams}
+            columns={ColExamMidtermData}
             handleDelete={handleDeleteExam}
             handleEdit={handleEditExamClick}
             onLoadMore={handleLoadMore}
             handleViewInformation = {handleViewInformationExam}
             hasMore={hasMore}
-            type="Giữa kỳ"
+            type="Giữa Kỳ"
           />
 
           {loading && (
