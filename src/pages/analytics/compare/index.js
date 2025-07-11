@@ -19,6 +19,8 @@ import {
   Paper,
   Chip,
 } from "@mui/material";
+
+import { TableWrapper } from "@/components/Analytics/Styles/Styles";
 import CompareResult from "../compare/compareResult/CompareResult";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
@@ -31,10 +33,14 @@ const Compare = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [isComparing, setIsComparing] = useState(false);
 
+
+  const [page, setPage] = useState(1);
+
+
   const dispatch = useDispatch();
   const { compareResults, compareLoading, compareError } = useSelector((state) => state.compare);
   const { accessToken } = useSelector(state => state.auth);
-  const { classes } = useSelector((state) => state.analytics);
+  const { classes,totalRecords,loading } = useSelector((state) => state.analytics);
 
   const cellStyle = {
     fontSize: "16px",
@@ -56,7 +62,19 @@ const Compare = () => {
     }
   }, [accessToken]);
 
-  const rows = useMemo(() => classes || [], [classes]);
+  const [rows, setRows] = useState([]);
+
+
+  useEffect(() => {
+      if (page === 1) {
+        setRows(classes);
+      } else {
+        setRows((prev) => [...prev, ...classes]);
+      }
+    }, [classes]);
+
+    
+  // const rows = useMemo(() => classes || [], [classes]);
 
   const handleCriteriaChange = (e) => {
     const newCriteria = e.target.value;
@@ -139,11 +157,40 @@ const Compare = () => {
     }
   }, [compareResults, compareLoading, compareError]);
 
+
+
   useEffect(() => {
     if (userId) {
-      dispatch(fetchClassesByLecturer({ userId, page: 1, amount: 10 }));
+      dispatch(fetchClassesByLecturer({ userId, page: page, amount: 10 }));
     }
-  }, [dispatch, userId]);
+  }, [dispatch, userId,page]);
+
+
+
+  const handleLoadMore = () => {
+    if (!loading && rows.length < totalRecords) {
+      setPage((prev) => prev + 1);
+    }
+  };
+
+  const [isFetching, setIsFetching] = useState(false);
+
+  const handleScroll = (e) => {
+          const { scrollTop, scrollHeight, clientHeight } = e.target;
+          const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
+  
+          if (isAtBottom && !isFetching && !loading) {
+          setIsFetching(true);
+          handleLoadMore();
+          }
+      };
+  
+
+  useEffect(() => {
+        if (!loading) {
+        setIsFetching(false);
+        }
+    }, [classes, loading]);
 
   if (isComparing) {
     console.log(compareResults.data)
@@ -258,73 +305,81 @@ const Compare = () => {
       >
         <Box sx={{ p: 3, borderBottom: '1px solid #e5e7eb' }}>
           <Typography variant="h6" fontWeight={600} color="text.primary">
-            Tổng số lớp hiển thị: {rows.length}
+            Tổng số lớp hiển thị: {totalRecords}
           </Typography>
         </Box>
+        <TableWrapper className="scroll-view">
+          <TableContainer 
+              component={Paper}
+              style={{ maxHeight: "550px", overflow: "auto" }}
+              onScroll={handleScroll}
+          
+          >
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >STT</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Môn</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Lớp</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Khóa</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Số sinh viên</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Tỷ lệ đậu (%)</TableCell>
+                  {criteria && (
+                    <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Chọn</TableCell>
+                  )}
+                </TableRow>
+              </TableHead>
 
-        <TableContainer sx={{ maxHeight: 550 }}>
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>STT</TableCell>
-                <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>Môn</TableCell>
-                <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>Lớp</TableCell>
-                <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>Khóa</TableCell>
-                <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>Số sinh viên</TableCell>
-                <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>Tỷ lệ đậu (%)</TableCell>
-                {criteria && (
-                  <TableCell sx={{ fontWeight: 600, textAlign: "center" }}>Chọn</TableCell>
-                )}
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {rows
-                .filter(item => selectedSubject === "" || item.courseName === selectedSubject)
-                .map((item, index) => (
-                  <TableRow
-                    key={item.no}
-                    sx={{
-                      '&:hover': {
-                        bgcolor: 'rgba(30, 58, 138, 0.04)',
-                      },
-                    }}
-                  >
-                    <TableCell sx={{ textAlign: "center" }}>{item.no}</TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>{item.courseName}</TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>{item.className}</TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>{item.academicYear}</TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>{item.totalStudents}</TableCell>
-                    <TableCell sx={{ textAlign: "center" }}>
-                      <Chip
-                        label={`${item.passRate}%`}
-                        size="small"
-                        sx={{
-                          bgcolor: item.passRate >= 80 ? '#dcfce7' : item.passRate >= 60 ? '#fef3c7' : '#fee2e2',
-                          color: item.passRate >= 80 ? '#166534' : item.passRate >= 60 ? '#92400e' : '#991b1b',
-                          fontWeight: 600,
-                        }}
-                      />
-                    </TableCell>
-                    {criteria && (
-                      <TableCell sx={{ textAlign: "center" }}>
-                        <input
-                          type="checkbox"
-                          checked={selectedRows.includes(item.no)}
-                          onChange={() => handleSelectRow(item.no)}
-                          style={{
-                            width: '18px',
-                            height: '18px',
-                            accentColor: '#1e3a8a',
+              <TableBody>
+                {rows
+                  .filter(item => selectedSubject === "" || item.courseName === selectedSubject)
+                  .map((item, index) => (
+                    <TableRow
+                      key={item.no}
+                      sx={{
+                        '&:hover': {
+                          bgcolor: 'rgba(30, 58, 138, 0.04)',
+                        },
+                      }}
+                    >
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.no}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.courseName}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.className}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.academicYear}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.totalStudents}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>
+                        <Chip
+                          label={`${item.passRate}%`}
+                          size="small"
+                          sx={{
+                            bgcolor: item.passRate >= 80 ? '#dcfce7' : item.passRate >= 60 ? '#fef3c7' : '#fee2e2',
+                            color: item.passRate >= 80 ? '#166534' : item.passRate >= 60 ? '#92400e' : '#991b1b',
+                            fontWeight: 600,
                           }}
                         />
                       </TableCell>
-                    )}
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                      {criteria && (
+                        <TableCell style={{ ...cellStyle, textAlign: "center" }}>
+                          <input
+                            type="checkbox"
+                            checked={selectedRows.includes(item.no)}
+                            onChange={() => handleSelectRow(item.no)}
+                            style={{
+                              width: '18px',
+                              height: '18px',
+                              accentColor: '#1e3a8a',
+                            }}
+                          />
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </TableWrapper>
+
+
       </Paper>
     </Box>
   );

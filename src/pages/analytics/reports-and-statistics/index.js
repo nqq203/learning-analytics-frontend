@@ -60,7 +60,7 @@ const ClassesList = () => {
   }, [classes]);
 
   const totalStudents = useMemo(() => {
-    //CHẠY KHI PAGE THAY ĐỔI 3
+    
     return rows.length || totalRecords;
   }, [rows]);
 
@@ -112,7 +112,7 @@ const ClassesList = () => {
 
   useEffect(() => {
     if (!userId) return;
-    console.log(filters.subject, filters.className)
+    
     dispatch(
       searchClasses({
         search: filters.search,
