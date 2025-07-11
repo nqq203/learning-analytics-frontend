@@ -1,26 +1,17 @@
-import styled from "styled-components";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  TextField,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  IconButton,
   Box,
   CircularProgress,
+  Paper,
+  Typography,
+  Button,
+  Tabs,
+  Tab,
 } from "@mui/material";
-import {
-  ActionButton,
-  Container,
-  Header,
-} from "@/components/Analytics/Styles/Styles";
-import SearchIcon from '@mui/icons-material/Search';
 import {
   Add,
   FileDownload,
 } from "@mui/icons-material";
-import InputAdornment from '@mui/material/InputAdornment'
 import { useRouter } from "next/router";
 import ClassTable from "@/components/ClassManagement/ClassTable";
 import InsertModal from "@/components/ClassManagement/InsertModal";
@@ -31,14 +22,14 @@ import { fetchClassDetail, fetchClassList, fetchAllFaculties, fetchAllMajors, fe
 import { jwtDecode } from "jwt-decode";
 import { clearClassDetail, clearClassList } from "@/redux/slice/dataSlice";
 import { toast } from "react-toastify";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import ProgramTable from "@/components/ClassManagement/ProgramTable";
 import FacultyTable from "@/components/ClassManagement/FacultyTable";
 import MajorTable from "@/components/ClassManagement/MajorTable";
 import CourseTab from "@/components/ClassManagement/CourseTab";
 import ConfirmDialog from "@/components/ClassManagement/ConfirmDialog";
 import DetailModal from "@/components/ClassManagement/DetailModal";
+import PageHeader from "@/components/CommonStyles/PageHeader";
+import SearchFilters from "@/components/CommonStyles/SearchFilters";
 
 export default function MainClassManagement() {
   const router = useRouter();
@@ -521,84 +512,112 @@ export default function MainClassManagement() {
     }
   }
 
+  const getTotalRecords = () => {
+    switch (tab) {
+      case 0: return totalRecords;
+      case 1: return totalPrograms;
+      case 2: return totalFaculties;
+      case 3: return totalMajors;
+      case 4: return totalCourses;
+      default: return 0;
+    }
+  };
+
+  const getTabLabel = () => {
+    switch (tab) {
+      case 0: return "Lớp";
+      case 1: return "Chương trình đào tạo";
+      case 2: return "Khoa";
+      case 3: return "Chuyên ngành";
+      case 4: return "Khóa học";
+      default: return "";
+    }
+  };
+
+  const filterOptions = [
+    {
+      key: "academicYear",
+      label: "Khóa",
+      value: chosenAcademicYear || "",
+      options: academicYears.map(year => ({ value: year, label: year })),
+      minWidth: 180,
+    },
+    {
+      key: "semester",
+      label: "Kỳ",
+      value: chosenSemester || "",
+      options: semesters.map(sem => ({ value: sem, label: sem })),
+      minWidth: 160,
+    },
+  ];
+
   return (
-    <Container>
-      <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
-          <TextField
-            placeholder="Tìm kiếm"
-            variant="outlined"
-            size="small"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSearch()}
-            style={{ width: "70%", minWidth: 500 }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handleSearch}
-                    disabled={loading}
-                  >
-                    <SearchIcon />
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-            sx={{
-              width: "100%",
-              '& .MuiOutlinedInput-root': {
-                paddingRight: 0,
-              },
-            }}
-          />
-          <FormControl style={{ width: "20%", minWidth: 250 }} size="small">
-            <InputLabel>Khóa</InputLabel>
-            <Select label="Chọn khóa" onChange={(e) => handleChangeAcedemicYear(e.target.value)}>
-              <MenuItem value="">Tất cả</MenuItem>
-              {
-                academicYears.map((item, index) => {
-                  return (<MenuItem value={item} key={index}>{item}</MenuItem>)
-                })
-              }
-            </Select>
-          </FormControl>
-          <FormControl style={{ width: "20%", minWidth: 250 }} size="small">
-            <InputLabel>Kỳ</InputLabel>
-            <Select label="Chọn kỳ"
-              onChange={(e) => handleChangeSemester(e.target.value)}
+    <Box sx={{ p: { xs: 2, md: 4 } }}>
+      <PageHeader
+        title="Quản lý dữ liệu"
+        subtitle="Quản lý thông tin lớp, chương trình đào tạo, khoa, chuyên ngành và khóa học"
+        icon="management"
+        variant="management"
+        stats={[
+          { label: "Tổng bản ghi", value: getTotalRecords() },
+          { label: "Loại dữ liệu", value: getTabLabel() },
+        ]}
+        actions={
+          <>
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => setModalInsert(true)}
+              disabled={loading}
+              sx={{
+                bgcolor: 'white',
+                color: '#059669',
+                '&:hover': {
+                  bgcolor: 'rgba(255,255,255,0.9)',
+                },
+              }}
             >
-              <MenuItem value="">Tất cả</MenuItem>
-              {
-                semesters.map((item, index) => {
-                  return (<MenuItem value={item} key={index}>{item}</MenuItem>)
-                })
-              }
-            </Select>
-          </FormControl>
-          <ActionButton
-            startIcon={<Add />}
-            style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
-            variant="contained"
-            onClick={() => setModalInsert(true)}
-            disabled={loading}
-          >
-            Thêm</ActionButton>
-          <ActionButton
-            startIcon={<FileDownload />}
-            color="primary"
-            style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
-            onClick={() => setImportFile(true)}
-            variant="contained"
-            disabled={loading}
-          >Tải file</ActionButton>
-        </div>
-      </Header>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}
-        >
-          Tổng bản ghi: {tab === 0 && totalRecords} {tab === 1 && totalPrograms} {tab === 2 && totalFaculties} {tab === 3 && totalMajors} {tab === 4 && totalCourses}
-        </span>
+              Thêm
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<FileDownload />}
+              onClick={() => setImportFile(true)}
+              disabled={loading}
+              sx={{
+                borderColor: 'white',
+                color: 'white',
+                '&:hover': {
+                  borderColor: 'rgba(255,255,255,0.8)',
+                  bgcolor: 'rgba(255,255,255,0.1)',
+                },
+              }}
+            >
+              Tải file
+            </Button>
+          </>
+        }
+      />
+
+      <SearchFilters
+        searchValue={search || ""}
+        onSearchChange={setSearch}
+        onSearch={handleSearch}
+        filters={filterOptions}
+        onFilterChange={(key, value) => {
+          if (key === "academicYear") {
+            handleChangeAcedemicYear(value);
+          } else if (key === "semester") {
+            handleChangeSemester(value);
+          }
+        }}
+        onClearFilters={() => {
+          setSearch("");
+          handleChangeAcedemicYear("");
+          handleChangeSemester("");
+        }}
+        searchPlaceholder="Tìm kiếm..."
+      />
         {/* --- Tabs --- */}
         <Tabs
           value={tab}
@@ -797,7 +816,6 @@ export default function MainClassManagement() {
           onClose={() => setConfirmOpen(false)}
           onConfirm={handleDelete}
         />
-      </div>
-    </Container>
-  );
+      </Box>
+    );
 }

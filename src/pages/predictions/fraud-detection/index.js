@@ -1,18 +1,10 @@
 import React, { useRef, useState, useEffect, useMemo } from "react";
 import {
-
   Box,
-
   Button,
   FormControl,
   TextField,
   Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Paper,
   MenuItem,
   Select,
@@ -22,23 +14,13 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
-  CircularProgress
-
+  CircularProgress,
+  Typography,
+  Alert,
 } from "@mui/material";
 
-import {
-  ActionButton,
-  Container,
-  Header,
-} from "@/components/Analytics/Styles/Styles";
-
-
-import Alert from '@mui/material/Alert';
 import SearchIcon from '@mui/icons-material/Search';
 import { fetchClassesByLecturer, fetchFraudDetect, fetchImportQuizFile } from "@/redux/thunk/fraudDetectionThunk";
-// import { useDispatch, useSelector } from "react-redux";
-// import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
-
 import InputAdornment from '@mui/material/InputAdornment';
 import { TableFraudDetection } from "@/components/FraudDetection/TableFraudDetection";
 import { Dialog1 } from "@/components/FraudDetection/Dialog1";
@@ -47,6 +29,7 @@ import { Dialog3 } from "@/components/FraudDetection/Dialog3";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
+import PageHeader from "@/components/CommonStyles/PageHeader";
 
 const FraudDetection = () => {
   // const [loading, setLoading] = useState(false);
@@ -214,23 +197,42 @@ const FraudDetection = () => {
   }
 
   return (
-    <div style={{ cursor: loading ? 'wait' : 'default' }}>
-      <Container > {/* Set the container to full width */}
-        {/* Bộ lọc + Button */}
-        <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem", width: "100%" }}>
-            {/* Lớp */}
+    <Box sx={{ p: { xs: 2, md: 4 }, cursor: loading ? 'wait' : 'default' }}>
+      <PageHeader
+        title="Phát hiện gian lận"
+        subtitle="Phân tích và phát hiện hành vi gian lận trong bài kiểm tra"
+        icon="fraud"
+        variant="fraud"
+        stats={[
+          { label: "Tổng lớp", value: classes.length },
+          { label: "Bài kiểm tra", value: Quiz.length },
+        ]}
+      />
+
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          mb: 3,
+          border: '1px solid #e5e7eb',
+          borderRadius: 2,
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+        }}
+      >
+        <Grid container spacing={3} alignItems="center">
+          {/* Lớp */}
+          <Grid item xs={12} md={3}>
             <FormControl
-              style={{ width: "30%", minWidth: 450 }}
+              fullWidth
               size="small"
-              disabled={loading}     // ← disable khi loading
+              disabled={loading}
             >
               <InputLabel>Lớp</InputLabel>
               <Select
-                label="Chọn lớp"
+                label="Lớp"
                 value={classesSelect}
                 onChange={(e) => handleChosingClass(e.target.value)}
-                disabled={loading}     // ← disable khi loading
+                disabled={loading}
               >
                 {classes.map(item => (
                   <MenuItem key={item.classId} value={item.classId}>
@@ -239,9 +241,12 @@ const FraudDetection = () => {
                 ))}
               </Select>
             </FormControl>
-            {/* Quiz */}
+          </Grid>
+
+          {/* Quiz */}
+          <Grid item xs={12} md={3}>
             <FormControl
-              style={{ width: "30%", minWidth: 450 }}
+              fullWidth
               size="small"
               disabled={loading || disabledTest}
             >
@@ -260,54 +265,57 @@ const FraudDetection = () => {
                 ))}
               </Select>
             </FormControl>
-            <input
-              type="file"
-              accept=".csv,.xlsx"
-              ref={fileInputRef}
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-            />
-            <Button
-              disabled={disabledThreehold}
-              variant="contained"
-              onClick={handleOpenDialog1}
-              fullWidth
-              sx={{
-                backgroundColor: '#8E24AA',
-                color: 'white',
-                '&:hover': {
-                  backgroundColor: '#7B1FA2',
-                },
-              }}
-            >
-              Thiết lập ngưỡng
-            </Button>
-            <Button
-              disabled={disabledThreehold}
-              variant="contained"
-              fullWidth
-              sx={{
-                backgroundColor: '#1976D2',
-                color: 'white',
-                '&:hover': {
-                  backgroundColor: '#303F9F',
-                },
-              }}
-              onClick={() => handleDetect()}
-            >
-              Phân tích
-            </Button>
-          </div>
-        </Header>
-        <Box
-          sx={{
-            borderBottom: "1.2px solid #ccc",
-            marginY: 3,
-          }}
-        />
-        {/* Bảng dữ liệu */}
+          </Grid>
 
-        {/* Table + Spinner Overlay */}
+          <Grid item xs={12} md={6}>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Button
+                disabled={disabledThreehold}
+                variant="contained"
+                onClick={handleOpenDialog1}
+                sx={{
+                  bgcolor: '#7c3aed',
+                  '&:hover': {
+                    bgcolor: '#6d28d9',
+                  },
+                }}
+              >
+                Thiết lập ngưỡng
+              </Button>
+              <Button
+                disabled={disabledThreehold}
+                variant="contained"
+                onClick={() => handleDetect()}
+                sx={{
+                  bgcolor: '#dc2626',
+                  '&:hover': {
+                    bgcolor: '#b91c1c',
+                  },
+                }}
+              >
+                Phân tích
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
+
+        <input
+          type="file"
+          accept=".csv,.xlsx"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+      </Paper>
+
+      {/* Bảng dữ liệu */}
+      <Paper
+        elevation={0}
+        sx={{
+          border: '1px solid #e5e7eb',
+          borderRadius: 2,
+        }}
+      >
         <Box position="relative">
           <TableFraudDetection data={data} />
           {loading && (
@@ -327,6 +335,7 @@ const FraudDetection = () => {
             </Box>
           )}
         </Box>
+      </Paper>
         <Dialog1
           openDialog1={openDialog1}
           handleCloseDialog1={handleCloseDialog1}
@@ -354,9 +363,8 @@ const FraudDetection = () => {
           minTime={minTime}
           maxTime={maxTime}
         ></Dialog3>
-      </Container>
-    </div>
-  );
+      </Box>
+    );
 };
 
 export default FraudDetection;

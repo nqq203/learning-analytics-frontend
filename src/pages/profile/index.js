@@ -41,24 +41,25 @@ const Profile = () => {
   return (
     <Box
       sx={{
-        pt: 5,
-        px: 2,
-        pb: 4,
-        minHeight: "calc(100vh - 64px)",
-        backgroundColor: "#f0f4f8",
+        minHeight: "100vh",
+        background: '#f8fafc',
+        pb: 6,
         display: "flex",
         justifyContent: "center",
-        alignItems: "start",
+        alignItems: "flex-start",
+        pt: 8,
       }}
     >
       <Paper
         elevation={2}
         sx={{
           width: "100%",
-          maxWidth: 700,
-          p: 4,
+          maxWidth: 500,
+          p: { xs: 3, md: 4 },
           borderRadius: 4,
-          backgroundColor: "#ffffff",
+          background: '#fff',
+          boxShadow: '0 4px 24px rgba(30,58,138,0.08)',
+          mt: 0,
         }}
       >
         <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
@@ -66,25 +67,27 @@ const Profile = () => {
             src={user?.avatarUrl || undefined}
             alt={user?.fullName}
             sx={{
-              width: 100,
-              height: 100,
-              bgcolor: "#90caf9",
-              fontSize: 36,
+              width: 110,
+              height: 110,
+              bgcolor: "#1e3a8a",
+              fontSize: 40,
               mb: 2,
-              color: "#ffffff",
+              color: "#fff",
+              border: '4px solid #e0e7ef',
+              boxShadow: '0 2px 8px rgba(30,58,138,0.10)',
             }}
           >
             {user?.fullName?.charAt(0)}
           </Avatar>
-          <Typography variant="h6" fontWeight={600} color="primary">
+          <Typography variant="h5" fontWeight={700} color="#1e3a8a" gutterBottom>
             {user?.fullName}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body1" color="#64748b" fontWeight={500}>
             {user?.role}
           </Typography>
         </Box>
 
-        <Divider sx={{ my: 3 }} />
+        <Divider sx={{ my: 3, borderColor: '#e0e7ef' }} />
 
         {/* Form */}
         <Grid container spacing={3}>
@@ -95,10 +98,15 @@ const Profile = () => {
               value={formData.email}
               onChange={handleChange("email")}
               disabled={!isEditing}
+              sx={{
+                '& .MuiInputBase-input.Mui-disabled': {
+                  color: '#64748b',
+                },
+              }}
             />
           </Grid>
-          {/* 
-            <Grid item xs={12}>
+          {/*
+          <Grid item xs={12}>
             <TextField
               label="Mật khẩu mới"
               fullWidth
@@ -110,7 +118,6 @@ const Profile = () => {
             />
           </Grid>
           */}
-
           <Grid item xs={12}>
             <TextField
               label="Ngày tạo tài khoản"
@@ -122,18 +129,29 @@ const Profile = () => {
               }
               disabled
               InputProps={{ readOnly: true }}
+              sx={{
+                '& .MuiInputBase-input.Mui-disabled': {
+                  color: '#64748b',
+                },
+              }}
             />
           </Grid>
         </Grid>
-        {/*
-          <Stack direction="row" spacing={2} mt={4} justifyContent="flex-end">
+
+        <Stack direction="row" spacing={2} mt={4} justifyContent="flex-end">
           {!isEditing ? (
             <Button
               variant="contained"
               startIcon={<EditIcon />}
               onClick={handleEdit}
-              sx={{ textTransform: "none", borderRadius: 2 }}
-              color="primary"
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+                fontWeight: 600,
+                bgcolor: '#059669',
+                '&:hover': { bgcolor: '#047857' },
+              }}
+              color="success"
             >
               Chỉnh sửa
             </Button>
@@ -143,8 +161,18 @@ const Profile = () => {
                 variant="outlined"
                 startIcon={<CancelIcon />}
                 onClick={handleCancel}
-                sx={{ textTransform: "none", borderRadius: 2 }}
-                color="inherit"
+                sx={{
+                  textTransform: "none",
+                  borderRadius: 2,
+                  fontWeight: 600,
+                  color: '#dc2626',
+                  borderColor: '#dc2626',
+                  '&:hover': {
+                    bgcolor: '#fee2e2',
+                    borderColor: '#dc2626',
+                  },
+                }}
+                color="error"
               >
                 Hủy
               </Button>
@@ -152,7 +180,13 @@ const Profile = () => {
                 variant="contained"
                 startIcon={<SaveIcon />}
                 onClick={handleSave}
-                sx={{ textTransform: "none", borderRadius: 2 }}
+                sx={{
+                  textTransform: "none",
+                  borderRadius: 2,
+                  fontWeight: 600,
+                  bgcolor: '#1e3a8a',
+                  '&:hover': { bgcolor: '#3b82f6' },
+                }}
                 color="primary"
               >
                 Lưu
@@ -160,7 +194,6 @@ const Profile = () => {
             </>
           )}
         </Stack>
-         */}
       </Paper>
     </Box>
   );
