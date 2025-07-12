@@ -25,16 +25,64 @@ import { jwtDecode } from "jwt-decode";
 import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
 import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk } from "@/redux/thunk/compareThunk";
 import PageHeader from "@/components/CommonStyles/PageHeader";
+import { useRouter } from 'next/router';
+
 const Compare = () => {
-  const [criteria, setCriteria] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [isComparing, setIsComparing] = useState(false);
+  const initialState = {
+    criteria: "",
+    selectedSubject: "",
+    selectedRows: [],
+    isComparing: false,
+  };
+  const [criteria, setCriteria] = useState(initialState.criteria);
+  const [selectedSubject, setSelectedSubject] = useState(initialState.selectedSubject);
+  const [selectedRows, setSelectedRows] = useState(initialState.selectedRows);
+  const [isComparing, setIsComparing] = useState(initialState.isComparing);
+  const [compareKey, setCompareKey] = useState(Date.now());
+  const [pageKey, setPageKey] = useState(0);
+
+  const resetCompareState = () => {
+    setCriteria(initialState.criteria);
+    setSelectedSubject(initialState.selectedSubject);
+    setSelectedRows(initialState.selectedRows);
+    setIsComparing(initialState.isComparing);
+    setCompareKey(Date.now());
+  };
 
   const dispatch = useDispatch();
   const { compareResults, compareLoading, compareError } = useSelector((state) => state.compare);
   const { accessToken } = useSelector(state => state.auth);
   const { classes } = useSelector((state) => state.analytics);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      if (!url.includes('/analytics/compare')) {
+        resetCompareState();
+      }
+    };
+    router.events.on('routeChangeStart', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChange);
+    };
+  }, [router]);
+
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      if (url.includes('/analytics/compare')) {
+        resetCompareState();
+      }
+    };
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router]);
+
+  useEffect(() => {
+    resetCompareState();
+  }, []);
 
   const cellStyle = {
     fontSize: "16px",
@@ -118,7 +166,7 @@ const Compare = () => {
         const payload = { cohorts, course_id: courseId };
         await dispatch(fetchCompareByCohortsThunk(payload));
       }
-      // Sau khi fetch thành công, hiển thị phần kết quả so sánh
+      setCompareKey(Date.now()); 
       setIsComparing(true);
     } catch (error) {
       console.error("Lỗi khi gửi yêu cầu so sánh:", error);
@@ -126,7 +174,7 @@ const Compare = () => {
   };
 
   const handleBack = () => {
-    setIsComparing(false);
+    resetCompareState();
   };
 
   useEffect(() => {
@@ -145,9 +193,18 @@ const Compare = () => {
     }
   }, [dispatch, userId]);
 
+
+
   if (isComparing) {
     console.log(compareResults.data)
-    return <CompareResult data={compareResults.data} mode={criteria} onBack={handleBack} />;
+    return (
+      <CompareResult
+        key={compareKey}
+        data={compareResults.data}
+        mode={criteria}
+        onBack={handleBack}
+      />
+    );
   }
 
   return (
