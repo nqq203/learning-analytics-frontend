@@ -23,7 +23,7 @@ import ScoreComparisonCharts from "@/components/CompareResults/charts/ScoreCompa
 
 const CompareResult = ({
   data,
-  mode, // "class" hoặc "course"
+  mode, 
   onBack,
   criteria,
   course,
@@ -112,7 +112,6 @@ if (!loading && !data) {
   };
 
   const safeData = data || {};
-  // Chuyển đổi dữ liệu và xử lý null hoặc NaN thành 0
   const sanitizedData = Object.values(safeData).map((item) => ({
     ...item,
     midtermAvg: Number(item.midtermAvg) || 0,
