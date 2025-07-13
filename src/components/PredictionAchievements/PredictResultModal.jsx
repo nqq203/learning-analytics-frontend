@@ -128,12 +128,6 @@ export default function PredictResultModal({
                             Điểm mong muốn
                           </TableCell>
                           <TableCell align="center" sx={{ fontWeight: 700 }}>
-                            Điểm TB dự đoán
-                          </TableCell>
-                           <TableCell align="center" sx={{ fontWeight: 700 }}>
-                            Điểm TB thực tế
-                          </TableCell>
-                          <TableCell align="center" sx={{ fontWeight: 700 }}>
                             Điểm CK dự đoán
                           </TableCell>
                           <TableCell align="center" sx={{ fontWeight: 700 }}>
@@ -141,9 +135,6 @@ export default function PredictResultModal({
                           </TableCell>
                           <TableCell align="center" sx={{ fontWeight: 700 }}>
                             Đủ điều kiện?
-                          </TableCell>
-                          <TableCell align="center" sx={{ fontWeight: 700 }}>
-                            Mean
                           </TableCell>
                         </TableRow>
                       </TableHead>
@@ -177,12 +168,6 @@ export default function PredictResultModal({
                                 }}
                               >
                                 {s.targetGrade || "--"}
-                              </TableCell>
-                              <TableCell align="center">
-                                {s.predictedTotalGrade || "--"}
-                              </TableCell>
-                              <TableCell align="center">
-                                {s.actualTotalGrade || "--"}
                               </TableCell>
                               <TableCell align="center">
                                 {s.predictedFinalGrade || "--"}
@@ -230,9 +215,6 @@ export default function PredictResultModal({
                                     </span>
                                   </Box>
                                 )}
-                              </TableCell>
-                              <TableCell align="center">
-                                {s.mean || "--"}
                               </TableCell>
                             </TableRow>
                             {expandedRows[s.studentId] && (

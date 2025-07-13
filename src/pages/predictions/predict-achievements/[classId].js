@@ -10,34 +10,17 @@ import {
   Checkbox,
   FormControlLabel,
   Button,
-  Divider,
   CircularProgress,
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Chip,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useDispatch, useSelector } from "react-redux";
 import { clearStudentList } from "@/redux/slice/dataSlice";
 import { fetchClassDetail, fetchStudentList } from "@/redux/thunk/dataThunk";
-import { TableWrapper } from "@/components/Analytics/Styles/Styles";
-import PredictModal from "@/components/PredictionAchievements/PredictModal";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import GradeList from "@/components/PredictionAchievements/GradeList";
 import SetupPredictModal from "@/components/PredictionAchievements/SetupPredictModal";
 import PredictResultModal from "@/components/PredictionAchievements/PredictResultModal";
 import { jwtDecode } from "jwt-decode";
-import PageHeader from "@/components/CommonStyles/PageHeader";
 
 export default function StudentListPage() {
   const router = useRouter();
