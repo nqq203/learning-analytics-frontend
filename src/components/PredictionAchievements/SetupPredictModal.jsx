@@ -11,7 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function SetupPredictModal({
   weightModalOpen,
@@ -34,6 +34,8 @@ export default function SetupPredictModal({
   _class,
 }) {
   const dispatch = useDispatch();
+  const isCancelled = useRef(false);
+  const abortController = useRef(null);
 
   useEffect(() => {
     const handleBeforeUnload = (e) => {
@@ -58,7 +60,11 @@ export default function SetupPredictModal({
         "Tiến trình phân tích đang diễn ra. Bạn có chắc chắn muốn thoát? Tiến trình sẽ bị hủy."
       );
       if (!confirmClose) return;
-      setAnalyzing(false); 
+      setAnalyzing(false);
+      isCancelled.current = true;
+      if (abortController.current) {
+        abortController.current.abort();
+      }
     }
     setWeightModalOpen(false);
   };
@@ -131,12 +137,14 @@ export default function SetupPredictModal({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setWeightModalOpen(false)} disabled={analyzing}>
+        <Button onClick={handleClose} disabled={analyzing}>
           Hủy
         </Button>
         <Button
           variant="contained"
           onClick={async () => {
+            isCancelled.current = false;
+            abortController.current = new AbortController();
             const total =
               Number(weights.assignmentQuiz) +
               Number(weights.midterm) +
@@ -175,7 +183,6 @@ export default function SetupPredictModal({
                 scores.project = s.projectGrade;
               if (s.practiceGrade !== undefined && s.practiceGrade !== null)
                 scores.practice = s.practiceGrade;
-              // No need to set scores.assignmentQuiz, only assignmentQuizGrade is used
               const weightsObj = {};
               if (
                 weights.assignmentQuiz !== undefined &&
@@ -190,7 +197,6 @@ export default function SetupPredictModal({
                 weightsObj.project = Number(weights.project);
               if (weights.practice !== undefined && weights.practice !== null)
                 weightsObj.practice = Number(weights.practice);
-              // Remove duplicate assignment
               return {
                 studentId: s.studentId,
                 identificationCode: s.identificationCode,
@@ -206,13 +212,16 @@ export default function SetupPredictModal({
                   students,
                   courseName: _class?.courseName,
                   classId: _class?.classId,
+                  signal: abortController.current.signal,
                 })
               ).unwrap();
             } catch (err) {
             } finally {
               setAnalyzing(false);
               setWeightModalOpen(false);
-              setResultModalOpen(true);
+              if (!isCancelled.current) {
+                setResultModalOpen(true);
+              }
             }
           }}
           disabled={analyzing}
