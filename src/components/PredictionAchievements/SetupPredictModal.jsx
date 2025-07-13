@@ -11,6 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
+import { useEffect, useRef } from "react";
 
 export default function SetupPredictModal({
   weightModalOpen,
@@ -33,11 +34,45 @@ export default function SetupPredictModal({
   _class,
 }) {
   const dispatch = useDispatch();
+  const isCancelled = useRef(false);
+  const abortController = useRef(null);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (analyzing) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    if (analyzing) {
+      window.addEventListener("beforeunload", handleBeforeUnload);
+    } else {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    }
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [analyzing]);
+
+  const handleClose = () => {
+    if (analyzing) {
+      const confirmClose = window.confirm(
+        "Tiến trình phân tích đang diễn ra. Bạn có chắc chắn muốn thoát? Tiến trình sẽ bị hủy."
+      );
+      if (!confirmClose) return;
+      setAnalyzing(false);
+      isCancelled.current = true;
+      if (abortController.current) {
+        abortController.current.abort();
+      }
+    }
+    setWeightModalOpen(false);
+  };
 
   return (
     <Dialog
       open={weightModalOpen}
-      onClose={() => setWeightModalOpen(false)}
+      onClose={handleClose}
       maxWidth="xs"
       fullWidth
     >
@@ -102,12 +137,14 @@ export default function SetupPredictModal({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setWeightModalOpen(false)} disabled={analyzing}>
+        <Button onClick={handleClose} disabled={analyzing}>
           Hủy
         </Button>
         <Button
           variant="contained"
           onClick={async () => {
+            isCancelled.current = false;
+            abortController.current = new AbortController();
             const total =
               Number(weights.assignmentQuiz) +
               Number(weights.midterm) +
@@ -146,7 +183,6 @@ export default function SetupPredictModal({
                 scores.project = s.projectGrade;
               if (s.practiceGrade !== undefined && s.practiceGrade !== null)
                 scores.practice = s.practiceGrade;
-              // No need to set scores.assignmentQuiz, only assignmentQuizGrade is used
               const weightsObj = {};
               if (
                 weights.assignmentQuiz !== undefined &&
@@ -161,7 +197,6 @@ export default function SetupPredictModal({
                 weightsObj.project = Number(weights.project);
               if (weights.practice !== undefined && weights.practice !== null)
                 weightsObj.practice = Number(weights.practice);
-              // Remove duplicate assignment
               return {
                 studentId: s.studentId,
                 scores: scores,
@@ -177,13 +212,16 @@ export default function SetupPredictModal({
                   students,
                   courseName: _class?.courseName,
                   classId: _class?.classId,
+                  signal: abortController.current.signal,
                 })
               ).unwrap();
             } catch (err) {
             } finally {
               setAnalyzing(false);
               setWeightModalOpen(false);
-              setResultModalOpen(true);
+              if (!isCancelled.current) {
+                setResultModalOpen(true);
+              }
             }
           }}
           disabled={analyzing}

@@ -4,6 +4,8 @@ import {
   DialogTitle,
   DialogContent,
   TextField,
+  Select,
+  MenuItem,
   Button,
   Box,
   IconButton,
@@ -14,7 +16,7 @@ import {
   Divider,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
-
+import { toast } from "react-toastify";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -31,39 +33,50 @@ function TabPanel(props) {
   );
 }
 
-export default function AddStudentModal({ open, onClose, subject, className, onSave }) {
+export default function AddStudentModal({ open, onClose, subject, className, onSave,basicFields,gradeFields,instructorId }) {
   const [tabValue, setTabValue] = useState(0);
 
   const [newStudent, setNewStudent] = useState({
-    id: "",
-    name: "",
-    subject: subject || "",
-    class: className || "",
-    quiz1: "",
-    quiz2: "",
-    quiz3: "",
-    midterm: "",
-    practice: "",
-    project: "",
-    final: "",
-    total: "",
+      identificationCode: "",
+      fullName: "",
+      email:  "",
+      programId: "",
+      facultyId:"",
+      majorId:"",
+      instructorId:instructorId
   });
 
+  const [newStudentGrade,setNewStudentGrade] =useState({
+        midtermGrade: "",
+        finalGrade: "",
+        projectGrade: "",
+        practiceGrade: "",
+        assignmentQuizGrade: "",
+        totalGrade: "",
+  })
+
+  
   useEffect(() => {
     setNewStudent({
-      id: "",
-      name: "",
-      subject: subject || "",
-      class: className || "",
-      quiz1: "",
-      quiz2: "",
-      quiz3: "",
-      midterm: "",
-      practice: "",
-      project: "",
-      final: "",
-      total: "",
+        identificationCode: "",
+        fullName: "",
+        email:  "",
+        programId: "",
+        facultyId:"",
+        majorId:"",
+        instructorId:instructorId
+        
     });
+
+
+    setNewStudentGrade({
+        midtermGrade: "",
+        finalGrade: "",
+        projectGrade:"",
+        practiceGrade: "",
+        assignmentQuizGrade: "",
+        totalGrade: ""
+    })
      setTabValue(0); 
   }, [subject, className, open]);
 
@@ -78,11 +91,34 @@ export default function AddStudentModal({ open, onClose, subject, className, onS
     });
   };
 
+
+  const handleInputChangeGrade = (field, value) => {
+    setNewStudentGrade({
+      ...newStudentGrade,
+      [field]: value,
+    });
+  };
+
+
   const handleSave = () => {
-    if (onSave && typeof onSave === "function") {
-      onSave(newStudent);
+    const missingFields = Object.entries(newStudent).filter(([key, value]) => {
+      return value === "" || value === null || value === undefined;
+    });
+
+    if (missingFields.length > 0) {
+      toast.error("Vui lòng điền đầy đủ thông tin cơ bản của sinh viên.");
+      setTabValue(0); 
+      return;
     }
-    onClose();
+    const updatedGrades = { ...newStudentGrade };
+    for (const key in updatedGrades) {
+      if (updatedGrades[key] === "" || updatedGrades[key] === null || updatedGrades[key] === undefined) {
+        updatedGrades[key] = 0;
+      }
+    }
+    onSave(newStudent,updatedGrades);
+    
+    // onClose();
   };
 
   return (
@@ -137,172 +173,103 @@ export default function AddStudentModal({ open, onClose, subject, className, onS
         <TabPanel value={tabValue} index={0}>
           <Box sx={{ px: 2, pb: 2 }}>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  MSSV:
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={newStudent.id}
-                  onChange={(e) => handleInputChange("id", e.target.value)}
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
 
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Họ và tên:
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={newStudent.name}
-                  onChange={(e) => handleInputChange("name", e.target.value)}
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
 
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Môn học:
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={newStudent.subject}
-                  onChange={(e) => handleInputChange("subject", e.target.value)}
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
+              {basicFields.map(({ key, label, type = 'text', options = [] }) => (
+                            <Grid item xs={6} key={key}>
+                              <Typography variant="subtitle2" gutterBottom>
+                                {label}
+                              </Typography>
+                              {type === 'select' ? (
+                                <Select
+                                  fullWidth
+                                  size="small"
+                                  value={newStudent[key]?? ''}
+                                  onChange={(e) => handleInputChange(key, e.target.value)}
+                                >
+                                  {options.map((opt, i) => (
+                                    <MenuItem key={i} value={opt.value ?? opt[key]}>
+                                      {opt.label ?? opt.name}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              ) : (
+                                <TextField
+                                  fullWidth
+                                  size="small"
+                                  variant="outlined"
+                                  value={newStudent[key] ?? ''}
+                                  onChange={(e) => handleInputChange(key, e.target.value)}
+                                />
+                              )}
+                            </Grid>
+                          ))}
+              {/* {
 
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Lớp:
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={newStudent.class}
-                  onChange={(e) => handleInputChange("class", e.target.value)}
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
+                basicFields.map((item)=>{
+                  return <Grid item xs={12} md={6}>
+                            <Typography variant="body2" sx={{ mb: 1 }}>
+                              {item.label}
+                            </Typography>
+                            <TextField
+                              fullWidth
+                              value={newStudent.id}
+                              onChange={(e) => handleInputChange(item.key, e.target.value)}
+                              variant="outlined"
+                              size="small"
+                            />
+                          </Grid>
 
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Thông tin A:
-                </Typography>
-                <TextField fullWidth variant="outlined" size="small" />
-              </Grid>
+                })
+              } */}
 
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1 }}>
-                  Thông tin B:
-                </Typography>
-                <TextField fullWidth variant="outlined" size="small" />
-              </Grid>
             </Grid>
           </Box>
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
           <Box sx={{ px: 2, pb: 2 }}>
-            <Grid container spacing={3}>
-              {["quiz1", "quiz2", "quiz3"].map((quiz, idx) => (
-                <Grid item xs={12} md={4} key={quiz}>
-                  <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
-                    Quiz {idx + 1}:
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    value={newStudent[quiz]}
-                    onChange={(e) => handleInputChange(quiz, e.target.value)}
-                    variant="outlined"
-                    size="small"
-                  />
-                </Grid>
-              ))}
+            <Grid container spacing={2}>
+                {
 
-              <Grid item xs={12}>
-                <Divider sx={{ my: 2 }} />
-              </Grid>
+                gradeFields.map(({ key, label })=>{
+                  return <Grid item xs={6}>
+                            <Typography variant="subtitle2" gutterBottom>
+                              {label}
+                            </Typography>
+                            <TextField
+                              fullWidth
+                              size="small"
+                              variant="outlined"
+                              type="number"
+                              value={newStudentGrade[key]??''}
+                              onChange={(e) => handleInputChangeGrade(key, e.target.value)}
+                              // InputProps={{              // nếu muốn chỉ số nguyên, bạn có thể thêm:
+                              //   inputProps: { step: 0.1 } // hoặc step: 1
+                              // }}
+                            />
+                          </Grid>
 
-              {[
-                { key: "midterm", label: "Giữa kỳ" },
-                { key: "practice", label: "Thực hành" },
-                { key: "project", label: "Đồ án" },
-              ].map(({ key, label }) => (
-                <Grid item xs={12} md={4} key={key}>
-                  <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
-                    {label}:
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    value={newStudent[key]}
-                    onChange={(e) => handleInputChange(key, e.target.value)}
-                    variant="outlined"
-                    size="small"
-                  />
-                </Grid>
-              ))}
+                })
+              }
+              
 
-              <Grid item xs={12}>
-                <Divider sx={{ my: 2 }} />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Typography variant="body2" sx={{ mb: 1, fontWeight: "bold" }}>
-                  Cuối kỳ:
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={newStudent.final}
-                  onChange={(e) => handleInputChange("final", e.target.value)}
-                  variant="outlined"
-                  size="small"
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <Divider sx={{ my: 2 }} />
-              </Grid>
-
-              <Grid item xs={12}>
-                <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
-                  Tổng kết:
-                </Typography>
-                <TextField
-                  fullWidth
-                  value={newStudent.total}
-                  onChange={(e) => handleInputChange("total", e.target.value)}
-                  variant="outlined"
-                  size="medium"
-                  InputProps={{
-                    sx: { fontSize: "1.25rem", fontWeight: "bold" },
-                  }}
-                />
-              </Grid>
+              
             </Grid>
           </Box>
         </TabPanel>
 
         <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            p: 2,
-            mt: 2,
-          }}
+          sx={{ p: 2, display: 'flex', justifyContent: 'flex-end', gap: 2 }}
         >
-          <Button variant="outlined" onClick={onClose} sx={{ width: "48%" }}>
-            ĐÓNG
+          <Button variant="outlined" onClick={onClose} >
+            Đóng
           </Button>
           <Button
             variant="contained"
             color="primary"
             onClick={handleSave}
-            sx={{ width: "48%" }}
+            
           >
             Thêm sinh viên
           </Button>

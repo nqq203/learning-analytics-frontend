@@ -102,11 +102,11 @@ export default function RegisterForm() {
     const handleSubmit = async e => {
         e.preventDefault()
         if (!name || !email || !password) {
-            toast.warning('Please fill out all fields')
+            toast.warning('Vui lòng điền đầy đủ thông tin')
             return
         }
         if (password !== confirm) {
-            toast.warning('Passwords do not match')
+            toast.warning('Mật khẩu không khớp')
             return
         }
 
@@ -119,7 +119,7 @@ export default function RegisterForm() {
             }
             toast.error(res.payload);
         } catch (err) {
-            toast.error(err.message || 'Registration failed')
+            toast.error(err.message || 'Đăng ký thất bại')
         }
     }
 
@@ -146,7 +146,7 @@ export default function RegisterForm() {
 
                     <StyledForm onSubmit={handleSubmit}>
                         <TextField
-                            label="Full Name"
+                            label="Họ và tên"
                             value={name}
                             onChange={e => setName(e.target.value)}
                             fullWidth
@@ -181,7 +181,7 @@ export default function RegisterForm() {
                         </TextField>
 
                         <TextField
-                            label="Password"
+                            label="Mật khẩu"
                             type={showPwd ? 'text' : 'password'}
                             value={password}
                             onChange={e => setPassword(e.target.value)}
@@ -204,7 +204,7 @@ export default function RegisterForm() {
                         />
 
                         <TextField
-                            label="Confirm Password"
+                            label="Xác nhận mật khẩu"
                             type={showPwd ? 'text' : 'password'}
                             value={confirm}
                             onChange={e => setConfirm(e.target.value)}
@@ -243,17 +243,17 @@ export default function RegisterForm() {
                             >
                                 {loading
                                     ? <CircularProgress size={24} color="white" />
-                                    : 'Register'}
+                                    : 'Đăng ký'}
                             </Button>
                         </motion.div>
 
                         <Typography align="center" sx={{ mt: 2 }}>
-                            Already have an account?{' '}
+                            Đã có tài khoản?{' '}
                             <Button
                                 variant="text"
                                 onClick={() => router.push('/login')}
                             >
-                                Sign In
+                                Đăng nhập
                             </Button>
                         </Typography>
                     </StyledForm>

@@ -107,7 +107,7 @@ export default function LoginForm() {
     const handleSubmit = async e => {
         e.preventDefault();
         if (!email || !password) {
-            toast.warning('Email and password are required!');
+            toast.warning('Vui lòng nhập email và mật khẩu!');
             return;
         }
         try {
@@ -120,7 +120,7 @@ export default function LoginForm() {
             toast.error(res.payload);
         } catch (err) {
             console.log(err);
-            toast.error('Login failed');
+            toast.error('Đăng nhập thất bại');
         }
     };
 
@@ -156,7 +156,7 @@ export default function LoginForm() {
                         />
 
                         <TextField
-                            label="Password"
+                            label="Mật khẩu"
                             type={showPwd ? 'text' : 'password'}
                             value={password}
                             onChange={e => setPassword(e.target.value)}
@@ -197,16 +197,16 @@ export default function LoginForm() {
                             >
                                 {loading
                                     ? <CircularProgress size={24} color="white" />
-                                    : 'Sign In'}
+                                    : 'Đăng nhập'}
                             </Button>
                         </motion.div>
                         <Typography align="center" sx={{ mt: 2 }}>
-                            Not have an account?{' '}
+                            Chưa có tài khoản?{' '}
                             <Button
                                 variant="text"
                                 onClick={() => router.push('/register')}
                             >
-                                REGISTER
+                                ĐĂNG KÝ
                             </Button>
                         </Typography>
                     </StyledForm>

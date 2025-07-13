@@ -47,7 +47,7 @@ export default function PredictModal({ open, onClose, classId, studentIds }) {
                       <TableCell>Điểm đồ án</TableCell>
                       <TableCell>Điểm thực hành</TableCell>
                       <TableCell>Điểm dự đoán CK</TableCell>
-                      <TableCell>Sugestions</TableCell>
+                      <TableCell>Gợi ý</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
