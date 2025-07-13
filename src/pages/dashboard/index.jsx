@@ -163,7 +163,7 @@ export default function DashboardPage() {
                     letterSpacing: "-0.02em",
                   }}
                 >
-                  Learning Analytics Dashboard
+                  Dashboard phân tích học tập
                 </Typography>
                 <Typography
                   variant="h6"
@@ -173,7 +173,7 @@ export default function DashboardPage() {
                     mt: 0.5,
                   }}
                 >
-                  Giám sát tiến trình học tập và hiệu quả môn học của sinh viên.
+                  Giám sát tiến trình học tập và hiệu quả các môn học của sinh viên.
                 </Typography>
               </Box>
             </Box>
