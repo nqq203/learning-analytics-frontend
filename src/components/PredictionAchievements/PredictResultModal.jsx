@@ -143,7 +143,7 @@ export default function PredictResultModal({
                             Đủ điều kiện?
                           </TableCell>
                           <TableCell align="center" sx={{ fontWeight: 700 }}>
-                            Mean
+                            Trung Bình
                           </TableCell>
                         </TableRow>
                       </TableHead>

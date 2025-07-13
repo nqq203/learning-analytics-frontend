@@ -20,7 +20,7 @@ import UpdateExamTable from "./UpdateExamTable";
 export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,handleUpdateExam }) {
 
   const HandleSaveAssignment = (studentInfo,scores,quizName)=>{
-    console.log("ExamData: ",ExamData)
+    
       const AssignmentData = studentInfo.map((student) => {
                   const studentScores = scores[student.studentId] || {};
                       return {
@@ -35,12 +35,12 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
             };
 
             handleUpdateExam(ExamData.assignmentId,mode,result)
-      // handleCreateExam("assignment",result)
+     
     }
 
   const HandleSaveExam = (mode,studentInfo,scores,questions,times,quizName)=>{
     
-    console.log("mode: ",mode)
+    
       if(mode=="quiz"){
             const quizData = studentInfo.map((student) => {
             const studentScores = scores[student.studentId] || {};
@@ -60,6 +60,7 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
                 studentId: student.studentId,
                 duration: Number(times[student.studentId]) || 0,
                 quizScore,
+                activityId: student.activityId,
                 questions: questionsList,
               };
             });
@@ -69,7 +70,7 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
               quizData: quizData,
             };
 
-            // console.log("Kết quả:", result);
+            console.log("Kết quả:", result);
             handleUpdateExam(ExamData.quizId,mode,result)
            
         }
@@ -90,6 +91,7 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
 
               return {
                 studentId: student.studentId,
+                activityId: student.activityId,
                 finalExamScore,
                 questions: questionsList,
               };
@@ -100,9 +102,43 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
               finalExamData: finalData,
             };
 
-            console.log("Kết quả:", result);
+          
             handleUpdateExam(ExamData.finalExamId,mode,result)
-            // handleCreateExam("final_exam",result)
+           
+        }
+        else if(type=="midterm_exam"){
+
+
+            const midtermData = studentInfo.map((student) => {
+            const studentScores = scores[student.studentId] || {};
+            const questionsList = questions.map((q, index) => {
+              const rawScore = studentScores[q];
+              const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
+              return {
+                questionNumber: index + 1,
+                score: score,
+              };
+            });
+
+            
+            const midtermExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
+
+              return {
+                studentId: student.studentId,
+                activityId: student.activityId,
+                midtermExamScore,
+                questions: questionsList,
+              };
+            });
+
+            const result = {
+              midtermExamName: quizName,
+              midtermExamData: midtermData,
+            };
+
+          
+            handleUpdateExam(ExamData.midtermExamId,mode,result)
+
         }
     }
 

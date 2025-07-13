@@ -75,6 +75,9 @@ const ExamQuizTable = ({
     else if(type==="Cuối kỳ"){
       handleViewInformation(row.finalExamId,"final_exam");
     }
+    else if(type==="Giữa kỳ"){
+      handleViewInformation(row.midtermExamId,"midterm_exam");
+    }
   }
 
   const handleUpdateBefore = (row)=>{
@@ -89,6 +92,10 @@ const ExamQuizTable = ({
     else if(type==="Cuối kỳ"){
       handleEdit(row.finalExamId,"final_exam");
     }
+    else if(type==="Giữa kỳ"){
+      handleEdit(row.midtermExamId,"midterm_exam");
+    }
+
   }
 
   const handleDeleteBefore= (row)=>{
@@ -101,6 +108,9 @@ const ExamQuizTable = ({
     }
     else if(type==="Cuối kỳ"){
       handleDelete(row.finalExamId,"final_exam");
+    }
+    else if(type==="Giữa kỳ"){
+      handleDelete(row.midtermExamId,"midterm_exam");
     }
   }
   const cellStyle = {

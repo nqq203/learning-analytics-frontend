@@ -105,6 +105,38 @@
             handleCreateExam("final_exam",result)
             onClose();
         }
+        else if(mode=="Giữa Kỳ"){
+          const midtermData = studentInfo.map((student) => {
+            const studentScores = scores[student.studentId] || {};
+            const questionsList = questions.map((q, index) => {
+              const rawScore = studentScores[q];
+              const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
+              return {
+                questionNumber: index + 1,
+                score: score,
+              };
+            });
+
+            
+            const midtermExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
+
+              return {
+                studentId: student.studentId,
+                midtermExamScore,
+                questions: questionsList,
+              };
+            });
+
+            const result = {
+              midtermExamName: quizName,
+              midtermExamData: midtermData,
+            };
+
+            // console.log("Kết quả:", result);
+           
+            handleCreateExam("midterm_exam",result)
+            onClose();
+        }
     }
 
     return (

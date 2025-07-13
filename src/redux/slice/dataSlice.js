@@ -79,6 +79,7 @@ const initialState = {
     assignments:[],
     finalExams:[],
     quizzes:[],
+    midtermExams:[],
     loadingExam: false,
     
     activities:[],
@@ -738,8 +739,8 @@ const dataSlice = createSlice({
                 state.assignments = action.payload.data.assignments;
                 state.finalExams = action.payload.data.finalExams;
                 state.quizzes = action.payload.data.quizzes;
-
-
+                    
+                state.midtermExams = action.payload.data.midtermExams;
                 // state.totalCourses = action.payload.data.totalRecords;
                 state.code = action.payload.code;
                 state.message = action.payload.message;

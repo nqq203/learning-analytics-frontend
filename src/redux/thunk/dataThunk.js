@@ -359,6 +359,7 @@ export const createStudent = createAsyncThunk(
     "data/createStudent",
     async (data, { rejectWithValue }) => {
         try {
+            console.log("data: ",data)
             const response = await dataApi.createStudent(data);
             return response.data;
         } catch (err) {

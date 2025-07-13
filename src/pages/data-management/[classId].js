@@ -32,7 +32,7 @@ import AddStudentModal from "@/components/StudentManagement/AddStudentModal";
 import StudentTable from "@/components/ClassManagement/StudentTable";
 import { useDispatch, useSelector } from "react-redux";
 import ImportFileModal from "@/components/ClassManagement/ImportFileModal";
-import { deleteStudentFromClass, fetchAllFaculties, fetchAllMajors, fetchAllPrograms, fetchStudentDetail, fetchStudentList, processFilePartly, processStudentData,fetchAllExam,fetchExamDetail,createExam,deleteExam,updateExam,fetchAllStudent } from "@/redux/thunk/dataThunk";
+import { deleteStudentFromClass, fetchAllFaculties, fetchAllMajors, fetchAllPrograms, fetchStudentDetail, fetchStudentList, processFilePartly, processStudentData,fetchAllExam,fetchExamDetail,createExam,deleteExam,updateExam,fetchAllStudent,createStudent } from "@/redux/thunk/dataThunk";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
@@ -311,7 +311,7 @@ export default function StudentDetailView({ onBack }) {
       return null;
     }
   }, [accessToken]);
-  const { loading, totalGrade, totalInformation, studentsInformation, studentsGrade, hasMore, page, amount, faculties, programs, majors, student, assignments,finalExams,quizzes, activities,examInfo,allStudents } = useSelector(state => state.data);
+  const { loading, totalGrade, totalInformation, studentsInformation, studentsGrade, hasMore, page, amount, faculties, programs, majors, student, assignments,finalExams,quizzes, activities,examInfo,allStudents,midtermExams } = useSelector(state => state.data);
   const [search, setSearch] = useState("");
   const [mssv, setMssv] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -373,7 +373,11 @@ export default function StudentDetailView({ onBack }) {
   }
 
 
-  
+  const ColExamMidtermData = useMemo(()=>{
+      if(midtermExams.length>0) return SetHeader(midtermExams);
+
+      return [];
+  },[midtermExams])
 
   const ColExamFinalData = useMemo(()=>{
       if(finalExams.length>0) return SetHeader(finalExams);
@@ -491,23 +495,23 @@ export default function StudentDetailView({ onBack }) {
 
   const handleEditExam = async (examId,type,payload)=>{
     
-        console.log("examId: ",examId)
-        console.log("type: ",type)
-        console.log("payload: ",payload)
+       
        try {
             const response = await dispatch(updateExam({ examId:examId, type: type,payload:payload }));
 
             if (response?.type?.includes("fulfilled") && response.payload?.success) {
-              toast.success(`Sửa thành công bài kiểm tra khỏi lớp`);
-              setConfirmExamOpen(false);
+              toast.success(`Sửa thành công bài kiểm tra`);
+              
               await dispatch(fetchAllExam({ instructor_id: userId, class_id: classId }));
+
+              setIsExamModal(false);
             } else {
               console.warn("Response bị rejected hoặc không success:", response);
-              toast.error(`Xóa thất bại! Hãy thử lại sau`);
+              toast.error(`Sửa thất bại! Hãy thử lại sau`);
             }
           } catch (err) {
             console.error("Lỗi trong handleDeleteRequestExam:", err);
-            toast.error(`Xóa thất bại! Hãy thử lại sau`);
+            toast.error(`Sửa thất bại! Hãy thử lại sau`);
           }
   }
 
@@ -563,9 +567,30 @@ export default function StudentDetailView({ onBack }) {
     setSelectedStudent(null);
   };
 
-  const handleAddNewStudent = (newStudent) => {
-    setStudents((prev) => [...prev, newStudent]);
-    setIsAddModalOpen(false);
+  const handleAddNewStudent = async (newStudent,GradeStudent) => {
+    console.log("Result : ",newStudent , GradeStudent);
+    try{
+      const response = await dispatch(
+        createStudent({classId:classId, payload:{
+          studentInformation:newStudent,
+          studentGrades:GradeStudent
+        }})
+      )
+
+      if (response.payload.success === true) {
+        toast.success(`Thêm thành công sinh viên ${mssv} khỏi lớp`);
+        dispatch(clearStudentList());
+        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: page + 1, amount, search }));
+        setIsAddModalOpen(false)
+      } else {
+        toast.error(`Mã sinh viên này đã tồn tại hoặc thêm thất bại!. Hãy thử lại sau`);
+      }
+
+    }catch {
+      toast.error(`Mã sinh viên này đã tồn tại hoặc thêm thất bại! Hãy thử lại sau`);
+    }
+    // setStudents((prev) => [...prev, newStudent]);
+    // setIsAddModalOpen(false);
   };
 
   const handleDeleteRequest = (studentId, identificationCode) => {
@@ -957,14 +982,14 @@ export default function StudentDetailView({ onBack }) {
         {secondTab === 2  &&(
           <Box position="relative">  
           <ExamQuizTable
-            filteredRows={finalExams}
-            columns={ColExamFinalData}
+            filteredRows={midtermExams}
+            columns={ColExamMidtermData}
             handleDelete={handleDeleteExam}
             handleEdit={handleEditExamClick}
             onLoadMore={handleLoadMore}
             handleViewInformation = {handleViewInformationExam}
             hasMore={hasMore}
-            type="Giữa kỳ"
+            type="Giữa Kỳ"
           />
 
           {loading && (
@@ -1046,8 +1071,26 @@ export default function StudentDetailView({ onBack }) {
         onClose={() => setIsAddModalOpen(false)}
         className={className}
         subject={subject}
-        onAddStudent={handleAddNewStudent}
+        onSave={handleAddNewStudent}
         mode="add"
+          instructorId= {userId??""}
+        basicFields={[
+          { key: 'identificationCode', label: 'MSSV', type: 'text' },
+          { key: 'fullName', label: 'Họ và tên', type: 'text' },
+          { key: 'email', label: 'Email', type: 'text' },
+          { key: 'programId', label: 'Chương trình', type: 'select', options: programs?.map(p => ({ value: p.programId, label: p.programName })) },
+          { key: 'facultyId', label: 'Khoa', type: 'select', options: faculties?.map(f => ({ value: f.facultyId, label: f.facultyName })) },
+          { key: 'majorId', label: 'Chuyên ngành', type: 'select', options: majors?.map(m => ({ value: m.majorId, label: m.majorName })) },
+        ]}
+        gradeFields={[
+          { key: 'midtermGrade', label: 'Giữa kỳ' },
+          { key: 'finalGrade', label: 'Cuối kỳ' },
+          { key: 'projectGrade', label: 'Đồ án' },
+          { key: 'practiceGrade', label: 'Thực hành' },
+          { key: 'assignmentQuizGrade', label: 'Quiz/Assignment' },
+          
+          { key: 'totalGrade', label: 'Tổng kết' },
+        ]}
       />
 
       <AddQuizModal
