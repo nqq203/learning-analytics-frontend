@@ -11,6 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
+import { useEffect } from "react";
 
 export default function SetupPredictModal({
   weightModalOpen,
@@ -34,10 +35,38 @@ export default function SetupPredictModal({
 }) {
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (analyzing) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    if (analyzing) {
+      window.addEventListener("beforeunload", handleBeforeUnload);
+    } else {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    }
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [analyzing]);
+
+  const handleClose = () => {
+    if (analyzing) {
+      const confirmClose = window.confirm(
+        "Tiến trình phân tích đang diễn ra. Bạn có chắc chắn muốn thoát? Tiến trình sẽ bị hủy."
+      );
+      if (!confirmClose) return;
+      setAnalyzing(false); 
+    }
+    setWeightModalOpen(false);
+  };
+
   return (
     <Dialog
       open={weightModalOpen}
-      onClose={() => setWeightModalOpen(false)}
+      onClose={handleClose}
       maxWidth="xs"
       fullWidth
     >

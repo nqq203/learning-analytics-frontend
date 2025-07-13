@@ -24,7 +24,7 @@ const features = [
     icon: AutoGraphIcon,
     colorStart: "#3b82f6",
     colorEnd: "#06b6d4",
-    badge: "Analytics",
+    badge: "Phân tích",
     link: "/analytics/reports-and-statistics",
   },
   {
@@ -34,7 +34,7 @@ const features = [
     icon: BatchPredictionIcon,
     colorStart: "#22c55e",
     colorEnd: "#10b981",
-    badge: "Prediction",
+    badge: "Dự đoán",
     link: "/predictions/predict-achievements",
   },
   {
@@ -44,7 +44,7 @@ const features = [
     icon: SecurityIcon,
     colorStart: "#ef4444",
     colorEnd: "#f97316",
-    badge: "Discovery",
+    badge: "Phát hiện",
     link: "/predictions/fraud-detection",
   },
 ];
