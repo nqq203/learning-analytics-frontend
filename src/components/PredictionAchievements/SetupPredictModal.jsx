@@ -171,10 +171,10 @@ export default function SetupPredictModal({
             const students = selectedStudents.map((s) => {
               const scores = {};
               if (
-                s.assignmentQuiz !== undefined &&
-                s.assignmentQuiz !== null
+                s.assignmentQuizGrade !== undefined &&
+                s.assignmentQuizGrade !== null
               )
-                scores.assignmentQuiz = s.assignmentQuiz;
+                scores.assignmentQuiz = s.assignmentQuizGrade;
               if (s.midtermGrade !== undefined && s.midtermGrade !== null)
                 scores.midterm = s.midtermGrade;
               if (s.finalGrade !== undefined && s.finalGrade !== null)
@@ -199,9 +199,9 @@ export default function SetupPredictModal({
                 weightsObj.practice = Number(weights.practice);
               return {
                 studentId: s.studentId,
+                scores: scores,
                 identificationCode: s.identificationCode,
                 targetGrade: goal,
-                scores,
                 weights: weightsObj,
               };
             });

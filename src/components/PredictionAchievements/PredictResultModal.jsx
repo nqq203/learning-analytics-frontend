@@ -112,7 +112,7 @@ export default function PredictResultModal({
                   </Box>
                 )}
                 {Array.isArray(predictState.result?.data) &&
-                predictState.result.data.length > 0 ? (
+                  predictState.result.data.length > 0 ? (
                   <TableContainer
                     component={Paper}
                     sx={{ mt: 0.5, borderRadius: 2, boxShadow: 2 }}
@@ -128,22 +128,13 @@ export default function PredictResultModal({
                             Điểm mong muốn
                           </TableCell>
                           <TableCell align="center" sx={{ fontWeight: 700 }}>
-                            Điểm TB dự đoán
-                          </TableCell>
-                           <TableCell align="center" sx={{ fontWeight: 700 }}>
-                            Điểm TB thực tế
-                          </TableCell>
-                          <TableCell align="center" sx={{ fontWeight: 700 }}>
                             Điểm CK dự đoán
                           </TableCell>
                           <TableCell align="center" sx={{ fontWeight: 700 }}>
                             Điểm CK thực tế
                           </TableCell>
                           <TableCell align="center" sx={{ fontWeight: 700 }}>
-                            Đủ điều kiện?
-                          </TableCell>
-                          <TableCell align="center" sx={{ fontWeight: 700 }}>
-                            Trung Bình
+                            Khả năng đạt?
                           </TableCell>
                         </TableRow>
                       </TableHead>
@@ -179,12 +170,6 @@ export default function PredictResultModal({
                                 {s.targetGrade || "--"}
                               </TableCell>
                               <TableCell align="center">
-                                {s.predictedTotalGrade || "--"}
-                              </TableCell>
-                              <TableCell align="center">
-                                {s.actualTotalGrade || "--"}
-                              </TableCell>
-                              <TableCell align="center">
                                 {s.predictedFinalGrade || "--"}
                               </TableCell>
                               <TableCell align="center">
@@ -204,7 +189,7 @@ export default function PredictResultModal({
                                         fontWeight: 700,
                                       }}
                                     >
-                                      Đạt
+                                      Có
                                     </span>
                                     <span role="img" aria-label="success">
                                       ✅
@@ -223,16 +208,13 @@ export default function PredictResultModal({
                                         fontWeight: 700,
                                       }}
                                     >
-                                      Không đạt
+                                      Không
                                     </span>
                                     <span role="img" aria-label="fail">
                                       ❌
                                     </span>
                                   </Box>
                                 )}
-                              </TableCell>
-                              <TableCell align="center">
-                                {s.mean || "--"}
                               </TableCell>
                             </TableRow>
                             {expandedRows[s.studentId] && (
@@ -250,7 +232,7 @@ export default function PredictResultModal({
                                     Gợi ý cải thiện
                                   </Typography>
                                   {Array.isArray(s.suggestions) &&
-                                  s.suggestions.length > 0 ? (
+                                    s.suggestions.length > 0 ? (
                                     <Box
                                       display="flex"
                                       flexDirection="column"

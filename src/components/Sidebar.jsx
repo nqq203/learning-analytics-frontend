@@ -294,7 +294,7 @@ const Sidebar = ({
             $isMobile={isMobile}
             $active={router.pathname.startsWith("/dashboard")}
           >
-            DASHBOARD
+            BẢNG ĐIỀU KHIỂN
           </NavText>
         </NavItem>
       </Link>

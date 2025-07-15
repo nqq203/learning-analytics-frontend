@@ -1,4 +1,5 @@
-import React, { useState, useEffect, Fragment, useMemo } from "react";
+import React, { useState, useEffect, Fragment, useMemo, useRef } from "react";
+import generatePDF from "react-to-pdf";
 import {
   Container,
   ActionButton,
@@ -50,6 +51,7 @@ const StudentAnalytics = () => {
   const [courseName, setCourseName] = useState("");
   const { accessToken } = useSelector((state) => state.auth);
   const { _class } = useSelector((state) => state.data);
+  const chartsRef = useRef();
 
   const userId = useMemo(() => {
     if (!accessToken) return null;
@@ -295,6 +297,11 @@ const StudentAnalytics = () => {
                 borderColor: "primary.main",
               },
             }}
+            onClick={() => generatePDF(chartsRef, {
+              filename: "charts.pdf",
+              page: { format: [210, 400] }, 
+              scale: 0.85 
+            })}
           >
             Xuất PDF
           </ActionButton>
@@ -312,7 +319,7 @@ const StudentAnalytics = () => {
           <h3>Chưa có dữ liệu hiển thị, vui lòng cấu hình để tiếp tục</h3>
         </Box>
       ) : (
-        <Box mt={2}>
+        <Box mt={2} ref={chartsRef}>
           {renderCharts()}
           {renderOtherCharts()}
         </Box>

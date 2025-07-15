@@ -31,12 +31,10 @@ import { useRouter } from 'next/router';
 
 const Compare = () => {
   const initialState = {
-    criteria: "",
     selectedSubject: "",
     selectedRows: [],
     isComparing: false,
   };
-  const [criteria, setCriteria] = useState(initialState.criteria);
   const [selectedSubject, setSelectedSubject] = useState(initialState.selectedSubject);
   const [selectedRows, setSelectedRows] = useState(initialState.selectedRows);
   const [isComparing, setIsComparing] = useState(initialState.isComparing);
@@ -44,7 +42,6 @@ const Compare = () => {
   const [pageKey, setPageKey] = useState(0);
 
   const resetCompareState = () => {
-    setCriteria(initialState.criteria);
     setSelectedSubject(initialState.selectedSubject);
     setSelectedRows(initialState.selectedRows);
     setIsComparing(initialState.isComparing);
@@ -124,13 +121,6 @@ const Compare = () => {
     
   // const rows = useMemo(() => classes || [], [classes]);
 
-  const handleCriteriaChange = (e) => {
-    const newCriteria = e.target.value;
-    setCriteria(newCriteria);
-    setSelectedSubject("");
-    setSelectedRows([]);
-  };
-
   const handleSubjectChange = (e) => {
     setSelectedSubject(e.target.value);
     setSelectedRows([]);
@@ -140,50 +130,25 @@ const Compare = () => {
     const selectedItem = rows.find(r => r.no === rowNo);
     if (!selectedItem) return;
 
-    if (criteria === "course") {
-      const courseId = selectedItem.courseId;
-      const currentSelectedItems = rows.filter(r => selectedRows.includes(r.no));
-
-      if (
-        currentSelectedItems.length > 0 &&
-        currentSelectedItems[0].courseId !== courseId
-      ) {
-        alert("Chỉ có thể chọn các lớp thuộc cùng một môn học khi so sánh theo khóa.");
-        return;
-      }
-    }
-
     setSelectedRows((prev) =>
       prev.includes(rowNo) ? prev.filter((no) => no !== rowNo) : [...prev, rowNo]
     );
   };
 
-  const isCompareEnabled = () =>
-    selectedRows.length >= 2 &&
-    (criteria !== "course" || new Set(selectedRows.map(no => {
-      const item = rows.find(r => r.no === no);
-      return item?.courseId;
-    })).size === 1);
+  const isCompareEnabled = () => selectedRows.length >= 2;
     
   const handleCompareClick = async () => {
     const selectedItems = rows.filter(row => selectedRows.includes(row.no));
 
     if (selectedItems.length < 2) {
-      alert("Cần chọn ít nhất 2 lớp hoặc khóa học để so sánh.");
+      alert("Cần chọn ít nhất 2 lớp để so sánh.");
       return;
     }
 
     try {
-      if (criteria === 'class') {
-        const classIds = selectedItems.map(row => String(row.classId));
-        const payload = { class_ids: classIds };
-        await dispatch(fetchCompareByClassesThunk(payload));
-      } else if (criteria === 'course') {
-        const cohorts = selectedItems.map(row => String(row.cohort || row.academicYear || ''));
-        const courseId = selectedItems[0].courseId;
-        const payload = { cohorts, course_id: courseId };
-        await dispatch(fetchCompareByCohortsThunk(payload));
-      }
+      const classIds = selectedItems.map(row => String(row.classId));
+      const payload = { class_ids: classIds };
+      await dispatch(fetchCompareByClassesThunk(payload));
       setCompareKey(Date.now()); 
       setIsComparing(true);
     } catch (error) {
@@ -248,7 +213,7 @@ const Compare = () => {
       <CompareResult
         key={compareKey}
         data={compareResults.data}
-        mode={criteria}
+        mode="class"
         onBack={handleBack}
       />
     );
@@ -267,7 +232,6 @@ const Compare = () => {
         ]}
       />
 
-      {/* Controls */}
       <Paper
         elevation={0}
         sx={{
@@ -281,21 +245,10 @@ const Compare = () => {
         <Grid container spacing={3} alignItems="center">
           <Grid item xs={12} md={4}>
             <FormControl fullWidth size="small">
-              <InputLabel>Tiêu chí</InputLabel>
-              <Select label="Tiêu chí" value={criteria} onChange={handleCriteriaChange}>
-                <MenuItem value="class">Theo Lớp</MenuItem>
-                <MenuItem value="course">Theo Khóa</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth size="small">
               <InputLabel>Môn học</InputLabel>
               <Select
                 label="Môn học"
                 value={selectedSubject}
-                disabled={!criteria}
                 onChange={handleSubjectChange}
               >
                 {[...new Set(rows.map((item) => item.courseName))].map((subject) => (
@@ -381,9 +334,7 @@ const Compare = () => {
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Khóa</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Số sinh viên</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Tỷ lệ đậu (%)</TableCell>
-                  {criteria && (
-                    <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Chọn</TableCell>
-                  )}
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Chọn</TableCell>
                 </TableRow>
               </TableHead>
 
@@ -415,20 +366,18 @@ const Compare = () => {
                           }}
                         />
                       </TableCell>
-                      {criteria && (
-                        <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                          <input
-                            type="checkbox"
-                            checked={selectedRows.includes(item.no)}
-                            onChange={() => handleSelectRow(item.no)}
-                            style={{
-                              width: '18px',
-                              height: '18px',
-                              accentColor: '#1e3a8a',
-                            }}
-                          />
-                        </TableCell>
-                      )}
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.includes(item.no)}
+                          onChange={() => handleSelectRow(item.no)}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            accentColor: '#1e3a8a',
+                          }}
+                        />
+                      </TableCell>
                     </TableRow>
                   ))}
               </TableBody>

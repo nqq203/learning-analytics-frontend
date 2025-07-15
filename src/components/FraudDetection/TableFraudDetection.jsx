@@ -48,8 +48,8 @@ export function TableFraudDetection({ data }) {
             {data.length > 0 ? <Fragment>
               {data.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell>{row.studentId}</TableCell>
-                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{row.identificationCode}</TableCell>
+                  <TableCell>{row.studentName}</TableCell>
                   <TableCell>{row.score}</TableCell>
                   <TableCell>{row.duration}</TableCell>
                   <TableCell>{row.deviationHigh}</TableCell>

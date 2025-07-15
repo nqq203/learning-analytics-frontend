@@ -489,3 +489,16 @@ export const fetchAllStudent = createAsyncThunk(
         }
     }
 );
+
+export const processLearningOutcome = createAsyncThunk(
+    "data/processLearningOutcome",
+    async ({ instructorId, file, classId }, { rejectWithValue }) => {
+        try {
+            const response = await dataApi.processLearningOutcome({ instructorId, file, classId });
+            return response.data;
+        } catch (err) {
+            const payload = err.response?.data ?? err;
+            return rejectWithValue(handleDataApiError(payload));
+        }
+    }
+)

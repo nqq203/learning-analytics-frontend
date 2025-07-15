@@ -156,12 +156,12 @@ export default function StudentAnalytics() {
                 <Select
                   labelId="student-label"
                   id="student-select"
-                  value={studentInfo?.studentId || ""}
+                  value={studentInfo?.identificationCode || ""}
                   label="MSSV - Họ tên"
                  
                 >
-                  <MenuItem value={studentInfo?.studentId || ""}>
-                    {`${studentInfo?.studentId || ""} - ${studentInfo?.fullName || ""}`}
+                  <MenuItem value={studentInfo?.identificationCode || ""}>
+                    {`${studentInfo?.identificationCode || ""} - ${studentInfo?.fullName || ""}`}
                   </MenuItem>
                 </Select>
               </FormControl>

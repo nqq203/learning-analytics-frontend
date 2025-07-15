@@ -19,7 +19,7 @@ import {
 
 
 const columns = [
-  {id:"studentId",label:"MSSV", align:"left"},
+  {id:"identificationCode",label:"MSSV", align:"left"},
   {id:"fullName",label:"Họ và tên", align:"left"},
   {id:"className",label:"Lớp", align:"left"},
   {id:"courseName",label:"Môn", align:"left"},
@@ -192,7 +192,7 @@ const StudentContainerLNO = () => {
          <div style={{ display: "flex", flexDirection: "column" }}>
             
             <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}>
-          Tổng số lớp hiển thị: {totalRecords}
+          Tổng số sinh viên hiển thị: {totalRecords}
         </span>
          
               <Box position="relative">

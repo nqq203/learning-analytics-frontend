@@ -1,6 +1,23 @@
 import axios from "axios";
+import { store } from "../store";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+// Add a request interceptor to include Bearer token from Redux store
+axios.interceptors.request.use(
+  (config) => {
+    // Adjust the path to access token in your redux state as needed
+    const state = store.getState();
+    const accessToken = state?.auth?.accessToken;
+    if (accessToken) {
+      config.headers = config.headers || {};
+      config.headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+    config.withCredentials = true;
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 const handleDataApiError = (error) => {
     if (error.message) {
@@ -160,17 +177,26 @@ const dataApi = {
 
     fetchAllExam: ({ instructor_id, class_id }) =>
         axios.get(`${API_URL}/data/exams?instructor_id=${instructor_id}&class_id=${class_id}`),
-    fetchExamDetail: ({ quiz_id,type }) =>
+    fetchExamDetail: ({ quiz_id, type }) =>
         axios.get(`${API_URL}/data/exams/${quiz_id}?type=${type}`),
-    createExam: ({ instructor_id,class_id,type,payload }) =>
-        axios.post(`${API_URL}/data/exams?instructor_id=${instructor_id}&class_id=${class_id}&type=${type}`,payload),
+    createExam: ({ instructor_id, class_id, type, payload }) =>
+        axios.post(`${API_URL}/data/exams?instructor_id=${instructor_id}&class_id=${class_id}&type=${type}`, payload),
 
-    updateExam: ({ examId,type,payload }) =>
-        axios.put(`${API_URL}/data/exams/${examId}?type=${type}`,payload),
-    deleteExam: ({ examId,type }) =>
+    updateExam: ({ examId, type, payload }) =>
+        axios.put(`${API_URL}/data/exams/${examId}?type=${type}`, payload),
+    deleteExam: ({ examId, type }) =>
         axios.delete(`${API_URL}/data/exams/${examId}?type=${type}`),
-    
-
+    processLearningOutcome: ({ instructorId, file, classId }) => {
+        const form = new FormData();
+        form.append("file", file);
+        return axios.post(
+            `${API_URL}/data/lo?instructor_id=${instructorId}&class_id=${classId}`,
+            form,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+            }
+        );
+    }
 }
 
 export { dataApi, handleDataApiError }

@@ -779,8 +779,8 @@ export default function MainClassManagement() {
             setOpen={setImportFile}
             types={importTypes}
             sampleLinks={[
-              "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1749965679/Course_Data_erpcd4.xlsx",
-              "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1749965679/All_lftjpg.xlsx",
+              "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565819/Course_Data_huy9kj.xlsx",
+              "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565819/All_f7u4fd.xlsx",
             ]}
             onImport={handleImport}
           /> : null}
