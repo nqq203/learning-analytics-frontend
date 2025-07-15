@@ -163,7 +163,7 @@ export default function DashboardPage() {
                     letterSpacing: "-0.02em",
                   }}
                 >
-                  Dashboard phân tích học tập
+                  Bảng điều khiển
                 </Typography>
                 <Typography
                   variant="h6"
