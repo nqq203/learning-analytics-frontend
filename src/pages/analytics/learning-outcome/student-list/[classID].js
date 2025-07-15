@@ -19,7 +19,7 @@ import {
 
 
 const columns = [
-  {id:"studentId",label:"MSSV", align:"left"},
+  {id:"identificationCode",label:"MSSV", align:"left"},
   {id:"fullName",label:"Họ và tên", align:"left"},
   {id:"className",label:"Lớp", align:"left"},
   {id:"courseName",label:"Môn", align:"left"},

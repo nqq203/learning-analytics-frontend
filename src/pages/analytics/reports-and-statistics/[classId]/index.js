@@ -50,16 +50,16 @@ const StudentsList = () => {
       if (buttonVariant === "contained") {
         const response = await dispatch(fetchStudents({ classId })).unwrap();
         setRows(response?.data?.studentList || []);
-        
+
         if (response?.data?.className) {
           setClassInfo({
             className: response.data.className,
             subjectName: response.data.subjectName || "Chưa có thông tin môn học"
           });
         }
-        
+
         setColumns([
-          { id: "studentId", label: "MSSV", align: "left" },
+          { id: "identificationCode", label: "MSSV", align: "left" },
           { id: "fullName", label: "Họ và tên", align: "left" },
           { id: "majorName", label: "Chuyên ngành", align: "left" },
           { id: "facultyName", label: "Khoa", align: "left" },
@@ -70,16 +70,16 @@ const StudentsList = () => {
           fetchStudentsDetails({ classId })
         ).unwrap();
         setRows(response?.data?.studentList || []);
-        
+
         if (response?.data?.className) {
           setClassInfo({
             className: response.data.className,
             subjectName: response.data.subjectName || "Chưa có thông tin môn học"
           });
         }
-        
+
         setColumns([
-          { id: "studentId", label: "MSSV" },
+          { id: "identificationCode", label: "MSSV" },
           { id: "fullName", label: "Họ và tên" },
           { id: "midtermGrade", label: "Giữa kỳ" },
           { id: "practiceGrade", label: "Thực hành" },
@@ -161,9 +161,9 @@ const StudentsList = () => {
   const averageGrade =
     buttonVariant === "outlined"
       ? (
-          sortedRows.reduce((sum, row) => sum + (row.totalGrade ?? 0), 0) /
-            studentCount || 0
-        ).toFixed(2)
+        sortedRows.reduce((sum, row) => sum + (row.totalGrade ?? 0), 0) /
+        studentCount || 0
+      ).toFixed(2)
       : 0;
 
   return (
@@ -271,15 +271,17 @@ const StudentsList = () => {
       <BodyWrapper>
         <InformationWrapper>
           <InformationItem>Số lượng sinh viên: {studentCount}</InformationItem>
-          <InformationItem>
-            Điểm trung bình: {buttonVariant === "outlined" ? averageGrade : "-"}
-          </InformationItem>
+          {averageGrade > 0 &&
+            <InformationItem>
+              Điểm trung bình: {buttonVariant === "outlined" ? averageGrade : "-"}
+            </InformationItem>}
         </InformationWrapper>
         <Box position="relative">
           <NonInfiniteAnalyticsTable
             filteredRows={sortedRows.map((row) => ({
               ...row,
-              fullName: row.fullName ?? "Không có tên",
+              identificationCode: row.identificationCode ?? "-",
+              fullName: row.fullName ?? "-",
               midtermGrade: row.midtermGrade ?? "-",
               practiceGrade: row.practiceGrade ?? "-",
               assignmentQuizGrade: row.assignmentQuizGrade ?? "-",

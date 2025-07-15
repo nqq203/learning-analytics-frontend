@@ -112,7 +112,7 @@ export default function PredictResultModal({
                   </Box>
                 )}
                 {Array.isArray(predictState.result?.data) &&
-                predictState.result.data.length > 0 ? (
+                  predictState.result.data.length > 0 ? (
                   <TableContainer
                     component={Paper}
                     sx={{ mt: 0.5, borderRadius: 2, boxShadow: 2 }}
@@ -134,7 +134,7 @@ export default function PredictResultModal({
                             Điểm CK thực tế
                           </TableCell>
                           <TableCell align="center" sx={{ fontWeight: 700 }}>
-                            Đủ điều kiện?
+                            Khả năng đạt?
                           </TableCell>
                         </TableRow>
                       </TableHead>
@@ -189,7 +189,7 @@ export default function PredictResultModal({
                                         fontWeight: 700,
                                       }}
                                     >
-                                      Đạt
+                                      Có
                                     </span>
                                     <span role="img" aria-label="success">
                                       ✅
@@ -208,7 +208,7 @@ export default function PredictResultModal({
                                         fontWeight: 700,
                                       }}
                                     >
-                                      Không đạt
+                                      Không
                                     </span>
                                     <span role="img" aria-label="fail">
                                       ❌
@@ -232,7 +232,7 @@ export default function PredictResultModal({
                                     Gợi ý cải thiện
                                   </Typography>
                                   {Array.isArray(s.suggestions) &&
-                                  s.suggestions.length > 0 ? (
+                                    s.suggestions.length > 0 ? (
                                     <Box
                                       display="flex"
                                       flexDirection="column"
