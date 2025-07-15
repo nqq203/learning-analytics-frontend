@@ -192,7 +192,7 @@ const StudentContainerLNO = () => {
          <div style={{ display: "flex", flexDirection: "column" }}>
             
             <span style={{ paddingLeft: "20px", paddingTop: "20px", fontSize: "20px", fontWeight: "700" }}>
-          Tổng số lớp hiển thị: {totalRecords}
+          Tổng số sinh viên hiển thị: {totalRecords}
         </span>
          
               <Box position="relative">
