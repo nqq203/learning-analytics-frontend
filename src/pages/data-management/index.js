@@ -85,6 +85,17 @@ export default function MainClassManagement() {
     }
     if (response.payload.success === true) {
       toast.success("Tạo dữ liệu Lớp/Khóa học thành công");
+      
+
+        dispatch(clearClassList());
+        dispatch(fetchClassList({ instructorId: userId, page: 1, amount, search, academicYear: chosenAcademicYear, semester: chosenSemester }));
+        await dispatch(fetchAllFaculties({ instructorId: userId }));
+        await dispatch(fetchAllMajors({ instructorId: userId }));
+        await dispatch(fetchAllPrograms({ instructorId: userId }));
+        await dispatch(fetchAllCourses({ instructorId: userId }))
+      
+      
+      
     } else {
       toast.error("Tạo dữ liệu thất bại! Hãy thử lại sau");
     }
