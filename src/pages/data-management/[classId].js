@@ -82,6 +82,7 @@ const LearningOutComeTabButtons = styled.div`
 
 const InfoColumns = [
   { id: "identificationCode", label: "MSSV", align: "center" },
+  { id: "fullName", label: "Họ và tên", align: "center"},
   { id: "email", label: "Email", align: "center" },
   { id: "programName", label: "Chương trình", align: "center" },
   { id: "facultyName", label: "Khoa", align: "center" },

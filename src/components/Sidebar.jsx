@@ -554,7 +554,11 @@ const Sidebar = ({
             borderRadius: collapsed ? '50%' : 1,
           }}
         >
-          {!collapsed && "Đăng xuất"}
+          <NavText
+           $collapsed={collapsed}
+            $isMobile={isMobile}>
+              Đăng xuất
+            </NavText>
         </Button>
       </UserProfileSection>
     </SidebarWrapper>
