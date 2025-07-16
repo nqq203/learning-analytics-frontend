@@ -222,7 +222,7 @@ const ExamUpdateData =
 }
   ;
 
-const academicYear = ["2014-2018", "2015-2019", "2021-2025", "2022-2026"]
+
 
 export default function StudentDetailView({ onBack }) {
   const [MiniTab, setMiniTab] = useState(1);
@@ -482,7 +482,7 @@ export default function StudentDetailView({ onBack }) {
   const handleDeleteRequestExam = async () => {
     try {
       const response = await dispatch(deleteExam({ examId: selectedExam, type: ModeExam }));
-      console.log("response sau khi xoa: ", response);
+     
 
       if (response?.type?.includes("fulfilled") && response.payload?.success) {
         toast.success(`Xóa thành công bài kiểm tra khỏi lớp`);
@@ -653,13 +653,18 @@ export default function StudentDetailView({ onBack }) {
 
     if (response.payload.success === true) {
       toast.success(`Tạo dữ liệu ${type.toLowerCase()} thành công`);
-      dispatch(fetchStudentList({
-        classId,
-        type: showSummary ? "summary" : "information",
-        page: 1,
-        amount,
-        search
-      }));
+      // dispatch(fetchStudentList({
+      //   classId,
+      //   type: showSummary ? "summary" : "information",
+      //   page: 1,
+      //   amount,
+      //   search
+      // }));
+
+      await dispatch(fetchAllExam({ instructor_id: userId, class_id: classId }));
+        // dispatch(clearStudentList());
+        // await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: page + 1, amount, search }));
+
     } else {
       toast.error("Tạo dữ liệu thất bại! Hãy thữ lại sau");
     }
