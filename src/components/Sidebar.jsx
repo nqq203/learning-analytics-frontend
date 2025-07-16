@@ -43,7 +43,7 @@ const SidebarWrapper = styled.div`
   &::after {
     content: "";
     display: ${({ $isMobile, $visible }) =>
-      $isMobile && $visible ? "block" : "none"};
+    $isMobile && $visible ? "block" : "none"};
     position: fixed;
     top: 0;
     left: 0;
@@ -184,6 +184,21 @@ const ExpandableContainer = styled.div`
   /* Bạn có thể dùng màu khác, ví dụ: #f2f2f2, #e8e8e8, v.v. */
   transition: background-color 0.3s ease;
 `;
+
+const LogoutNavItem = styled(NavItem)`
+  color: var(--error-600) !important;
+  border: 1px solid var(--error-600);
+  border-radius: 10px;
+  margin-top: 5px;
+  height: 40px;
+  gap: 35px;
+  background-color: #fff;
+  transition: background-color 0.2s, color 0.2s;
+  &:hover {
+    background-color: var(--error-600) !important;
+    color: var(--white) !important;
+  }
+`
 
 const Sidebar = ({
   role,
@@ -337,7 +352,7 @@ const Sidebar = ({
                 "/analytics/reports-and-statistics"
               )}
               $isMobile={isMobile}
-              // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
+            // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
             >
               <NavText
                 $collapsed={collapsed}
@@ -432,7 +447,7 @@ const Sidebar = ({
                 "/predictions/fraud-detection"
               )}
               $isMobile={isMobile}
-              // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
+            // onClick={toggleProps} // Nếu muốn đóng sidebar khi click
             >
               <NavText
                 $collapsed={collapsed}
@@ -522,7 +537,7 @@ const Sidebar = ({
             {user?.fullName || "User Name"}
           </UserName>
         </AvatarContainer>
-        <Button
+        {/* <Button
           variant="outlined"
           color="error"
           fullWidth
@@ -530,6 +545,8 @@ const Sidebar = ({
           startIcon={<LogoutIcon />}
           sx={{
             mt: 2,
+            display: "flex",
+            flexDirection: "row",
             fontWeight: 600,
             textTransform: 'none',
             letterSpacing: 0.5,
@@ -541,25 +558,53 @@ const Sidebar = ({
               color: '#fff',
               borderColor: 'error.main',
             },
-            '& .MuiButton-startIcon': {
-              marginRight: collapsed ? 0 : 1,
-            },
-            '& .MuiButton-label': {
-              display: collapsed ? 'none' : 'block',
-            },
-            justifyContent: collapsed ? 'center' : 'flex-start',
-            minWidth: collapsed ? '40px' : 'auto',
-            width: collapsed ? '40px' : '100%',
-            height: collapsed ? '40px' : 'auto',
-            borderRadius: collapsed ? '50%' : 1,
+            // '& .MuiButton-startIcon': {
+            //  marginRight: collapsed ? 0 : 1,
+            // },
+            // '& .MuiButton-label': {
+            //  display: collapsed ? 'none' : 'block',
+            // },
+            // justifyContent: collapsed ? 'center' : 'flex-start',
+            // minWidth: collapsed ? '40px' : 'auto',
+            // width: collapsed ? '40px' : '100%',
+            // height: collapsed ? '40px' : 'auto',
+            // borderRadius: collapsed ? '50%' : 1,
           }}
         >
           <NavText
-           $collapsed={collapsed}
+            $collapsed={collapsed}
             $isMobile={isMobile}>
-              Đăng xuất
-            </NavText>
-        </Button>
+            Đăng xuất
+          </NavText>
+        </Button> */}
+
+        <LogoutNavItem
+          $collapsed={collapsed}
+          $isMobile={isMobile}
+          onClick={handleLogoutClick}
+          style={{
+            color: "var(--error-600)",
+            border: "1px solid var(--error-600)",
+            borderRadius: '10px',
+            marginTop: "5px",
+            height: "40px",
+            gap: '35px',
+            '&:hover': {
+              backgroundColor: 'var(--error-600)',
+              color: 'var(--white)',
+            }
+          }}
+        >
+          <NavIcon>
+            <LogoutIcon />
+          </NavIcon>
+          <NavText
+            $collapsed={collapsed}
+            $isMobile={isMobile}
+          >
+            {"Đăng xuất"}
+          </NavText>
+        </LogoutNavItem>
       </UserProfileSection>
     </SidebarWrapper>
   );
