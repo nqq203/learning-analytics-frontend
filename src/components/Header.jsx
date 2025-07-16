@@ -74,7 +74,7 @@ export default function Header({ title }) {
     }
   };
 
-  console.log(pathname);
+  // console.log(pathname);
 
   return (
     <HeaderContainer transparent={pathname === "/"}>

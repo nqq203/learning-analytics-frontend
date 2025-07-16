@@ -68,7 +68,7 @@
               quizData: quizData,
             };
 
-            console.log("Kết quả:", result);
+            // console.log("Kết quả:", result);
             
             handleCreateExam("quiz",result)
             onClose();
@@ -100,7 +100,7 @@
               finalExamData: finalData,
             };
 
-            console.log("Kết quả:", result);
+            // console.log("Kết quả:", result);
            
             handleCreateExam("final_exam",result)
             onClose();

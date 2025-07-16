@@ -161,7 +161,7 @@ const Compare = () => {
   };
 
   useEffect(() => {
-    console.log(compareResults)
+    // console.log(compareResults)
     if (compareResults && !compareLoading && !compareError) {
       setIsComparing(true);
     } else if (compareError) {
@@ -208,7 +208,7 @@ const Compare = () => {
 
 
   if (isComparing) {
-    console.log(compareResults.data)
+    // console.log(compareResults.data)
     return (
       <CompareResult
         key={compareKey}

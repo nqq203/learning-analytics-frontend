@@ -119,7 +119,7 @@ export default function LoginForm() {
             } 
             toast.error(res.payload);
         } catch (err) {
-            console.log(err);
+            // console.log(err);
             toast.error('Đăng nhập thất bại');
         }
     };

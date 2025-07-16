@@ -89,10 +89,10 @@ export default function StudentListPage() {
     dispatch(fetchClassDetail({ instructorId: userId, classId }));
   }, [classId]);
 
-  useEffect(() => {
-    console.log("stdeutn: ", studentsGrade);
-    console.log(classId);
-  }, [studentsGrade, classId]);
+  // useEffect(() => {
+  //   console.log("stdeutn: ", studentsGrade);
+  //   console.log(classId);
+  // }, [studentsGrade, classId]);
 
   useEffect(() => {
     const el = containerRef.current;

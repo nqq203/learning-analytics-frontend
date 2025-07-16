@@ -60,7 +60,7 @@ const authSlice = createSlice({
                 state.userId = action.payload.data.userId;
                 state.isAuthenticated = true;
                 const decodedToken = jwtDecode(action.payload.data.accessToken);
-                console.log(decodedToken);
+                // console.log(decodedToken);
                 state.user = decodedToken.user;
             })
             .addCase(login.rejected, (state, action) => {

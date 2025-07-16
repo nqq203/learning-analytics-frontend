@@ -535,7 +535,6 @@ export default function StudentDetailView({ onBack }) {
 
   const handleCreateExam = async (mode, examInfo) => {
     try {
-
       const response = await dispatch(createExam({ instructor_id: userId, class_id: classId, type: mode, payload: examInfo }));
 
       if (response.payload.success === true) {
@@ -545,8 +544,6 @@ export default function StudentDetailView({ onBack }) {
       } else {
         toast.error(`Thêm thất bại! Hãy thử lại sau`);
       }
-
-
     } catch {
       toast.error(`Thêm thất bại! Hãy thử lại sau`);
     } finally {
@@ -573,7 +570,6 @@ export default function StudentDetailView({ onBack }) {
   };
 
   const handleAddNewStudent = async (newStudent, GradeStudent) => {
-    console.log("Result : ", newStudent, GradeStudent);
     try {
       const response = await dispatch(
         createStudent({
@@ -585,10 +581,10 @@ export default function StudentDetailView({ onBack }) {
       )
 
       if (response.payload.success === true) {
-        toast.success(`Thêm thành công sinh viên ${mssv} khỏi lớp`);
+        toast.success(`Thêm thành công sinh viên ${mssv} vào lớp`);
         dispatch(clearStudentList());
-        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: page + 1, amount, search }));
-        setIsAddModalOpen(false)
+        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: 1, amount, search }));
+        setIsAddModalOpen(false);
       } else {
         toast.error(`Mã sinh viên này đã tồn tại hoặc thêm thất bại!. Hãy thử lại sau`);
       }

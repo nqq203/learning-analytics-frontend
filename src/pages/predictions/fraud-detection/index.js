@@ -145,7 +145,7 @@ const FraudDetection = () => {
 
   const handleChosingQuiz = (QuizIdChosen) => {
     if (QuizIdChosen === 'import') {
-      console.log("HELLO")
+      // console.log("HELLO")
       fileInputRef.current.click();
 
     }
@@ -170,7 +170,7 @@ const FraudDetection = () => {
 
   const handleFileChange = async (e) => {
     // setLoading(true);
-    console.log("FILE CHANGE")
+    // console.log("FILE CHANGE")
     const file = e.target.files[0];
 
     if (file) {
@@ -188,7 +188,7 @@ const FraudDetection = () => {
 
   const handleDetect = async () => {
     // setLoading(true);
-    console.log(`Handle Detect: ${userId} ${quizSelect} ${minTime} ${maxTime}`)
+    // console.log(`Handle Detect: ${userId} ${quizSelect} ${minTime} ${maxTime}`)
 
     await dispatch(fetchFraudDetect({ userId, quiz_id: quizSelect, min_threshold: minTime, max_threshold: maxTime }));
 

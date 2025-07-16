@@ -39,12 +39,12 @@ export const fetchImportQuizFile = createAsyncThunk(
         try{
             const response = await fraudDetectionApi.fetchImportQuizFile({userId, file, class_id, activity_type})
            
-            console.log("Xong fetchImportQuizFile: ",response.data)
+            // console.log("Xong fetchImportQuizFile: ",response.data)
             
             return response.data;
         }
         catch(error){
-            console.log("Lỗi khi import file",error)
+            // console.log("Lỗi khi import file",error)
             return rejectWithValue(handleFraudDetectionApiError(error.response.data))
         }
     }
