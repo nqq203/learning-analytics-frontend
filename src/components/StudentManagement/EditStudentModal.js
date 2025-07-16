@@ -17,7 +17,7 @@ import {
   Divider,
 } from '@mui/material';
 import { Close } from '@mui/icons-material';
-
+import { toast } from 'react-toastify';
 function TabPanel({ children, value, index }) {
   return value === index ? <Box sx={{ p: 2 }}>{children}</Box> : null;
 }
@@ -67,11 +67,42 @@ export default function EditStudentModal({
   const handleSave = () => {
     if (!changed) return;
     const payload = {};
-    Object.keys(formData).forEach(key => {
-      if (formData[key] !== initial[key]) payload[key] = formData[key];
-    });
-    onSubmit(payload);
-    onClose();
+    // console.log(formData)
+    const nonGradeKeys = Object.keys(formData).filter(key => !key.endsWith('Grade'));
+  
+    // Kiểm tra chỉ những field không phải Grade
+    const emptyField = nonGradeKeys.find(key => 
+      !formData[key] || formData[key].toString().trim() === ""
+    );
+    
+    if (emptyField) {
+      toast.error("Vui lòng nhập đầy đủ thông tin");
+      return;
+    }
+    
+    const resultPayload = {
+        studentInformation: {
+          fullName: formData["fullName"],
+          email: formData["email"],
+          identificationCode: formData["identificationCode"],
+          programId: formData["programId"],
+          majorId: formData["majorId"],
+          facultyId: formData["facultyId"]
+        },
+        studentGrades:{
+          totalGrade: formData["totalGrade"] ?? 0,
+          midtermGrade: formData["midtermGrade"]?? 0,
+          finalGrade: formData["finalGrade"]?? 0,
+          projectGrade: formData["projectGrade"]?? 0,
+          practiceGrade: formData["practiceGrade"]?? 0,
+          assignmentQuizGrade: formData["assignmentQuizGrade"]?? 0
+        }
+
+    }
+
+
+    onSubmit(entityData.studentInformation.studentId,resultPayload);
+    // onClose();
   };
 
   return (

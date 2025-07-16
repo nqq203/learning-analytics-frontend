@@ -24,7 +24,9 @@ import { useEffect, useMemo, useState, useRef } from "react";
 
 
 export default function ViewTable({ QuizName,ExamData,type }) {
-  
+useEffect(()=>{
+  console.log("ExamData: ",ExamData)
+},[ExamData])
 
   return (
     <div style={{display:"flex",flexDirection:"column",gap:"1rem"}}>
@@ -53,7 +55,7 @@ export default function ViewTable({ QuizName,ExamData,type }) {
                 <TableCell style={{fontWeight:"bold",fontSize:"12px"}} >MSSV</TableCell>
                 <TableCell style={{fontWeight:"bold",fontSize:"12px"}} >Điểm tổng kết</TableCell>
                 {
-                    (type==="quiz" || type ==="final_exam")&&(
+                    (type==="quiz" || type ==="final_exam" || type ==="midterm_exam")&&(
                             <>
                                 {type==="quiz" &&( <TableCell style={{fontWeight:"bold",fontSize:"12px"}} >Thời gian làm bài</TableCell> )}
                                 
@@ -78,7 +80,7 @@ export default function ViewTable({ QuizName,ExamData,type }) {
                   <TableCell style={{fontSize:"10px"}} >{student.identificationCode}</TableCell>
                   <TableCell style={{fontSize:"11px"}} >{student.activityScore}</TableCell>
                   {
-                    (type==="quiz" || type ==="final_exam")&&(
+                    (type==="quiz" || type ==="final_exam" || type ==="midterm_exam")&&(
                             <>
                                 {type==="quiz" &&( <TableCell style={{fontSize:"11px"}} >{student.duration}</TableCell> )}
                                 

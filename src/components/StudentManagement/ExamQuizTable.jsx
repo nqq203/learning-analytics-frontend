@@ -65,6 +65,8 @@ const ExamQuizTable = ({
   }, [onLoadMore]);
 
   const handleDetail = (row)=>{
+    console.log("row: ",row)
+    // console.log("type: ",type)
     if(type==="Quiz"){
       handleViewInformation(row.quizId,"quiz");
     }
@@ -75,8 +77,8 @@ const ExamQuizTable = ({
     else if(type==="Cuối kỳ"){
       handleViewInformation(row.finalExamId,"final_exam");
     }
-    else if(type==="Giữa kỳ"){
-      handleViewInformation(row.midtermExamId,"midterm_exam");
+    else if(type==="Giữa Kỳ"){
+      handleViewInformation(row.midtermId,"midterm_exam");
     }
   }
 
@@ -92,8 +94,8 @@ const ExamQuizTable = ({
     else if(type==="Cuối kỳ"){
       handleEdit(row.finalExamId,"final_exam");
     }
-    else if(type==="Giữa kỳ"){
-      handleEdit(row.midtermExamId,"midterm_exam");
+    else if(type==="Giữa Kỳ"){
+      handleEdit(row.midtermId,"midterm_exam");
     }
 
   }

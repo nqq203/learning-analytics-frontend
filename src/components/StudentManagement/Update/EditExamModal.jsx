@@ -18,7 +18,7 @@ import { Close } from "@mui/icons-material";
 import UpdateAssignTableModal from "./UpdateAssignTableModal";
 import UpdateExamTable from "./UpdateExamTable";
 export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,handleUpdateExam }) {
-
+  
   const HandleSaveAssignment = (studentInfo,scores,quizName)=>{
     
       const AssignmentData = studentInfo.map((student) => {
@@ -106,7 +106,7 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
             handleUpdateExam(ExamData.finalExamId,mode,result)
            
         }
-        else if(type=="midterm_exam"){
+        else if(mode=="midterm_exam"){
 
 
             const midtermData = studentInfo.map((student) => {
@@ -136,7 +136,7 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
               midtermExamData: midtermData,
             };
 
-          
+            
             handleUpdateExam(ExamData.midtermExamId,mode,result)
 
         }
@@ -147,6 +147,7 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
     if(mode=="quiz")              return ExamData?.quizName;
       else if(mode=="assignment")   return ExamData?.assignmentName;
         else if(mode=="final_exam")   return ExamData?.finalExamName;
+          else if(mode=="midterm_exam")   return ExamData?.midtermExamName;          
     return ""
   },[mode])
 

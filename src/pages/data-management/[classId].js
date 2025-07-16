@@ -32,7 +32,7 @@ import AddStudentModal from "@/components/StudentManagement/AddStudentModal";
 import StudentTable from "@/components/ClassManagement/StudentTable";
 import { useDispatch, useSelector } from "react-redux";
 import ImportFileModal from "@/components/ClassManagement/ImportFileModal";
-import { deleteStudentFromClass, fetchAllFaculties, fetchAllMajors, fetchAllPrograms, fetchStudentDetail, fetchStudentList, processFilePartly, processStudentData, fetchAllExam, fetchExamDetail, createExam, deleteExam, updateExam, fetchAllStudent, createStudent, processLearningOutcome } from "@/redux/thunk/dataThunk";
+import { deleteStudentFromClass, fetchAllFaculties, fetchAllMajors, fetchAllPrograms, fetchStudentDetail, fetchStudentList, processFilePartly, processStudentData, fetchAllExam, fetchExamDetail, createExam, deleteExam, updateExam, fetchAllStudent, createStudent, processLearningOutcome, updateStudent } from "@/redux/thunk/dataThunk";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
@@ -459,7 +459,7 @@ export default function StudentDetailView({ onBack }) {
   //OPTION EXAM TABLE HERE
 
   const handleEditExamClick = (examId, type) => {
-
+    
     setIsExamModal(true);
     setEditExamType(type);
 
@@ -521,7 +521,9 @@ export default function StudentDetailView({ onBack }) {
   }
 
   const handleViewInformationExam = (examId, type) => {
-
+    
+    console.log(examId);
+    console.log(type);
     setIsViewDetailExamModal(true);
     setViewDetailExamType(type);
 
@@ -531,11 +533,12 @@ export default function StudentDetailView({ onBack }) {
     }))
 
 
+
   }
 
   const handleCreateExam = async (mode, examInfo) => {
     try {
-
+      console.log("examInfo: ",examInfo)
       const response = await dispatch(createExam({ instructor_id: userId, class_id: classId, type: mode, payload: examInfo }));
 
       if (response.payload.success === true) {
@@ -558,7 +561,31 @@ export default function StudentDetailView({ onBack }) {
   }
   //OPTION EXAM TABLE HERE
 
-  const handleUpdateStudent = async () => {
+  const handleUpdateStudent = async (studentId,payload) => {
+    
+    try {
+
+
+      const response = await dispatch(updateStudent({ studentId: studentId, classId: classId, payload }));
+     
+
+      if (response?.type?.includes("fulfilled") && response.payload?.success) {
+        toast.success(`Sửa sinh viên thành công`);
+        
+        
+        handleCloseEdit();
+        dispatch(clearStudentList());
+        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page:1, amount, search }));
+
+      } else {
+        console.warn("Response bị rejected hoặc không success:", response);
+        toast.error(`Sửa thất bại! Hãy thử lại sau`);
+      }
+    } catch (err) {
+      console.error("Lỗi trong handleDeleteRequestExam:", err);
+      toast.error(`Sửa thất bại! Hãy thử lại sau`);
+    }
+
 
   }
 
@@ -585,10 +612,10 @@ export default function StudentDetailView({ onBack }) {
       )
 
       if (response.payload.success === true) {
-        toast.success(`Thêm thành công sinh viên ${mssv} khỏi lớp`);
+        toast.success(`Thêm thành công sinh viên ${newStudent.identificationCode} vào lớp`);
         dispatch(clearStudentList());
-        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: page + 1, amount, search }));
-        setIsAddModalOpen(false)
+        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page:1, amount, search }));
+        setIsAddModalOpen(false);
       } else {
         toast.error(`Mã sinh viên này đã tồn tại hoặc thêm thất bại!. Hãy thử lại sau`);
       }
@@ -653,17 +680,8 @@ export default function StudentDetailView({ onBack }) {
 
     if (response.payload.success === true) {
       toast.success(`Tạo dữ liệu ${type.toLowerCase()} thành công`);
-      // dispatch(fetchStudentList({
-      //   classId,
-      //   type: showSummary ? "summary" : "information",
-      //   page: 1,
-      //   amount,
-      //   search
-      // }));
-
       await dispatch(fetchAllExam({ instructor_id: userId, class_id: classId }));
-        // dispatch(clearStudentList());
-        // await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: page + 1, amount, search }));
+      
 
     } else {
       toast.error("Tạo dữ liệu thất bại! Hãy thữ lại sau");
@@ -694,12 +712,6 @@ export default function StudentDetailView({ onBack }) {
 
   }, [classId, showSummary]);
 
-  // useEffect(()=>
-  //     {
-  //       console.log("activities: ",activities)
-  //       console.log("examInfo: ",examInfo)
-  //    }
-  //    ,[activities,examInfo ])
 
 
   return (
