@@ -20,12 +20,16 @@ import { Close } from "@mui/icons-material";
 import ViewTable from "./ViewTable";
 
 export default function DetailExamModal({ open, onClose,mode,StudentData,ExamData }) {
- 
+  // useEffect(()=>{
+  //   console.log("ExamData: ",ExamData)
+  //   console.log("mode: ",mode)
+  // },[ExamData])
 
   const ExamName = useMemo(()=>{
     if(mode=="quiz")              return ExamData.quizName;
       else if(mode=="assignment")   return ExamData.assignmentName;
         else if(mode=="final_exam")   return ExamData.finalExamName;
+          else if(mode=="midterm_exam")   return ExamData.midtermExamName;
     
   },[ExamData])
 

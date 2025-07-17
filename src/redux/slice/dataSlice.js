@@ -770,6 +770,8 @@ const dataSlice = createSlice({
 
                 if(action.payload.data.assignment) state.examInfo = action.payload.data.assignment;
 
+                if(action.payload.data.midtermExam) state.examInfo = action.payload.data.midtermExam;
+
                 state.message = action.payload.message;
                 state.code = action.payload.code;
                 state.success = action.payload.success;

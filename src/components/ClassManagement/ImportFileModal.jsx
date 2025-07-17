@@ -47,7 +47,13 @@ export default function ImportFileModal({
         }
     }, [open]);
 
-    const close = () => setOpen(false);
+    const close = () => {
+        const result = confirm("Bạn có chắc chắn muốn thoát không?");
+        if(result){
+            setOpen(false)
+        }
+    
+    };
 
     return (
         <Dialog open={open} onClose={close} fullWidth maxWidth="sm">
