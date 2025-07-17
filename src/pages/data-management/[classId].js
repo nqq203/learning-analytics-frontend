@@ -482,7 +482,7 @@ export default function StudentDetailView({ onBack }) {
   const handleDeleteRequestExam = async () => {
     try {
       const response = await dispatch(deleteExam({ examId: selectedExam, type: ModeExam }));
-     
+
 
       if (response?.type?.includes("fulfilled") && response.payload?.success) {
         toast.success(`Xóa thành công bài kiểm tra khỏi lớp`);
@@ -649,20 +649,16 @@ export default function StudentDetailView({ onBack }) {
 
     if (response.payload.success === true) {
       toast.success(`Tạo dữ liệu ${type.toLowerCase()} thành công`);
-      // dispatch(fetchStudentList({
-      //   classId,
-      //   type: showSummary ? "summary" : "information",
-      //   page: 1,
-      //   amount,
-      //   search
-      // }));
-
-      await dispatch(fetchAllExam({ instructor_id: userId, class_id: classId }));
-        // dispatch(clearStudentList());
-        // await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: page + 1, amount, search }));
-
+      if (type === "THông tin sinh viên" || type === "Tổng kết") {
+        // refetch student list after final note and student information
+        dispatch(clearStudentList());
+        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: 1, amount, search }));
+      } else {
+        // refetch all exam after create new exam
+        await dispatch(fetchAllExam({ instructor_id: userId, class_id: classId }));
+      }
     } else {
-      toast.error("Tạo dữ liệu thất bại! Hãy thữ lại sau");
+      toast.error(`Tạo dữ liệu ${type.toLowerCase()} thất bại! Hãy thữ lại sau`);
     }
     setImportFile(false);
   }
