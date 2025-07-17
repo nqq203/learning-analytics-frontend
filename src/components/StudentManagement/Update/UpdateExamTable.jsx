@@ -42,7 +42,13 @@ const UpdateExamTable = ({
     const [quizName, setQuizName] = useState();
 
     useEffect(()=>{
-      if(examData) setQuizName(mode=="quiz"? examData.quizName : examData.finalExamName)
+      if(examData) {
+        if(mode=="quiz") setQuizName(examData.quizName)
+        else if(mode=="final_exam") setQuizName(examData.finalExamName)
+          else if(mode=="midterm_exam") setQuizName(examData.midtermExamName)
+        // setQuizName(mode=="quiz"? examData.quizName : examData.finalExamName)
+      
+      }
     },[examData])
 
     useEffect(()=>{

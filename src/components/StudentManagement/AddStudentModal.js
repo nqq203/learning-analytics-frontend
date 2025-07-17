@@ -121,8 +121,17 @@ export default function AddStudentModal({ open, onClose, subject, className, onS
     // onClose();
   };
 
+
+  const handleCloseModal = ()=>{
+    const result = confirm("Bạn có chắc chắn muốn thoát không?");
+        if(result){
+          onClose();
+        }
+  }
+
+  
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleCloseModal} maxWidth="md" fullWidth>
       <DialogTitle
         sx={{
           display: "flex",
@@ -134,7 +143,7 @@ export default function AddStudentModal({ open, onClose, subject, className, onS
         <Typography variant="h6" sx={{ fontWeight: "medium" }}>
           Thêm Sinh Viên Vào Lớp
         </Typography>
-        <IconButton onClick={onClose} aria-label="close">
+        <IconButton onClick={handleCloseModal} aria-label="close">
           <Close />
         </IconButton>
       </DialogTitle>
