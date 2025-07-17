@@ -105,11 +105,19 @@ export default function EditStudentModal({
     // onClose();
   };
 
+  const handleCloseModal = ()=>{
+    const result = confirm("Bạn có chắc chắn muốn thoát không?");
+        if(result ){
+          onClose();
+        }
+    }
+
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+    <Dialog open={open} onClose={handleCloseModal} fullWidth maxWidth="md">
       <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6">{title}</Typography>
-        <Box component={Close} onClick={onClose} sx={{ cursor: 'pointer' }} />
+        <Box component={Close} onClick={handleCloseModal} sx={{ cursor: 'pointer' }} />
       </DialogTitle>
       <Divider />
       <DialogContent>

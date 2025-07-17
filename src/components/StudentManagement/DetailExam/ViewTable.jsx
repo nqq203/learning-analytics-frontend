@@ -77,8 +77,8 @@ useEffect(()=>{
             <TableBody>
               {ExamData?.map((student) => (
                 <TableRow key={student.MSSV}>
-                  <TableCell style={{fontSize:"10px"}} >{student.identificationCode}</TableCell>
-                  <TableCell style={{fontSize:"11px"}} >{student.activityScore}</TableCell>
+                  <TableCell style={{fontSize:"10px"}} >{student.identificationCode || "--"}</TableCell>
+                  <TableCell style={{fontSize:"11px"}} >{student.activityScore }</TableCell>
                   {
                     (type==="quiz" || type ==="final_exam" || type ==="midterm_exam")&&(
                             <>
@@ -87,14 +87,14 @@ useEffect(()=>{
 
                                 {student?.questions?.map((scoreInfo, index) => (
                                     <TableCell key={index} style={{fontSize:"11px"}} >
-                                    {scoreInfo.score}
+                                    {scoreInfo.score }
                                     </TableCell>
                                 ))}
                             </>
                     )
                 }
-                <TableCell style={{fontSize:"11px"}} >{student.createdDate}</TableCell>
-                  <TableCell style={{fontSize:"11px"}}>{student.updatedDate}</TableCell>
+                <TableCell style={{fontSize:"11px"}} >{student.createdDate || "--"}</TableCell>
+                  <TableCell style={{fontSize:"11px"}}>{student.updatedDate || "--"}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

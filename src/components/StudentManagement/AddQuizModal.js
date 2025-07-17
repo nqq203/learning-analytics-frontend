@@ -16,6 +16,7 @@
   import { Close } from "@mui/icons-material";
   import QuizTableModal from "./QuizTableModal";
   import AssignmentTableModal from "./AssignmentTableModal";
+import { toast } from "react-toastify";
 
   export default function AddQuizModal({ open, onClose, onSave,mode,students,handleCreateExam }) {
     
@@ -46,6 +47,7 @@
             const questionsList = questions.map((q, index) => {
               const rawScore = studentScores[q];
               const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
+
               return {
                 questionNumber: index + 1,
                 score: score,
@@ -88,6 +90,12 @@
             
             const finalExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
 
+              if(finalExamScore>10){
+                toast.error(`Điểm tổng của sinh viên ${student.identificationCode} lớn hơn 0.`)
+                return null;
+              }
+
+
               return {
                 studentId: student.studentId,
                 finalExamScore,
@@ -95,17 +103,24 @@
               };
             });
 
+
+            if (finalData.some(item => item === null || item === undefined)) {
+              return;
+            }
+
+
             const result = {
               finalExamName: quizName,
               finalExamData: finalData,
             };
 
-            console.log("Kết quả:", result);
+            
            
             handleCreateExam("final_exam",result)
             onClose();
         }
         else if(mode=="Giữa Kỳ"){
+          console.log("studentInfo: ",studentInfo)
           const midtermData = studentInfo.map((student) => {
             const studentScores = scores[student.studentId] || {};
             const questionsList = questions.map((q, index) => {
@@ -120,6 +135,12 @@
             
             const midtermExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
 
+            if(midtermExamScore>10){
+              toast.error(`Điểm tổng của sinh viên ${student.identificationCode} lớn hơn 0.`)
+              return null;
+            }
+
+
               return {
                 studentId: student.studentId,
                 midtermExamScore,
@@ -127,10 +148,19 @@
               };
             });
 
+
+            if (midtermData.some(item => item === null || item === undefined)) {
+              return;
+            }
+
+
             const result = {
               midtermExamName: quizName,
               midtermExamData: midtermData,
             };
+
+
+            
 
             // console.log("Kết quả:", result);
            
@@ -139,8 +169,17 @@
         }
     }
 
+
+    const handleCloseModal = ()=>{
+      const result = confirm("Bạn có chắc chắn muốn thoát không?");
+          if(result){
+            onClose();
+          }
+    }
+
+
     return (
-      <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
+      <Dialog open={open} onClose={handleCloseModal} maxWidth="xl" fullWidth>
         <DialogTitle
           sx={{
             
@@ -153,7 +192,7 @@
           <Typography variant="h6" sx={{ fontWeight: "medium" }}>
             Thêm bài {mode} Vào Lớp
           </Typography>
-          <IconButton onClick={onClose} aria-label="close">
+          <IconButton onClick={handleCloseModal} aria-label="close">
             <Close />
           </IconButton>
         </DialogTitle>

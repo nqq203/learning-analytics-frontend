@@ -538,7 +538,7 @@ export default function StudentDetailView({ onBack }) {
 
   const handleCreateExam = async (mode, examInfo) => {
     try {
-      console.log("examInfo: ",examInfo)
+      
       const response = await dispatch(createExam({ instructor_id: userId, class_id: classId, type: mode, payload: examInfo }));
 
       if (response.payload.success === true) {
@@ -1093,6 +1093,7 @@ export default function StudentDetailView({ onBack }) {
           ]}
           onImport={handleImport}
         />}
+
       <AddStudentModal
         open={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}

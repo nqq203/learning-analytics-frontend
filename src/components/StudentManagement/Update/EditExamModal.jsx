@@ -151,9 +151,15 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
     return ""
   },[mode])
 
+  const handleCloseModal = ()=>{
+    const result = confirm("Bạn có chắc chắn muốn thoát không?");
+        if(result){
+          onClose();
+        }
+    }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
+    <Dialog open={open} onClose={handleCloseModal} maxWidth="xl" fullWidth>
       <DialogTitle
         sx={{
           
@@ -166,7 +172,7 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
         <Typography variant="h6" sx={{ fontWeight: "medium" }}>
           Sửa {mode} 
         </Typography>
-        <IconButton onClick={onClose} aria-label="close">
+        <IconButton onClick={handleCloseModal} aria-label="close">
           <Close />
         </IconButton>
       </DialogTitle>
