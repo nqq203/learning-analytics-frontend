@@ -243,30 +243,42 @@ const Compare = () => {
         }}
       >
         <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={6}>
             <FormControl fullWidth size="small">
-              <InputLabel>Môn học</InputLabel>
+              <InputLabel shrink>Môn học</InputLabel>
               <Select
                 label="Môn học"
                 value={selectedSubject}
                 onChange={handleSubjectChange}
+                displayEmpty
+                renderValue={selected => {
+                  if (!selected) {
+                    return <em>Tất cả</em>;
+                  }
+                  return selected;
+                }}
               >
-                {[...new Set(rows.map((item) => item.courseName))].map((subject) => (
-                  <MenuItem key={subject} value={subject}>
-                    {subject}
-                  </MenuItem>
-                ))}
+                <MenuItem value="">
+                  <em>Tất cả</em>
+                </MenuItem>
+                {[...new Set(rows.map((item) => item.courseName))]
+                  .filter(subject => subject)
+                  .map((subject) => (
+                    <MenuItem key={subject} value={subject}>
+                      {subject}
+                    </MenuItem>
+                  ))}
               </Select>
             </FormControl>
           </Grid>
-
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' } }}>
             <Button
-              fullWidth
+              fullWidth={false}
               variant="contained"
               disabled={!isCompareEnabled()}
               onClick={handleCompareClick}
               sx={{
+                minWidth: 160,
                 bgcolor: '#1e3a8a',
                 '&:hover': {
                   bgcolor: '#1e40af',
