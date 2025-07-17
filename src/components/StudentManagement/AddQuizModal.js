@@ -114,11 +114,7 @@ import { toast } from "react-toastify";
               finalExamData: finalData,
             };
 
-<<<<<<< HEAD
-            // console.log("Kết quả:", result);
-=======
             
->>>>>>> ca88807caea01b73fbef4a2bd44487fd9c17bf64
            
             handleCreateExam("final_exam",result)
             onClose();

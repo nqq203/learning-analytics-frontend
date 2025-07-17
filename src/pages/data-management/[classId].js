@@ -538,10 +538,6 @@ export default function StudentDetailView({ onBack }) {
 
   const handleCreateExam = async (mode, examInfo) => {
     try {
-<<<<<<< HEAD
-=======
-      
->>>>>>> ca88807caea01b73fbef4a2bd44487fd9c17bf64
       const response = await dispatch(createExam({ instructor_id: userId, class_id: classId, type: mode, payload: examInfo }));
 
       if (response.payload.success === true) {
@@ -612,15 +608,9 @@ export default function StudentDetailView({ onBack }) {
       )
 
       if (response.payload.success === true) {
-<<<<<<< HEAD
-        toast.success(`Thêm thành công sinh viên ${mssv} vào lớp`);
-        dispatch(clearStudentList());
-        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: 1, amount, search }));
-=======
         toast.success(`Thêm thành công sinh viên ${newStudent.identificationCode} vào lớp`);
         dispatch(clearStudentList());
         await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page:1, amount, search }));
->>>>>>> ca88807caea01b73fbef4a2bd44487fd9c17bf64
         setIsAddModalOpen(false);
       } else {
         toast.error(`Mã sinh viên này đã tồn tại hoặc thêm thất bại!. Hãy thử lại sau`);
@@ -686,7 +676,6 @@ export default function StudentDetailView({ onBack }) {
 
     if (response.payload.success === true) {
       toast.success(`Tạo dữ liệu ${type.toLowerCase()} thành công`);
-<<<<<<< HEAD
       if (type === "THông tin sinh viên" || type === "Tổng kết") {
         // refetch student list after final note and student information
         dispatch(clearStudentList());
@@ -695,11 +684,6 @@ export default function StudentDetailView({ onBack }) {
         // refetch all exam after create new exam
         await dispatch(fetchAllExam({ instructor_id: userId, class_id: classId }));
       }
-=======
-      await dispatch(fetchAllExam({ instructor_id: userId, class_id: classId }));
-      
-
->>>>>>> ca88807caea01b73fbef4a2bd44487fd9c17bf64
     } else {
       toast.error(`Tạo dữ liệu ${type.toLowerCase()} thất bại! Hãy thữ lại sau`);
     }
