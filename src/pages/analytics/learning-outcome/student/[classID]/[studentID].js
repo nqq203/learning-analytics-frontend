@@ -5,9 +5,11 @@ import StudentResultLNO from "@/components/LearningOutcome/StudentResultLNO";
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStudentDetail } from "@/redux/thunk/learningoutcomeThunk";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select,Tabs,
+  Tab, 
+  Box} from "@mui/material";
 import { jwtDecode } from "jwt-decode";
-
+import DetailExamLNO from "@/components/LearningOutcome/DetailExamLNO";
 import {
   ActionButton,
   Container,
@@ -66,6 +68,9 @@ export default function StudentAnalytics() {
   useEffect(()=>{
     console.log('Thong tin:',courseInfo, grades, studentInfo)
   },[courseInfo, grades, studentInfo])
+
+  const [tab, setTab] = useState(0);
+  
   const dispatch = useDispatch();
   const router = useRouter();
   const { classID, studentID } = router.query;
@@ -106,9 +111,28 @@ export default function StudentAnalytics() {
     return studentInfo || [];
   }, [studentInfo]);
 
+  const handleTabChange = (e, newIdx) => {
+    setTab(newIdx);
+  }
+
   return (
     <Container>
-      
+        
+          <Tabs
+            value={tab}
+            onChange={handleTabChange}
+            indicatorColor="primary"
+            textColor="primary"
+            sx={{ marginTop: 2 }}
+          >
+            <Tab label="TỔNG QUAN" />
+            <Tab label="CHI TIẾT" />
+          
+          </Tabs>
+        
+
+       
+        
         <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
             
@@ -170,14 +194,32 @@ export default function StudentAnalytics() {
         </Header>
 
         
+        {
+          tab===0 &&(
+            <StudentResultLNO
+            userId={userId}
+            studentID={studentID}
+            classID={classID}
+            studentInfo={studentInfo_Student}
+            studentGrade={grades_Student}
+          />
 
-        <StudentResultLNO
+          )
+        }
+
+        {
+          tab==1 &&(
+            <DetailExamLNO></DetailExamLNO>
+          )
+
+        }
+        {/* <StudentResultLNO
           userId={userId}
           studentID={studentID}
           classID={classID}
           studentInfo={studentInfo_Student}
           studentGrade={grades_Student}
-        />
+        /> */}
       
 
     </Container>

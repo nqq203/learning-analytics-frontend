@@ -112,7 +112,7 @@ const UpdateAssignTableModal = ({
                   type="text"
                   style={{border:"none",width:"50%"}}
                   placeholder="Nhập điểm"
-                  value={scores[student.studentId] || ""}
+                  value={scores[student.studentId] }
                   onChange={(e) =>
                     handleScoreChange(student.studentId, e.target.value)
                   }
