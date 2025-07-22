@@ -77,6 +77,24 @@ const LearningOutcomeApi = {
   FetchAcademicYearClass:({
     userId
   }) => axios.get(`${API_URL}/learning-outcome/academic-year?instructor_id=${userId}`),
+
+  FetchAcademicYearClass:({
+    userId
+  }) => axios.get(`${API_URL}/learning-outcome/academic-year?instructor_id=${userId}`),
+
+  FetchLOChart:({
+    studentId,
+    class_id
+  }) => axios.get(`${API_URL}/learning-outcome/students/${studentId}/lo-chart?class_id=${class_id}`),
+
+
+  FetchLOFinal:({
+    type,
+    studentId,
+    class_id,
+    final_exam_id
+  }) => axios.get(`${API_URL}/learning-outcome/students/${studentId}/lo-chart?class_id=${class_id}&final_exam_id=${final_exam_id}&type=${type}`),
+
 };
 
 export { LearningOutcomeApi, handleLearningOutcomeApiError };

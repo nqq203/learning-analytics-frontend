@@ -65,9 +65,7 @@ export default function StudentAnalytics() {
   const { courseInfo, grades, studentInfo } = useSelector(
     (state) => state.learningoutcome
   );
-  useEffect(()=>{
-    console.log('Thong tin:',courseInfo, grades, studentInfo)
-  },[courseInfo, grades, studentInfo])
+  
 
   const [tab, setTab] = useState(0);
   
@@ -94,6 +92,8 @@ export default function StudentAnalytics() {
           classId: classID,
           studentId: studentID,
         })
+
+        
       );
     };
     fetchStudentRow();
@@ -209,17 +209,11 @@ export default function StudentAnalytics() {
 
         {
           tab==1 &&(
-            <DetailExamLNO></DetailExamLNO>
+            <DetailExamLNO userId={userId} studentID={studentID} classID={classID}></DetailExamLNO>
           )
 
         }
-        {/* <StudentResultLNO
-          userId={userId}
-          studentID={studentID}
-          classID={classID}
-          studentInfo={studentInfo_Student}
-          studentGrade={grades_Student}
-        /> */}
+        
       
 
     </Container>
