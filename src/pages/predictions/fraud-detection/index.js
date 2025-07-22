@@ -30,6 +30,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import PageHeader from "@/components/CommonStyles/PageHeader";
+import { clearStudents } from "@/redux/slice/fraudDetectionSlice";
 
 const FraudDetection = () => {
   // const [loading, setLoading] = useState(false);
@@ -96,12 +97,15 @@ const FraudDetection = () => {
     fetchClasses();
   }, [userId]);
 
+
+  // Reset data về rỗng khi userId đổi (vào lại trang)
   useEffect(() => {
+    dispatch(clearStudents());
+  }, []);
 
+  useEffect(() => {
     setData(students);
-
-  }, [students])
-
+  }, [students]);
 
   useEffect(() => {
     if (classesSelect) {
