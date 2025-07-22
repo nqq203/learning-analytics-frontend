@@ -343,10 +343,10 @@ export default function StudentDetailView({ onBack }) {
   }
 
 
-  //Tạo header
+  //Tạo header  
 
   const mapKeyToLabel = (key) => {
-    if (key === "assignmentName" || key === "quizName" || key === "finalExamName") return "Tên bài";
+    if (key === "assignmentName" || key === "quizName" || key === "finalExamName" || key ==="midtermName") return "Tên bài";
     if (key === "createdDate") return "Ngày tạo";
     if (key === "updatedDate") return "Ngày cập nhập";
     if (key === "identificationCode") return "MSSV";
@@ -367,7 +367,7 @@ export default function StudentDetailView({ onBack }) {
       filteredRows.reduce((a, b) =>
         Object.keys(a).length > Object.keys(b).length ? a : b
       )
-    ).filter(key => key !== "studentId" && key !== "quizId" && key !== "assignmentId" && key !== "finalExamId");
+    ).filter(key => key !== "studentId" && key !== "quizId" && key !== "assignmentId" && key !== "finalExamId" && key !== "midtermId");
 
     return rawKeys.map((key) => ({
       id: key,
@@ -377,18 +377,47 @@ export default function StudentDetailView({ onBack }) {
     }));
   }
 
+  
+
 
   const ColExamMidtermData = useMemo(() => {
-    if (midtermExams.length > 0) return SetHeader(midtermExams);
+    
+    if (midtermExams.length > 0) {
+      
+      const headers = SetHeader(midtermExams);
+      // Đưa "midtermName" lên đầu
+      headers.sort((a, b) => {
+        if (a.id === "midtermName") return -1;
+        if (b.id === "midtermName") return 1;
+        return 0;
+      });
+      return headers;
+    
+    };
 
     return [];
   }, [midtermExams])
 
+
+
   const ColExamFinalData = useMemo(() => {
-    if (finalExams.length > 0) return SetHeader(finalExams);
+    if (finalExams.length > 0) {
+
+      
+
+      const headers = SetHeader(finalExams);
+      // Đưa "midtermName" lên đầu
+      headers.sort((a, b) => {
+        if (a.id === "finalExamName") return -1;
+        if (b.id === "finalExamName") return 1;
+        return 0;
+      });
+      return headers;
+    };
 
     return [];
   }, [finalExams])
+
 
 
   const ColExamAssignmentData = useMemo(() => {
@@ -399,10 +428,26 @@ export default function StudentDetailView({ onBack }) {
 
 
   const ColExamQuizData = useMemo(() => {
-    if (quizzes.length > 0) return SetHeader(quizzes);
+    
+    // if (quizzes.length > 0) return SetHeader(quizzes);
+
+
+    const headers = SetHeader(quizzes);
+      // Đưa "midtermName" lên đầu
+      headers.sort((a, b) => {
+        if (a.id === "quizName") return -1;
+        if (b.id === "quizName") return 1;
+        return 0;
+      });
+      return headers;
+
 
     return [];
   }, [quizzes])
+
+  useEffect(()=>{
+    console.log("ColExamQuizData: ",ColExamQuizData)
+  },[ColExamFinalData])
 
   const ColStudentsAssignments = useMemo(() => {
     return SetHeader(studentsAssignments);
