@@ -97,3 +97,31 @@ export const FetchAcademicYearClass = createAsyncThunk(
 
 
 )
+
+
+export const FetchLOChart = createAsyncThunk(
+    "learningOutcome/FetchLOChart",
+    async({studentId,class_id})=>{
+        try{
+            const response = await LearningOutcomeApi.FetchLOChart({studentId,class_id})
+            return response.data;
+        }
+        catch(error){
+            return rejectWithValue(handleLearningOutcomeApiError(error.response.data))
+        }
+    }
+)
+
+
+export const FetchLOFinal = createAsyncThunk(
+    "learningOutcome/FetchLOFinal",
+    async({type,studentId,class_id,final_exam_id})=>{
+        try{
+            const response = await LearningOutcomeApi.FetchLOFinal({type,studentId,class_id,final_exam_id})
+            return response.data;
+        }
+        catch(error){
+            return rejectWithValue(handleLearningOutcomeApiError(error.response.data))
+        }
+    }
+)

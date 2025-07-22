@@ -10,7 +10,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid
 
 } from 'recharts';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
-
+import { fetchAllExam } from "@/redux/thunk/dataThunk";
 import { 
   Box, 
   Card, 
@@ -30,7 +30,7 @@ import { Bar } from "react-chartjs-2";
 
 import { PieChart, Pie, Cell,Tooltip as PieToolTip } from 'recharts';
 import PieChartIcon from '@mui/icons-material/PieChart';
-
+import { FetchLOChart,FetchLOFinal } from "@/redux/thunk/learningoutcomeThunk";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, Legend);
 import {
   FormControl,
@@ -38,6 +38,9 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
 
 const LearningOutcomeBody = styled.div`
   padding-inline:2rem;
@@ -98,20 +101,245 @@ const TitleChart = styled.div`
 
 export default function DetailExamLNO({
 //   userId,
-//   studentID,
-//   classID,
+  studentID,
+  classID,
+  userId
 //   studentInfo,
 //   studentGrade,
 }) {
 
-  const dataAssignment = [
-    { subject: 'LO1', Score: 8, fullMark: 10 },
-    { subject: 'LO2', Score: 7, fullMark: 10 },
-    { subject: 'LO3', Score: 8, fullMark: 10 },
-    { subject: 'LO4', Score: 6, fullMark: 10 },
-    { subject: 'LO5', Score: 8, fullMark: 10 },
-    { subject: 'LO6', Score: 6, fullMark: 10 },
-];
+  
+  const { finalExams } = useSelector(state => state.data);
+
+  const [chosenBarFinal, setChosenBarFinal] = useState();
+  const [chosenRadarFinal, setChosenRadarFinal] = useState();
+  const [chosenPieFinal, setChosenPieFinal] = useState();
+  const [chosenLineFinal, setChosenLineFinal] = useState();
+  
+  
+
+
+ 
+  
+  const { LoChart, assignmentQuiz,finalExamDataBar,finalExamDataRadar,finalExamDataLine,finalExamDataPie,finalExamData } = useSelector(
+    (state) => state.learningoutcome
+  );
+
+  useEffect(()=>{
+
+      if (Array.isArray(finalExams) && finalExams.length > 0) {
+        setChosenBarFinal(finalExams[0]?.finalExamId);
+        setChosenRadarFinal(finalExams[0]?.finalExamId);
+        setChosenPieFinal(finalExams[0]?.finalExamId);
+        setChosenLineFinal(finalExams[0]?.finalExamId);
+
+      }
+
+  },[finalExams])
+
+
+  // Bar Chart
+  useEffect(()=>{
+
+    if(chosenBarFinal)
+    {
+      const fetchBarData = async ()=>{
+        await dispatch(FetchLOFinal({
+          type: "Bar",
+          studentId: studentID,
+          class_id: classID,
+          final_exam_id: chosenBarFinal
+          
+          }))
+      }
+
+      fetchBarData();
+
+    }
+
+
+  },[chosenBarFinal])
+
+  // Bar Chart
+
+
+  //Radar Chart 
+  useEffect(()=>{
+
+    if(chosenRadarFinal)
+    {
+      const fetchData = async ()=>{
+        await dispatch(FetchLOFinal({
+          type: "Radar",
+          studentId: studentID,
+          class_id: classID,
+          final_exam_id: chosenRadarFinal
+          
+          }))
+      }
+
+      fetchData();
+
+    }
+
+
+  },[chosenRadarFinal])
+
+  
+  //Radar Chart
+
+
+  //Pie Chart
+  useEffect(()=>{
+
+    if(chosenPieFinal)
+    {
+      const fetchData = async ()=>{
+        await dispatch(FetchLOFinal({
+          type: "Pie",
+          studentId: studentID,
+          class_id: classID,
+          final_exam_id: chosenPieFinal
+          
+          }))
+      }
+
+      fetchData();
+
+    }
+
+
+  },[chosenPieFinal])
+
+  const finalChartPieData = useMemo(()=>{
+      return finalExamDataPie
+  },[finalExamDataPie]) 
+  //Pie Chart
+
+
+
+  //Line Chart
+  useEffect(()=>{
+
+    if(chosenLineFinal)
+    {
+      const fetchData = async ()=>{
+        await dispatch(FetchLOFinal({
+          type: "Line",
+          studentId: studentID,
+          class_id: classID,
+          final_exam_id: chosenLineFinal
+          
+          }))
+      }
+
+      fetchData();
+
+    }
+
+
+  },[chosenLineFinal])
+
+  const finalChartLineData = useMemo(()=>{
+      return finalExamDataLine
+  },[finalExamDataLine]) 
+
+  //Line Chart
+
+
+  //ASSIGNMENT
+
+  const AssignmentChartData = useMemo(()=>{
+    
+    if(assignmentQuiz.length!=[]){
+      var data = []
+        for (let x in assignmentQuiz.radar){
+
+            data.push({subject:x,Score:assignmentQuiz.radar[x], fullMark: 10 })
+           
+        }
+        console.log(data)
+        return data;
+    }
+    return []
+  },[assignmentQuiz])
+  
+  //FINAL
+
+  // BAR CHART
+  const FinalBarData = useMemo(()=>{
+    if(finalExamDataBar!=[]){
+      var data = []
+      finalExamDataBar?.questionScores?.map((item)=>{
+        data.push({subject:item.questionName,Score:item.questionScore })
+      })
+        return data;
+    }
+    return []
+  },[finalExamDataBar])
+
+  const barDataFinal = {
+    labels: FinalBarData.map(item => item.subject),
+    datasets: [
+      {
+        label: 'Điểm',
+        data: FinalBarData.map(item => item.Score),
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      },
+    ],
+  };
+  const barOptions = (title) => ({
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      title: { display: true, text: title },
+    },
+  });
+  // BAR CHART
+
+  //RADAR
+  const FinalRadarData = useMemo(()=>{
+   
+    if(finalExamDataRadar!=[]){
+      var data = []
+      finalExamDataRadar?.questionScores?.map((item)=>{
+        data.push({subject:item.questionName,Score:item.questionScore })
+      })
+        return data;
+    }
+    return []
+  },[finalExamDataRadar])
+
+
+  const FinalLineData = useMemo(()=>{
+   
+    if(finalExamDataLine!=[]){
+      var data = []
+      finalExamDataLine?.questionScores?.map((item)=>{
+        data.push({subject:item.questionName,Score:item.questionScore })
+      })
+        return data;
+    }
+    return []
+  },[finalExamDataLine])
+
+
+  const router = useRouter();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const fetchLoChart = async () => {
+      await dispatch(
+        FetchLOChart({
+          studentId: studentID,
+          class_id: classID,
+        })
+      );
+
+      await dispatch(fetchAllExam({ instructor_id: userId, class_id: classID }));
+    };
+    fetchLoChart();
+  }, [router.query, classID, studentID]);
+
 
 const dataFinal = [
   { subject: 'LO1', Score: 8, fullMark: 10 },
@@ -124,38 +352,21 @@ const dataFinal = [
 
 
   const barDataAssignment = {
-    labels: dataAssignment.map(item => item.subject),
+    labels: AssignmentChartData.map(item => item.subject),
     datasets: [
       {
-        label: 'Assignment',
-        data: dataAssignment.map(item => item.Score),
+        label: 'Điểm',
+        data: AssignmentChartData.map(item => item.Score),
         backgroundColor: 'rgba(54, 162, 235, 0.5)',
       },
     ],
   };
-  // Bar chart data for Final
-  const barDataFinal = {
-    labels: dataFinal.map(item => item.subject),
-    datasets: [
-      {
-        label: 'Final',
-        data: dataFinal.map(item => item.Score),
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      },
-    ],
-  };
-  const barOptions = (title) => ({
-    responsive: true,
-    plugins: {
-      legend: { display: false },
-      title: { display: true, text: title },
-    },
-  });
+  
 
 
   const countAssignment = {
-    dat: dataAssignment.filter(item => item.Score > 5).length,
-    khongdat: dataAssignment.filter(item => item.Score <= 5).length,
+    dat: AssignmentChartData.filter(item => item.Score > 5).length,
+    khongdat: AssignmentChartData.filter(item => item.Score <= 5).length,
   };
   const pieDataAssignment = [
     { name: 'Đạt', value: countAssignment.dat },
@@ -171,7 +382,7 @@ const dataFinal = [
     { name: 'Không đạt', value: countFinal.khongdat },
   ];
   
-  const COLORS = ['#00C49F', '#FF8042'];
+  const COLORS = ['#4CAF50', '#E53935'];
 
     
 
@@ -221,11 +432,6 @@ const dataFinal = [
                       </Box>
                     </Box>
                   
-                  
-                  
-
-                
-
             
                 <Bar data={barDataAssignment} options={barOptions('Assignment')} />
 
@@ -259,10 +465,10 @@ const dataFinal = [
 
                     <Box>
                       <Typography variant="h6" fontWeight="700" color="#1e293b">
-                      Điểm theo từng LO của các bài Cuối Kỳ
+                      Điểm theo từng câu hỏi của các bài Cuối Kỳ
                       </Typography>
                       <Typography variant="body2" color="#64748b">
-                      Phân bố xếp điểm các LO trong các bài Cuối Kỳ của sinh viên.
+                      Phân bố xếp điểm các câu hỏi trong các bài Cuối Kỳ của sinh viên.
                       </Typography>
                     </Box>
                   </Box>
@@ -288,14 +494,15 @@ const dataFinal = [
                         >
                           <InputLabel>Bài kiểm tra</InputLabel>
                           <Select
-                            value="Kiểm tra 1"
+                            value={chosenBarFinal || ""}
                             label="Bài kiểm tra"
-                            // onChange={(e) => onFilterChange(filter.key, e.target.value)}
+                            onChange={(e) => setChosenBarFinal(e.target.value)}
                           >
-                            <MenuItem value="">Tất cả</MenuItem>
-                            <MenuItem value="">Bài kiểm tra 1</MenuItem>
-                            <MenuItem value="">Bài kiểm tra 2</MenuItem>
-                            <MenuItem value="">Bài kiểm tra 3</MenuItem>
+                            {Array.isArray(finalExams) && finalExams.map((item) => (
+                              <MenuItem value={item.finalExamId} key={item.finalExamId}>
+                                Bài kiểm tra {item.finalExamId}
+                              </MenuItem>
+                            ))}
                           </Select>
                         </FormControl>
                 </Box>
@@ -312,7 +519,7 @@ const dataFinal = [
         </ChartContainer1>
       </ChartContainer>
 
-
+                         
       <ChartContainer>
       {/* <TitleChart>Năng lực của sinh viên</TitleChart> */}
 
@@ -351,11 +558,11 @@ const dataFinal = [
 
             <ResponsiveContainer width="100%" height={300}>
               
-              <RadarChart data={dataAssignment}>
+              <RadarChart data={AssignmentChartData}>
                   <PolarGrid />
                   <PolarAngleAxis dataKey="subject" />
                   <PolarRadiusAxis />
-                  <Radar name="Điểm" dataKey="Score" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                  <Radar name="Điểm" dataKey="Score" stroke="#8884d8" fill="rgba(54, 162, 235, 0.5)" fillOpacity={0.6} />
                   <Tooltip />
               </RadarChart>
             
@@ -386,10 +593,10 @@ const dataFinal = [
 
                     <Box>
                       <Typography variant="h6" fontWeight="700" color="#1e293b">
-                        Năng lực theo từng LO của các bài Cuối Kỳ
+                        Năng lực theo từng câu hỏi của các bài Cuối Kỳ
                       </Typography>
                       <Typography variant="body2" color="#64748b">
-                      Tổng hợp năng lực theo các LO trong các bài Cuối Kỳ của sinh viên.
+                      Tổng hợp năng lực theo các câu hỏi trong các bài Cuối Kỳ của sinh viên.
                       </Typography>
                     </Box>
                   </Box>
@@ -415,14 +622,15 @@ const dataFinal = [
                         >
                           <InputLabel>Bài kiểm tra</InputLabel>
                           <Select
-                            value="Kiểm tra 1"
+                            value={chosenRadarFinal || ""}
                             label="Bài kiểm tra"
-                            // onChange={(e) => onFilterChange(filter.key, e.target.value)}
+                            onChange={(e) => setChosenRadarFinal(e.target.value)}
                           >
-                            <MenuItem value="">Tất cả</MenuItem>
-                            <MenuItem value="">Bài kiểm tra 1</MenuItem>
-                            <MenuItem value="">Bài kiểm tra 2</MenuItem>
-                            <MenuItem value="">Bài kiểm tra 3</MenuItem>
+                             {Array.isArray(finalExams) && finalExams.map((item) => (
+                              <MenuItem value={item.finalExamId} key={item.finalExamId}>
+                                Bài kiểm tra {item.finalExamId}
+                              </MenuItem>
+                            ))}
                           </Select>
                     </FormControl>
                     </Box>
@@ -431,11 +639,11 @@ const dataFinal = [
             </Grid>
             <ResponsiveContainer width="100%" height={300}>
               
-              <RadarChart data={dataFinal}>
+              <RadarChart data={FinalRadarData}>
                   <PolarGrid />
                   <PolarAngleAxis dataKey="subject" />
                   <PolarRadiusAxis />
-                  <Radar name="Điểm" dataKey="Score" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                  <Radar name="Điểm" dataKey="Score" stroke="rgba(199, 72, 99, 0.62)" fill="rgba(255, 99, 132, 0.5)" fillOpacity={0.6} />
                   <Tooltip />
               </RadarChart>
             
@@ -447,7 +655,138 @@ const dataFinal = [
         </ChartContainer1>
       </ChartContainer>
 
+      <ChartContainer>
+            
 
+      <ChartContainer1>
+        
+        <ChartBox>
+        <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+                
+                <Box
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 2,
+                    background: "linear-gradient(135deg,rgba(51, 232, 34, 0.91) 0%,rgb(58, 237, 73) 100%)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "white",
+                  }}
+                >
+                  <ShowChartIcon />
+                </Box>
+
+                <Box>
+                  <Typography variant="h6" fontWeight="700" color="#1e293b">
+                    Diễn biến điểm của LO của theo các bài Assignment
+                  </Typography>
+                  <Typography variant="body2" color="#64748b">
+                  Tổng hợp diễn biến điểm của các LO theo các bài Assignment sinh viên.
+                  </Typography>
+                </Box>
+              </Box>
+        </Box>
+
+
+          <ResponsiveContainer width="100%" height={350}>
+                <LineChart data={AssignmentChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="subject" />
+                  <YAxis domain={[0, 10]} />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="Score" stroke="#8884d8" activeDot={{ r: 8 }} />
+                </LineChart>
+            </ResponsiveContainer>
+        </ChartBox>
+
+        <ChartBox>
+
+        <Grid container justifyContent="space-between" alignItems="center">
+          <Grid item>
+            <Box sx={{ mb: 3 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+                    
+                    <Box
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 2,
+                        background: "linear-gradient(135deg,rgba(51, 232, 34, 0.91) 0%,rgb(58, 237, 73) 100%)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "white",
+                      }}
+                    >
+                      <ShowChartIcon />
+                    </Box>
+
+                    <Box>
+                      <Typography variant="h6" fontWeight="700" color="#1e293b">
+                        Diễn biến điểm của từng câu hỏi của theo các bài Cuối Kỳ
+                      </Typography>
+                      <Typography variant="body2" color="#64748b">
+                      Tổng hợp diễn biến điểm của từng câu hỏi theo các bài Cuối Kỳ sinh viên.
+                      </Typography>
+                    </Box>
+                  </Box>
+            </Box>
+          </Grid>
+          
+          <Grid item >
+          <Box sx={{ mb: 3 }}>
+                      <FormControl
+                        size="small"
+                        sx={{
+                          minWidth: 180,
+                          '& .MuiOutlinedInput-root': {
+                            bgcolor: 'white',
+                            '&:hover fieldset': {
+                              borderColor: '#3b82f6',
+                            },
+                            '&.Mui-focused fieldset': {
+                              borderColor: '#1e3a8a',
+                            },
+                          },
+                        }}
+                      >
+                        <InputLabel>Bài kiểm tra</InputLabel>
+                        <Select
+                          value={chosenLineFinal || ""}
+                          label="Bài kiểm tra"
+                          onChange={(e) => setChosenLineFinal(e.target.value)}
+                        >
+
+                        {Array.isArray(finalExams) && finalExams.map((item) => (
+                            <MenuItem value={item.finalExamId} key={item.finalExamId}>
+                              Bài kiểm tra {item.finalExamId}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                  </FormControl>
+          </Box>
+          </Grid>
+
+        </Grid>
+
+          <ResponsiveContainer width="100%" height={350}>
+                <LineChart data={FinalLineData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="subject" />
+                  <YAxis domain={[0, 10]} />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="Score" stroke="#8884d8" activeDot={{ r: 8 }} />
+                </LineChart>
+            </ResponsiveContainer>
+        </ChartBox>
+        
+      </ChartContainer1>
+      </ChartContainer>
 
       <ChartContainer>
       
@@ -486,6 +825,7 @@ const dataFinal = [
           </Box>
              <ResponsiveContainer width="100%" height={350}>
                 <PieChart >
+
                   <Pie
                     data={pieDataAssignment}
                     // cx="50%"
@@ -500,238 +840,19 @@ const dataFinal = [
                       <Cell key={`cell-assignment-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-
+                  <Tooltip></Tooltip>
                   {/* <PieToolTip></PieToolTip> */}
                 </PieChart>
               </ResponsiveContainer>
           </ChartBox>
 
-          <ChartBox>
-          <Grid container justifyContent="space-between" alignItems="center">
-            <Grid item>
-              <Box sx={{ mb: 3 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-                      
-                      <Box
-                        sx={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: 2,
-                          background: "linear-gradient(135deg,rgb(222, 230, 70) 0%,rgb(222, 245, 50) 100%)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "white",
-                        }}
-                      >
-                        <PieChartIcon />
-                      </Box>
-
-                      <Box>
-                        <Typography variant="h6" fontWeight="700" color="#1e293b">
-                          Tỉ lệ đạt của các LO của theo các bài Cuối Kỳ
-                        </Typography>
-                        <Typography variant="body2" color="#64748b">
-                        Tỉ lệ đạt chuẩn đầu ra của các LO theo các bài Cuối Kỳ sinh viên.
-                        </Typography>
-                      </Box>
-                    </Box>
-              </Box>
-          </Grid>
           
-          <Grid item >
-          <Box sx={{ mb: 3 }}>
-                    <FormControl
-                          size="small"
-                          sx={{
-                            minWidth: 180,
-                            '& .MuiOutlinedInput-root': {
-                              bgcolor: 'white',
-                              '&:hover fieldset': {
-                                borderColor: '#3b82f6',
-                              },
-                              '&.Mui-focused fieldset': {
-                                borderColor: '#1e3a8a',
-                              },
-                            },
-                          }}
-                        >
-                          <InputLabel>Bài kiểm tra</InputLabel>
-                          <Select
-                            value="Kiểm tra 1"
-                            label="Bài kiểm tra"
-                            // onChange={(e) => onFilterChange(filter.key, e.target.value)}
-                          >
-                            <MenuItem value="">Tất cả</MenuItem>
-                            <MenuItem value="">Bài kiểm tra 1</MenuItem>
-                            <MenuItem value="">Bài kiểm tra 2</MenuItem>
-                            <MenuItem value="">Bài kiểm tra 3</MenuItem>
-                          </Select>
-                    </FormControl>
-          </Box>
-          </Grid>
-
-          </Grid>
-
-
-             <ResponsiveContainer width="100%" height={350}>
-                <PieChart >
-                  <Pie
-                    data={pieDataFinal}
-                    // cx="50%"
-                    // cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    // outerRadius={100}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {pieDataFinal.map((entry, index) => (
-                      <Cell key={`cell-assignment-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-
-                  {/* <PieToolTip></PieToolTip> */}
-                </PieChart>
-              </ResponsiveContainer>
-          
-          
-          </ChartBox>
           
         </ChartContainer1>
       </ChartContainer>
       
 
-      <ChartContainer>
-      {/* <TitleChart>Năng lực của sinh viên</TitleChart> */}
-
-        <ChartContainer1>
-          
-          <ChartBox>
-          <Box sx={{ mb: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-                  
-                  <Box
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 2,
-                      background: "linear-gradient(135deg,rgba(51, 232, 34, 0.91) 0%,rgb(58, 237, 73) 100%)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "white",
-                    }}
-                  >
-                    <ShowChartIcon />
-                  </Box>
-
-                  <Box>
-                    <Typography variant="h6" fontWeight="700" color="#1e293b">
-                      Diễn biến điểm của LO của theo các bài Assignment
-                    </Typography>
-                    <Typography variant="body2" color="#64748b">
-                    Tổng hợp diễn biến điểm của các LO theo các bài Assignment sinh viên.
-                    </Typography>
-                  </Box>
-                </Box>
-          </Box>
-
-
-             <ResponsiveContainer width="100%" height={350}>
-                  <LineChart data={dataAssignment}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="subject" />
-                    <YAxis domain={[0, 10]} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="Score" stroke="#8884d8" activeDot={{ r: 8 }} />
-                  </LineChart>
-              </ResponsiveContainer>
-          </ChartBox>
-
-          <ChartBox>
-
-          <Grid container justifyContent="space-between" alignItems="center">
-            <Grid item>
-              <Box sx={{ mb: 3 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-                      
-                      <Box
-                        sx={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: 2,
-                          background: "linear-gradient(135deg,rgba(51, 232, 34, 0.91) 0%,rgb(58, 237, 73) 100%)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "white",
-                        }}
-                      >
-                        <ShowChartIcon />
-                      </Box>
-
-                      <Box>
-                        <Typography variant="h6" fontWeight="700" color="#1e293b">
-                          Diễn biến điểm của LO của theo các bài Cuối Kỳ
-                        </Typography>
-                        <Typography variant="body2" color="#64748b">
-                        Tổng hợp diễn biến điểm của các LO theo các bài Cuối Kỳ sinh viên.
-                        </Typography>
-                      </Box>
-                    </Box>
-              </Box>
-            </Grid>
-            
-            <Grid item >
-            <Box sx={{ mb: 3 }}>
-                        <FormControl
-                          size="small"
-                          sx={{
-                            minWidth: 180,
-                            '& .MuiOutlinedInput-root': {
-                              bgcolor: 'white',
-                              '&:hover fieldset': {
-                                borderColor: '#3b82f6',
-                              },
-                              '&.Mui-focused fieldset': {
-                                borderColor: '#1e3a8a',
-                              },
-                            },
-                          }}
-                        >
-                          <InputLabel>Bài kiểm tra</InputLabel>
-                          <Select
-                            value="Kiểm tra 1"
-                            label="Bài kiểm tra"
-                            // onChange={(e) => onFilterChange(filter.key, e.target.value)}
-                          >
-                            <MenuItem value="">Tất cả</MenuItem>
-                            <MenuItem value="">Bài kiểm tra 1</MenuItem>
-                            <MenuItem value="">Bài kiểm tra 2</MenuItem>
-                            <MenuItem value="">Bài kiểm tra 3</MenuItem>
-                          </Select>
-                    </FormControl>
-            </Box>
-            </Grid>
-
-          </Grid>
-
-             <ResponsiveContainer width="100%" height={350}>
-                  <LineChart data={dataFinal}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="subject" />
-                    <YAxis domain={[0, 10]} />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="Score" stroke="#8884d8" activeDot={{ r: 8 }} />
-                  </LineChart>
-              </ResponsiveContainer>
-          </ChartBox>
-          
-        </ChartContainer1>
-      </ChartContainer>
+      
 
 
     </LearningOutcomeBody>
