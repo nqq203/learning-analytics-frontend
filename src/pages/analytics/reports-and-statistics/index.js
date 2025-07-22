@@ -173,6 +173,7 @@ const ClassesList = () => {
   };
 
   const columns = [
+    { id: "classId", label: "ID Lớp", align: "center" },
     { id: "courseName", label: "Môn học", align: "left" },
     { id: "className", label: "Lớp", align: "left" },
     { id: "academicYear", label: "Khóa", align: "center" },
@@ -211,7 +212,7 @@ const ClassesList = () => {
         icon="analytics"
         variant="analytics"
         stats={[
-          { label: "Tổng lớp", value: totalStudents },
+          { label: "Tổng lớp", value: totalRecords },
           { label: "Môn học", value: subjectOptions.length },
         ]}
       />
@@ -226,7 +227,7 @@ const ClassesList = () => {
             setFilterSubject(value);
             updateFilter("subject", value);
           } else if (key === "className") {
-            setFilterClass(value);cl
+            setFilterClass(value);
             updateFilter("className", value);
           }
         }}

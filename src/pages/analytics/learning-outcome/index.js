@@ -20,9 +20,9 @@ import SearchFilters from "@/components/CommonStyles/SearchFilters";
 
 
 const columns = [
+  {id:"id",label:"ID Lớp", align:"center"},
   {id:"courseName",label:"Môn", align:"left"},
   {id:"className",label:"Lớp", align:"left"},
-  
   {id:"academicYear",label:"Khóa", align:"center"},
   {id:"semester",label:"Học Kỳ", align:"center"},
   {id:"credit",label:"Tín chỉ", align:"center"},
@@ -149,6 +149,18 @@ const LearningOutcome = () => {
     },
   ];
 
+  // Lấy danh sách môn học duy nhất từ classes
+  const subjectOptions = useMemo(() => {
+    if (!classes || classes.length === 0) return [];
+    const seen = new Set();
+    return classes.filter(item => {
+      if (!item.courseName) return false;
+      if (seen.has(item.courseName)) return false;
+      seen.add(item.courseName);
+      return true;
+    });
+  }, [classes]);
+
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       <PageHeader
@@ -158,7 +170,9 @@ const LearningOutcome = () => {
         variant="analytics"
         stats={[
           { label: "Tổng lớp", value: totalRecords },
+          { label: "Môn học", value: subjectOptions.length },
           { label: "Khóa học", value: academicYear.length },
+          { label: "Kỳ học", value: semester.length },
         ]}
       />
 
