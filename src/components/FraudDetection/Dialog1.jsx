@@ -40,7 +40,7 @@ export function Dialog1({openDialog1,handleCloseDialog1,handleOpenDialog3,handle
           <NotificationsIcon sx={{ fontSize: 60, color: "#1976D2" }} />
           <Typography sx={{ mt: 2, color: "gray" }}>
             { !hasThreeHold?
-                "Bạn chưa thiết lập ngưỡng thời gian. Thiết lập ngưỡng thời gian của bạn hoặc tiếp tục với ngưỡng mặc định của hệ thống (tối thiểu: 584 giây, tối đa: 2436 giây, k = 2) để tiếp tục phân tích."
+                "Bạn chưa thiết lập ngưỡng thời gian. Thiết lập ngưỡng thời gian của bạn hoặc tiếp tục với ngưỡng mặc định của hệ thống (k = 2, và thời gian trung bình của toàn bộ sinh viên) để tiếp tục phân tích."
                 :
                 "Bạn đã thiết lập ngưỡng. Chỉnh sửa thiết lập ngưỡng của bạn."
             }

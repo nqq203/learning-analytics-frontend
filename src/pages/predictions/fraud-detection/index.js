@@ -160,6 +160,10 @@ const FraudDetection = () => {
   }
 
   useEffect(() => {
+    setQuizSelect("");
+  }, [classesSelect]);
+
+  useEffect(() => {
     if (!classesSelect) return;                        // chưa chọn thì thôi
     const cls = classes.find(c => c.classId === classesSelect);
     if (cls) {
@@ -273,7 +277,7 @@ const FraudDetection = () => {
 
           <Grid item xs={12} md={6}>
             <Box sx={{ display: 'flex', gap: 2 }}>
-              <Button
+              {/* <Button
                 disabled={disabledThreehold}
                 variant="contained"
                 onClick={handleOpenDialog1}
@@ -285,9 +289,9 @@ const FraudDetection = () => {
                 }}
               >
                 Thiết lập ngưỡng
-              </Button>
+              </Button> */}
               <Button
-                disabled={disabledThreehold}
+                disabled={disabledThreehold || !quizSelect}
                 variant="contained"
                 onClick={() => handleDetect()}
                 sx={{
