@@ -173,6 +173,7 @@ const ClassesList = () => {
   };
 
   const columns = [
+    { id: "classId", label: "ID Lớp", align: "center" },
     { id: "courseName", label: "Môn học", align: "left" },
     { id: "className", label: "Lớp", align: "left" },
     { id: "academicYear", label: "Khóa", align: "center" },

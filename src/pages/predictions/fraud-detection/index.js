@@ -236,7 +236,7 @@ const FraudDetection = () => {
               >
                 {classes.map(item => (
                   <MenuItem key={item.classId} value={item.classId}>
-                    {item.className}
+                    #{item.classId} - {item.className}
                   </MenuItem>
                 ))}
               </Select>

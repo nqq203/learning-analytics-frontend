@@ -341,6 +341,7 @@ const Compare = () => {
               <TableHead>
                 <TableRow>
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >STT</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >ID Lớp</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Môn</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Lớp</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Khóa</TableCell>
@@ -363,6 +364,7 @@ const Compare = () => {
                       }}
                     >
                       <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.no}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.classId}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.courseName}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.className}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.academicYear}</TableCell>
