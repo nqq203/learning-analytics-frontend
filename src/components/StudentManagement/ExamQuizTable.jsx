@@ -111,8 +111,8 @@ const ExamQuizTable = ({
     else if(type==="Cuối kỳ"){
       handleDelete(row.finalExamId,"final_exam");
     }
-    else if(type==="Giữa kỳ"){
-      handleDelete(row.midtermExamId,"midterm_exam");
+    else if(type==="Giữa Kỳ"){
+      handleDelete(row.midtermId,"midterm_exam");
     }
   }
   const cellStyle = {

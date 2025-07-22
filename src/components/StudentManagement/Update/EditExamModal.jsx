@@ -22,7 +22,7 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
   const HandleSaveAssignment = (studentInfo,scores,quizName)=>{
     
       const AssignmentData = studentInfo.map((student) => {
-                  const studentScores = scores[student.studentId] || {};
+                  const studentScores = scores[student.studentId] || 0;
                       return {
                       activityId: student.activityId,
                       assignmentScore: studentScores
