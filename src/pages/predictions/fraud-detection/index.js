@@ -204,7 +204,7 @@ const FraudDetection = () => {
         icon="fraud"
         variant="fraud"
         stats={[
-          { label: "Tổng lớp", value: classes.length },
+          { label: "Tổng số lớp có dữ liệu", value: classes.length },
           { label: "Bài kiểm tra", value: Quiz.length },
         ]}
       />

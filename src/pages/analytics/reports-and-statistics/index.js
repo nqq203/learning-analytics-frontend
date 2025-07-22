@@ -211,7 +211,7 @@ const ClassesList = () => {
         icon="analytics"
         variant="analytics"
         stats={[
-          { label: "Tổng lớp", value: totalStudents },
+          { label: "Tổng lớp", value: totalRecords },
           { label: "Môn học", value: subjectOptions.length },
         ]}
       />
@@ -226,7 +226,7 @@ const ClassesList = () => {
             setFilterSubject(value);
             updateFilter("subject", value);
           } else if (key === "className") {
-            setFilterClass(value);cl
+            setFilterClass(value);
             updateFilter("className", value);
           }
         }}

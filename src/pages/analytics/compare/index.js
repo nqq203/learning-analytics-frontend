@@ -227,7 +227,7 @@ const Compare = () => {
         icon="analytics"
         variant="analytics"
         stats={[
-          { label: "Tổng lớp", value: rows.length },
+          { label: "Tổng lớp", value: totalRecords },
           { label: "Đã chọn", value: selectedRows.length },
         ]}
       />
@@ -341,8 +341,8 @@ const Compare = () => {
               <TableHead>
                 <TableRow>
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >STT</TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Môn</TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Lớp</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Môn</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Lớp</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Khóa</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Số sinh viên</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Tỷ lệ đậu (%)</TableCell>
@@ -363,8 +363,8 @@ const Compare = () => {
                       }}
                     >
                       <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.no}</TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.courseName}</TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.className}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.courseName}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.className}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.academicYear}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.totalStudents}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>
