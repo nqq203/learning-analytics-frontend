@@ -33,7 +33,82 @@ const colorPalette = [
   "#FF8042",
 ];
 
-const RadarChartAnalytics = ({ data, selectedGrades }) => {
+const RadarChartAnalytics = ({ 
+  data = [], 
+  selectedGrades = [], 
+  isLOChart = false,
+  loData = null
+}) => {
+  // Handle LO Chart data differently
+  if (isLOChart && loData) {
+    // Transform LO data for radar chart
+    const transformedData = [];
+    
+    // Get all unique LO codes from all groups
+    const allLoCodes = [...new Set(
+      loData.flatMap(group => group.loAverages.map(lo => lo.loCode))
+    )];
+    
+    // Create data points for each LO
+    allLoCodes.forEach(loCode => {
+      const dataPoint = { loCode };
+      loData.forEach(group => {
+        const loScore = group.loAverages.find(lo => lo.loCode === loCode);
+        dataPoint[group.groupName] = loScore ? loScore.averageScore : 0;
+      });
+      transformedData.push(dataPoint);
+    });
+
+    return (
+      <Box
+        boxShadow={3}
+        p={2}
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        gap="20px"
+      >
+        <h3 style={{ margin: 0, fontSize: '16px' }}>
+          Phân tích nhóm sinh viên theo LO
+        </h3>
+        
+        <RadarChart
+          cx={250}
+          cy={200}
+          outerRadius={120}
+          width={500}
+          height={400}
+          data={transformedData}
+        >
+          <PolarGrid />
+          <PolarAngleAxis dataKey="loCode" />
+          <PolarRadiusAxis angle={30} domain={[0, 10]} />
+          <Tooltip />
+          <Legend />
+          {loData.map((group, index) => (
+            <Radar
+              key={group.groupName}
+              name={group.groupName}
+              dataKey={group.groupName}
+              stroke={colorPalette[index % colorPalette.length]}
+              fill={colorPalette[index % colorPalette.length]}
+              fillOpacity={0.4}
+            />
+          ))}
+        </RadarChart>
+      </Box>
+    );
+  }
+
+  // For regular charts, ensure we have valid data
+  if (!data || !Array.isArray(data) || !selectedGrades || !Array.isArray(selectedGrades)) {
+    return (
+      <Box p={2} textAlign="center">
+        <p>Vui lòng chọn loại điểm để hiển thị biểu đồ radar</p>
+      </Box>
+    );
+  }
+
   const studentOptions = useMemo(() => {
     return data.map((student) => ({
       id: student.identificationCode,
@@ -42,12 +117,15 @@ const RadarChartAnalytics = ({ data, selectedGrades }) => {
   }, [data]);
 
   const [selectedStudentIds, setSelectedStudentIds] = useState(
-    data.length > 0 ? [data[0].identificationCode] : []
+    data && data.length > 0 ? [data[0].identificationCode] : []
   );
 
   const radarData = useMemo(() => {
-    if (!selectedGrades || selectedGrades.length === 0 || data.length === 0 || selectedStudentIds.length === 0)
+    if (!selectedGrades || !Array.isArray(selectedGrades) || selectedGrades.length === 0 || 
+        !data || !Array.isArray(data) || data.length === 0 || 
+        !selectedStudentIds || !Array.isArray(selectedStudentIds) || selectedStudentIds.length === 0)
       return [];
+      
     return selectedGrades.map((gradeKey) => {
       const subjectLabel = labelMap[gradeKey] || gradeKey;
       const obj = { subject: subjectLabel };
@@ -70,6 +148,10 @@ const RadarChartAnalytics = ({ data, selectedGrades }) => {
   }, [data, selectedGrades, selectedStudentIds]);
 
   const maxScore = useMemo(() => {
+    if (!selectedGrades || !Array.isArray(selectedGrades) || !data || !Array.isArray(data)) {
+      return 10;
+    }
+    
     let maxVal = 10;
     selectedGrades.forEach((gradeKey) => {
       data.forEach((student) => {
@@ -125,7 +207,7 @@ const RadarChartAnalytics = ({ data, selectedGrades }) => {
       </FormControl>
 
       {/* Radar Chart hiển thị dữ liệu của sinh viên được chọn và trung bình lớp */}
-      {selectedGrades.length === 0 ? (
+      {!selectedGrades || selectedGrades.length === 0 ? (
         <p>Vui lòng chọn ít nhất một loại điểm</p>
       ) : (
         <RadarChart

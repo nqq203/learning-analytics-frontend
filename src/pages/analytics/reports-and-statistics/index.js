@@ -19,11 +19,13 @@ import { jwtDecode } from "jwt-decode";
 import PageHeader from "@/components/CommonStyles/PageHeader";
 import SearchFilters from "@/components/CommonStyles/SearchFilters";
 import SearchIcon from "@mui/icons-material/Search";
+import { fetchAllCourses } from "@/redux/thunk/dataThunk";
 
 const ClassesList = () => {
   const { totalRecords, classes, loading } = useSelector(
     (state) => state.analytics
   );
+  const { courses } = useSelector((state) => state.data);
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
   const [filterSubject, setFilterSubject] = useState("");
@@ -60,7 +62,7 @@ const ClassesList = () => {
   }, [classes]);
 
   const totalStudents = useMemo(() => {
-    
+
     return rows.length || totalRecords;
   }, [rows]);
 
@@ -102,6 +104,10 @@ const ClassesList = () => {
   };
 
   useEffect(() => {
+    dispatch(fetchAllCourses({ instructorId: userId }));
+  }, [userId]);
+
+  useEffect(() => {
     const fetchClasses = async () => {
       await dispatch(
         fetchClassesByLecturer({ userId: userId, page: page, amount: 10 })
@@ -112,7 +118,7 @@ const ClassesList = () => {
 
   useEffect(() => {
     if (!userId) return;
-    
+
     dispatch(
       searchClasses({
         search: filters.search,
@@ -186,9 +192,9 @@ const ClassesList = () => {
       key: "subject",
       label: "Môn học",
       value: filterSubject,
-      options: subjectOptions.map(subject => ({
-        value: subject.id,
-        label: subject.name
+      options: courses?.map(course => ({
+        value: course.courseId,
+        label: course.courseName
       })),
       minWidth: 200,
     },
@@ -213,7 +219,7 @@ const ClassesList = () => {
         variant="analytics"
         stats={[
           { label: "Tổng lớp", value: totalRecords },
-          { label: "Môn học", value: subjectOptions.length },
+          { label: "Môn học", value: courses?.length },
         ]}
       />
 
@@ -244,10 +250,10 @@ const ClassesList = () => {
       >
         <Box sx={{ p: 3, pb: 0 }}>
           <Typography variant="h6" fontWeight={600} color="text.primary">
-          Tổng số lớp hiển thị: {totalRecords}
+            Tổng số lớp hiển thị: {totalRecords}
           </Typography>
         </Box>
-        
+
         <Box position="relative">
           <AnalyticsTable
             filteredRows={rows}

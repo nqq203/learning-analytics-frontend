@@ -61,6 +61,10 @@ const analyticsApi = {
     axios.get(
       `${API_URL}/analytics/classes?user_id=${userId}&page=${page}&amount=${amount}&search=${search}&subject=${subject}&class_name=${className}`
     ),
+  fetchLOCharts: ({ classId, finalExamId }) => 
+    axios.get(
+      `${API_URL}/analytics/classes/lo-chart?class_id=${classId}&final_exam_id=${finalExamId}`
+    ),
 };
 
 export { analyticsApi, handleAnalyticsApiError };

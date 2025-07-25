@@ -18,7 +18,49 @@ const labelMap = {
   totalGrade: "Điểm tổng",
 };
 
-const BarChartAnalytics = ({ data, selectedGrades }) => {
+const BarChartAnalytics = ({ 
+  data, 
+  selectedGrades = [], 
+  isLOChart = false, 
+  loType = "", 
+  loData = null 
+}) => {
+  // Handle LO Chart data differently
+  if (isLOChart && loData) {
+    return (
+      <Box
+        boxShadow={3}
+        p={2}
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        gap="20px"
+      >
+        <h3 style={{ margin: 0, fontSize: '16px' }}>
+          So sánh điểm trung bình - {loType === 'assignmentQuiz' ? 'Bài tập/Quiz' : 'Thi cuối kỳ'}
+        </h3>
+
+        <BarChart width={500} height={300} data={loData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="loCode" />
+          <YAxis domain={[0, 10]} />
+          <Tooltip formatter={(value, name) => [value?.toFixed(2), 'Điểm TB']} />
+          <Legend />
+          <Bar dataKey="averageScore" fill="#1976d2" name="Điểm trung bình" />
+        </BarChart>
+      </Box>
+    );
+  }
+
+  // For regular charts, ensure selectedGrades has values
+  if (!selectedGrades || selectedGrades.length === 0) {
+    return (
+      <Box p={2} textAlign="center">
+        <p>Vui lòng chọn loại điểm để hiển thị biểu đồ</p>
+      </Box>
+    );
+  }
+
   const gradeFields = useMemo(() => {
     return selectedGrades.map((field) => ({
       key: field,
@@ -26,9 +68,9 @@ const BarChartAnalytics = ({ data, selectedGrades }) => {
     }));
   }, [selectedGrades]);
 
-  const [selectedBarFields, setSelectedBarFields] = useState([
-    selectedGrades[0],
-  ]);
+  const [selectedBarFields, setSelectedBarFields] = useState(
+    selectedGrades && selectedGrades.length > 0 ? [selectedGrades[0]] : []
+  );
   const [barData, setBarData] = useState([]);
 
   const colorMap = {
@@ -48,9 +90,14 @@ const BarChartAnalytics = ({ data, selectedGrades }) => {
   ];
 
   function convertDataForBarChart(data, selectedFields) {
+    // Safety checks
+    if (!data || !Array.isArray(data) || !selectedFields || !Array.isArray(selectedFields)) {
+      return [];
+    }
+
     const result = scoreRanges.map((range) => {
       const row = { range: range.label };
-      selectedFields.forEach((field) => {
+      selectedFields?.forEach((field) => {
         const count = data.filter((item) => {
           const value = parseFloat(item[field]);
           return !isNaN(value) && value >= range.min && value < range.max;
@@ -64,8 +111,10 @@ const BarChartAnalytics = ({ data, selectedGrades }) => {
   }
 
   useEffect(() => {
-    const converted = convertDataForBarChart(data, selectedBarFields);
-    setBarData(converted);
+    if (data && selectedBarFields && selectedBarFields.length > 0) {
+      const converted = convertDataForBarChart(data, selectedBarFields);
+      setBarData(converted);
+    }
   }, [data, selectedBarFields]);
 
   // Xử lý thay đổi cho dropdown chọn loại điểm
@@ -105,13 +154,13 @@ const BarChartAnalytics = ({ data, selectedGrades }) => {
         <Legend />
 
         {/* Với mỗi trường được chọn -> vẽ một Bar */}
-        {selectedBarFields.map((fieldKey) => (
+        {selectedBarFields && selectedBarFields.map((fieldKey) => (
           <Bar
             key={fieldKey}
             dataKey={fieldKey}
             fill={colorMap[fieldKey] || "#8884d8"}
             name={
-              gradeFields.find((f) => f.key === fieldKey)?.label || fieldKey
+              gradeFields?.find((f) => f.key === fieldKey)?.label || fieldKey
             }
           />
         ))}
@@ -129,12 +178,12 @@ const BarChartAnalytics = ({ data, selectedGrades }) => {
             label="Chọn loại điểm"
             renderValue={(selected) => {
               const labels = gradeFields
-                .filter((f) => selected.includes(f.key))
+                ?.filter((f) => selected.includes(f.key))
                 .map((f) => f.label);
-              return labels.join(", ");
+              return labels?.join(", ") || "";
             }}
           >
-            {gradeFields.map((field) => (
+            {gradeFields?.map((field) => (
               <MenuItem key={field.key} value={field.key}>
                 {field.label}
               </MenuItem>

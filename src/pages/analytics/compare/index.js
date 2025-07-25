@@ -28,6 +28,7 @@ import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
 import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk } from "@/redux/thunk/compareThunk";
 import PageHeader from "@/components/CommonStyles/PageHeader";
 import { useRouter } from 'next/router';
+import { fetchAllCourses } from "@/redux/thunk/dataThunk";
 
 const Compare = () => {
   const initialState = {
@@ -55,7 +56,8 @@ const Compare = () => {
   const dispatch = useDispatch();
   const { compareResults, compareLoading, compareError } = useSelector((state) => state.compare);
   const { accessToken } = useSelector(state => state.auth);
-  const { classes,totalRecords,loading } = useSelector((state) => state.analytics);
+  const { classes, totalRecords, loading } = useSelector((state) => state.analytics);
+  const { courses } = useSelector((state) => state.data);
 
   const router = useRouter();
 
@@ -111,14 +113,14 @@ const Compare = () => {
 
 
   useEffect(() => {
-      if (page === 1) {
-        setRows(classes);
-      } else {
-        setRows((prev) => [...prev, ...classes]);
-      }
-    }, [classes]);
+    if (page === 1) {
+      setRows(classes);
+    } else {
+      setRows((prev) => [...prev, ...classes]);
+    }
+  }, [classes]);
 
-    
+
   // const rows = useMemo(() => classes || [], [classes]);
 
   const handleSubjectChange = (e) => {
@@ -136,7 +138,7 @@ const Compare = () => {
   };
 
   const isCompareEnabled = () => selectedRows.length >= 2;
-    
+
   const handleCompareClick = async () => {
     const selectedItems = rows.filter(row => selectedRows.includes(row.no));
 
@@ -149,7 +151,7 @@ const Compare = () => {
       const classIds = selectedItems.map(row => String(row.classId));
       const payload = { class_ids: classIds };
       await dispatch(fetchCompareByClassesThunk(payload));
-      setCompareKey(Date.now()); 
+      setCompareKey(Date.now());
       setIsComparing(true);
     } catch (error) {
       console.error("Lỗi khi gửi yêu cầu so sánh:", error);
@@ -176,7 +178,7 @@ const Compare = () => {
     if (userId) {
       dispatch(fetchClassesByLecturer({ userId, page: page, amount: 10 }));
     }
-  }, [dispatch, userId,page]);
+  }, [dispatch, userId, page]);
 
 
 
@@ -189,22 +191,25 @@ const Compare = () => {
   const [isFetching, setIsFetching] = useState(false);
 
   const handleScroll = (e) => {
-          const { scrollTop, scrollHeight, clientHeight } = e.target;
-          const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
-  
-          if (isAtBottom && !isFetching && !loading) {
-          setIsFetching(true);
-          handleLoadMore();
-          }
-      };
-  
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
+
+    if (isAtBottom && !isFetching && !loading) {
+      setIsFetching(true);
+      handleLoadMore();
+    }
+  };
+
 
   useEffect(() => {
-        if (!loading) {
-        setIsFetching(false);
-        }
-    }, [classes, loading]);
+    if (!loading) {
+      setIsFetching(false);
+    }
+  }, [classes, loading]);
 
+  useEffect(() => {
+    dispatch(fetchAllCourses({ instructorId: userId }));
+  }, [userId]);
 
 
   if (isComparing) {
@@ -228,6 +233,7 @@ const Compare = () => {
         variant="analytics"
         stats={[
           { label: "Tổng lớp", value: totalRecords },
+          { label: "Môn học", value: courses?.length },
           { label: "Đã chọn", value: selectedRows.length },
         ]}
       />
@@ -331,11 +337,11 @@ const Compare = () => {
           </Typography>
         </Box>
         <TableWrapper className="scroll-view">
-          <TableContainer 
-              component={Paper}
-              style={{ maxHeight: "550px", overflow: "auto" }}
-              onScroll={handleScroll}
-          
+          <TableContainer
+            component={Paper}
+            style={{ maxHeight: "550px", overflow: "auto" }}
+            onScroll={handleScroll}
+
           >
             <Table stickyHeader>
               <TableHead>

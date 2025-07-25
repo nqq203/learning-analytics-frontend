@@ -79,3 +79,15 @@ export const searchClasses = createAsyncThunk(
     }
   }
 );
+
+export const fetchLearningObjectivesCharts = createAsyncThunk(
+  "analytics/fetchLearningObjectivesCharts",
+  async ({ classId, finalExamId }, { rejectWithValue }) => {
+    try {
+      const response = await analyticsApi.fetchLOCharts({ classId, finalExamId });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(handleAnalyticsApiError(error.response.data));
+    }
+  }
+);

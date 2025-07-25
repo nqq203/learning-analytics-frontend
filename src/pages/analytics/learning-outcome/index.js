@@ -15,22 +15,24 @@ import {
 import { jwtDecode } from "jwt-decode";
 import PageHeader from "@/components/CommonStyles/PageHeader";
 import SearchFilters from "@/components/CommonStyles/SearchFilters";
+import { fetchAllCourses } from "@/redux/thunk/dataThunk";
 
 
 
 
 const columns = [
-  {id:"id",label:"ID Lớp", align:"center"},
-  {id:"courseName",label:"Môn", align:"left"},
-  {id:"className",label:"Lớp", align:"left"},
-  {id:"academicYear",label:"Khóa", align:"center"},
-  {id:"semester",label:"Học Kỳ", align:"center"},
-  {id:"credit",label:"Tín chỉ", align:"center"},
+  { id: "id", label: "ID Lớp", align: "center" },
+  { id: "courseName", label: "Môn", align: "left" },
+  { id: "className", label: "Lớp", align: "left" },
+  { id: "academicYear", label: "Khóa", align: "center" },
+  { id: "semester", label: "Học Kỳ", align: "center" },
+  { id: "credit", label: "Tín chỉ", align: "center" },
 ]
 const semester = [1, 2, 3];
 
 const LearningOutcome = () => {
-  const { classes, totalRecords,academicYear, loading } = useSelector((state) => state.learningoutcome);
+  const { classes, totalRecords, academicYear, loading } = useSelector((state) => state.learningoutcome);
+  const { courses } = useSelector(state => state.data);
   const dispatch = useDispatch();
   const [searchResult, setSearchResult] = useState("");
   const router = useRouter();
@@ -68,36 +70,40 @@ const LearningOutcome = () => {
     // setIsLoading(false);
   };
 
+  useEffect(() => {
+    dispatch(fetchAllCourses({ instructorId: userId }));
+  }, [userId]);
+
   const handleLoadMore = () => {
-      if (!loading && rows.length < totalRecords) {
-          setPage(prev => prev + 1);
-      }
+    if (!loading && rows.length < totalRecords) {
+      setPage(prev => prev + 1);
+    }
   };
 
-  const handleSearch = (value) => { 
+  const handleSearch = (value) => {
     setSearchKeyword(value);
   };
 
-  const handleSearchResult = (value) => { 
+  const handleSearchResult = (value) => {
     setSearchResult(value);
     setPage(1); // reset page
     setRows([]); // reset data
   };
 
-  const handleKeyPress = (e) => { 
+  const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       handleSearchResult(searchKeyword);
     }
   };
 
 
-  const handleChangeSemester = (value) => {  
+  const handleChangeSemester = (value) => {
     setChosenSemester(value);
     setPage(1);
     setRows([]);
   };
 
-  const handleChangeAcademicYear = (value) => { 
+  const handleChangeAcademicYear = (value) => {
     setChosenAcademicYear(value);
     setPage(1);
     setRows([]);
@@ -170,8 +176,8 @@ const LearningOutcome = () => {
         variant="analytics"
         stats={[
           { label: "Tổng lớp", value: totalRecords },
-          { label: "Môn học", value: subjectOptions.length },
-          { label: "Khóa học", value: academicYear.length },
+          { label: "Môn học", value: courses?.length },
+          { label: "Năm học", value: academicYear.length },
           { label: "Kỳ học", value: semester.length },
         ]}
       />
