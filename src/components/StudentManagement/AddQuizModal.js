@@ -1,218 +1,224 @@
-  import React, { useState, useEffect } from "react";
-  import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    TextField,
-    Button,
-    Box,
-    IconButton,
-    Typography,
-    Tabs,
-    Tab,
-    Grid,
-    Divider,
-  } from "@mui/material";
-  import { Close } from "@mui/icons-material";
-  import QuizTableModal from "./QuizTableModal";
-  import AssignmentTableModal from "./AssignmentTableModal";
+import React, { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  Button,
+  Box,
+  IconButton,
+  Typography,
+  Tabs,
+  Tab,
+  Grid,
+  Divider,
+} from "@mui/material";
+import { Close } from "@mui/icons-material";
+import QuizTableModal from "./QuizTableModal";
+import AssignmentTableModal from "./AssignmentTableModal";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
-  export default function AddQuizModal({ open, onClose, onSave,mode,students,handleCreateExam }) {
-    
-    const HandleSaveAssignment = (studentInfo,scores,quizName)=>{
-      const AssignmentData = studentInfo.map((student) => {
-                  const studentScores = scores[student.studentId] || 0;
-                      return {
-                      studentId: student.studentId,
-                      assignmentScore: studentScores
-                      };
-            });
+export default function AddQuizModal({ open, onClose, onSave, mode, students, handleCreateExam }) {
+  const { loading } = useSelector(state => state.data);
 
-            const result = {
-              assignmentName: quizName,
-              assignmentData: AssignmentData,
-            };
+  const HandleSaveAssignment = (studentInfo, scores, quizName) => {
+    const AssignmentData = studentInfo.map((student) => {
+      const studentScores = scores[student.studentId] || 0;
+      return {
+        studentId: student.studentId,
+        assignmentScore: studentScores
+      };
+    });
 
-            
-            
-      handleCreateExam("assignment",result)
+    const result = {
+      assignmentName: quizName,
+      assignmentData: AssignmentData,
+    };
+
+
+
+    handleCreateExam("assignment", result)
+    onClose();
+  }
+
+  const HandleSaveExam = (mode, studentInfo, scores, questions, times, quizName) => {
+    if (mode == "Quiz") {
+      const quizData = studentInfo.map((student) => {
+        const studentScores = scores[student.studentId] || {};
+        const questionsList = questions.map((q, index) => {
+          const rawScore = studentScores[q];
+          const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
+
+          return {
+            questionNumber: index + 1,
+            score: score,
+          };
+        });
+
+
+        const quizScore = questionsList.reduce((acc, q) => acc + q.score, 0);
+
+        return {
+          studentId: student.studentId,
+          duration: Number(times[student.studentId]) || 0,
+          quizScore,
+          questions: questionsList,
+        };
+      });
+
+      const result = {
+        quizName: quizName,
+        quizData: quizData,
+      };
+
+      // console.log("Kết quả:", result);
+
+      handleCreateExam("quiz", result)
       onClose();
     }
+    else if (mode == "Cuối Kỳ") {
+      const finalData = studentInfo.map((student) => {
+        const studentScores = scores[student.studentId] || {};
+        const questionsList = questions.map((q, index) => {
+          const rawScore = studentScores[q];
+          const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
+          return {
+            questionNumber: index + 1,
+            score: score,
+          };
+        });
 
-    const HandleSaveExam = (mode,studentInfo,scores,questions,times,quizName)=>{
-      if(mode=="Quiz"){
-            const quizData = studentInfo.map((student) => {
-            const studentScores = scores[student.studentId] || {};
-            const questionsList = questions.map((q, index) => {
-              const rawScore = studentScores[q];
-              const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
 
-              return {
-                questionNumber: index + 1,
-                score: score,
-              };
-            });
+        const finalExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
 
-            
-            const quizScore = questionsList.reduce((acc, q) => acc + q.score, 0);
-
-              return {
-                studentId: student.studentId,
-                duration: Number(times[student.studentId]) || 0,
-                quizScore,
-                questions: questionsList,
-              };
-            });
-
-            const result = {
-              quizName: quizName,
-              quizData: quizData,
-            };
-
-            // console.log("Kết quả:", result);
-            
-            handleCreateExam("quiz",result)
-            onClose();
+        if (finalExamScore > 10) {
+          toast.error(`Điểm tổng của sinh viên ${student.identificationCode} lớn hơn 0.`)
+          return null;
         }
-        else if(mode=="Cuối Kỳ"){
-          const finalData = studentInfo.map((student) => {
-            const studentScores = scores[student.studentId] || {};
-            const questionsList = questions.map((q, index) => {
-              const rawScore = studentScores[q];
-              const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
-              return {
-                questionNumber: index + 1,
-                score: score,
-              };
-            });
-
-            
-            const finalExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
-
-              if(finalExamScore>10){
-                toast.error(`Điểm tổng của sinh viên ${student.identificationCode} lớn hơn 0.`)
-                return null;
-              }
 
 
-              return {
-                studentId: student.studentId,
-                finalExamScore,
-                questions: questionsList,
-              };
-            });
+        return {
+          studentId: student.studentId,
+          finalExamScore,
+          questions: questionsList,
+        };
+      });
 
 
-            if (finalData.some(item => item === null || item === undefined)) {
-              return;
-            }
+      if (finalData.some(item => item === null || item === undefined)) {
+        return;
+      }
 
 
-            const result = {
-              finalExamName: quizName,
-              finalExamData: finalData,
-            };
-
-            
-           
-            handleCreateExam("final_exam",result)
-            onClose();
-        }
-        else if(mode=="Giữa Kỳ"){
-          console.log("studentInfo: ",studentInfo)
-          const midtermData = studentInfo.map((student) => {
-            const studentScores = scores[student.studentId] || {};
-            const questionsList = questions.map((q, index) => {
-              const rawScore = studentScores[q];
-              const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
-              return {
-                questionNumber: index + 1,
-                score: score,
-              };
-            });
-
-            
-            const midtermExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
-
-            if(midtermExamScore>10){
-              toast.error(`Điểm tổng của sinh viên ${student.identificationCode} lớn hơn 0.`)
-              return null;
-            }
+      const result = {
+        finalExamName: quizName,
+        finalExamData: finalData,
+      };
 
 
-              return {
-                studentId: student.studentId,
-                midtermExamScore,
-                questions: questionsList,
-              };
-            });
 
-
-            if (midtermData.some(item => item === null || item === undefined)) {
-              return;
-            }
-
-
-            const result = {
-              midtermExamName: quizName,
-              midtermExamData: midtermData,
-            };
-
-
-            
-
-            // console.log("Kết quả:", result);
-           
-            handleCreateExam("midterm_exam",result)
-            onClose();
-        }
+      handleCreateExam("final_exam", result)
+      onClose();
     }
+    else if (mode == "Giữa Kỳ") {
+      console.log("studentInfo: ", studentInfo)
+      const midtermData = studentInfo.map((student) => {
+        const studentScores = scores[student.studentId] || {};
+        const questionsList = questions.map((q, index) => {
+          const rawScore = studentScores[q];
+          const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
+          return {
+            questionNumber: index + 1,
+            score: score,
+          };
+        });
 
 
-    const handleCloseModal = ()=>{
-      const result = confirm("Bạn có chắc chắn muốn thoát không?");
-          if(result){
-            onClose();
-          }
+        const midtermExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
+
+        if (midtermExamScore > 10) {
+          toast.error(`Điểm tổng của sinh viên ${student.identificationCode} lớn hơn 0.`)
+          return null;
+        }
+
+
+        return {
+          studentId: student.studentId,
+          midtermExamScore,
+          questions: questionsList,
+        };
+      });
+
+
+      if (midtermData.some(item => item === null || item === undefined)) {
+        return;
+      }
+
+
+      const result = {
+        midtermExamName: quizName,
+        midtermExamData: midtermData,
+      };
+
+
+
+
+      // console.log("Kết quả:", result);
+
+      handleCreateExam("midterm_exam", result)
+      onClose();
     }
-
-
-    return (
-      <Dialog open={open} onClose={handleCloseModal} maxWidth="xl" fullWidth>
-        <DialogTitle
-          sx={{
-            
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            pb: 1,
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: "medium" }}>
-            Thêm bài {mode} Vào Lớp
-          </Typography>
-          <IconButton onClick={handleCloseModal} aria-label="close">
-            <Close />
-          </IconButton>
-        </DialogTitle>
-
-        <Divider />
-
-        <DialogContent sx={{ p: 3 }}>
-          
-
-              
-              <div style={{paddingInline:"16px"}}>
-                    {mode ==="Assignment"?
-                    <AssignmentTableModal studentInfo={students} mode={mode} HandleSaveAssignment={HandleSaveAssignment} onClose={onClose} > </AssignmentTableModal>
-                    :
-                    <QuizTableModal studentInfo={students} mode={mode} HandleSaveExam={HandleSaveExam} onClose={onClose}></QuizTableModal>
-                  }
-                    
-              </div>
-            
-        </DialogContent>
-      </Dialog>
-    );
   }
+
+
+  const handleCloseModal = () => {
+    if (loading) {
+      const result = confirm("Đang có request đang xử lý. Bạn có chắc chắn muốn thoát không?");
+      if (result) {
+        onClose();
+      }
+    } else {
+      onClose();
+    }
+  }
+
+
+  return (
+    <Dialog open={open} onClose={handleCloseModal} maxWidth="xl" fullWidth>
+      <DialogTitle
+        sx={{
+
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          pb: 1,
+        }}
+      >
+        <Typography variant="h6" sx={{ fontWeight: "medium" }}>
+          Thêm bài {mode} Vào Lớp
+        </Typography>
+        <IconButton onClick={handleCloseModal} aria-label="close">
+          <Close />
+        </IconButton>
+      </DialogTitle>
+
+      <Divider />
+
+      <DialogContent sx={{ p: 3 }}>
+
+
+
+        <div style={{ paddingInline: "16px" }}>
+          {mode === "Assignment" ?
+            <AssignmentTableModal studentInfo={students} mode={mode} HandleSaveAssignment={HandleSaveAssignment} onClose={onClose} > </AssignmentTableModal>
+            :
+            <QuizTableModal studentInfo={students} mode={mode} HandleSaveExam={HandleSaveExam} onClose={onClose}></QuizTableModal>
+          }
+
+        </div>
+
+      </DialogContent>
+    </Dialog>
+  );
+}

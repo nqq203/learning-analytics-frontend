@@ -17,152 +17,158 @@ import {
 import { Close } from "@mui/icons-material";
 import UpdateAssignTableModal from "./UpdateAssignTableModal";
 import UpdateExamTable from "./UpdateExamTable";
-export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,handleUpdateExam }) {
-  
-  const HandleSaveAssignment = (studentInfo,scores,quizName)=>{
-    
-      const AssignmentData = studentInfo.map((student) => {
-                  const studentScores = scores[student.studentId] || 0;
-                      return {
-                      activityId: student.activityId,
-                      assignmentScore: studentScores
-                      };
-            });
+import { useSelector } from "react-redux";
+export default function EditExamModal({ open, onClose, mode, StudentData, ExamData, handleUpdateExam }) {
+  const { loading } = useSelector(state => state.data);
 
-            const result = {
-              assignmentName: quizName,
-              assignmentData: AssignmentData,
-            };
+  const HandleSaveAssignment = (studentInfo, scores, quizName) => {
 
-            handleUpdateExam(ExamData.assignmentId,mode,result)
-     
+    const AssignmentData = studentInfo.map((student) => {
+      const studentScores = scores[student.studentId] || 0;
+      return {
+        activityId: student.activityId,
+        assignmentScore: studentScores
+      };
+    });
+
+    const result = {
+      assignmentName: quizName,
+      assignmentData: AssignmentData,
+    };
+
+    handleUpdateExam(ExamData.assignmentId, mode, result)
+
+  }
+
+  const HandleSaveExam = (mode, studentInfo, scores, questions, times, quizName) => {
+
+
+    if (mode == "quiz") {
+      const quizData = studentInfo.map((student) => {
+        const studentScores = scores[student.studentId] || {};
+        const questionsList = questions.map((q, index) => {
+          const rawScore = studentScores[q];
+          const score = Number(rawScore) || 0;
+          return {
+            questionNumber: index + 1,
+            score: score,
+          };
+        });
+
+
+        const quizScore = questionsList.reduce((acc, q) => acc + q.score, 0);
+
+        return {
+          studentId: student.studentId,
+          duration: Number(times[student.studentId]) || 0,
+          quizScore,
+          activityId: student.activityId,
+          questions: questionsList,
+        };
+      });
+
+      const result = {
+        quizName: quizName,
+        quizData: quizData,
+      };
+
+      console.log("Kết quả:", result);
+      handleUpdateExam(ExamData.quizId, mode, result)
+
     }
-
-  const HandleSaveExam = (mode,studentInfo,scores,questions,times,quizName)=>{
-    
-    
-      if(mode=="quiz"){
-            const quizData = studentInfo.map((student) => {
-            const studentScores = scores[student.studentId] || {};
-            const questionsList = questions.map((q, index) => {
-              const rawScore = studentScores[q];
-              const score = Number(rawScore) || 0; 
-              return {
-                questionNumber: index + 1,
-                score: score,
-              };
-            });
-
-            
-            const quizScore = questionsList.reduce((acc, q) => acc + q.score, 0);
-
-              return {
-                studentId: student.studentId,
-                duration: Number(times[student.studentId]) || 0,
-                quizScore,
-                activityId: student.activityId,
-                questions: questionsList,
-              };
-            });
-
-            const result = {
-              quizName: quizName,
-              quizData: quizData,
-            };
-
-            console.log("Kết quả:", result);
-            handleUpdateExam(ExamData.quizId,mode,result)
-           
-        }
-        else if(mode=="final_exam"){
-          const finalData = studentInfo.map((student) => {
-            const studentScores = scores[student.studentId] || {};
-            const questionsList = questions.map((q, index) => {
-              const rawScore = studentScores[q];
-              const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
-              return {
-                questionNumber: index + 1,
-                score: score,
-              };
-            });
-
-            
-            const finalExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
-
-              return {
-                studentId: student.studentId,
-                activityId: student.activityId,
-                finalExamScore,
-                questions: questionsList,
-              };
-            });
-
-            const result = {
-              finalExamName: quizName,
-              finalExamData: finalData,
-            };
-
-          
-            handleUpdateExam(ExamData.finalExamId,mode,result)
-           
-        }
-        else if(mode=="midterm_exam"){
+    else if (mode == "final_exam") {
+      const finalData = studentInfo.map((student) => {
+        const studentScores = scores[student.studentId] || {};
+        const questionsList = questions.map((q, index) => {
+          const rawScore = studentScores[q];
+          const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
+          return {
+            questionNumber: index + 1,
+            score: score,
+          };
+        });
 
 
-            const midtermData = studentInfo.map((student) => {
-            const studentScores = scores[student.studentId] || {};
-            const questionsList = questions.map((q, index) => {
-              const rawScore = studentScores[q];
-              const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
-              return {
-                questionNumber: index + 1,
-                score: score,
-              };
-            });
+        const finalExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
 
-            
-            const midtermExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
+        return {
+          studentId: student.studentId,
+          activityId: student.activityId,
+          finalExamScore,
+          questions: questionsList,
+        };
+      });
 
-              return {
-                studentId: student.studentId,
-                activityId: student.activityId,
-                midtermExamScore,
-                questions: questionsList,
-              };
-            });
+      const result = {
+        finalExamName: quizName,
+        finalExamData: finalData,
+      };
 
-            const result = {
-              midtermExamName: quizName,
-              midtermExamData: midtermData,
-            };
 
-            
-            handleUpdateExam(ExamData.midtermExamId,mode,result)
+      handleUpdateExam(ExamData.finalExamId, mode, result)
 
-        }
     }
+    else if (mode == "midterm_exam") {
 
 
-  const ExamName = useMemo(()=>{
-    if(mode=="quiz")              return ExamData?.quizName;
-      else if(mode=="assignment")   return ExamData?.assignmentName;
-        else if(mode=="final_exam")   return ExamData?.finalExamName;
-          else if(mode=="midterm_exam")   return ExamData?.midtermExamName;          
+      const midtermData = studentInfo.map((student) => {
+        const studentScores = scores[student.studentId] || {};
+        const questionsList = questions.map((q, index) => {
+          const rawScore = studentScores[q];
+          const score = Number(rawScore) || 0; // đảm bảo là số, nếu undefined thì thành 0
+          return {
+            questionNumber: index + 1,
+            score: score,
+          };
+        });
+
+
+        const midtermExamScore = questionsList.reduce((acc, q) => acc + q.score, 0);
+
+        return {
+          studentId: student.studentId,
+          activityId: student.activityId,
+          midtermExamScore,
+          questions: questionsList,
+        };
+      });
+
+      const result = {
+        midtermExamName: quizName,
+        midtermExamData: midtermData,
+      };
+
+
+      handleUpdateExam(ExamData.midtermExamId, mode, result)
+
+    }
+  }
+
+
+  const ExamName = useMemo(() => {
+    if (mode == "quiz") return ExamData?.quizName;
+    else if (mode == "assignment") return ExamData?.assignmentName;
+    else if (mode == "final_exam") return ExamData?.finalExamName;
+    else if (mode == "midterm_exam") return ExamData?.midtermExamName;
     return ""
-  },[mode])
+  }, [mode])
 
-  const handleCloseModal = ()=>{
-    const result = confirm("Bạn có chắc chắn muốn thoát không?");
-        if(result){
-          onClose();
-        }
+  const handleCloseModal = () => {
+    if (loading) {
+      const result = confirm("Đang xử lý yêu cầu. Bạn có chắc chắn muốn thoát?");
+      if (result) {
+        onClose();
+      }
+    } else {
+      onClose();
     }
+  }
 
   return (
     <Dialog open={open} onClose={handleCloseModal} maxWidth="xl" fullWidth>
       <DialogTitle
         sx={{
-          
+
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -170,7 +176,7 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
         }}
       >
         <Typography variant="h6" sx={{ fontWeight: "medium" }}>
-          Sửa {mode} 
+          Sửa {mode}
         </Typography>
         <IconButton onClick={handleCloseModal} aria-label="close">
           <Close />
@@ -180,30 +186,30 @@ export default function EditExamModal({ open, onClose,mode,StudentData,ExamData,
       <Divider />
 
       <DialogContent sx={{ p: 3 }}>
-        
-          <div style={{paddingInline:"16px"}}>
-                    {mode ==="assignment"?
-                    <UpdateAssignTableModal 
-                      studentInfo={StudentData} 
-                      mode={mode} 
-                      HandleSaveAssignment={HandleSaveAssignment} 
-                      onClose={onClose}
-                      
-                      examData={ExamData}
-                      > </UpdateAssignTableModal>
-                    :
-                    <UpdateExamTable 
-                      studentInfo={StudentData} 
-                      examData={ExamData}
-                      mode={mode} 
-                      HandleSaveExam={HandleSaveExam} 
-                      onClose={onClose}
-                      
-                    ></UpdateExamTable>
-                  }
-                    
-              </div>
-            
+
+        <div style={{ paddingInline: "16px" }}>
+          {mode === "assignment" ?
+            <UpdateAssignTableModal
+              studentInfo={StudentData}
+              mode={mode}
+              HandleSaveAssignment={HandleSaveAssignment}
+              onClose={onClose}
+
+              examData={ExamData}
+            > </UpdateAssignTableModal>
+            :
+            <UpdateExamTable
+              studentInfo={StudentData}
+              examData={ExamData}
+              mode={mode}
+              HandleSaveExam={HandleSaveExam}
+              onClose={onClose}
+
+            ></UpdateExamTable>
+          }
+
+        </div>
+
       </DialogContent>
     </Dialog>
   );

@@ -362,6 +362,9 @@ export default function StudentDetailView({ onBack }) {
   };
 
   const SetHeader = (filteredRows) => {
+    if (!filteredRows || filteredRows.length === 0) {
+      return [];
+    }
 
     const rawKeys = Object.keys(
       filteredRows.reduce((a, b) =>

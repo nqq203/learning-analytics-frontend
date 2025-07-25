@@ -48,11 +48,14 @@ export default function ImportFileModal({
     }, [open]);
 
     const close = () => {
-        const result = confirm("Bạn có chắc chắn muốn thoát không?");
-        if(result){
-            setOpen(false)
+        if (loading) {
+            const result = confirm("Đang có request đang xử lý. Bạn có chắc chắn muốn thoát không?");
+            if (result) {
+                setOpen(false);
+            }
+        } else {
+            setOpen(false);
         }
-    
     };
 
     return (
