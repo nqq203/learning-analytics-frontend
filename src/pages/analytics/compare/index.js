@@ -325,7 +325,7 @@ const Compare = () => {
           borderRadius: 2,
         }}
       >
-        <Box sx={{ p: 3, borderBottom: '1px solid #e5e7eb' }}>
+        <Box sx={{ p: 3, pb: 0 }}>
           <Typography variant="h6" fontWeight={600} color="text.primary">
             Tổng số lớp hiển thị: {totalRecords}
           </Typography>

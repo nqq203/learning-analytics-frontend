@@ -238,17 +238,16 @@ const ClassesList = () => {
       <Paper
         elevation={0}
         sx={{
-          p: 3,
           border: '1px solid #e5e7eb',
           borderRadius: 2,
         }}
       >
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ p: 3, pb: 0 }}>
           <Typography variant="h6" fontWeight={600} color="text.primary">
           Tổng số lớp hiển thị: {totalRecords}
           </Typography>
         </Box>
-
+        
         <Box position="relative">
           <AnalyticsTable
             filteredRows={rows}
