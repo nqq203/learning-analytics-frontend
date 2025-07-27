@@ -122,7 +122,7 @@ export function AvgScoreChart({ data = [] }) {
           </Box>
           <Box>
             <Typography variant="h6" fontWeight="700" color="#1e293b">
-            Điểm trung bình theo khóa
+            Phân bố điểm tổng kết
             </Typography>
             <Typography variant="body2" color="#64748b">
             Hiển thị xu hướng điểm số theo từng khóa và môn học.

@@ -21,6 +21,48 @@ import EqualizerIcon from "@mui/icons-material/Equalizer";
 import WarningIcon from "@mui/icons-material/Warning";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
+const CustomXAxisTick = ({ x, y, payload, width = 80 }) => {
+  if (!payload?.value) return null;
+
+  const maxCharsPerLine = Math.floor(width / 8); 
+  const words = payload.value.split(" ");
+  const lines = [];
+  let currentLine = "";
+
+  words.forEach((word) => {
+    if ((currentLine + " " + word).trim().length > maxCharsPerLine) {
+      lines.push(currentLine.trim());
+      currentLine = word;
+    } else {
+      currentLine += " " + word;
+    }
+  });
+  if (currentLine) lines.push(currentLine.trim());
+
+  return (
+    <text
+      x={x}
+      y={y + 10}
+      textAnchor="middle"
+      fill="#64748b"
+      fontSize="10"
+      fontWeight="500"
+    >
+      {lines.map((line, index) => (
+        <tspan
+          key={index}
+          x={x}
+          dy={index === 0 ? 0 : 11}
+        >
+          {line}
+        </tspan>
+      ))}
+    </text>
+  );
+};
+
+
+
 const CustomBarChartYAxisLabel = ({ x, y, payload }) => {
   return (
     <text x={x} y={y} dy={4} textAnchor="end" fill="#64748b" fontSize="12">
@@ -59,7 +101,7 @@ const CustomTooltip = ({ active, payload, label }) => {
               {entry.name}:
             </Typography>
             <Typography variant="body2" fontWeight="600" color="#0f172a">
-              {entry.value} học sinh
+              {entry.value} sinh viên
             </Typography>
           </Box>
         ))}
@@ -106,10 +148,10 @@ export function RiskStudentChart({ data = [] }) {
           </Box>
           <Box>
             <Typography variant="h6" fontWeight="700" color="#1e293b">
-            Phân tích khả năng đạt và rớt của học sinh
+            Tỉ lệ đậu và rớt môn của sinh viên
             </Typography>
             <Typography variant="body2" color="#64748b">
-            So sánh số lượng học sinh có nguy cơ trượt và có khả năng đạt giữa các môn học.
+            So sánh tỉ lệ sinh viên có nguy cơ trượt và có khả năng đạt giữa các môn học.
             </Typography>
           </Box>
         </Box>
@@ -143,15 +185,18 @@ export function RiskStudentChart({ data = [] }) {
             />
             <XAxis
               dataKey="name"
-              label={{
-                value: "Môn học",
-                position: "insideBottomRight",
-                offset: -2,
-                style: { fill: "#64748b", fontSize: 12, fontWeight: "bold" },
-              }}
-              tick={false}
+              interval={0} 
+              // label={{
+              //   value: "Môn học",
+              //   position: "insideBottomRight",
+              //   offset: -2,
+              //   style: { fill: "#64748b", fontSize: 12, fontWeight: "bold" },
+              // }}
+              // tick={false}
+              tick={<CustomXAxisTick width={150}/>} 
               axisLine={{ stroke: "#e2e8f0" }}
               tickLine={{ stroke: "#e2e8f0" }}
+              
             />
 
             
