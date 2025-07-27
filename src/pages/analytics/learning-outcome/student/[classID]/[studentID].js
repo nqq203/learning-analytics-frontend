@@ -193,6 +193,8 @@ export default function StudentAnalytics() {
           </div>
         </Header>
 
+        <div style={{width:"100%"}}>
+
         
         {
           tab===0 &&(
@@ -213,7 +215,7 @@ export default function StudentAnalytics() {
           )
 
         }
-        
+        </div>
       
 
     </Container>

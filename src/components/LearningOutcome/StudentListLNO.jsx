@@ -15,7 +15,7 @@ import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
 import { TableWrapper } from "../Analytics/Styles/Styles";
 
-
+import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
 
 
 
@@ -89,7 +89,7 @@ export default function StudentListLNO({ TableContent, TableHeader, setStudentID
                                 ))}
                                 {action && (
                                     <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
-                                        Chi tiết
+                                        Thống kê
                                     </TableCell>
                                 )}
 
@@ -119,15 +119,15 @@ export default function StudentListLNO({ TableContent, TableHeader, setStudentID
                                             {action &&
                                                 (
                                                     <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                                                        <VisibilityIcon
+                                                        <TroubleshootIcon
                                                             color="primary"
                                                             style={{ cursor: "pointer" }}
 
                                                             onClick={() => setStudentID(row.studentId)}
 
-                                                        >
+                                                        />
 
-                                                        </VisibilityIcon>
+                                                        
                                                     </TableCell>
                                                 )
 

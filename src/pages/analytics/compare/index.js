@@ -139,8 +139,16 @@ const Compare = () => {
 
   const isCompareEnabled = () => selectedRows.length >= 2;
 
+
+  useEffect(()=>{
+    console.log("selectedRows: ",selectedRows)
+
+  },[selectedRows])
   const handleCompareClick = async () => {
+
     const selectedItems = rows.filter(row => selectedRows.includes(row.no));
+    console.log("AFTER selectedItems: ",selectedItems)
+
 
     if (selectedItems.length < 2) {
       alert("Cần chọn ít nhất 2 lớp để so sánh.");
@@ -227,8 +235,8 @@ const Compare = () => {
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       <PageHeader
-        title="So sánh kết quả"
-        subtitle="So sánh hiệu quả học tập giữa các lớp và khóa học"
+        title="Thống kê môn"
+        subtitle="So sánh hiệu quả học tập của môn giữa các lớp và khóa học"
         icon="analytics"
         variant="analytics"
         stats={[
@@ -389,6 +397,7 @@ const Compare = () => {
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>
                         <input
                           type="checkbox"
+                          disabled={selectedRows.length > 6 && !selectedRows.includes(item.no)}
                           checked={selectedRows.includes(item.no)}
                           onChange={() => handleSelectRow(item.no)}
                           style={{

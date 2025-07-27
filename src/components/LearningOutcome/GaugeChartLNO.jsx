@@ -9,18 +9,18 @@ import {
 
 const GaugeChart = ({value}) => {
   const RADIAN = Math.PI / 180;
-  const width = 580;
-  const height = 320;
+  const width = 590;
+  const height = 350;
 
   const chartValue = value;
 
   const slices = [
-    { value: 2.99, color: "#FF0000", name: "Kém (0-3)" },
-    { value: 1.99, color: "#FF6B6B", name: "Yếu (3-5)" },
-    { value: 1.99, color: "#FFA94D", name: "Trung bình (5-7)" },
-    { value: 0.99, color: "#FFD43B", name: "Khá (7-8)" },
-    { value: 0.99, color: "#69DB7C", name: "Giỏi (8-9)" },
-    { value: 0.99, color: "#38D9A9", name: "Xuất sắc (9-10)" },
+    { value: 2.99, color: "#FF4545", name: "Kém (0-3)" },
+    { value: 1.99, color: "#FF9C73", name: "Yếu (3-5)" },
+    { value: 1.99, color: "#FBD288", name: "Trung bình (5-7)" },
+    { value: 0.99, color: "#FCF596", name: "Khá (7-8)" },
+    { value: 0.99, color: "#B4E380", name: "Giỏi (8-9)" },
+    { value: 0.99, color: "#88D66C", name: "Xuất sắc (9-10)" },
   ];
 
   const pieProps = {
