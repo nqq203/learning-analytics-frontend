@@ -14,6 +14,7 @@ const initialState = {
   avgScoreChart: [],
   academicRankData: [],
   riskStudentData: [],
+  passFailData: [],
   spendingTimeChartData: [],
   subjects: [],
   cardsData: null,
@@ -36,6 +37,7 @@ const dashboardSlice = createSlice({
           avgScoreChart,
           riskStudentData,
           spendingTimeChartData,
+          passFailData,
           subjects,
           cardData,
         } = action.payload ?? {};
@@ -43,6 +45,7 @@ const dashboardSlice = createSlice({
         state.academicRankData = academicRankData ?? [];
         state.avgScoreChart = avgScoreChart ?? [];
         state.riskStudentData = riskStudentData ?? [];
+        state.passFailData = passFailData ?? [];
         state.spendingTimeChartData = spendingTimeChartData ?? [];
         state.subjects = Array.isArray(subjects) ? subjects : [];
         state.cardsData = cardData ?? null;

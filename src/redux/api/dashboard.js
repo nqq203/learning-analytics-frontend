@@ -32,17 +32,18 @@ const handleDashboardApiError = (error) => {
 const dashboardApi = {
   fetchStatsCards: () => axios.get(`${API_URL}/dashboard/cards`),
   fetchSummary: ({ instructorId, courseId, academicYear }) => {
-    if (courseId) {
+    if (courseId && academicYear) {
+      return axios.get(
+        `${API_URL}/dashboard/summary?instructor_id=${instructorId}&course_id=${courseId}&academic_year=${academicYear}`
+      );
+    }
+    else if (courseId) {
       return axios.get(
         `${API_URL}/dashboard/summary?instructor_id=${instructorId}&course_id=${courseId}`
       );
     } else if (academicYear) {
       return axios.get(
         `${API_URL}/dashboard/summary?instructor_id=${instructorId}&academic_year=${academicYear}`
-      );
-    } else if (courseId && academicYear) {
-      return axios.get(
-        `${API_URL}/dashboard/summary?instructor_id=${instructorId}&course_id=${courseId}&academic_year=${academicYear}`
       );
     } else {
       return axios.get(

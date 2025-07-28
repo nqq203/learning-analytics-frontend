@@ -114,18 +114,23 @@ const CustomTooltip = ({ active, payload, label }) => {
 export function RiskStudentChart({ data = [] }) {
   const theme = useTheme();
 
-  if (!Array.isArray(data) || data.length === 0) return null;
+  // Tạo dữ liệu mặc định khi không có data
+  const defaultData = [
+    { name: "Không có dữ liệu", atRisk: 0, students: 0 }
+  ];
 
-  const formattedData = data.map((item) => ({
-    ...item,
-    atRisk: Number(item.atRisk),
-    students: Number(item.students),
-  }));
+  const formattedData = Array.isArray(data) && data.length > 0 
+    ? data.map((item) => ({
+        name: item.name,
+        atRisk: Number(item.failedStudents),
+        students: Number(item.passedStudents),
+      })).slice(0,4)
+    : defaultData;
 
   const maxDataValue = Math.max(
     ...formattedData.map((d) => Math.max(d.atRisk, d.students))
   );
-  const maxValue = Math.ceil(maxDataValue / 10) * 10;
+  const maxValue = Math.max(10, Math.ceil(maxDataValue / 10) * 10);
 
   return (
     <Box sx={{ height: "100%" }}>
