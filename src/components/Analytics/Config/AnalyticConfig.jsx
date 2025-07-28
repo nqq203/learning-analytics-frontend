@@ -23,6 +23,7 @@ const AnalyticConfig = ({ open, onClose, onApply }) => {
     grades: [],
     chartTypes: [],
     otherFields: [],
+    learningObjectives: [],
   });
 
   const [isDisabledButton, setIsDisabledButton] = useState(false);
@@ -48,6 +49,11 @@ const AnalyticConfig = ({ open, onClose, onApply }) => {
     { key: "passRate", label: "Tỉ lệ đậu/rớt" },
   ];
 
+  const learningObjectiveOptions = [
+    // { key: "finalExam", label: "Bài cuối kỳ" },
+    { key: "assignmentQuiz", label: "Bài tập/Quiz" },
+  ];
+
   const handleFieldChange = (e, category) => {
     const { value, checked } = e.target;
     setSelectedFields((prev) => {
@@ -57,6 +63,8 @@ const AnalyticConfig = ({ open, onClose, onApply }) => {
           ? gradeOptions.map((o) => o.key)
           : category === "chartTypes"
           ? chartOptions.map((o) => o.key)
+          : category === "learningObjectives"
+          ? learningObjectiveOptions.map((o) => o.key)
           : otherOptions.map((o) => o.key);
 
       if (value === `all${category}`) {
@@ -104,52 +112,128 @@ const AnalyticConfig = ({ open, onClose, onApply }) => {
       </DialogTitle>
 
       <DialogContent dividers>
-        <Grid container spacing={3}>
-          {[
-            { title: "Điểm", category: "grades", options: gradeOptions },
-            {
-              title: "Loại biểu đồ",
-              category: "chartTypes",
-              options: chartOptions,
-            },
-            { title: "Khác", category: "otherFields", options: otherOptions },
-          ].map(({ title, category, options }) => (
-            <Grid item xs={12} md={4} key={category}>
-              <Paper elevation={2} sx={{ p: 2 }}>
-                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                  {title}
-                </Typography>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      onChange={(e) => handleFieldChange(e, category)}
-                      value={`all${category}`}
-                      checked={
-                        selectedFields[category].length === options.length
-                      }
-                    />
-                  }
-                  label="Tất cả"
-                />
-                <Divider sx={{ mb: 1 }} />
-                <FormGroup>
-                  {options.map(({ key, label }) => (
+        <Grid container spacing={3} sx={{ alignItems: 'stretch' }}>
+          {/* Box lớn chứa Điểm và Loại biểu đồ */}
+          <Grid item xs={12} md={8} sx={{ display: 'flex' }}>
+            <Paper elevation={2} sx={{ p: 2, minHeight: '400px', width: '100%' }}>
+              <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                Cấu hình biểu đồ
+              </Typography>
+              <Grid container spacing={2} sx={{ height: 'calc(100% - 40px)' }}>
+                {/* Điểm */}
+                <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column' }}>
+                  <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+                    Điểm
+                  </Typography>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onChange={(e) => handleFieldChange(e, "grades")}
+                        value="allgrades"
+                        checked={selectedFields.grades.length === gradeOptions.length}
+                      />
+                    }
+                    label="Tất cả"
+                  />
+                  <Divider sx={{ mb: 1 }} />
+                  <FormGroup sx={{ flex: 1 }}>
+                    {gradeOptions.map(({ key, label }) => (
+                      <FormControlLabel
+                        key={key}
+                        control={
+                          <Checkbox
+                            onChange={(e) => handleFieldChange(e, "grades")}
+                            value={key}
+                            checked={selectedFields.grades.includes(key)}
+                          />
+                        }
+                        label={label}
+                      />
+                    ))}
+                  </FormGroup>
+                </Grid>
+
+                {/* Loại biểu đồ */}
+                <Grid item xs={12} sm={6} sx={{ display: 'flex', flexDirection: 'column' }}>
+                  <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+                    Loại biểu đồ
+                  </Typography>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onChange={(e) => handleFieldChange(e, "chartTypes")}
+                        value="allchartTypes"
+                        checked={selectedFields.chartTypes.length === chartOptions.length}
+                      />
+                    }
+                    label="Tất cả"
+                  />
+                  <Divider sx={{ mb: 1 }} />
+                  <FormGroup sx={{ flex: 1 }}>
+                    {chartOptions.map(({ key, label }) => (
+                      <FormControlLabel
+                        key={key}
+                        control={
+                          <Checkbox
+                            onChange={(e) => handleFieldChange(e, "chartTypes")}
+                            value={key}
+                            checked={selectedFields.chartTypes.includes(key)}
+                          />
+                        }
+                        label={label}
+                      />
+                    ))}
+                  </FormGroup>
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+
+          {/* Mục tiêu học tập và Khác */}
+          <Grid item xs={12} md={4} sx={{ display: 'flex' }}>
+            <Grid container spacing={2} sx={{ height: 'fit-content', width: '100%' }}>
+              {[
+                { title: "Mục tiêu học tập", category: "learningObjectives", options: learningObjectiveOptions },
+                { title: "Khác", category: "otherFields", options: otherOptions },
+              ].map(({ title, category, options }) => (
+                <Grid item xs={12} key={category} sx={{ display: 'flex' }}>
+                  <Paper elevation={2} sx={{ p: 2, minHeight: '190px', width: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                      {title}
+                    </Typography>
                     <FormControlLabel
-                      key={key}
                       control={
                         <Checkbox
                           onChange={(e) => handleFieldChange(e, category)}
-                          value={key}
-                          checked={selectedFields[category].includes(key)}
+                          value={`all${category}`}
+                          checked={
+                            selectedFields[category].length === options.length
+                          }
                         />
                       }
-                      label={label}
+                      label="Tất cả"
                     />
-                  ))}
-                </FormGroup>
-              </Paper>
+                    <Divider sx={{ mb: 1 }} />
+                    <FormGroup sx={{ flex: 1 }}>
+                      {options.map(({ key, label }) => (
+                        <FormControlLabel
+                          key={key}
+                          control={
+                            <Checkbox
+                              onChange={(e) => handleFieldChange(e, category)}
+                              value={key}
+                              checked={selectedFields[category].includes(key)}
+                            />
+                          }
+                          label={label}
+                        />
+                      ))}
+                    </FormGroup>
+                  </Paper>
+                </Grid>
+              ))}
             </Grid>
-          ))}
+          </Grid>
         </Grid>
       </DialogContent>
 

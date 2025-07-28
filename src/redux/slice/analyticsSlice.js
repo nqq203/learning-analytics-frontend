@@ -6,6 +6,7 @@ import {
   fetchStudents,
   searchStudents,
   searchClasses,
+  fetchLearningObjectivesCharts,
 } from '../thunk/analyticsThunk';
 
 const initialState = {
@@ -27,6 +28,9 @@ const initialState = {
   compareResults: null, 
   compareLoading: false, 
   compareError: null,
+  learningObjectivesData: null,
+  learningObjectivesLoading: false,
+  learningObjectivesError: null,
 };
 
 const analyticsSlice = createSlice({
@@ -144,6 +148,25 @@ const analyticsSlice = createSlice({
       .addCase(searchClasses.rejected, (state, action) => {
         state.loading = false;
         state.error = action?.payload?.error || action?.error?.message;
+        state.message = action?.payload?.message || action?.message || action?.payload;
+        state.code = action?.payload?.code || action?.code;
+      })
+      // Learning Objectives Charts
+      .addCase(fetchLearningObjectivesCharts.pending, (state) => {
+        state.learningObjectivesLoading = true;
+        state.learningObjectivesError = null;
+      })
+      .addCase(fetchLearningObjectivesCharts.fulfilled, (state, action) => {
+        state.learningObjectivesLoading = false;
+        state.learningObjectivesData = action.payload.data;
+        state.learningObjectivesError = null;
+        state.code = action.payload.code;
+        state.message = action.payload.message;
+        state.success = action.payload.success;
+      })
+      .addCase(fetchLearningObjectivesCharts.rejected, (state, action) => {
+        state.learningObjectivesLoading = false;
+        state.learningObjectivesError = action?.payload?.error || action?.error?.message;
         state.message = action?.payload?.message || action?.message || action?.payload;
         state.code = action?.payload?.code || action?.code;
       })

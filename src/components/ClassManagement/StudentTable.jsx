@@ -107,7 +107,7 @@ const StudentTable = ({
                   <TableCell style={{ textAlign: "center" }}>{index + 1}</TableCell>
                   {columns.map((col, idx) => (
                     <TableCell key={idx} style={{ textAlign: "center" }}>
-                      {row[col.id] || "--"}
+                      {row[col.id] === 0 ? 0 : !row[col.id] ? "--" : row[col.id]}
                     </TableCell>
                   ))}
                   {action && (

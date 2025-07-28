@@ -25,7 +25,7 @@ export const fetchFilteredClasses = createAsyncThunk(
             
             
             const response = await LearningOutcomeApi.FilterClass({userId,page,amount,semester,academicYear,search})
-            console.log("Response data: ",response.data)
+            // console.log("Response data: ",response.data)
             return response.data;
         }
         catch(error){
@@ -73,7 +73,7 @@ export const fetchStudentSearch = createAsyncThunk(
             
             
             const response = await LearningOutcomeApi.FetchStudentSearch({classId,page,amount,userId,search})
-            console.log("Response data: ",response.data)
+            // console.log("Response data: ",response.data)
             return response.data;
         }
         catch(error){
@@ -96,4 +96,32 @@ export const FetchAcademicYearClass = createAsyncThunk(
     }
 
 
+)
+
+
+export const FetchLOChart = createAsyncThunk(
+    "learningOutcome/FetchLOChart",
+    async({studentId,class_id})=>{
+        try{
+            const response = await LearningOutcomeApi.FetchLOChart({studentId,class_id})
+            return response.data;
+        }
+        catch(error){
+            return rejectWithValue(handleLearningOutcomeApiError(error.response.data))
+        }
+    }
+)
+
+
+export const FetchLOFinal = createAsyncThunk(
+    "learningOutcome/FetchLOFinal",
+    async({type,studentId,class_id,final_exam_id})=>{
+        try{
+            const response = await LearningOutcomeApi.FetchLOFinal({type,studentId,class_id,final_exam_id})
+            return response.data;
+        }
+        catch(error){
+            return rejectWithValue(handleLearningOutcomeApiError(error.response.data))
+        }
+    }
 )

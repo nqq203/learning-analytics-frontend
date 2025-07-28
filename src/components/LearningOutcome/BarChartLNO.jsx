@@ -58,7 +58,7 @@ const BarChart = ({studentGrade}) => {
   };
 
   return (
-    <div style={{ height: "20rem",width:"33rem" }}>
+    <div style={{ height: "22rem",width:"40rem" }}>
       <Bar data={data} options={options} />
     </div>
   );

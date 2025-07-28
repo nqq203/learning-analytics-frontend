@@ -30,6 +30,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import PageHeader from "@/components/CommonStyles/PageHeader";
+import { clearStudents } from "@/redux/slice/fraudDetectionSlice";
 
 const FraudDetection = () => {
   // const [loading, setLoading] = useState(false);
@@ -96,12 +97,15 @@ const FraudDetection = () => {
     fetchClasses();
   }, [userId]);
 
+
+  // Reset data về rỗng khi userId đổi (vào lại trang)
   useEffect(() => {
+    dispatch(clearStudents());
+  }, []);
 
+  useEffect(() => {
     setData(students);
-
-  }, [students])
-
+  }, [students]);
 
   useEffect(() => {
     if (classesSelect) {
@@ -145,7 +149,7 @@ const FraudDetection = () => {
 
   const handleChosingQuiz = (QuizIdChosen) => {
     if (QuizIdChosen === 'import') {
-      console.log("HELLO")
+      // console.log("HELLO")
       fileInputRef.current.click();
 
     }
@@ -154,6 +158,10 @@ const FraudDetection = () => {
       setQuizSelect(QuizIdChosen);
     }
   }
+
+  useEffect(() => {
+    setQuizSelect("");
+  }, [classesSelect]);
 
   useEffect(() => {
     if (!classesSelect) return;                        // chưa chọn thì thôi
@@ -170,7 +178,7 @@ const FraudDetection = () => {
 
   const handleFileChange = async (e) => {
     // setLoading(true);
-    console.log("FILE CHANGE")
+    // console.log("FILE CHANGE")
     const file = e.target.files[0];
 
     if (file) {
@@ -188,7 +196,7 @@ const FraudDetection = () => {
 
   const handleDetect = async () => {
     // setLoading(true);
-    console.log(`Handle Detect: ${userId} ${quizSelect} ${minTime} ${maxTime}`)
+    // console.log(`Handle Detect: ${userId} ${quizSelect} ${minTime} ${maxTime}`)
 
     await dispatch(fetchFraudDetect({ userId, quiz_id: quizSelect, min_threshold: minTime, max_threshold: maxTime }));
 
@@ -204,7 +212,7 @@ const FraudDetection = () => {
         icon="fraud"
         variant="fraud"
         stats={[
-          { label: "Tổng lớp", value: classes.length },
+          { label: "Tổng số lớp có dữ liệu", value: classes.length },
           { label: "Bài kiểm tra", value: Quiz.length },
         ]}
       />
@@ -236,7 +244,7 @@ const FraudDetection = () => {
               >
                 {classes.map(item => (
                   <MenuItem key={item.classId} value={item.classId}>
-                    {item.className}
+                    #{item.classId} - {item.className}
                   </MenuItem>
                 ))}
               </Select>
@@ -269,7 +277,7 @@ const FraudDetection = () => {
 
           <Grid item xs={12} md={6}>
             <Box sx={{ display: 'flex', gap: 2 }}>
-              <Button
+              {/* <Button
                 disabled={disabledThreehold}
                 variant="contained"
                 onClick={handleOpenDialog1}
@@ -281,9 +289,9 @@ const FraudDetection = () => {
                 }}
               >
                 Thiết lập ngưỡng
-              </Button>
+              </Button> */}
               <Button
-                disabled={disabledThreehold}
+                disabled={disabledThreehold || !quizSelect}
                 variant="contained"
                 onClick={() => handleDetect()}
                 sx={{

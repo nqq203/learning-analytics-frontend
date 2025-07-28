@@ -56,6 +56,13 @@ const QuizTableModal = ({
   };
 
   const handleScoreChange = (mssv, question, value) => {
+
+    if(mode=="Quiz" && !(value==0 ||value==1) ){
+      toast.warning("Vui lòng chỉ nhập điểm có giá trị là 0 và 1")
+      return;
+        
+    }
+
     setScores((prev) => ({
       ...prev,
       [mssv]: {

@@ -8,7 +8,14 @@ import {
   Cell,
 } from 'recharts';
 
-export const PieChartAnalytics = ({ pieChartData, selectedGrades, selectedGradeField, setSelectedGradeField }) => {
+export const PieChartAnalytics = ({ 
+  pieChartData, 
+  selectedGrades = [], 
+  selectedGradeField = "", 
+  setSelectedGradeField = () => {},
+  isLOChart = false,
+  loCode = ""
+}) => {
   function formatFieldNameForFilter(field) {
     // Chèn dấu cách trước các chữ cái in hoa, sau đó viết hoa chữ cái đầu tiên
     // const result = field.replace(/([A-Z])/g, " $1").trim();
@@ -32,21 +39,28 @@ export const PieChartAnalytics = ({ pieChartData, selectedGrades, selectedGradeF
 
   if (!pieChartData) return null;
   return (
-    <Box boxShadow={3} p={2} display="flex" flexDirection="column" alignItems="center" gap="20px">
+    <Box boxShadow={isLOChart ? 0 : 3} p={isLOChart ? 0 : 2} display="flex" flexDirection="column" alignItems="center" gap={isLOChart ? "10px" : "20px"}>
       {/* Header trong Box chứa PieChart, có tiêu đề và dropdown filter */}
-      <h3 style={{ margin: 0 }}>(Biểu đồ tròn) Phân bố điểm theo {formatFieldNameForFilter(selectedGradeField)}</h3>
+      {!isLOChart && (
+        <h3 style={{ margin: 0 }}>
+          {isLOChart 
+            ? `Tỷ lệ đạt/trượt - ${loCode}`
+            : `(Biểu đồ tròn) Phân bố điểm theo ${formatFieldNameForFilter(selectedGradeField)}`
+          }
+        </h3>
+      )}
 
       {/* Biểu đồ Pie */}
-      <PieChart width={600} height={500}>
+      <PieChart width={isLOChart ? 250 : 600} height={isLOChart ? 180 : 500}>
         <Pie
           data={pieChartData}
           dataKey="count"
           nameKey="label"
           cx="50%"
           cy="50%"
-          outerRadius={150}
+          outerRadius={isLOChart ? 60 : 150}
           fill="#8884d8"
-          label
+          label={!isLOChart}
         >
           {pieChartData.map((entry, index) => (
             <Cell
@@ -58,7 +72,7 @@ export const PieChartAnalytics = ({ pieChartData, selectedGrades, selectedGradeF
         <Tooltip />
         <Legend />
       </PieChart>
-      {selectedGrades.length > 0 && (
+      {!isLOChart && selectedGrades && selectedGrades.length > 0 && (
         <FormControl variant="outlined" size="small" style={{ width: "200px" }}>
           <InputLabel id="grade-field-label">Chọn loại điểm</InputLabel>
           <Select

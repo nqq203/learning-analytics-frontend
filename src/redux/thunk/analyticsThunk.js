@@ -8,9 +8,9 @@ export const fetchClassesByLecturer = createAsyncThunk(
   "analytics/fetchClassesByLecturer",
   async ({ userId, page, amount }, { rejectWithValue }) => {
     try {
-      console.log(`UserId: ${userId} Page: ${page} Amount: ${amount}`)
+      // console.log(`UserId: ${userId} Page: ${page} Amount: ${amount}`)
       const response = await analyticsApi.fetchClassesByLecturer({ userId, page, amount });
-      console.log(response.data)
+      // console.log(response.data)
       return response.data;
     } catch (error) {
       return rejectWithValue(handleAnalyticsApiError(error.response.data));
@@ -72,7 +72,19 @@ export const searchClasses = createAsyncThunk(
     try {
       
       const response = await analyticsApi.searchClasses({ userId, page, amount, search, subject, className  });
-      console.log(response.data)
+      // console.log(response.data)
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(handleAnalyticsApiError(error.response.data));
+    }
+  }
+);
+
+export const fetchLearningObjectivesCharts = createAsyncThunk(
+  "analytics/fetchLearningObjectivesCharts",
+  async ({ classId, finalExamId }, { rejectWithValue }) => {
+    try {
+      const response = await analyticsApi.fetchLOCharts({ classId, finalExamId });
       return response.data;
     } catch (error) {
       return rejectWithValue(handleAnalyticsApiError(error.response.data));

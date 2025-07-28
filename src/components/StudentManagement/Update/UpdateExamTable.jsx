@@ -42,7 +42,13 @@ const UpdateExamTable = ({
     const [quizName, setQuizName] = useState();
 
     useEffect(()=>{
-      if(examData) setQuizName(mode=="quiz"? examData.quizName : examData.finalExamName)
+      if(examData) {
+        if(mode=="quiz") setQuizName(examData.quizName)
+        else if(mode=="final_exam") setQuizName(examData.finalExamName)
+          else if(mode=="midterm_exam") setQuizName(examData.midtermExamName)
+        // setQuizName(mode=="quiz"? examData.quizName : examData.finalExamName)
+      
+      }
     },[examData])
 
     useEffect(()=>{
@@ -60,7 +66,7 @@ const UpdateExamTable = ({
         }
 
         studentInfo?.map((student)=>{
-            student.questions.map((q,index)=>{
+            student?.questions?.map((q,index)=>{
                 const questionIntial = `Câu ${index + 1}`;
                 setScores((prev) => ({
                   ...prev,
@@ -81,7 +87,7 @@ const UpdateExamTable = ({
 
 
         studentInfo?.map((student)=>{
-            student.questions.map((q,index)=>{
+            student?.questions?.map((q,index)=>{
                 const questionIntial = `Câu ${index + 1}`;
                 setScores((prev) => ({
                   ...prev,
@@ -242,7 +248,7 @@ const UpdateExamTable = ({
                     max="10"
                     placeholder="Nhập điểm"
                     style={{border:"none",width:"100%"}}
-                    value={scores[student.studentId]?.[q] || ""}
+                    value={scores[student.studentId]?.[q] }
                     onChange={(e) =>
                       handleScoreChange(student.studentId, q, e.target.value)
                     }

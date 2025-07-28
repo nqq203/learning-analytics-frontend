@@ -17,7 +17,8 @@ import {
   Divider,
 } from '@mui/material';
 import { Close } from '@mui/icons-material';
-
+import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 function TabPanel({ children, value, index }) {
   return value === index ? <Box sx={{ p: 2 }}>{children}</Box> : null;
 }
@@ -38,6 +39,7 @@ export default function EditStudentModal({
   const [tab, setTab] = useState(0);
   const [formData, setFormData] = useState({});
   const [initial, setInitial] = useState({});
+  const { loading } = useSelector(state => state.data);
 
   useEffect(() => {
     // gộp thông tin & điểm
@@ -67,18 +69,56 @@ export default function EditStudentModal({
   const handleSave = () => {
     if (!changed) return;
     const payload = {};
-    Object.keys(formData).forEach(key => {
-      if (formData[key] !== initial[key]) payload[key] = formData[key];
-    });
-    onSubmit(payload);
-    onClose();
+    // console.log(formData)
+
+    // Chỉ kiểm tra MSSV (identificationCode) là bắt buộc
+    if (!formData["identificationCode"] || formData["identificationCode"].toString().trim() === "") {
+      toast.error("Vui lòng nhập mã số sinh viên");
+      return;
+    }
+
+    const resultPayload = {
+      studentInformation: {
+        fullName: formData["fullName"],
+        email: formData["email"],
+        identificationCode: formData["identificationCode"],
+        programId: formData["programId"],
+        majorId: formData["majorId"],
+        facultyId: formData["facultyId"]
+      },
+      studentGrades: {
+        totalGrade: formData["totalGrade"] ?? 0,
+        midtermGrade: formData["midtermGrade"] ?? 0,
+        finalGrade: formData["finalGrade"] ?? 0,
+        projectGrade: formData["projectGrade"] ?? 0,
+        practiceGrade: formData["practiceGrade"] ?? 0,
+        assignmentQuizGrade: formData["assignmentQuizGrade"] ?? 0
+      }
+
+    }
+
+
+    onSubmit(entityData.studentInformation.studentId, resultPayload);
+    // onClose();
   };
 
+  const handleCloseModal = () => {
+    if (loading) {
+      const result = confirm("Đang có request đang xử lý. Bạn có chắc chắn muốn thoát không?");
+      if (result) {
+        onClose();
+      }
+    } else {
+      onClose();
+    }
+  }
+
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+    <Dialog open={open} onClose={handleCloseModal} fullWidth maxWidth="md">
       <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6">{title}</Typography>
-        <Box component={Close} onClick={onClose} sx={{ cursor: 'pointer' }} />
+        <Box component={Close} onClick={handleCloseModal} sx={{ cursor: 'pointer' }} />
       </DialogTitle>
       <Divider />
       <DialogContent>
@@ -90,7 +130,7 @@ export default function EditStudentModal({
           <Tab label="Quiz" />
           <Tab label="Giữa kỳ"/>
           <Tab label="Cuối kỳ"/> */}
-        
+
         </Tabs>
 
         <TabPanel value={tab} index={0}>
@@ -264,7 +304,7 @@ export default function EditStudentModal({
           </Grid>
         </TabPanel> */}
 
-        
+
       </DialogContent>
 
       <Box sx={{ p: 2, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>

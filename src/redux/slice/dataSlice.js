@@ -628,7 +628,7 @@ const dataSlice = createSlice({
                     // không lặp lại studentId cũ
                     const existingIds = new Set(state.studentsGrade.map(s => s.studentId));
                     newItems = items.filter(item => !existingIds.has(item.studentId));
-                    console.log(newItems);
+                    // console.log(newItems);
                     state.studentsGrade = [...state.studentsGrade, ...newItems];
                     // cập nhật tổng số và trung bình
                     state.totalGrade = totalRecords;
@@ -769,6 +769,8 @@ const dataSlice = createSlice({
                 if(action.payload.data.finalExam) state.examInfo = action.payload.data.finalExam;
 
                 if(action.payload.data.assignment) state.examInfo = action.payload.data.assignment;
+
+                if(action.payload.data.midtermExam) state.examInfo = action.payload.data.midtermExam;
 
                 state.message = action.payload.message;
                 state.code = action.payload.code;

@@ -1,5 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit"
-import { fetchClassesByLecturer,fetchFilteredClasses,fetchStudent,fetchStudentDetail,fetchStudentSearch,FetchAcademicYearClass } from "../thunk/learningoutcomeThunk"
+import { fetchClassesByLecturer,fetchFilteredClasses,fetchStudent,fetchStudentDetail,fetchStudentSearch,FetchAcademicYearClass,FetchLOChart,FetchLOFinal } from "../thunk/learningoutcomeThunk"
 
 
 const initialState = {
@@ -23,7 +23,17 @@ const initialState = {
     courseInfo:[],
     grades:[],
     studentInfo:[],
-    academicYear:[]
+    academicYear:[],
+
+    LoChart:[],
+    assignmentQuiz:[],
+
+    type:null,
+    finalExamDataRadar:[],
+    finalExamDataBar:[],
+    finalExamDataLine:[],
+    finalExamDataPie:[],
+    finalExamData:[]
 }
 
 const learningoutcomeSlice = createSlice({
@@ -154,7 +164,67 @@ const learningoutcomeSlice = createSlice({
                 state.message = action?.payload?.message || action?.message || action?.payload;
                 state.code = action?.payload?.code || action?.code;
               })
+
+
+
+              .addCase(FetchLOChart.pending, (state, action) => {
+                state.loading = true;
+              })
+              .addCase(FetchLOChart.fulfilled, (state, action) => {
+                state.loading = false;
+                state.LoChart = action.payload.data;
+                state.assignmentQuiz = action.payload.data.assignmentQuiz;
+
+                state.code = action.payload.code;
+                state.message = action.payload.message;
+                state.success = action.payload.success;
+              })
+              .addCase(FetchLOChart.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+              })
               
+
+              .addCase(FetchLOFinal.pending, (state, action) => {
+                state.loading = true;
+              })
+              .addCase(FetchLOFinal.fulfilled, (state, action) => {
+
+
+                const type = action.meta.arg.type;
+                state.type = type;
+
+                state.finalExamData = action.payload.data.finalExam;
+                
+                if(type=="Bar"){
+                    
+                    state.finalExamDataBar = action.payload.data.finalExam;
+                }
+                else if (type=="Radar"){
+                    state.finalExamDataRadar = action.payload.data.finalExam;
+                }
+                else if (type=="Line"){
+                    state.finalExamDataLine = action.payload.data.finalExam;
+                }
+                else if(type=="Pie"){
+                    state.finalExamDataPie = action.payload.data.finalExam;
+                }
+                
+                state.loading = false;
+                
+                state.code = action.payload.code;
+                state.message = action.payload.message;
+                state.success = action.payload.success;
+              })
+              .addCase(FetchLOFinal.rejected, (state, action) => {
+                
+                state.loading = false;
+                state.error = action?.payload?.error || action?.error?.message;
+                state.message = action?.payload?.message || action?.message || action?.payload;
+                state.code = action?.payload?.code || action?.code;
+              })
               
     }
 })

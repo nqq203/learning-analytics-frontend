@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -35,6 +36,7 @@ function TabPanel(props) {
 
 export default function AddStudentModal({ open, onClose, subject, className, onSave,basicFields,gradeFields,instructorId }) {
   const [tabValue, setTabValue] = useState(0);
+  const { loading } = useSelector(state => state.data);
 
   const [newStudent, setNewStudent] = useState({
       identificationCode: "",
@@ -121,8 +123,21 @@ export default function AddStudentModal({ open, onClose, subject, className, onS
     // onClose();
   };
 
+
+  const handleCloseModal = ()=>{
+    if (loading) {
+      const result = confirm("Đang có request đang xử lý. Bạn có chắc chắn muốn thoát không?");
+      if (result) {
+        onClose();
+      }
+    } else {
+      onClose();
+    }
+  }
+
+  
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleCloseModal} maxWidth="md" fullWidth>
       <DialogTitle
         sx={{
           display: "flex",
@@ -134,7 +149,7 @@ export default function AddStudentModal({ open, onClose, subject, className, onS
         <Typography variant="h6" sx={{ fontWeight: "medium" }}>
           Thêm Sinh Viên Vào Lớp
         </Typography>
-        <IconButton onClick={onClose} aria-label="close">
+        <IconButton onClick={handleCloseModal} aria-label="close">
           <Close />
         </IconButton>
       </DialogTitle>

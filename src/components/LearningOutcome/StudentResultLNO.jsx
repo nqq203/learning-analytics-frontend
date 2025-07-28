@@ -4,13 +4,22 @@ import styled from "styled-components";
 import MyGaugeChart from "./GaugeChartLNO";
 import TableChart from "./TableChartLNO";
 import BarChart from "./BarChartLNO";
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
+import TableChartIcon from '@mui/icons-material/TableChart';
+import SpeedIcon from '@mui/icons-material/Speed';
+import { 
+  Box, 
+  Card, 
+  CardContent, 
+  Grid, 
+  Typography,
+  Paper,
+  Divider,
+  Chip,
 } from "@mui/material";
-
+import EqualizerIcon from "@mui/icons-material/Equalizer";
+import DonutLargeRoundedIcon from "@mui/icons-material/DonutLargeRounded";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import SchoolIcon from "@mui/icons-material/School";
 const LearningOutcomeBody = styled.div`
   padding-inline:2rem;
   display: flex;
@@ -28,7 +37,6 @@ const ChartContainer = styled.div`
 const ChartContainer1 = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content:space-between;
   gap: 1rem;
 `;
 
@@ -80,12 +88,67 @@ export default function StudentResultLNO({
         <ChartContainer1>
           {/* Biểu đồ cột đưa lên trên */}
           <ChartBox>
-            <TitleChart>Thống kê điểm</TitleChart>
+          <Box sx={{ mb: 0 }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                        
+                        <Box
+                          sx={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 2,
+                            background: "linear-gradient(135deg,rgba(51, 232, 34, 0.91) 0%,rgb(58, 237, 73) 100%)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "white",
+                          }}
+                        >
+                          <EqualizerIcon />
+                        </Box>
+
+                        <Box>
+                          <Typography variant="h6" fontWeight="700" color="#1e293b">
+                          Thống kê điểm
+                          </Typography>
+                          <Typography variant="body2" color="#64748b">
+                          Phân bố điểm của các cột điểm của sinh viên. Bao gồm các cột điểm như: đồ án, thực hành, giữa kỳ, cuối kỳ, tổng kết.
+                          </Typography>
+                        </Box>
+                      </Box>
+          </Box>
+            
             <BarChart studentGrade={studentGrade} />
           </ChartBox>
 
           <ChartBox>
-            <TitleChart>Điểm của sinh viên</TitleChart>
+          <Box sx={{ mb: 3 }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+                        
+                        <Box
+                          sx={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 2,
+                            background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "white",
+                          }}
+                        >
+                          <TableChartIcon />
+                        </Box>
+
+                        <Box>
+                          <Typography variant="h6" fontWeight="700" color="#1e293b">
+                          Điểm của sinh viên
+                          </Typography>
+                          <Typography variant="body2" color="#64748b">
+                          Bảng điểm chi tiết của một sinh viên. Bao gồm: đồ án, thực hành, giữa kỳ, cuối kỳ, tổng kết.
+                          </Typography>
+                        </Box>
+                      </Box>
+          </Box>
             <TableChart studentGrade={studentGrade} />
           </ChartBox>
         </ChartContainer1>
@@ -93,14 +156,38 @@ export default function StudentResultLNO({
 
       {/* Biểu đồ Gauge đưa xuống dưới */}
       <BarChartContainer1>
+
+        
         <BarChartBox>
-          <h3 style={{ textAlign: "left" }}>
-            Loại xếp hạng của sinh viên:
-            <span style={{ fontWeight: 500 }}>
-              {" "}
-              {studentGrade.classification}
-            </span>
-          </h3>
+
+        <Box sx={{ mb: 3 }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+                        
+                        <Box
+                          sx={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 2,
+                            background: "linear-gradient(135deg,rgb(222, 230, 70) 0%,rgb(222, 245, 50) 100%)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "white",
+                          }}
+                        >
+                          <SpeedIcon />
+                        </Box>
+
+                        <Box>
+                          <Typography variant="h6" fontWeight="700" color="#1e293b">
+                          Loại sinh viên: {studentGrade.classification}
+                          </Typography>
+                          <Typography variant="body2" color="#64748b">
+                          Phân loại đánh giá của một sinh viên. Bao gồm: kém, yếu, trung bình, khá, giỏi, xuất sắc.
+                          </Typography>
+                        </Box>
+                      </Box>
+          </Box>
           <MyGaugeChart value={studentGrade.totalGrade} />
         </BarChartBox>
       </BarChartContainer1>

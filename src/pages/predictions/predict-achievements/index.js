@@ -117,6 +117,18 @@ export default function PredictArchievement() {
     },
   ];
 
+  // Lấy danh sách môn học duy nhất từ classList
+  const subjectOptions = useMemo(() => {
+    if (!classList || classList.length === 0) return [];
+    const seen = new Set();
+    return classList.filter(item => {
+      if (!item.courseName) return false;
+      if (seen.has(item.courseName)) return false;
+      seen.add(item.courseName);
+      return true;
+    });
+  }, [classList]);
+
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       <PageHeader
@@ -126,7 +138,9 @@ export default function PredictArchievement() {
         variant="prediction"
         stats={[
           { label: "Tổng lớp", value: totalRecords },
+          { label: "Môn học", value: subjectOptions.length },
           { label: "Khóa học", value: academicYears.length },
+          { label: "Kỳ học", value: semesters.length },
         ]}
       />
 

@@ -85,6 +85,12 @@ export default function MainClassManagement() {
     }
     if (response.payload.success === true) {
       toast.success("Tạo dữ liệu Lớp/Khóa học thành công");
+      dispatch(clearClassList()); 
+      dispatch(fetchClassList({ instructorId: userId, page: 1, amount, search, academicYear: chosenAcademicYear, semester: chosenSemester }));
+      await dispatch(fetchAllFaculties({ instructorId: userId }));
+      await dispatch(fetchAllMajors({ instructorId: userId }));
+      await dispatch(fetchAllPrograms({ instructorId: userId }));
+      await dispatch(fetchAllCourses({ instructorId: userId }))
     } else {
       toast.error("Tạo dữ liệu thất bại! Hãy thử lại sau");
     }
@@ -108,7 +114,7 @@ export default function MainClassManagement() {
   const classFields = [
     { label: "ID lớp", key: "classId" },
     // { label: "ID khóa học", key: "classId"}, 
-    { label: "Tên lớp", key: "className"},
+    { label: "Tên lớp", key: "className" },
     { label: "Mã khóa học", key: "courseCode" },
     { label: "Tên khóa học", key: "courseName" },
     { label: "Học kỳ", key: "semester" },
@@ -120,7 +126,7 @@ export default function MainClassManagement() {
     { label: "Chuyên ngành", key: "majorName" },
     { label: "Khoa", key: "facultyName" },
     { label: "Thời gian tạo", key: "createdDate" },
-    { label: "Cập nhật", key: "updatedDate"},
+    { label: "Cập nhật", key: "updatedDate" },
   ]
 
   const editLabelMap = {
@@ -618,204 +624,204 @@ export default function MainClassManagement() {
         }}
         searchPlaceholder="Tìm kiếm..."
       />
-        {/* --- Tabs --- */}
-        <Tabs
-          value={tab}
-          onChange={handleTabChange}
-          indicatorColor="primary"
-          textColor="primary"
-          sx={{ marginTop: 2 }}
-        >
-          <Tab label="Lớp" />
-          <Tab label="Chương trình đào tạo" />
-          <Tab label="Khoa" />
-          <Tab label="Chuyên ngành" />
-          <Tab label="Khóa học" />
-        </Tabs>
-        {/* Table + Spinner Overlay */}
-        <div style={{ position: "relative", marginTop: 16 }}>
-          {tab === 0 && (
-            <Box position="relative">
-              <ClassTable
-                filteredRows={classList.map((row) => {
-                  return {
-                    ...row,
-                    numberStudent: row.numberStudent != null ? row.numberStudent : "--"
-                  };
-                })}
-                columns={columns}
-                handleDelete={handleDeleteRequest}
-                handleEdit={handleEdit}
-                handleViewStudent={handleViewStudent}
-                handleViewInformation={handleViewInformation}
-                onLoadMore={handleLoadMore}
-              />
-              {loading && (
-                <Box
-                  position="absolute"
-                  top={0}
-                  left={0}
-                  width="100%"
-                  height="100%"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  bgcolor="rgba(255,255,255,0.6)"
-                  zIndex={10}
-                >
-                  <CircularProgress size="50px" />
-                </Box>
-              )}
-            </Box>
-          )}
+      {/* --- Tabs --- */}
+      <Tabs
+        value={tab}
+        onChange={handleTabChange}
+        indicatorColor="primary"
+        textColor="primary"
+        sx={{ marginTop: 2 }}
+      >
+        <Tab label="Lớp" />
+        <Tab label="Chương trình đào tạo" />
+        <Tab label="Khoa" />
+        <Tab label="Chuyên ngành" />
+        <Tab label="Khóa học" />
+      </Tabs>
+      {/* Table + Spinner Overlay */}
+      <div style={{ position: "relative", marginTop: 16 }}>
+        {tab === 0 && (
+          <Box position="relative">
+            <ClassTable
+              filteredRows={classList.map((row) => {
+                return {
+                  ...row,
+                  numberStudent: row.numberStudent != null ? row.numberStudent : "--"
+                };
+              })}
+              columns={columns}
+              handleDelete={handleDeleteRequest}
+              handleEdit={handleEdit}
+              handleViewStudent={handleViewStudent}
+              handleViewInformation={handleViewInformation}
+              onLoadMore={handleLoadMore}
+            />
+            {loading && (
+              <Box
+                position="absolute"
+                top={0}
+                left={0}
+                width="100%"
+                height="100%"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                bgcolor="rgba(255,255,255,0.6)"
+                zIndex={10}
+              >
+                <CircularProgress size="50px" />
+              </Box>
+            )}
+          </Box>
+        )}
 
-          {tab === 1 && (
-            <Box position="relative">
-              <ProgramTable
-                rows={programs || []}
-                handleDelete={handleDeleteRequest}
-                handleEdit={handleEdit}
-              />
-              {loadingProgram && (
-                <Box
-                  position="absolute"
-                  top={0}
-                  left={0}
-                  width="100%"
-                  height="100%"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  bgcolor="rgba(255,255,255,0.6)"
-                  zIndex={10}
-                >
-                  <CircularProgress size="50px" />
-                </Box>
-              )}
-            </Box>
-          )}
+        {tab === 1 && (
+          <Box position="relative">
+            <ProgramTable
+              rows={programs || []}
+              handleDelete={handleDeleteRequest}
+              handleEdit={handleEdit}
+            />
+            {loadingProgram && (
+              <Box
+                position="absolute"
+                top={0}
+                left={0}
+                width="100%"
+                height="100%"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                bgcolor="rgba(255,255,255,0.6)"
+                zIndex={10}
+              >
+                <CircularProgress size="50px" />
+              </Box>
+            )}
+          </Box>
+        )}
 
-          {tab === 2 && (
-            <Box position="relative">
-              <FacultyTable
-                rows={faculties || []}
-                handleDelete={handleDeleteRequest}
-                handleEdit={handleEdit}
-              />
-              {loadingFaculty && (
-                <Box
-                  position="absolute"
-                  top={0}
-                  left={0}
-                  width="100%"
-                  height="100%"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  bgcolor="rgba(255,255,255,0.6)"
-                  zIndex={10}
-                >
-                  <CircularProgress size="50px" />
-                </Box>
-              )}
-            </Box>
-          )}
+        {tab === 2 && (
+          <Box position="relative">
+            <FacultyTable
+              rows={faculties || []}
+              handleDelete={handleDeleteRequest}
+              handleEdit={handleEdit}
+            />
+            {loadingFaculty && (
+              <Box
+                position="absolute"
+                top={0}
+                left={0}
+                width="100%"
+                height="100%"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                bgcolor="rgba(255,255,255,0.6)"
+                zIndex={10}
+              >
+                <CircularProgress size="50px" />
+              </Box>
+            )}
+          </Box>
+        )}
 
-          {tab === 3 && (
-            <Box position="relative">
-              <MajorTable
-                rows={majors || []}
-                handleDelete={handleDeleteRequest}
-                handleEdit={handleEdit}
-              />
-              {loadingMajor && (
-                <Box
-                  position="absolute"
-                  top={0}
-                  left={0}
-                  width="100%"
-                  height="100%"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  bgcolor="rgba(255,255,255,0.6)"
-                  zIndex={10}
-                >
-                  <CircularProgress size="50px" />
-                </Box>
-              )}
-            </Box>
-          )}
+        {tab === 3 && (
+          <Box position="relative">
+            <MajorTable
+              rows={majors || []}
+              handleDelete={handleDeleteRequest}
+              handleEdit={handleEdit}
+            />
+            {loadingMajor && (
+              <Box
+                position="absolute"
+                top={0}
+                left={0}
+                width="100%"
+                height="100%"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                bgcolor="rgba(255,255,255,0.6)"
+                zIndex={10}
+              >
+                <CircularProgress size="50px" />
+              </Box>
+            )}
+          </Box>
+        )}
 
-          {tab === 4 && (
-            <Box position="relative">
-              <CourseTab
-                rows={courses || []}
-                handleDelete={handleDeleteRequest}
-                handleEdit={handleEdit}
-              />
-              {loadingCourse && (
-                <Box
-                  position="absolute"
-                  top={0}
-                  left={0}
-                  width="100%"
-                  height="100%"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  bgcolor="rgba(255,255,255,0.6)"
-                  zIndex={10}
-                >
-                  <CircularProgress size="50px" />
-                </Box>
-              )}
-            </Box>
-          )}
-        </div>
-        {importFile ?
-          <ImportFileModal
-            open={importFile}
-            setOpen={setImportFile}
-            types={importTypes}
-            sampleLinks={[
-              "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565819/Course_Data_huy9kj.xlsx",
-              "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565819/All_f7u4fd.xlsx",
-            ]}
-            onImport={handleImport}
-          /> : null}
-        {modalInsert ?
-          <InsertModal
-            Modal={modalInsert}
-            setModal={setModalInsert}
-            faculties={faculties}
-            majors={majors}
-            programs={programs}
-            courses={courses}
-            onInsert={handleInsert}
-          /> : null}
-        {modalUpdate && !loading ?
-          <EditModal
-            title={tab === 0 ? "lớp" : tab === 1 ? "chương trình" : tab === 2 ? "khoa" : tab === 3 ? "chuyên ngành" : "khóa học"}
-            Modal={modalUpdate}
-            setModal={setModalUpdate}
-            fields={getEditFields()}
-            onSubmit={handleSubmitEdit} /> : null}
-        {openDetail && !loading &&
-          <DetailModal
-            open={openDetail}
-            onClose={() => setOpenDetail(false)}
-            title={"Thông tin lớp"}
-            fields={classFields}
-            entityData={_class} />}
-        {/* Confirm dialog */}
-        <ConfirmDialog
-          open={confirmOpen}
-          title={`Xác nhận xóa ${tab === 0 ? "lớp" : tab === 1 ? "chương trình" : tab === 2 ? "khoa" : tab === 3 ? "chuyên ngành" : "khóa học"}`}
-          content={`Bạn có chắc chắn muốn xóa ${tab === 0 ? "LỚP" : tab === 1 ? "CHƯƠNG TRÌNH" : tab === 2 ? "KHOA" : tab === 3 ? "CHUYÊN NGÀNH" : "KHÓA HỌC"} này không?`}
-          onClose={() => setConfirmOpen(false)}
-          onConfirm={handleDelete}
-        />
-      </Box>
-    );
+        {tab === 4 && (
+          <Box position="relative">
+            <CourseTab
+              rows={courses || []}
+              handleDelete={handleDeleteRequest}
+              handleEdit={handleEdit}
+            />
+            {loadingCourse && (
+              <Box
+                position="absolute"
+                top={0}
+                left={0}
+                width="100%"
+                height="100%"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                bgcolor="rgba(255,255,255,0.6)"
+                zIndex={10}
+              >
+                <CircularProgress size="50px" />
+              </Box>
+            )}
+          </Box>
+        )}
+      </div>
+      {importFile ?
+        <ImportFileModal
+          open={importFile}
+          setOpen={setImportFile}
+          types={importTypes}
+          sampleLinks={[
+            "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565819/Course_Data_huy9kj.xlsx",
+            "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565819/All_f7u4fd.xlsx",
+          ]}
+          onImport={handleImport}
+        /> : null}
+      {modalInsert ?
+        <InsertModal
+          Modal={modalInsert}
+          setModal={setModalInsert}
+          faculties={faculties}
+          majors={majors}
+          programs={programs}
+          courses={courses}
+          onInsert={handleInsert}
+        /> : null}
+      {modalUpdate && !loading ?
+        <EditModal
+          title={tab === 0 ? "lớp" : tab === 1 ? "chương trình" : tab === 2 ? "khoa" : tab === 3 ? "chuyên ngành" : "khóa học"}
+          Modal={modalUpdate}
+          setModal={setModalUpdate}
+          fields={getEditFields()}
+          onSubmit={handleSubmitEdit} /> : null}
+      {openDetail && !loading &&
+        <DetailModal
+          open={openDetail}
+          onClose={() => setOpenDetail(false)}
+          title={"Thông tin lớp"}
+          fields={classFields}
+          entityData={_class} />}
+      {/* Confirm dialog */}
+      <ConfirmDialog
+        open={confirmOpen}
+        title={`Xác nhận xóa ${tab === 0 ? "lớp" : tab === 1 ? "chương trình" : tab === 2 ? "khoa" : tab === 3 ? "chuyên ngành" : "khóa học"}`}
+        content={`Bạn có chắc chắn muốn xóa ${tab === 0 ? "LỚP" : tab === 1 ? "CHƯƠNG TRÌNH" : tab === 2 ? "KHOA" : tab === 3 ? "CHUYÊN NGÀNH" : "KHÓA HỌC"} này không?`}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+      />
+    </Box>
+  );
 }

@@ -32,7 +32,7 @@ import AddStudentModal from "@/components/StudentManagement/AddStudentModal";
 import StudentTable from "@/components/ClassManagement/StudentTable";
 import { useDispatch, useSelector } from "react-redux";
 import ImportFileModal from "@/components/ClassManagement/ImportFileModal";
-import { deleteStudentFromClass, fetchAllFaculties, fetchAllMajors, fetchAllPrograms, fetchStudentDetail, fetchStudentList, processFilePartly, processStudentData, fetchAllExam, fetchExamDetail, createExam, deleteExam, updateExam, fetchAllStudent, createStudent, processLearningOutcome } from "@/redux/thunk/dataThunk";
+import { deleteStudentFromClass, fetchAllFaculties, fetchAllMajors, fetchAllPrograms, fetchStudentDetail, fetchStudentList, processFilePartly, processStudentData, fetchAllExam, fetchExamDetail, createExam, deleteExam, updateExam, fetchAllStudent, createStudent, processLearningOutcome, updateStudent } from "@/redux/thunk/dataThunk";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
@@ -222,7 +222,7 @@ const ExamUpdateData =
 }
   ;
 
-const academicYear = ["2014-2018", "2015-2019", "2021-2025", "2022-2026"]
+
 
 export default function StudentDetailView({ onBack }) {
   const [MiniTab, setMiniTab] = useState(1);
@@ -343,10 +343,10 @@ export default function StudentDetailView({ onBack }) {
   }
 
 
-  //Tạo header
+  //Tạo header  
 
   const mapKeyToLabel = (key) => {
-    if (key === "assignmentName" || key === "quizName" || key === "finalExamName") return "Tên bài";
+    if (key === "assignmentName" || key === "quizName" || key === "finalExamName" || key ==="midtermName") return "Tên bài";
     if (key === "createdDate") return "Ngày tạo";
     if (key === "updatedDate") return "Ngày cập nhập";
     if (key === "identificationCode") return "MSSV";
@@ -362,12 +362,15 @@ export default function StudentDetailView({ onBack }) {
   };
 
   const SetHeader = (filteredRows) => {
+    if (!filteredRows || filteredRows.length === 0) {
+      return [];
+    }
 
     const rawKeys = Object.keys(
       filteredRows.reduce((a, b) =>
         Object.keys(a).length > Object.keys(b).length ? a : b
       )
-    ).filter(key => key !== "studentId" && key !== "quizId" && key !== "assignmentId" && key !== "finalExamId");
+    ).filter(key => key !== "studentId" && key !== "quizId" && key !== "assignmentId" && key !== "finalExamId" && key !== "midtermId");
 
     return rawKeys.map((key) => ({
       id: key,
@@ -377,18 +380,47 @@ export default function StudentDetailView({ onBack }) {
     }));
   }
 
+  
+
 
   const ColExamMidtermData = useMemo(() => {
-    if (midtermExams.length > 0) return SetHeader(midtermExams);
+    
+    if (midtermExams.length > 0) {
+      
+      const headers = SetHeader(midtermExams);
+      // Đưa "midtermName" lên đầu
+      headers.sort((a, b) => {
+        if (a.id === "midtermName") return -1;
+        if (b.id === "midtermName") return 1;
+        return 0;
+      });
+      return headers;
+    
+    };
 
     return [];
   }, [midtermExams])
 
+
+
   const ColExamFinalData = useMemo(() => {
-    if (finalExams.length > 0) return SetHeader(finalExams);
+    if (finalExams.length > 0) {
+
+      
+
+      const headers = SetHeader(finalExams);
+      // Đưa "midtermName" lên đầu
+      headers.sort((a, b) => {
+        if (a.id === "finalExamName") return -1;
+        if (b.id === "finalExamName") return 1;
+        return 0;
+      });
+      return headers;
+    };
 
     return [];
   }, [finalExams])
+
 
 
   const ColExamAssignmentData = useMemo(() => {
@@ -399,10 +431,26 @@ export default function StudentDetailView({ onBack }) {
 
 
   const ColExamQuizData = useMemo(() => {
-    if (quizzes.length > 0) return SetHeader(quizzes);
+    
+    // if (quizzes.length > 0) return SetHeader(quizzes);
+
+
+    const headers = SetHeader(quizzes);
+      // Đưa "midtermName" lên đầu
+      headers.sort((a, b) => {
+        if (a.id === "quizName") return -1;
+        if (b.id === "quizName") return 1;
+        return 0;
+      });
+      return headers;
+
 
     return [];
   }, [quizzes])
+
+  useEffect(()=>{
+    console.log("ColExamQuizData: ",ColExamQuizData)
+  },[ColExamFinalData])
 
   const ColStudentsAssignments = useMemo(() => {
     return SetHeader(studentsAssignments);
@@ -459,7 +507,7 @@ export default function StudentDetailView({ onBack }) {
   //OPTION EXAM TABLE HERE
 
   const handleEditExamClick = (examId, type) => {
-
+    
     setIsExamModal(true);
     setEditExamType(type);
 
@@ -482,7 +530,7 @@ export default function StudentDetailView({ onBack }) {
   const handleDeleteRequestExam = async () => {
     try {
       const response = await dispatch(deleteExam({ examId: selectedExam, type: ModeExam }));
-      console.log("response sau khi xoa: ", response);
+
 
       if (response?.type?.includes("fulfilled") && response.payload?.success) {
         toast.success(`Xóa thành công bài kiểm tra khỏi lớp`);
@@ -521,7 +569,9 @@ export default function StudentDetailView({ onBack }) {
   }
 
   const handleViewInformationExam = (examId, type) => {
-
+    
+    console.log(examId);
+    console.log(type);
     setIsViewDetailExamModal(true);
     setViewDetailExamType(type);
 
@@ -531,11 +581,11 @@ export default function StudentDetailView({ onBack }) {
     }))
 
 
+
   }
 
   const handleCreateExam = async (mode, examInfo) => {
     try {
-
       const response = await dispatch(createExam({ instructor_id: userId, class_id: classId, type: mode, payload: examInfo }));
 
       if (response.payload.success === true) {
@@ -545,8 +595,6 @@ export default function StudentDetailView({ onBack }) {
       } else {
         toast.error(`Thêm thất bại! Hãy thử lại sau`);
       }
-
-
     } catch {
       toast.error(`Thêm thất bại! Hãy thử lại sau`);
     } finally {
@@ -558,7 +606,31 @@ export default function StudentDetailView({ onBack }) {
   }
   //OPTION EXAM TABLE HERE
 
-  const handleUpdateStudent = async () => {
+  const handleUpdateStudent = async (studentId,payload) => {
+    
+    try {
+
+
+      const response = await dispatch(updateStudent({ studentId: studentId, classId: classId, payload }));
+     
+
+      if (response?.type?.includes("fulfilled") && response.payload?.success) {
+        toast.success(`Sửa sinh viên thành công`);
+        
+        
+        handleCloseEdit();
+        dispatch(clearStudentList());
+        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page:1, amount, search }));
+
+      } else {
+        console.warn("Response bị rejected hoặc không success:", response);
+        toast.error(`Sửa thất bại! Hãy thử lại sau`);
+      }
+    } catch (err) {
+      console.error("Lỗi trong handleDeleteRequestExam:", err);
+      toast.error(`Sửa thất bại! Hãy thử lại sau`);
+    }
+
 
   }
 
@@ -573,7 +645,6 @@ export default function StudentDetailView({ onBack }) {
   };
 
   const handleAddNewStudent = async (newStudent, GradeStudent) => {
-    console.log("Result : ", newStudent, GradeStudent);
     try {
       const response = await dispatch(
         createStudent({
@@ -585,10 +656,10 @@ export default function StudentDetailView({ onBack }) {
       )
 
       if (response.payload.success === true) {
-        toast.success(`Thêm thành công sinh viên ${mssv} khỏi lớp`);
+        toast.success(`Thêm thành công sinh viên ${newStudent.identificationCode} vào lớp`);
         dispatch(clearStudentList());
-        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: page + 1, amount, search }));
-        setIsAddModalOpen(false)
+        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page:1, amount, search }));
+        setIsAddModalOpen(false);
       } else {
         toast.error(`Mã sinh viên này đã tồn tại hoặc thêm thất bại!. Hãy thử lại sau`);
       }
@@ -653,15 +724,16 @@ export default function StudentDetailView({ onBack }) {
 
     if (response.payload.success === true) {
       toast.success(`Tạo dữ liệu ${type.toLowerCase()} thành công`);
-      dispatch(fetchStudentList({
-        classId,
-        type: showSummary ? "summary" : "information",
-        page: 1,
-        amount,
-        search
-      }));
+      if (type === "THông tin sinh viên" || type === "Tổng kết") {
+        // refetch student list after final note and student information
+        dispatch(clearStudentList());
+        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: 1, amount, search }));
+      } else {
+        // refetch all exam after create new exam
+        await dispatch(fetchAllExam({ instructor_id: userId, class_id: classId }));
+      }
     } else {
-      toast.error("Tạo dữ liệu thất bại! Hãy thữ lại sau");
+      toast.error(`Tạo dữ liệu ${type.toLowerCase()} thất bại! Hãy thữ lại sau`);
     }
     setImportFile(false);
   }
@@ -689,12 +761,6 @@ export default function StudentDetailView({ onBack }) {
 
   }, [classId, showSummary]);
 
-  // useEffect(()=>
-  //     {
-  //       console.log("activities: ",activities)
-  //       console.log("examInfo: ",examInfo)
-  //    }
-  //    ,[activities,examInfo ])
 
 
   return (
@@ -1076,6 +1142,7 @@ export default function StudentDetailView({ onBack }) {
           ]}
           onImport={handleImport}
         />}
+
       <AddStudentModal
         open={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}

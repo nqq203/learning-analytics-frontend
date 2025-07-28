@@ -160,9 +160,9 @@ export default function FilterItem({ category, onFilterChange, onClearFilter }){
 
 
     }
-    useEffect(() => {
-        console.log("value mới: ", value);
-      }, [value]);
+    // useEffect(() => {
+    //     console.log("value mới: ", value);
+    //   }, [value]);
 
 
     // useEffect(() => {

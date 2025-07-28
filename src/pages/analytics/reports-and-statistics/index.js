@@ -19,11 +19,13 @@ import { jwtDecode } from "jwt-decode";
 import PageHeader from "@/components/CommonStyles/PageHeader";
 import SearchFilters from "@/components/CommonStyles/SearchFilters";
 import SearchIcon from "@mui/icons-material/Search";
+import { fetchAllCourses } from "@/redux/thunk/dataThunk";
 
 const ClassesList = () => {
   const { totalRecords, classes, loading } = useSelector(
     (state) => state.analytics
   );
+  const { courses } = useSelector((state) => state.data);
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
   const [filterSubject, setFilterSubject] = useState("");
@@ -60,7 +62,7 @@ const ClassesList = () => {
   }, [classes]);
 
   const totalStudents = useMemo(() => {
-    
+
     return rows.length || totalRecords;
   }, [rows]);
 
@@ -102,6 +104,10 @@ const ClassesList = () => {
   };
 
   useEffect(() => {
+    dispatch(fetchAllCourses({ instructorId: userId }));
+  }, [userId]);
+
+  useEffect(() => {
     const fetchClasses = async () => {
       await dispatch(
         fetchClassesByLecturer({ userId: userId, page: page, amount: 10 })
@@ -112,7 +118,7 @@ const ClassesList = () => {
 
   useEffect(() => {
     if (!userId) return;
-    
+
     dispatch(
       searchClasses({
         search: filters.search,
@@ -173,6 +179,7 @@ const ClassesList = () => {
   };
 
   const columns = [
+    { id: "classId", label: "ID Lớp", align: "center" },
     { id: "courseName", label: "Môn học", align: "left" },
     { id: "className", label: "Lớp", align: "left" },
     { id: "academicYear", label: "Khóa", align: "center" },
@@ -185,9 +192,9 @@ const ClassesList = () => {
       key: "subject",
       label: "Môn học",
       value: filterSubject,
-      options: subjectOptions.map(subject => ({
-        value: subject.id,
-        label: subject.name
+      options: courses?.map(course => ({
+        value: course.courseId,
+        label: course.courseName
       })),
       minWidth: 200,
     },
@@ -211,8 +218,8 @@ const ClassesList = () => {
         icon="analytics"
         variant="analytics"
         stats={[
-          { label: "Tổng lớp", value: totalStudents },
-          { label: "Môn học", value: subjectOptions.length },
+          { label: "Tổng lớp", value: totalRecords },
+          { label: "Môn học", value: courses?.length },
         ]}
       />
 
@@ -226,7 +233,7 @@ const ClassesList = () => {
             setFilterSubject(value);
             updateFilter("subject", value);
           } else if (key === "className") {
-            setFilterClass(value);cl
+            setFilterClass(value);
             updateFilter("className", value);
           }
         }}
@@ -237,14 +244,13 @@ const ClassesList = () => {
       <Paper
         elevation={0}
         sx={{
-          p: 3,
           border: '1px solid #e5e7eb',
           borderRadius: 2,
         }}
       >
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ p: 3, pb: 0 }}>
           <Typography variant="h6" fontWeight={600} color="text.primary">
-          Tổng số lớp hiển thị: {totalRecords}
+            Tổng số lớp hiển thị: {totalRecords}
           </Typography>
         </Box>
 
