@@ -456,7 +456,7 @@ const Sidebar = ({
                   "/predictions/fraud-detection"
                 )}
               >
-                PHÁT HIỆN GIAN LẬN
+                PHÁT HIỆN BẤT THƯỜNG
               </NavText>
             </SubNavItem>
           </Link>
@@ -480,7 +480,7 @@ const Sidebar = ({
                   "/predictions/predict-achievements"
                 )}
               >
-                DỰ ĐOÁN THÀNH TÍCH
+                DỰ ĐOÁN ĐIỂM SỐ
               </NavText>
             </SubNavItem>
           </Link>

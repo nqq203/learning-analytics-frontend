@@ -1,10 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk } from '../thunk/compareThunk';
+import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk,fetchCompareByCourse,fetchCompareByClassNew} from '../thunk/compareThunk';
 
 const initialState = {
   compareResults: null,
   loading: false,
   error: null,
+  course:[],
+  classesNew:[],
+  totalRecords:0,
 };
 
 const compareSlice = createSlice({
@@ -37,7 +40,37 @@ const compareSlice = createSlice({
       .addCase(fetchCompareByCohortsThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+
+
+      .addCase(fetchCompareByCourse.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCompareByCourse.fulfilled, (state, action) => {
+        state.loading = false;
+        state.course = action.payload.data.items;
+        state.totalRecords = action.payload.data.totalRecords;
+      })
+      .addCase(fetchCompareByCourse.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+
+      .addCase(fetchCompareByClassNew.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCompareByClassNew.fulfilled, (state, action) => {
+        state.loading = false;
+        state.classesNew = action.payload.data.classesList;
+        state.totalRecords = action.payload.data.totalRecords;
+      })
+      .addCase(fetchCompareByClassNew.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
   },
 });
 

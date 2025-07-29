@@ -28,7 +28,7 @@ const features = [
     link: "/analytics/reports-and-statistics",
   },
   {
-    title: "Dự Đoán Thành Tích",
+    title: "Dự Đoán Điểm Số",
     description:
       "Dự đoán kết quả học tập trong tương lai dựa trên dữ liệu hiện tại.",
     icon: BatchPredictionIcon,
@@ -38,7 +38,7 @@ const features = [
     link: "/predictions/predict-achievements",
   },
   {
-    title: "Phát Hiện Gian Lận",
+    title: "Phát Hiện Bất Thường",
     description:
       "Phân tích hành vi bất thường để phát hiện các dấu hiệu gian lận.",
     icon: SecurityIcon,

@@ -132,7 +132,7 @@ export default function PredictArchievement() {
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       <PageHeader
-        title="Dự đoán thành tích"
+        title="Dự đoán điểm số"
         subtitle="Phân tích và dự đoán kết quả học tập của sinh viên"
         icon="prediction"
         variant="prediction"

@@ -6,6 +6,7 @@ import TableChart from "./TableChartLNO";
 import BarChart from "./BarChartLNO";
 import TableChartIcon from '@mui/icons-material/TableChart';
 import SpeedIcon from '@mui/icons-material/Speed';
+
 import { 
   Box, 
   Card, 
@@ -21,15 +22,19 @@ import DonutLargeRoundedIcon from "@mui/icons-material/DonutLargeRounded";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import SchoolIcon from "@mui/icons-material/School";
 const LearningOutcomeBody = styled.div`
-  padding-inline:2rem;
   display: flex;
   flex-direction: column;
+  padding-inline:1rem;
+  align-items:center;
+  justify-content:center;
+  
   gap: 1rem;
   margin-top:1rem;
   `;
 
 const ChartContainer = styled.div`
   width: 100%;
+  
   display: flex;
   flex-direction: column;
 `;
@@ -43,8 +48,8 @@ const ChartContainer1 = styled.div`
 const ChartBox = styled.div`
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
   background-color: white;
-  width: 47%;
-  padding: 1rem;
+  width: 50%;
+  padding: 1.1rem;
   text-align: center;
   border-radius: 10px;
 `;
@@ -155,42 +160,45 @@ export default function StudentResultLNO({
       </ChartContainer>
 
       {/* Biểu đồ Gauge đưa xuống dưới */}
-      <BarChartContainer1>
+      <ChartContainer>
 
         
-        <BarChartBox>
+        <ChartContainer1>
+          <ChartBox>
+            <Box sx={{ mb: 0 }}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+                          
+                          <Box
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: 2,
+                              background: "linear-gradient(135deg,rgb(222, 230, 70) 0%,rgb(222, 245, 50) 100%)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              color: "white",
+                            }}
+                          >
+                            <SpeedIcon />
+                          </Box>
 
-        <Box sx={{ mb: 3 }}>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-                        
-                        <Box
-                          sx={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: 2,
-                            background: "linear-gradient(135deg,rgb(222, 230, 70) 0%,rgb(222, 245, 50) 100%)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: "white",
-                          }}
-                        >
-                          <SpeedIcon />
+                          <Box>
+                            <Typography variant="h6" fontWeight="700" color="#1e293b">
+                            Loại sinh viên: {studentGrade.classification}
+                            </Typography>
+                            <Typography variant="body2" color="#64748b">
+                            Phân loại đánh giá của một sinh viên. Bao gồm: kém, yếu, trung bình, khá, giỏi, xuất sắc.
+                            </Typography>
+                          </Box>
                         </Box>
-
-                        <Box>
-                          <Typography variant="h6" fontWeight="700" color="#1e293b">
-                          Loại sinh viên: {studentGrade.classification}
-                          </Typography>
-                          <Typography variant="body2" color="#64748b">
-                          Phân loại đánh giá của một sinh viên. Bao gồm: kém, yếu, trung bình, khá, giỏi, xuất sắc.
-                          </Typography>
-                        </Box>
-                      </Box>
-          </Box>
-          <MyGaugeChart value={studentGrade.totalGrade} />
-        </BarChartBox>
-      </BarChartContainer1>
+            </Box>
+            <div style={{width:"100%",display:"flex",justifyContent:"center",alignItems:"center"}}>
+              <MyGaugeChart value={studentGrade.totalGrade} />
+            </div>
+          </ChartBox>
+        </ChartContainer1>
+      </ChartContainer>
     </LearningOutcomeBody>
   );
 }
