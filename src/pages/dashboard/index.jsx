@@ -342,7 +342,7 @@ export default function DashboardPage() {
                 },
               }}
             >
-              <AvgScoreChart data={avgScoreChart} />
+              <AvgScoreChart data={avgScoreChart} selectedSubject={selectedSubject} selectedYear={selectedYear} />
             </Paper>
           </Grid>
           <Grid item xs={12} lg={6}>
