@@ -12,6 +12,7 @@ import {
   Add,
   FileDownload,
 } from "@mui/icons-material";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useRouter } from "next/router";
 import ClassTable from "@/components/ClassManagement/ClassTable";
 import InsertModal from "@/components/ClassManagement/InsertModal";
@@ -587,7 +588,7 @@ export default function MainClassManagement() {
             </Button>
             <Button
               variant="outlined"
-              startIcon={<FileDownload />}
+              startIcon={<CloudUploadIcon />}
               onClick={() => setImportFile(true)}
               disabled={loading}
               sx={{

@@ -21,7 +21,7 @@ import {
 } from "@mui/icons-material";
 import Menu from '@mui/material/Menu';
 import AddQuizModal from "@/components/StudentManagement/AddQuizModal";
-
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 import EditExamModal from "@/components/StudentManagement/Update/EditExamModal";
 
@@ -841,7 +841,7 @@ export default function StudentDetailView({ onBack }) {
             variant="contained"
             color="primary"
             onClick={() => setImportFile(true)}
-            startIcon={<FileDownload />}
+            startIcon={<CloudUploadIcon />}
             disabled={loading}
           >
             Tải file

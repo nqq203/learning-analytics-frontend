@@ -15,20 +15,25 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TextField,
+  InputAdornment,
+  IconButton,
   TableRow,
   Paper,
   Chip,
 } from "@mui/material";
-
+import { Search, FilterList, Clear } from '@mui/icons-material';
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { TableWrapper } from "@/components/Analytics/Styles/Styles";
-import CompareResult from "../compare/compareResult/CompareResult";
+import CompareResult from "./compareResult/CompareResult";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
-import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk } from "@/redux/thunk/compareThunk";
+import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk,fetchCompareByClassNew,fetchCompareByCourse } from "@/redux/thunk/compareThunk";
 import PageHeader from "@/components/CommonStyles/PageHeader";
 import { useRouter } from 'next/router';
 import { fetchAllCourses } from "@/redux/thunk/dataThunk";
+import { useNavigate } from "react-router-dom";
 
 const Compare = () => {
   const initialState = {
@@ -36,12 +41,17 @@ const Compare = () => {
     selectedRows: [],
     isComparing: false,
   };
+
+  
+    
   const [selectedSubject, setSelectedSubject] = useState(initialState.selectedSubject);
   const [selectedRows, setSelectedRows] = useState(initialState.selectedRows);
   const [isComparing, setIsComparing] = useState(initialState.isComparing);
   const [compareKey, setCompareKey] = useState(Date.now());
   const [pageKey, setPageKey] = useState(0);
-
+  const router = useRouter();
+  const { classId } = router.query;
+  
   const resetCompareState = () => {
     setSelectedSubject(initialState.selectedSubject);
     setSelectedRows(initialState.selectedRows);
@@ -49,18 +59,36 @@ const Compare = () => {
     setCompareKey(Date.now());
   };
 
+  const [searchValue,setSearchValue] = useState("")
+  const [searchKeyWord,setSearchKeyWord] = useState("")
 
-  const [page, setPage] = useState(1);
+  const handleKeyDown = (e)=>{
+    if (e.key === 'Enter') {
+      setSearchKeyWord(searchValue)
+    }
+  }
 
 
   const dispatch = useDispatch();
-  const { compareResults, compareLoading, compareError } = useSelector((state) => state.compare);
+  const { compareResults, compareLoading, compareError,loading,totalRecords,course } = useSelector((state) => state.compare);
   const { accessToken } = useSelector(state => state.auth);
-  const { classes, totalRecords, loading } = useSelector((state) => state.analytics);
+  // const { classes, totalRecords, loading } = useSelector((state) => state.analytics);
   const { courses } = useSelector((state) => state.data);
+  
+  useEffect(()=>{
+    dispatch(fetchCompareByCourse({
+      instructor_id:1,
+      search:null
+    }))
+    
+  },[])
 
-  const router = useRouter();
 
+  useEffect(()=>{
+    
+    console.log("course: ",course)
+  },[course])
+  
   useEffect(() => {
     const handleRouteChange = (url) => {
       if (!url.includes('/analytics/compare')) {
@@ -113,125 +141,30 @@ const Compare = () => {
 
 
   useEffect(() => {
-    if (page === 1) {
-      setRows(classes);
-    } else {
-      setRows((prev) => [...prev, ...classes]);
-    }
-  }, [classes]);
+    
+      setRows(course??[]);
+    
+  }, [course]);
 
 
   // const rows = useMemo(() => classes || [], [classes]);
-
-  const handleSubjectChange = (e) => {
-    setSelectedSubject(e.target.value);
-    setSelectedRows([]);
-  };
-
-  const handleSelectRow = (rowNo) => {
-    const selectedItem = rows.find(r => r.no === rowNo);
-    if (!selectedItem) return;
-
-    setSelectedRows((prev) =>
-      prev.includes(rowNo) ? prev.filter((no) => no !== rowNo) : [...prev, rowNo]
-    );
-  };
-
-  const isCompareEnabled = () => selectedRows.length >= 2;
-
-
-  useEffect(()=>{
-    console.log("selectedRows: ",selectedRows)
-
-  },[selectedRows])
-  const handleCompareClick = async () => {
-
-    const selectedItems = rows.filter(row => selectedRows.includes(row.no));
-    console.log("AFTER selectedItems: ",selectedItems)
-
-
-    if (selectedItems.length < 2) {
-      alert("Cần chọn ít nhất 2 lớp để so sánh.");
-      return;
-    }
-
-    try {
-      const classIds = selectedItems.map(row => String(row.classId));
-      const payload = { class_ids: classIds };
-      await dispatch(fetchCompareByClassesThunk(payload));
-      setCompareKey(Date.now());
-      setIsComparing(true);
-    } catch (error) {
-      console.error("Lỗi khi gửi yêu cầu so sánh:", error);
-    }
-  };
-
-  const handleBack = () => {
-    resetCompareState();
-  };
-
-  useEffect(() => {
-    // console.log(compareResults)
-    if (compareResults && !compareLoading && !compareError) {
-      setIsComparing(true);
-    } else if (compareError) {
-      console.error("Lỗi khi so sánh:", compareError);
-      alert("Đã xảy ra lỗi khi so sánh: " + (compareError.message || ""));
-    }
-  }, [compareResults, compareLoading, compareError]);
 
 
 
   useEffect(() => {
     if (userId) {
-      dispatch(fetchClassesByLecturer({ userId, page: page, amount: 10 }));
+      dispatch(fetchCompareByCourse({ instructor_id: userId,search:searchKeyWord}));
     }
-  }, [dispatch, userId, page]);
+  }, [dispatch, userId,searchKeyWord]);
 
-
-
-  const handleLoadMore = () => {
-    if (!loading && rows.length < totalRecords) {
-      setPage((prev) => prev + 1);
-    }
-  };
-
-  const [isFetching, setIsFetching] = useState(false);
-
-  const handleScroll = (e) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.target;
-    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
-
-    if (isAtBottom && !isFetching && !loading) {
-      setIsFetching(true);
-      handleLoadMore();
-    }
-  };
-
-
-  useEffect(() => {
-    if (!loading) {
-      setIsFetching(false);
-    }
-  }, [classes, loading]);
-
-  useEffect(() => {
-    dispatch(fetchAllCourses({ instructorId: userId }));
-  }, [userId]);
-
-
-  if (isComparing) {
-    // console.log(compareResults.data)
-    return (
-      <CompareResult
-        key={compareKey}
-        data={compareResults.data}
-        mode="class"
-        onBack={handleBack}
-      />
-    );
+  
+  const handleActions = (courseId)=>{
+    if(courseId)
+        router.push(`/analytics/compare/${courseId}`)
   }
 
+
+  
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       <PageHeader
@@ -240,9 +173,9 @@ const Compare = () => {
         icon="analytics"
         variant="analytics"
         stats={[
-          { label: "Tổng lớp", value: totalRecords },
-          { label: "Môn học", value: courses?.length },
-          { label: "Đã chọn", value: selectedRows.length },
+          { label: "Tổng môn", value: totalRecords }
+        //   { label: "Môn học", value: courses?.length },
+        //   { label: "Đã chọn", value: selectedRows.length },
         ]}
       />
 
@@ -256,79 +189,53 @@ const Compare = () => {
           background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
         }}
       >
-        <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth size="small">
-              <InputLabel shrink>Môn học</InputLabel>
-              <Select
-                label="Môn học"
-                value={selectedSubject}
-                onChange={handleSubjectChange}
-                displayEmpty
-                renderValue={selected => {
-                  if (!selected) {
-                    return <em>Tất cả</em>;
-                  }
-                  return selected;
-                }}
-              >
-                <MenuItem value="">
-                  <em>Tất cả</em>
-                </MenuItem>
-                {[...new Set(rows.map((item) => item.courseName))]
-                  .filter(subject => subject)
-                  .map((subject) => (
-                    <MenuItem key={subject} value={subject}>
-                      {subject}
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' } }}>
-            <Button
-              fullWidth={false}
-              variant="contained"
-              disabled={!isCompareEnabled()}
-              onClick={handleCompareClick}
-              sx={{
-                minWidth: 160,
-                bgcolor: '#1e3a8a',
-                '&:hover': {
-                  bgcolor: '#1e40af',
-                },
-                '&:disabled': {
-                  bgcolor: '#9ca3af',
-                },
-              }}
-            >
-              So sánh ({selectedRows.length})
-            </Button>
-          </Grid>
-        </Grid>
+        <Grid container spacing={1} alignItems="center">
+         
 
-        {selectedRows.length > 0 && (
-          <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
-              Đã chọn:
-            </Typography>
-            {selectedRows.map((rowNo) => {
-              const item = rows.find(r => r.no === rowNo);
-              return item ? (
-                <Chip
-                  key={rowNo}
-                  label={`${item.className} (${item.courseName})`}
-                  size="small"
+             <TextField
+          variant="outlined"
+          placeholder="Nhập từ khóa tìm kiếm"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          size="small"
+          sx={{
+            flex: 1,
+            minWidth: 300,
+            '& .MuiOutlinedInput-root': {
+              bgcolor: 'white',
+              '&:hover fieldset': {
+                borderColor: '#3b82f6',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#1e3a8a',
+              },
+            },
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={()=>{setSearchKeyWord(searchValue)}}
                   sx={{
-                    bgcolor: '#e0e7ff',
-                    color: '#3730a3',
-                    fontWeight: 500,
+                    color: '#1e3a8a',
+                    '&:hover': {
+                      bgcolor: 'rgba(30, 58, 138, 0.1)',
+                    },
                   }}
-                />
-              ) : null;
-            })}
-          </Box>
-        )}
+                >
+                  <Search />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+
+
+
+          </Grid>
+          
+        
       </Paper>
 
       {/* Table */}
@@ -348,20 +255,18 @@ const Compare = () => {
           <TableContainer
             component={Paper}
             style={{ maxHeight: "550px", overflow: "auto" }}
-            onScroll={handleScroll}
+            // onScroll={handleScroll}
 
           >
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >STT</TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >ID Lớp</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >ID Môn</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Môn</TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Lớp</TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Khóa</TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Số sinh viên</TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Tỷ lệ đậu (%)</TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Chọn</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Loại Môn</TableCell>
+                  
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Chi tiết</TableCell>
                 </TableRow>
               </TableHead>
 
@@ -377,34 +282,18 @@ const Compare = () => {
                         },
                       }}
                     >
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.no}</TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.classId}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{index+1}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.courseCode}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.courseName}</TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.className}</TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.academicYear}</TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.totalStudents}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.courseType}</TableCell>
+                    
+                     
+                      
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                        <Chip
-                          label={`${item.passRate}%`}
-                          size="small"
-                          sx={{
-                            bgcolor: item.passRate >= 80 ? '#dcfce7' : item.passRate >= 60 ? '#fef3c7' : '#fee2e2',
-                            color: item.passRate >= 80 ? '#166534' : item.passRate >= 60 ? '#92400e' : '#991b1b',
-                            fontWeight: 600,
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                        <input
-                          type="checkbox"
-                          disabled={selectedRows.length > 6 && !selectedRows.includes(item.no)}
-                          checked={selectedRows.includes(item.no)}
-                          onChange={() => handleSelectRow(item.no)}
-                          style={{
-                            width: '18px',
-                            height: '18px',
-                            accentColor: '#1e3a8a',
-                          }}
+                         <VisibilityIcon
+                            color="primary"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => handleActions(item.courseId)}
                         />
                       </TableCell>
                     </TableRow>

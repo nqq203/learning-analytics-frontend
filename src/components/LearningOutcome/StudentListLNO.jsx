@@ -119,7 +119,7 @@ export default function StudentListLNO({ TableContent, TableHeader, setStudentID
                                             {action &&
                                                 (
                                                     <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                                                        <TroubleshootIcon
+                                                        <VisibilityIcon
                                                             color="primary"
                                                             style={{ cursor: "pointer" }}
 

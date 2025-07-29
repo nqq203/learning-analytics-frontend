@@ -24,3 +24,27 @@ export const fetchCompareByCohortsThunk = createAsyncThunk(
     }
   }
 );
+
+export const fetchCompareByCourse = createAsyncThunk(
+  "compare/fetchCompareByCourse",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await compareApi.fetchCompareByCourse(payload);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const fetchCompareByClassNew = createAsyncThunk(
+  "compare/fetchCompareByClassNew",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await compareApi.fetchCompareByClassNew(payload);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
