@@ -75,19 +75,19 @@ const Compare = () => {
   // const { classes, totalRecords, loading } = useSelector((state) => state.analytics);
   const { courses } = useSelector((state) => state.data);
   
-  useEffect(()=>{
-    dispatch(fetchCompareByCourse({
-      instructor_id:1,
-      search:null
-    }))
+  // useEffect(()=>{
+  //   dispatch(fetchCompareByCourse({
+  //     instructor_id:1,
+  //     search:null
+  //   }))
     
-  },[])
+  // },[])
 
 
-  useEffect(()=>{
+  // useEffect(()=>{
     
-    console.log("course: ",course)
-  },[course])
+  //   console.log("course: ",course)
+  // },[course])
   
   useEffect(() => {
     const handleRouteChange = (url) => {
@@ -189,7 +189,7 @@ const Compare = () => {
           background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
         }}
       >
-        <Grid container spacing={1} alignItems="center">
+        <Grid container >
          
 
              <TextField
