@@ -95,6 +95,7 @@ export default function DashboardPage() {
     academicRankData,
     avgScoreChart,
     riskStudentData,
+    passFailData,
     cardsData,
     loading,
   } = useSelector((state) => state.dashboard);
@@ -341,7 +342,7 @@ export default function DashboardPage() {
                 },
               }}
             >
-              <AvgScoreChart data={avgScoreChart} />
+              <AvgScoreChart data={avgScoreChart} selectedSubject={selectedSubject} selectedYear={selectedYear} />
             </Paper>
           </Grid>
           <Grid item xs={12} lg={6}>
@@ -360,7 +361,7 @@ export default function DashboardPage() {
                 },
               }}
             >
-              <RiskStudentChart data={riskStudentData} />
+              <RiskStudentChart data={passFailData} />
             </Paper>
           </Grid>
         </Grid>

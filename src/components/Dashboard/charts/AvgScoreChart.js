@@ -14,16 +14,8 @@ import {
   Divider,
 } from "@mui/material";
 import { useState, useMemo } from "react";
-import {
-  LineChart as RechartsLineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
+import dynamic from "next/dynamic";
+const PlotlyBoxPlot = dynamic(() => import("./PlotlyBoxPlot"), { ssr: false });
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 
@@ -85,164 +77,308 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export function AvgScoreChart({ data = [] }) {
+export function AvgScoreChart({ data = [], selectedSubject = '', selectedYear = '' }) {
   const theme = useTheme();
-
-  const [subject, setSubject] = useState("");
-  const [scoreType, setScoreType] = useState("Trung bình");
   const [scale, setScale] = useState(10);
 
-  const filteredData = useMemo(() => {
-    return data; // tùy chọn thêm lọc nếu muốn
-  }, [data]);
+  const isSubjectFilter = !!selectedSubject;
+  const isYearFilter = !!selectedYear;
 
-  const subjects = [...new Set(data.map((d) => d.subject))];
-  const scoreTypes = [...new Set(data.map((d) => d.type))];
+  const createMultiLineLabel = (text, maxCharsPerLine = 15) => {
+    if (text.length <= maxCharsPerLine) return text;
+    
+    const words = text.split(" ");
+    const lines = [];
+    let currentLine = "";
 
-  if (!filteredData.length) return null;
+    words.forEach((word) => {
+      if ((currentLine + " " + word).trim().length > maxCharsPerLine) {
+        if (currentLine.trim()) lines.push(currentLine.trim());
+        currentLine = word;
+      } else {
+        currentLine += " " + word;
+      }
+    });
+    if (currentLine.trim()) lines.push(currentLine.trim());
+
+    return lines.join('<br>');
+  };
+
+  let xLabels = [];
+  let boxPlotData = [];
+
+  if (isSubjectFilter && !isYearFilter) {
+    // Filter theo môn: trục hoành là lớp, show điểm trung bình các lớp của môn đó
+    xLabels = data.map((d) => d.name);
+    boxPlotData = [{
+      y: data.map((d) => d.value),
+      x: xLabels,
+      name: 'Điểm TB',
+      type: 'box',
+      boxpoints: 'all',
+      jitter: 0.5,
+      whiskerwidth: 0.2,
+      marker: { size: 4, color: '#3b82f6' },
+      line: { width: 2, color: '#1d4ed8' },
+      hoverinfo: 'y+name',
+      hovertemplate: '<b>%{x}</b><br>Điểm TB: %{y}<extra></extra>'
+    }];
+  } else if (!isSubjectFilter && isYearFilter) {
+    // Filter theo khoá: trục hoành là môn, show điểm trung bình các môn theo khoá
+    xLabels = data.map((d) => d.name);
+    boxPlotData = [{
+      y: data.map((d) => d.value),
+      x: xLabels,
+      name: 'Điểm TB',
+      type: 'box',
+      boxpoints: 'all',
+      jitter: 0.5,
+      whiskerwidth: 0.2,
+      marker: { size: 4, color: '#3b82f6' },
+      line: { width: 2, color: '#1d4ed8' },
+      hoverinfo: 'y+name',
+      hovertemplate: '<b>%{x}</b><br>Điểm TB: %{y}<extra></extra>'
+    }];
+  } else if (isSubjectFilter && isYearFilter) {
+    // Filter cả 2: trục hoành là lớp, show điểm trung bình các lớp của môn đó, chỉ lấy các lớp thuộc khoá đã chọn
+    xLabels = data.map((d) => d.name);
+    boxPlotData = [{
+      y: data.map((d) => d.value),
+      x: xLabels,
+      name: 'Điểm TB',
+      type: 'box',
+      boxpoints: 'all',
+      jitter: 0.5,
+      whiskerwidth: 0.2,
+      marker: { size: 4, color: '#3b82f6' },
+      line: { width: 2, color: '#1d4ed8' },
+      hoverinfo: 'y+name',
+      hovertemplate: '<b>%{x}</b><br>Điểm TB: %{y}<extra></extra>'
+    }];
+  } else {
+    // Không filter: trục hoành là môn, show điểm trung bình các môn
+    xLabels = data.map((d) => d.name);
+    boxPlotData = [{
+      y: data.map((d) => d.value),
+      x: xLabels,
+      name: 'Điểm TB',
+      type: 'box',
+      boxpoints: 'all',
+      jitter: 0.5,
+      whiskerwidth: 0.2,
+      marker: { size: 4, color: '#3b82f6' },
+      line: { width: 2, color: '#1d4ed8' },
+      hoverinfo: 'y+name',
+      hovertemplate: '<b>%{x}</b><br>Điểm TB: %{y}<extra></extra>'
+    }];
+  }
+
+  if (!data.length) {
+    return (
+      <Box sx={{ height: '100%' }}>
+        <Box sx={{ mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+            <Box
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: 2,
+                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+              }}
+            >
+              <ShowChartIcon />
+            </Box>
+            <Box>
+              <Typography variant="h6" fontWeight="700" color="#1e293b">
+                Phân bố điểm tổng kết
+              </Typography>
+              <Typography variant="body2" color="#64748b">
+                Hiển thị điểm tổng kết theo từng khóa, môn.
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+
+        <Box sx={{ height: 350, mb: 3, position: "relative" }}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              position: "absolute",
+              top: 2,    
+              left: 15,    
+              fontSize: 12,
+              color: "#64748b",
+              zIndex: 1,
+              fontWeight: "bold",
+            }}
+          >
+            Điểm
+          </Typography>
+          <PlotlyBoxPlot
+            data={[]}
+            layout={{
+              title: 'Phân bố điểm',
+              dragmode: false,
+              hovermode: 'closest',
+              yaxis: {
+                title: {
+                  text: '',
+                  font: { size: 14, color: '#64748b', weight: 'bold' },
+                  standoff: 0,
+                  y: 1.05
+                },
+                range: [0, 10],
+                dtick: 1,
+                zeroline: false,
+                gridcolor: '#e2e8f0',
+                tickfont: { color: '#64748b', size: 12 },
+                titlefont: { size: 14, color: '#64748b' },
+                fixedrange: true,
+              },
+              xaxis: {
+                title: isSubjectFilter ? 'Lớp' : 'Môn',
+                tickfont: { color: '#64748b', size: 12 },
+                titlefont: { size: 14, color: '#64748b' },
+                showgrid: false,
+                categoryorder: 'array',
+                categoryarray: [],
+                fixedrange: true,
+                tickangle: 0,
+                tickmode: 'array',
+                ticktext: [],
+                tickvals: [],
+              },
+              boxmode: 'group',
+              plot_bgcolor: 'white',
+              paper_bgcolor: 'white',
+              margin: { t: 40, r: 30, l: 50, b: 100 },
+              legend: { orientation: 'h', y: -0.2 },
+            }}
+            config={{ 
+              responsive: true, 
+              displayModeBar: false,
+              modeBarButtonsToRemove: ['zoom', 'pan', 'select', 'lasso2d', 'resetScale2d'],
+              scrollZoom: false,
+              displaylogo: false,
+              toImageButtonOptions: {
+                format: 'png',
+                filename: 'chart',
+                height: 500,
+                width: 700,
+                scale: 1
+              }
+            }}
+            style={{ width: '100%', height: '100%' }}
+          />
+        </Box>
+      </Box>
+    );
+  }
 
   return (
-    <Box sx={{ height: "100%" }}>
-      {/* Header */}
+    <Box sx={{ height: '100%' }}>
       <Box sx={{ mb: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
           <Box
             sx={{
               width: 40,
               height: 40,
               borderRadius: 2,
-              background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
+              background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
             }}
           >
             <ShowChartIcon />
           </Box>
           <Box>
             <Typography variant="h6" fontWeight="700" color="#1e293b">
-            Điểm trung bình theo khóa
+            Phân bố điểm tổng kết
             </Typography>
             <Typography variant="body2" color="#64748b">
-            Hiển thị xu hướng điểm số theo từng khóa và môn học.
+              Hiển thị điểm tổng kết theo từng khóa, môn.
             </Typography>
           </Box>
         </Box>
       </Box>
 
       {/* Chart */}
-      <Box sx={{ height: 320, mb: 3 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <RechartsLineChart
-            data={filteredData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
-          >
-            <CartesianGrid 
-              strokeDasharray="3 3" 
-              stroke="#e2e8f0"
-              opacity={0.6}
-            />
-            <XAxis
-              dataKey="year"
-              label={{
-                value: "Khóa",
-                position: "insideBottomRight",
-                offset: -10,
-                style: { fill: "#64748b", fontSize: 12, fontWeight: "bold" },
-              }}
-              tick={{ fill: "#64748b", fontSize: 12 }}
-              axisLine={{ stroke: "#e2e8f0" }}
-              tickLine={{ stroke: "#e2e8f0" }}
-            />
-            <YAxis
-              domain={[0, scale]}
-              ticks={Array.from({ length: scale + 1 }, (_, i) => i)}
-              tick={CustomYAxisLabel}
-              axisLine={{ stroke: "#e2e8f0" }}
-              tickLine={{ stroke: "#e2e8f0" }}
-              style={{ fontWeight: "bold" }}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend
-              verticalAlign="top"
-              align="right"
-              wrapperStyle={{ 
-                paddingBottom: "10px",
-                fontSize: "12px",
-                color: "#64748b"
-              }}
-            />
-            <Line
-              type="monotone"
-              dataKey="value"
-              name="Điểm (10)"
-              stroke="#3b82f6"
-              strokeWidth={3}
-              activeDot={{ 
-                r: 8, 
-                stroke: "#3b82f6", 
-                strokeWidth: 2,
-                fill: "white"
-              }}
-              dot={{ 
-                r: 4, 
-                fill: "#3b82f6",
-                stroke: "white",
-                strokeWidth: 2
-              }}
-            />
-          </RechartsLineChart>
-        </ResponsiveContainer>
-      </Box>
-
-      {/* Filters */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          flexWrap: "wrap",
-          gap: 1.5,
-        }}
-      >
-        <Chip
-          icon={<TrendingUpIcon sx={{ fontSize: "1rem" }} />}
-          label={`Môn học: ${subject || "Tất cả"}`}
-          variant="outlined"
+      <Box sx={{ height: 350, mb: 3, position: "relative" }}>
+        <Typography
+          variant="subtitle2"
           sx={{
-            borderColor: "#3b82f6",
-            color: "#3b82f6",
-            fontWeight: 500,
-            "&:hover": {
-              bgcolor: "#dbeafe",
-            },
+            position: "absolute",
+            top: 2,    
+            left: 15,    
+            fontSize: 12,
+            color: "#64748b",
+            zIndex: 1,
+            fontWeight: "bold",
           }}
-        />
-        <Chip
-          icon={<TrendingUpIcon sx={{ fontSize: "1rem" }} />}
-          label={`Loại điểm: ${scoreType || "Tất cả"}`}
-          variant="outlined"
-          sx={{
-            borderColor: "#10b981",
-            color: "#10b981",
-            fontWeight: 500,
-            "&:hover": {
-              bgcolor: "#d1fae5",
+        >
+          Điểm
+        </Typography>
+        <PlotlyBoxPlot
+          data={boxPlotData}
+          layout={{
+            title: 'Phân bố điểm',
+            dragmode: false,
+            hovermode: 'closest',
+            yaxis: {
+              title: {
+                text: '',
+                font: { size: 14, color: '#64748b', weight: 'bold' },
+                standoff: 0,
+                y: 1.05
+              },
+              range: [0, 10],
+              dtick: 1,
+              zeroline: false,
+              gridcolor: '#e2e8f0',
+              tickfont: { color: '#64748b', size: 12 },
+              titlefont: { size: 14, color: '#64748b' },
+              fixedrange: true,
             },
-          }}
-        />
-        <Chip
-          icon={<TrendingUpIcon sx={{ fontSize: "1rem" }} />}
-          label={`Thang: ${scale}`}
-          variant="outlined"
-          sx={{
-            borderColor: "#8b5cf6",
-            color: "#8b5cf6",
-            fontWeight: 500,
-            "&:hover": {
-              bgcolor: "#ede9fe",
+            xaxis: {
+              title: isSubjectFilter ? 'Lớp' : 'Môn',
+              tickfont: { color: '#64748b', size: 10 },
+              titlefont: { size: 14, color: '#64748b' },
+              showgrid: false,
+              categoryorder: 'array',
+              categoryarray: xLabels,
+              fixedrange: true,
+              tickangle: 0,
+              tickmode: 'array',
+              ticktext: xLabels.map(label => createMultiLineLabel(label)),
+              tickvals: xLabels,
             },
+            boxmode: 'group',
+            plot_bgcolor: 'white',
+            paper_bgcolor: 'white',
+            margin: { t: 40, r: 30, l: 50, b: 100 },
+            legend: { orientation: 'h', y: -0.2 },
           }}
+          config={{ 
+            responsive: true, 
+            displayModeBar: false,
+            modeBarButtonsToRemove: ['zoom', 'pan', 'select', 'lasso2d', 'resetScale2d'],
+            scrollZoom: false,
+            displaylogo: false,
+            toImageButtonOptions: {
+              format: 'png',
+              filename: 'chart',
+              height: 500,
+              width: 700,
+              scale: 1
+            }
+          }}
+          style={{ width: '100%', height: '100%' }}
         />
       </Box>
     </Box>
