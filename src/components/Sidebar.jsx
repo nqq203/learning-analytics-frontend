@@ -164,7 +164,7 @@ const UserName = styled.span`
 `;
 
 const SubNavItem = styled(NavItem)`
-  padding-left: 40px;
+  padding-left: 30px;
   font-size: 14px;
 `;
 
@@ -455,6 +455,7 @@ const Sidebar = ({
                 $active={router.pathname.startsWith(
                   "/predictions/fraud-detection"
                 )}
+
               >
                 PHÁT HIỆN BẤT THƯỜNG
               </NavText>

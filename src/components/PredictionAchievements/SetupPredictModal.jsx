@@ -79,7 +79,7 @@ export default function SetupPredictModal({
       <DialogTitle>Thiết lập phần trăm điểm</DialogTitle>
       <DialogContent>
         <Box display="flex" flexDirection="column" gap={2} mt={1}>
-          <TextField
+          {/* <TextField
             label="Điểm mong muốn"
             value={goal}
             onChange={(e) => {
@@ -90,7 +90,7 @@ export default function SetupPredictModal({
             inputProps={{ maxLength: 1 }}
             error={!!goalError}
             helperText={goalError || "Chỉ nhập 1 ký tự: A, B, C, D, F"}
-          />
+          /> */}
           <TextField
             label="Giữa kỳ (%)"
             type="number"
@@ -156,12 +156,12 @@ export default function SetupPredictModal({
               return;
             }
             // Validate điểm mong muốn
-            if (!["A", "B", "C", "D", "F"].includes(goal)) {
-              setGoalError("Chỉ được nhập 1 ký tự: A, B, C, D, F");
-              return;
-            }
+            // if (!["A", "B", "C", "D", "F"].includes(goal)) {
+            //   setGoalError("Chỉ được nhập 1 ký tự: A, B, C, D, F");
+            //   return;
+            // }
             setWeightError("");
-            setGoalError("");
+            // setGoalError("");
             setAnalyzing(true);
 
             const selectedStudents = studentsGrade.filter((s) =>
@@ -201,7 +201,7 @@ export default function SetupPredictModal({
                 studentId: s.studentId,
                 scores: scores,
                 identificationCode: s.identificationCode,
-                targetGrade: goal,
+                targetGrade: "A", // hard code for now
                 weights: weightsObj,
               };
             });
