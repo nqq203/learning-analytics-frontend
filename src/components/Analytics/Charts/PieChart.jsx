@@ -34,6 +34,7 @@ export const PieChartAnalytics = ({
   };
 
   const handleGradeFieldChange = (e) => {
+    console.log(e.target.value);
     setSelectedGradeField(e.target.value);
   };
 

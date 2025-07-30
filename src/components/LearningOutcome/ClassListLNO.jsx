@@ -15,7 +15,7 @@ import { TableWrapper } from "../Analytics/Styles/Styles";
 import styled from "styled-components";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useEffect,useState } from "react";
-
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
 export default function ClassListLNO({TableHeader,TableContent,setClassID,onScrollEnd, action = true, loading}){
     const [isFetching, setIsFetching] = useState(false);
@@ -87,7 +87,7 @@ export default function ClassListLNO({TableHeader,TableContent,setClassID,onScro
                                 ))}
                                 {action && (
                                     <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
-                                    Chi tiết
+                                    Danh sách lớp
                                     </TableCell>
                                 )}
 
@@ -115,7 +115,7 @@ export default function ClassListLNO({TableHeader,TableContent,setClassID,onScro
                                      {action && 
                                      (
                                         <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                                            <VisibilityIcon
+                                            <FormatListBulletedIcon
                                             color="primary"
                                             style={{ cursor: "pointer" }}
                                             onClick={()=>handleClick(row.id, row.className, row.courseName) }

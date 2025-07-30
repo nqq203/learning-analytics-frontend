@@ -43,15 +43,21 @@ import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 
 const LearningOutcomeBody = styled.div`
-  padding-inline:2rem;
+  
+  
   display: flex;
   flex-direction: column;
+  padding-inline:1rem;
+  align-items:center;
+  justify-content:center;
+  
   gap: 1rem;
   margin-top:1rem;
   `;
 
 const ChartContainer = styled.div`
   width: 100%;
+  
   display: flex;
   flex-direction: column;
 `;
@@ -65,37 +71,11 @@ const ChartContainer1 = styled.div`
 const ChartBox = styled.div`
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
   background-color: white;
-  width: 47%;
-  padding: 1rem;
+  width: 50%;
+  padding: 1.1rem;
   text-align: center;
   border-radius: 10px;
 `;
-
-const BarChartContainer1 = styled.div`
-  margin: auto;
-`;
-
-const BarChartBox = styled.div`
-  padding:1rem;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
-  background-color: white;
-  width: 100%;
-  
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-`;
-
-const TitleChart = styled.div`
-  text-align: left;
- 
-  
-  font-size: 1.2rem;
-`;
-
-
-
 
 
 
@@ -521,7 +501,7 @@ const dataFinal = [
 
                          
       <ChartContainer>
-      {/* <TitleChart>Năng lực của sinh viên</TitleChart> */}
+  
 
         <ChartContainer1>
           
@@ -561,7 +541,7 @@ const dataFinal = [
               <RadarChart data={AssignmentChartData}>
                   <PolarGrid />
                   <PolarAngleAxis dataKey="subject" />
-                  <PolarRadiusAxis />
+                  <PolarRadiusAxis  domain={[0, 10]} />
                   <Radar name="Điểm" dataKey="Score" stroke="#8884d8" fill="rgba(54, 162, 235, 0.5)" fillOpacity={0.6} />
                   <Tooltip />
               </RadarChart>
@@ -570,7 +550,7 @@ const dataFinal = [
           </ChartBox>
 
           <ChartBox>
-            {/* <TitleChart>Cuối kỳ: </TitleChart> */}
+         
             <Grid container justifyContent="space-between" alignItems="center">
             <Grid item>
               <Box sx={{ mb: 3 }}>
@@ -655,7 +635,7 @@ const dataFinal = [
         </ChartContainer1>
       </ChartContainer>
 
-      <ChartContainer>
+      {/* <ChartContainer>
             
 
       <ChartContainer1>
@@ -786,9 +766,9 @@ const dataFinal = [
         </ChartBox>
         
       </ChartContainer1>
-      </ChartContainer>
+      </ChartContainer> */}
 
-      <ChartContainer>
+      {/* <ChartContainer>
       
 
 
@@ -828,11 +808,10 @@ const dataFinal = [
 
                   <Pie
                     data={pieDataAssignment}
-                    // cx="50%"
-                    // cy="50%"
+                   
                     labelLine={false}
                     label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    // outerRadius={100}
+                   
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -841,7 +820,7 @@ const dataFinal = [
                     ))}
                   </Pie>
                   <Tooltip></Tooltip>
-                  {/* <PieToolTip></PieToolTip> */}
+                  
                 </PieChart>
               </ResponsiveContainer>
           </ChartBox>
@@ -849,7 +828,7 @@ const dataFinal = [
           
           
         </ChartContainer1>
-      </ChartContainer>
+      </ChartContainer> */}
       
 
       

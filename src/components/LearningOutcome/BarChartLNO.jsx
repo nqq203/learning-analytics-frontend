@@ -5,8 +5,8 @@ import dynamic from "next/dynamic";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-
-const Bar = dynamic(() => import("react-chartjs-2").then((mod) => mod.Bar), { ssr: false });
+import { Bar } from "react-chartjs-2";
+// const Bar = dynamic(() => import("react-chartjs-2").then((mod) => mod.Bar), { ssr: false });
 
 
 
@@ -24,43 +24,29 @@ const BarChart = ({studentGrade}) => {
       {
         label: "Điểm số",
         data: scores.map((item) => item.score),
-        backgroundColor: ["#FBB03B"],
-        borderColor: ["#FBB03B"],
+        backgroundColor: ["rgba(54, 162, 235, 0.5)"],
+        borderColor: ["rgba(54, 162, 235, 0.5)"],
         borderWidth: 1,
         borderRadius: 5,
       },
     ],
   };
 
-  const options = {
+  
+
+  const barOptions = () => ({
     responsive: true,
-    maintainAspectRatio: false,
     plugins: {
-      legend: {
-        display: false,
-        position: "top",
-      },
-      title: {
-        display: true,
-        // text: "Bảng điểm",
-      },
+      legend: { display: false },
+      title: { display: true, text: "Điểm" },
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-        min: 0, // Bắt đầu từ 2
-        max: 10, // Kết thúc ở 10
-        ticks: {
-          stepSize: 2, // Chỉ hiển thị các giá trị 2, 4, 6, 8, 10
-        },
-      },
-    },
-  };
+  });
+
 
   return (
-    <div style={{ height: "22rem",width:"40rem" }}>
-      <Bar data={data} options={options} />
-    </div>
+   
+      <Bar data={data} options={barOptions()}  />
+    
   );
 };
 

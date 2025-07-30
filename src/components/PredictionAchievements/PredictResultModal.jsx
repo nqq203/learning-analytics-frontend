@@ -124,18 +124,18 @@ export default function PredictResultModal({
                           <TableCell align="center" sx={{ fontWeight: 700 }}>
                             MSSV
                           </TableCell>
-                          <TableCell align="center" sx={{ fontWeight: 700 }}>
+                          {/* <TableCell align="center" sx={{ fontWeight: 700 }}>
                             Điểm mong muốn
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell align="center" sx={{ fontWeight: 700 }}>
                             Điểm CK dự đoán
                           </TableCell>
                           <TableCell align="center" sx={{ fontWeight: 700 }}>
                             Điểm CK thực tế
                           </TableCell>
-                          <TableCell align="center" sx={{ fontWeight: 700 }}>
+                          {/* <TableCell align="center" sx={{ fontWeight: 700 }}>
                             Khả năng đạt?
-                          </TableCell>
+                          </TableCell> */}
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -157,7 +157,7 @@ export default function PredictResultModal({
                               <TableCell align="center">
                                 {s.identificationCode}
                               </TableCell>
-                              <TableCell
+                              {/* <TableCell
                                 align="center"
                                 sx={{
                                   fontWeight: 600,
@@ -168,14 +168,14 @@ export default function PredictResultModal({
                                 }}
                               >
                                 {s.targetGrade || "--"}
-                              </TableCell>
+                              </TableCell> */}
                               <TableCell align="center">
                                 {s.predictedFinalGrade || "--"}
                               </TableCell>
                               <TableCell align="center">
                                 {s.actualFinalGrade || "--"}
                               </TableCell>
-                              <TableCell align="center">
+                              {/* <TableCell align="center">
                                 {s.feasible ? (
                                   <Box
                                     display="flex"
@@ -215,7 +215,7 @@ export default function PredictResultModal({
                                     </span>
                                   </Box>
                                 )}
-                              </TableCell>
+                              </TableCell> */}
                             </TableRow>
                             {expandedRows[s.studentId] && (
                               <TableRow>

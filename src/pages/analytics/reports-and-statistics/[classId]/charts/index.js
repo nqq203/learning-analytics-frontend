@@ -18,7 +18,7 @@ import {
   TextField,
   CircularProgress,
 } from "@mui/material";
-import AnalyticConfig from "@/components/Analytics/Config/AnalyticConfig";
+// import AnalyticConfig from "@/components/Analytics/Config/AnalyticConfig";
 import { PieChartAnalytics } from "@/components/Analytics/Charts/PieChart";
 import BarChartAnalytics from "@/components/Analytics/Charts/BarChart";
 import ScatterChartAnalytics from "@/components/Analytics/Charts/ScatterPlot";
@@ -40,13 +40,11 @@ const StudentAnalytics = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [isOpenAnalyticConfig, setIsOpenAnalyticConfig] = useState(false);
-  const [selectedChartTypes, setSelectedChartTypes] = useState([]);
-  const [selectedOthers, setSelectedOthers] = useState([]);
-  const [selectedGrades, setSelectedGrades] = useState([]);
-  const [selectedLearningObjectives, setSelectedLearningObjectives] = useState([]);
+  // const [selectedChartTypes, setSelectedChartTypes] = useState([]);
+  // const [selectedOthers, setSelectedOthers] = useState([]);
+  // const [selectedGrades, setSelectedGrades] = useState([]);
+  // const [selectedLearningObjectives, setSelectedLearningObjectives] = useState([]);
   const [pieChartData, setPieChartData] = useState(null);
-  const [selectedGradeField, setSelectedGradeField] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
   const { classId } = router.query;
   const [data, setData] = useState([]);
   const [className, setClassName] = useState("");
@@ -55,6 +53,13 @@ const StudentAnalytics = () => {
   const { _class } = useSelector((state) => state.data);
   const { learningObjectivesData: loData, learningObjectivesLoading } = useSelector((state) => state.analytics);
   const chartsRef = useRef();
+
+  const selectedChartTypes = ["pie", "column", "scatter", "radar"]; // All chart types
+  const selectedGrades = ["midtermGrade", "finalGrade", "practiceGrade", "projectGrade", "totalGrade"]; // All grade types
+  const selectedOthers = ["classification", "passFail"]; // All other charts
+  const selectedLearningObjectives = ["assignmentQuiz"];
+  const [selectedGradeField, setSelectedGradeField] = useState(selectedGrades[0]);
+
 
   const userId = useMemo(() => {
     if (!accessToken) return null;
@@ -90,41 +95,29 @@ const StudentAnalytics = () => {
 
   // Fetch learning objectives data when LO is selected
   useEffect(() => {
-    if (classId && selectedLearningObjectives.length > 0) {
-      // console.log('DEBUG - Fetching LO data for classId:', classId, 'selectedLO:', selectedLearningObjectives);
+    if (classId) {
       dispatch(fetchLearningObjectivesCharts({
         classId
-        // Removed finalExamId as it's no longer relevant
       }));
     }
-  }, [classId, selectedLearningObjectives, dispatch]);
+  }, [classId, dispatch]);
 
-  // Debug: Log Learning Objectives data khi có thay đổi
-  // useEffect(() => {
-  //   if (loData) {
-  //     console.log('DEBUG - Learning Objectives Data Updated:', loData);
-  //     if (loData.assignmentQuiz) {
-  //       console.log('DEBUG - Assignment/Quiz Data:', loData.assignmentQuiz);
-  //     }
-  //   }
-  // }, [loData]);
+  // const handleOpenConfig = () => {
+  //   setIsOpenAnalyticConfig(true);
+  // };
 
-  const handleOpenConfig = () => {
-    setIsOpenAnalyticConfig(true);
-  };
+  // const handleCloseConfig = () => {
+  //   setIsOpenAnalyticConfig(false);
+  // };
 
-  const handleCloseConfig = () => {
-    setIsOpenAnalyticConfig(false);
-  };
+  // const handleApplyChartConfig = (selectedFields) => {
+  //   setSelectedChartTypes(selectedFields.chartTypes);
+  //   setSelectedGrades(selectedFields.grades);
+  //   setSelectedOthers(selectedFields.otherFields);
+  //   setSelectedLearningObjectives(selectedFields.learningObjectives);
 
-  const handleApplyChartConfig = (selectedFields) => {
-    setSelectedChartTypes(selectedFields.chartTypes);
-    setSelectedGrades(selectedFields.grades);
-    setSelectedOthers(selectedFields.otherFields);
-    setSelectedLearningObjectives(selectedFields.learningObjectives);
-
-    setSelectedGradeField(selectedFields.grades[0]);
-  };
+  //   setSelectedGradeField(selectedFields.grades[0]);
+  // };
 
   // Hàm tính toán phân bố điểm theo các khoảng: 0-4, 4-6, 6-8, 8-10
   const computeDistribution = (data, fieldName) => {
@@ -150,21 +143,50 @@ const StudentAnalytics = () => {
   };
 
   // Khi người dùng chọn loại điểm trong dropdown filter, cập nhật pieChartData
-  useEffect(() => {
-    if (selectedGradeField) {
-      const distribution = computeDistribution(data, selectedGradeField);
-      setPieChartData(distribution);
-    }
-  }, [selectedGradeField, data]);
+  // useEffect(() => {
+  //   if (selectedGradeField && data.length > 0) {
+  //     const distribution = computeDistribution(data, selectedGradeField);
+  //     setPieChartData(distribution);
+  //   }
+  // }, [selectedGradeField, data]);
 
   // Render pie chart
   const renderPieChart = () => {
+    const handleGradeFieldChange = (newField) => {
+      if (newField && newField !== selectedGradeField && selectedGrades.includes(newField)) {
+        setSelectedGradeField(newField);
+      }
+    };
+
+    if (!data.length) {
+      return (
+        <Box p={2} textAlign="center" sx={{ backgroundColor: '#fff3cd', borderRadius: 1 }}>
+          <CircularProgress size={20} />
+          <p>Đang tải dữ liệu sinh viên...</p>
+        </Box>
+      );
+    }
+
+    if (!selectedGradeField) {
+      return null;
+    }
+
+    // Compute pieChartData directly here instead of using useEffect to prevent hanging
+    let currentPieChartData = null;
+    try {
+      currentPieChartData = computeDistribution(data, selectedGradeField);
+      console.log('Direct computation result:', currentPieChartData);
+    } catch (error) {
+      console.error('Error in direct computation:', error);
+      return null;
+    }
+
     return (
       <PieChartAnalytics
-        pieChartData={pieChartData}
+        pieChartData={currentPieChartData}
         selectedGradeField={selectedGradeField}
         selectedGrades={selectedGrades}
-        setSelectedGradeField={setSelectedGradeField}
+        setSelectedGradeField={handleGradeFieldChange}
       />
     );
   };
@@ -506,12 +528,12 @@ const StudentAnalytics = () => {
           {chartData.radarChart.slice(0, 4).map((group, index) => {
             // Safe check for loAverages to prevent reduce errors
             const loAverages = group.loAverages || [];
-            const avgScore = loAverages.length > 0 
-              ? loAverages.reduce((sum, lo) => sum + lo.averageScore, 0) / loAverages.length 
+            const avgScore = loAverages.length > 0
+              ? loAverages.reduce((sum, lo) => sum + lo.averageScore, 0) / loAverages.length
               : 0;
             const strongLOs = loAverages.filter(lo => lo.averageScore >= 7);
             const weakLOs = loAverages.filter(lo => lo.averageScore < 5);
-            const consistentPerformance = loAverages.length > 0 
+            const consistentPerformance = loAverages.length > 0
               ? Math.max(...loAverages.map(lo => lo.averageScore)) - Math.min(...loAverages.map(lo => lo.averageScore))
               : 0;
 
@@ -649,8 +671,8 @@ const StudentAnalytics = () => {
                 const loAverages = group.loAverages || [];
                 return {
                   name: group.groupName,
-                  avg: loAverages.length > 0 
-                    ? loAverages.reduce((sum, lo) => sum + lo.averageScore, 0) / loAverages.length 
+                  avg: loAverages.length > 0
+                    ? loAverages.reduce((sum, lo) => sum + lo.averageScore, 0) / loAverages.length
                     : 0,
                   consistency: loAverages.length > 0
                     ? Math.max(...loAverages.map(lo => lo.averageScore)) - Math.min(...loAverages.map(lo => lo.averageScore))
@@ -1165,8 +1187,7 @@ const StudentAnalytics = () => {
   const renderLOInfoTable = () => {
     // Get LO info from class data
     const learningOutcomes = loData?.classInfo?.learningOutcomes || [];
-    console.log()
-    
+
     if (learningOutcomes.length === 0) return null;
 
     return (
@@ -1180,10 +1201,10 @@ const StudentAnalytics = () => {
         }}>
           📋 Danh Sách Mục Tiêu Học Tập (Learning Objectives)
         </h4>
-        
-        <Box sx={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+
+        <Box sx={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: 2,
           maxHeight: '300px',
           overflowY: 'auto',
@@ -1196,7 +1217,7 @@ const StudentAnalytics = () => {
               borderRadius: 1,
               border: '1px solid #e9ecef',
               boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              '&:hover': { 
+              '&:hover': {
                 boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
                 transform: 'translateY(-1px)',
                 transition: 'all 0.2s ease'
@@ -1217,7 +1238,7 @@ const StudentAnalytics = () => {
                 }}>
                   {lo.loCode}
                 </Box>
-                
+
                 <Box sx={{ flex: 1 }}>
                   <div style={{
                     fontSize: '14px',
@@ -1227,7 +1248,7 @@ const StudentAnalytics = () => {
                   }}>
                     {lo.loCode}: {lo.loDescription}
                   </div>
-                  
+
                   <div style={{
                     fontSize: '12px',
                     color: '#6c757d',
@@ -1235,7 +1256,7 @@ const StudentAnalytics = () => {
                   }}>
                     📚 {lo.courseName}
                   </div>
-                  
+
                   <div style={{
                     fontSize: '11px',
                     color: '#868e96'
@@ -1262,7 +1283,7 @@ const StudentAnalytics = () => {
         {/* Summary Info */}
         <Box sx={{ mt: 2, p: 2, backgroundColor: '#e3f2fd', borderRadius: 1, textAlign: 'center' }}>
           <span style={{ fontSize: '14px', color: '#1976d2', fontWeight: 'bold' }}>
-            📊 Tổng cộng: {learningOutcomes.length} Mục tiêu học tập | 
+            📊 Tổng cộng: {learningOutcomes.length} Mục tiêu học tập |
             📚 Môn học: {learningOutcomes[0]?.courseName} ({learningOutcomes[0]?.courseCode})
           </span>
         </Box>
@@ -1289,9 +1310,6 @@ const StudentAnalytics = () => {
           }}
         >
           🎯 Thống Kê Mục Tiêu Học Tập (Learning Objectives)
-          <div style={{ fontSize: "14px", fontWeight: "normal", marginTop: "8px", opacity: 0.9 }}>
-            ✨ Tự động hiển thị tất cả biểu đồ cho Bài tập & Quiz
-          </div>
         </h3>
 
         {/* Learning Objectives Info Table */}
@@ -1325,17 +1343,17 @@ const StudentAnalytics = () => {
 
               <Box sx={{ mb: 3, p: 1.5, backgroundColor: '#e8f5e8', borderRadius: 2, textAlign: 'center' }}>
                 <span style={{ fontSize: '14px', color: '#2e7d32', fontStyle: 'italic', fontWeight: '500' }}>
-                  ✨ Tự động hiển thị: Bar Chart, Pie Chart, Radar Chart, Histogram
+                  ✨ Tự động hiển thị: Radar Chart, Histogram
                 </span>
               </Box>
 
               {/* Automatically display all 4 chart types for Assignment/Quiz - Full height */}
               <Box display="flex" flexDirection="column" gap={4}>
                 {/* Bar Chart - Always show */}
-                {renderLOBarChart('assignmentQuiz', loData.assignmentQuiz)}
+                {/* {renderLOBarChart('assignmentQuiz', loData.assignmentQuiz)} */}
 
                 {/* Pie Chart - Always show - Full height */}
-                {renderLOPieChart('assignmentQuiz', loData.assignmentQuiz)}
+                {/* {renderLOPieChart('assignmentQuiz', loData.assignmentQuiz)} */}
 
                 {/* Radar Chart - Always show - Full height */}
                 {renderLORadarChart('assignmentQuiz', loData.assignmentQuiz)}
@@ -1373,7 +1391,7 @@ const StudentAnalytics = () => {
             boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
           }}
         >
-          📊 Thống Kê Khác
+          📊 Thống Kê Xếp Loại và Tỉ Lệ Đậu Rớt
         </h3>
         <Box
           display="grid"
@@ -1409,7 +1427,7 @@ const StudentAnalytics = () => {
             boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
           }}
         >
-          📊 Thống Kê Điểm Số
+          📊 Thống Kê Điểm Thành Phần
         </h3>
         <Box
           display="grid"
@@ -1432,8 +1450,8 @@ const StudentAnalytics = () => {
                 return renderScatterChart();
               // case "histogram":
               //   return renderHistogramChart();
-              case "radar":
-                return renderRadarChart();
+              // case "radar":
+              //   return renderRadarChart();
               default:
                 return null;
             }
@@ -1464,8 +1482,8 @@ const StudentAnalytics = () => {
             disabled
           />
         </Box>
-        <ButtonWrapper>
-          <ActionButton
+        {/* <ButtonWrapper> */}
+        {/* <ActionButton
             variant="contained"
             sx={{
               width: "50%",
@@ -1485,36 +1503,37 @@ const StudentAnalytics = () => {
             onClick={handleOpenConfig}
           >
             Cấu hình biểu đồ
-          </ActionButton>
+          </ActionButton> */}
 
-          <ActionButton
-            variant="outlined"
-            sx={{
-              width: "50%",
-              fontWeight: 600,
-              fontSize: "15px",
-              py: 1.2,
-              textTransform: "none",
-              whiteSpace: "nowrap",
-              borderRadius: 1,
+        <ActionButton
+          variant="outlined"
+          sx={{
+            // width: "50%",
+            fontWeight: 600,
+            fontSize: "15px",
+            py: 1.2,
+            textTransform: "none",
+            whiteSpace: "nowrap",
+            borderRadius: 1,
+            color: "primary.main",
+            borderColor: "primary.main",
+            transition: "all 0.3s ease",
+            width: "200px",
+            "&:hover": {
+              backgroundColor: "rgba(25, 118, 210, 0.1)",
               color: "primary.main",
               borderColor: "primary.main",
-              transition: "all 0.3s ease",
-              "&:hover": {
-                backgroundColor: "rgba(25, 118, 210, 0.1)",
-                color: "primary.main",
-                borderColor: "primary.main",
-              },
-            }}
-            onClick={() => generatePDF(chartsRef, {
-              filename: "charts.pdf",
-              page: { format: [210, 400] },
-              scale: 0.85
-            })}
-          >
-            Xuất PDF
-          </ActionButton>
-        </ButtonWrapper>
+            },
+          }}
+          onClick={() => generatePDF(chartsRef, {
+            filename: "charts.pdf",
+            page: { format: [210, 400] },
+            scale: 0.85
+          })}
+        >
+          Xuất PDF
+        </ActionButton>
+        {/* </ButtonWrapper> */}
       </Header>
 
       {/* Check if there's any data to display */}
@@ -1538,19 +1557,39 @@ const StudentAnalytics = () => {
         </Box>
       ) : (
         <Box mt={2} ref={chartsRef}>
-          {selectedGrades.length > 0 && selectedChartTypes.length > 0 && renderCharts()}
-          {selectedOthers.length > 0 && renderOtherCharts()}
-          {selectedLearningObjectives.length > 0 && renderLearningObjectivesCharts()}
+          {/* Always render other charts */}
+          {data.length > 0 && renderOtherCharts()}
+
+          {/* Always render grade charts */}
+          {data.length > 0 && renderCharts()}
+
+
+
+          {/* Always render learning objectives charts when data is available */}
+          {loData && renderLearningObjectivesCharts()}
+
+          {/* Loading state */}
+          {(!data.length || learningObjectivesLoading) && (
+            <Box display="flex" justifyContent="center" alignItems="center" p={8}>
+              <CircularProgress size={60} />
+              <Box ml={3}>
+                <h3>Đang tải dữ liệu phân tích...</h3>
+                <p style={{ color: '#666', fontSize: '14px' }}>
+                  Vui lòng đợi trong giây lát để hệ thống tải và xử lý dữ liệu
+                </p>
+              </Box>
+            </Box>
+          )}
         </Box>
       )}
 
-      {isOpenAnalyticConfig && (
+      {/* {isOpenAnalyticConfig && (
         <AnalyticConfig
           open={isOpenAnalyticConfig}
           onClose={handleCloseConfig}
           onApply={handleApplyChartConfig}
         />
-      )}
+      )} */}
     </Container>
   );
 };

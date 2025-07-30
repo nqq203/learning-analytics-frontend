@@ -94,6 +94,7 @@ export default function DashboardPage() {
   const {
     academicRankData,
     avgScoreChart,
+    allGrades,
     riskStudentData,
     passFailData,
     cardsData,
@@ -174,7 +175,8 @@ export default function DashboardPage() {
                     mt: 0.5,
                   }}
                 >
-                  Giám sát tiến trình học tập và hiệu quả các môn học của sinh viên.
+                  Giám sát tiến trình học tập và hiệu quả các môn học của sinh
+                  viên.
                 </Typography>
               </Box>
             </Box>
@@ -342,7 +344,12 @@ export default function DashboardPage() {
                 },
               }}
             >
-              <AvgScoreChart data={avgScoreChart} selectedSubject={selectedSubject} selectedYear={selectedYear} />
+              <AvgScoreChart
+                data={avgScoreChart}
+                allGrades={allGrades}
+                selectedSubject={selectedSubject}
+                selectedYear={selectedYear}
+              />
             </Paper>
           </Grid>
           <Grid item xs={12} lg={6}>

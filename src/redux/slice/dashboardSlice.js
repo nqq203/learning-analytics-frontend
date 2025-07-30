@@ -12,6 +12,7 @@ const initialState = {
   error: null,
   summary: null,
   avgScoreChart: [],
+  allGrades: [],
   academicRankData: [],
   riskStudentData: [],
   passFailData: [],
@@ -35,6 +36,7 @@ const dashboardSlice = createSlice({
         const {
           academicRankData,
           avgScoreChart,
+          allGrades,
           riskStudentData,
           spendingTimeChartData,
           passFailData,
@@ -44,6 +46,7 @@ const dashboardSlice = createSlice({
 
         state.academicRankData = academicRankData ?? [];
         state.avgScoreChart = avgScoreChart ?? [];
+        state.allGrades = allGrades ?? [];
         state.riskStudentData = riskStudentData ?? [];
         state.passFailData = passFailData ?? [];
         state.spendingTimeChartData = spendingTimeChartData ?? [];

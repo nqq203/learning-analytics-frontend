@@ -15,8 +15,12 @@ import {
   Box,
   Link,
   CircularProgress,
+  FormControl,
+  InputLabel,
   Chip,
   Divider,
+  Select,
+  MenuItem
 } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ScoreComparisonCharts from "@/components/CompareResults/charts/ScoreComparisonCharts";
@@ -31,7 +35,20 @@ const CompareResult = ({
   loading,
 }) => {
   const [chartType, setChartType] = useState("bar");
-  
+  const [scoreType,setScoreType] = useState("midterm")
+
+
+  const scoreTypeLabels = {
+    midterm: "điểm Giữa Kỳ",
+    practice: "điểm Thực Hành",
+    project: "điểm Đồ Án",
+    final: "điểm Cuối Kỳ",
+    total: "điểm Trung Bình"
+  };
+
+  const handleScoreType=(value)=>{
+    setScoreType(value)
+  }
 if (loading) {
   return (
     <Box 
@@ -182,6 +199,9 @@ if (!loading && !data) {
               >
                 Kết quả so sánh
               </Typography>
+
+              
+
               <Box width="64px" />
             </Box>
           </Box>
@@ -262,7 +282,8 @@ if (!loading && !data) {
               overflow: 'hidden'
             }}>
               <Box sx={{ p: 2 }}>
-                <Tabs
+              <Box display="flex" justifyContent="right" alignItems="center" width="100%">
+                {/* <Tabs
                   value={chartType}
                   onChange={handleChangeTab}
                   centered
@@ -284,10 +305,40 @@ if (!loading && !data) {
                   <Tab label="Biểu đồ Cột" value="bar" />
                   <Tab label="Biểu đồ Radar" value="radar" />
                   <Tab label="Biểu đồ Tròn" value="pie" />
-                </Tabs>
+                </Tabs> */}
+                
+                <Box sx={{ width: 150 }} />
+                      
+                      <Typography 
+                      variant="h6"
+                      sx={{ flex: 1, textAlign: "center", fontWeight: 600 }}>So sánh {scoreTypeLabels[scoreType]} giữa các lớp </Typography>
+
+
+                      <FormControl  >
+                        <InputLabel id="demo-simple-select-label">Điểm</InputLabel>
+                        <Select
+                          value={scoreType}
+                          onChange={(e)=>setScoreType(e.target.value)}
+                          size="small"
+                          sx={{ minWidth: 150 }}
+                          label="Điểm"
+                        >
+                          <MenuItem value="midterm">Điểm Giữa Kỳ</MenuItem>
+                          <MenuItem value="practice">Điểm Thực Hành</MenuItem>
+                          <MenuItem value="project">Điểm Đồ Án</MenuItem>
+                          <MenuItem value="final">Điểm Cuối Kỳ</MenuItem>
+                          <MenuItem value="total">Điểm Trung Bình</MenuItem>
+                          
+                          
+                        </Select>
+                      </FormControl>
+
+                      
+                </Box>
 
                 <Box sx={{ mt: 3, minHeight: '400px' }}>
                   <ScoreComparisonCharts
+                    scoreType = {scoreType}
                     chartType={chartType}
                     data={chartData}
                     getDisplayName={(item) => item.name}
