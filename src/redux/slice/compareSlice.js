@@ -1,19 +1,29 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk,fetchCompareByCourse,fetchCompareByClassNew} from '../thunk/compareThunk';
+import { createSlice } from "@reduxjs/toolkit";
+import {
+  fetchCompareByClassesThunk,
+  fetchCompareByCohortsThunk,
+  fetchCompareByCourse,
+  fetchCompareByClassNew,
+} from "../thunk/compareThunk";
 
 const initialState = {
   compareResults: null,
   loading: false,
   error: null,
-  course:[],
-  classesNew:[],
-  totalRecords:0,
+  course: [],
+  classesNew: [],
+  totalRecords: 0,
 };
 
 const compareSlice = createSlice({
-  name: 'compare',
+  name: "compare",
   initialState,
-  reducers: {},
+  reducers: {
+    clearCompareResults: (state) => {
+      state.compareResults = null;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchCompareByClassesThunk.pending, (state) => {
@@ -42,7 +52,6 @@ const compareSlice = createSlice({
         state.error = action.payload;
       })
 
-
       .addCase(fetchCompareByCourse.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -57,7 +66,6 @@ const compareSlice = createSlice({
         state.error = action.payload;
       })
 
-
       .addCase(fetchCompareByClassNew.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -70,8 +78,9 @@ const compareSlice = createSlice({
       .addCase(fetchCompareByClassNew.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
+      });
   },
 });
 
+export const { clearCompareResults } = compareSlice.actions;
 export default compareSlice.reducer;

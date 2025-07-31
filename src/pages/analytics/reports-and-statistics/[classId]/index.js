@@ -263,7 +263,7 @@ const StudentsList = () => {
             style={{ width: "10%", fontWeight: "700", fontSize: "14px" }}
             onClick={handleClickAnalytics}
           >
-            Thống kê
+            Biểu đồ
           </ActionButton>
         </div>
       </Header>

@@ -87,7 +87,7 @@ export default function ClassListLNO({TableHeader,TableContent,setClassID,onScro
                                 ))}
                                 {action && (
                                     <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>
-                                    Danh sách lớp
+                                    Danh sách sinh viên
                                     </TableCell>
                                 )}
 
