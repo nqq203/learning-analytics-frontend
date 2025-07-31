@@ -445,10 +445,10 @@ const dataFinal = [
 
                     <Box>
                       <Typography variant="h6" fontWeight="700" color="#1e293b">
-                      Điểm theo từng câu hỏi của các bài Cuối Kỳ
+                      Điểm theo từng câu hỏi của các bài thi
                       </Typography>
                       <Typography variant="body2" color="#64748b">
-                      Phân bố xếp điểm các câu hỏi trong các bài Cuối Kỳ của sinh viên.
+                      Phân bố xếp điểm các câu hỏi trong các bài thi của sinh viên.
                       </Typography>
                     </Box>
                   </Box>
@@ -526,10 +526,10 @@ const dataFinal = [
 
                   <Box>
                     <Typography variant="h6" fontWeight="700" color="#1e293b">
-                      Năng lực theo từng LO của Assignment
+                      Năng lực theo từng LO của Bài tập/Quiz
                     </Typography>
                     <Typography variant="body2" color="#64748b">
-                    Tổng hợp năng lực theo các LO trong Assignment của sinh viên.
+                    Tổng hợp năng lực theo các LO trong Bài tập/Quiz của sinh viên.
                     </Typography>
                   </Box>
                 </Box>

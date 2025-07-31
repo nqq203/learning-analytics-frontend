@@ -10,7 +10,6 @@ import {
 } from "recharts";
 import { Box, FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText } from "@mui/material";
 
-// Mapping tên trường điểm sang label tiếng Việt (hoặc label tuỳ chọn)
 const labelMap = {
   midtermGrade: "Điểm giữa kỳ",
   finalGrade: "Điểm cuối kỳ",
@@ -33,31 +32,76 @@ const colorPalette = [
   "#FF8042",
 ];
 
-const RadarChartAnalytics = ({ 
-  data = [], 
-  selectedGrades = [], 
+const RadarChartAnalytics = ({
+  data = [],
+  selectedGrades = [],
   isLOChart = false,
-  loData = null
+  loData = null,
+  loType = "",
 }) => {
+  console.log('🎯 RadarChart Debug:', { isLOChart, loData, loType });
+
   // Handle LO Chart data differently
   if (isLOChart && loData) {
-    // Transform LO data for radar chart
+    console.log('📊 Processing LO Radar Data:', loData);
+
+    // Validate loData
+    if (!Array.isArray(loData) || loData.length === 0) {
+      return (
+        <Box p={2} textAlign="center" sx={{ color: '#666' }}>
+          <p>Không có dữ liệu nhóm cho radar chart</p>
+        </Box>
+      );
+    }
+
     const transformedData = [];
-    
+
     // Get all unique LO codes from all groups
     const allLoCodes = [...new Set(
-      loData.flatMap(group => group.loAverages.map(lo => lo.loCode))
+      loData.flatMap(group => {
+        if (group.loAverages && Array.isArray(group.loAverages)) {
+          return group.loAverages.map(lo => lo.loCode);
+        }
+        return [];
+      })
     )];
-    
+
+    console.log('📋 All LO Codes:', allLoCodes);
+
+    if (allLoCodes.length === 0) {
+      return (
+        <Box p={2} textAlign="center" sx={{ color: '#666' }}>
+          <p>Không có Learning Objectives để hiển thị</p>
+        </Box>
+      );
+    }
+
     // Create data points for each LO
     allLoCodes.forEach(loCode => {
       const dataPoint = { loCode };
+
       loData.forEach(group => {
-        const loScore = group.loAverages.find(lo => lo.loCode === loCode);
-        dataPoint[group.groupName] = loScore ? loScore.averageScore : 0;
+        if (group.loAverages && Array.isArray(group.loAverages)) {
+          const loScore = group.loAverages.find(lo => lo.loCode === loCode);
+
+          if (loType === 'finalExam') {
+            // For finalExam, use averageCompletion (percentage)
+            dataPoint[group.groupName] = loScore ? parseFloat(loScore.averageCompletion || 0) : 0;
+          } else {
+            // For assignmentQuiz, use averageScore (0-10 scale)
+            dataPoint[group.groupName] = loScore ? (loScore.averageScore || 0) : 0;
+          }
+        }
       });
+
       transformedData.push(dataPoint);
     });
+
+    console.log('✅ Transformed Data:', transformedData);
+
+    // Determine domain based on loType
+    const domain = loType === 'finalExam' ? [0, 100] : [0, 10];
+    const unit = loType === 'finalExam' ? '%' : '';
 
     return (
       <Box
@@ -67,35 +111,83 @@ const RadarChartAnalytics = ({
         flexDirection="column"
         alignItems="center"
         gap="20px"
+        sx={{ width: '100%' }}
       >
         <h3 style={{ margin: 0, fontSize: '16px' }}>
-          Phân tích nhóm sinh viên theo LO
+          {loType === 'finalExam' ?
+            '🎯 Phân tích nhóm - Bài kiểm tra cuối kỳ (% hoàn thành)' :
+            '🎯 Phân tích nhóm - Bài tập/Quiz (điểm số)'
+          }
         </h3>
-        
+
+        {/* Debug Info */}
+        <Box sx={{ fontSize: '12px', color: '#666', textAlign: 'center' }}>
+          <div>📊 Nhóm: {loData.length} | LO: {allLoCodes.length} | Thang đo: {domain[1]}{unit}</div>
+        </Box>
+
         <RadarChart
-          cx={250}
+          cx={300}
           cy={200}
-          outerRadius={120}
-          width={500}
+          outerRadius={150}
+          width={600}
           height={400}
           data={transformedData}
         >
           <PolarGrid />
-          <PolarAngleAxis dataKey="loCode" />
-          <PolarRadiusAxis angle={30} domain={[0, 10]} />
-          <Tooltip />
+          <PolarAngleAxis
+            dataKey="loCode"
+            tick={{ fontSize: 12 }}
+          />
+          <PolarRadiusAxis
+            angle={30}
+            domain={domain}
+            tick={{ fontSize: 10 }}
+            tickCount={6}
+          />
+          <Tooltip
+            formatter={(value, name) => [
+              `${value.toFixed(1)}${unit}`,
+              name
+            ]}
+            labelFormatter={(label) => `LO: ${label}`}
+          />
           <Legend />
+
           {loData.map((group, index) => (
             <Radar
               key={group.groupName}
-              name={group.groupName}
-              dataKey={group.groupName}
+              name={group.groupName || `Nhóm ${index + 1}`}
+              dataKey={group.groupName || `Nhóm ${index + 1}`}
               stroke={colorPalette[index % colorPalette.length]}
               fill={colorPalette[index % colorPalette.length]}
-              fillOpacity={0.4}
+              fillOpacity={0.3}
+              strokeWidth={2}
             />
           ))}
         </RadarChart>
+
+        {/* Summary */}
+        <Box sx={{ fontSize: '11px', color: '#666', textAlign: 'center', mt: 1 }}>
+          <div>📈 Nhóm có hiệu suất cao nhất: <strong>{
+            loData.reduce((best, group) => {
+              const groupAvg = group.loAverages?.reduce((sum, lo) => {
+                const value = loType === 'finalExam' ?
+                  parseFloat(lo.averageCompletion || 0) :
+                  (lo.averageScore || 0);
+                return sum + value;
+              }, 0) / (group.loAverages?.length || 1);
+
+              const bestAvg = best.loAverages?.reduce((sum, lo) => {
+                const value = loType === 'finalExam' ?
+                  parseFloat(lo.averageCompletion || 0) :
+                  (lo.averageScore || 0);
+                return sum + value;
+              }, 0) / (best.loAverages?.length || 1);
+
+              return groupAvg > bestAvg ? group : best;
+            }).groupName
+          }</strong></div>
+        </Box>
       </Box>
     );
   }
@@ -121,11 +213,11 @@ const RadarChartAnalytics = ({
   );
 
   const radarData = useMemo(() => {
-    if (!selectedGrades || !Array.isArray(selectedGrades) || selectedGrades.length === 0 || 
-        !data || !Array.isArray(data) || data.length === 0 || 
-        !selectedStudentIds || !Array.isArray(selectedStudentIds) || selectedStudentIds.length === 0)
+    if (!selectedGrades || !Array.isArray(selectedGrades) || selectedGrades.length === 0 ||
+      !data || !Array.isArray(data) || data.length === 0 ||
+      !selectedStudentIds || !Array.isArray(selectedStudentIds) || selectedStudentIds.length === 0)
       return [];
-      
+
     return selectedGrades.map((gradeKey) => {
       const subjectLabel = labelMap[gradeKey] || gradeKey;
       const obj = { subject: subjectLabel };
@@ -151,7 +243,7 @@ const RadarChartAnalytics = ({
     if (!selectedGrades || !Array.isArray(selectedGrades) || !data || !Array.isArray(data)) {
       return 10;
     }
-    
+
     let maxVal = 10;
     selectedGrades.forEach((gradeKey) => {
       data.forEach((student) => {
@@ -173,7 +265,6 @@ const RadarChartAnalytics = ({
     >
       <h3 style={{ margin: 0 }}>So sánh Sinh viên với Trung bình Lớp</h3>
 
-      {/* Dropdown cho phép chọn nhiều sinh viên với giới hạn tối đa 4 */}
       <FormControl size="small" style={{ width: 300 }}>
         <InputLabel id="student-multiselect-label">Chọn sinh viên</InputLabel>
         <Select
@@ -206,7 +297,6 @@ const RadarChartAnalytics = ({
         </Select>
       </FormControl>
 
-      {/* Radar Chart hiển thị dữ liệu của sinh viên được chọn và trung bình lớp */}
       {!selectedGrades || selectedGrades.length === 0 ? (
         <p>Vui lòng chọn ít nhất một loại điểm</p>
       ) : (
@@ -223,7 +313,6 @@ const RadarChartAnalytics = ({
           <PolarRadiusAxis angle={30} domain={[0, maxScore]} />
           <Tooltip />
           <Legend />
-          {/* Radar cho trung bình lớp */}
           <Radar
             name="Trung bình lớp"
             dataKey="average"
@@ -231,7 +320,6 @@ const RadarChartAnalytics = ({
             fill="#82ca9d"
             fillOpacity={0.6}
           />
-          {/* Radar cho từng sinh viên được chọn */}
           {selectedStudentIds.map((studentId, index) => {
             const studentObj = data.find((s) => s.identificationCode === studentId);
             const displayName = studentObj
