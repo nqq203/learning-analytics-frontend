@@ -231,7 +231,7 @@ if (!loading && !data) {
                       <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>Thực hành</TableCell>
                       <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>Đồ án</TableCell>
                       <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>Cuối kỳ</TableCell>
-                      <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>Trung bình</TableCell>
+                      <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>Tổng kết</TableCell>
                       <TableCell sx={{ fontWeight: 700, color: '#1e3a8a' }}>Số SV</TableCell>
                     </TableRow>
                   </TableHead>
@@ -327,7 +327,7 @@ if (!loading && !data) {
                           <MenuItem value="practice">Điểm Thực Hành</MenuItem>
                           <MenuItem value="project">Điểm Đồ Án</MenuItem>
                           <MenuItem value="final">Điểm Cuối Kỳ</MenuItem>
-                          <MenuItem value="total">Điểm Trung Bình</MenuItem>
+                          <MenuItem value="total">Điểm Tổng Kết</MenuItem>
                           
                           
                         </Select>

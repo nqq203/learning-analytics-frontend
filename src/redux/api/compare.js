@@ -48,7 +48,7 @@ const compareApi = {
   fetchCompareByCourse : ({instructor_id,search}) =>
     axios.get(`${API_URL}/data/courses?instructor_id=${instructor_id}&search=${search}`),
   fetchCompareByClassNew : ({instructor_id,courseId,page,amount}) =>
-    axios.get(`${API_URL}/analytics/classes?user_id=${instructor_id}&page=${page}&amount=${amount}&course=${courseId}`),
+    axios.get(`${API_URL}/analytics/classes?user_id=${instructor_id}&page=${page}&amount=${amount}&subject=${courseId}`),
   
 };
 

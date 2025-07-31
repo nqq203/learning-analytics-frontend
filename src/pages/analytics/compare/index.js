@@ -29,7 +29,7 @@ import CompareResult from "./compareResult/CompareResult";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
-import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk,fetchCompareByClassNew,fetchCompareByCourse } from "@/redux/thunk/compareThunk";
+import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk, fetchCompareByClassNew, fetchCompareByCourse } from "@/redux/thunk/compareThunk";
 import PageHeader from "@/components/CommonStyles/PageHeader";
 import { useRouter } from 'next/router';
 import { fetchAllCourses } from "@/redux/thunk/dataThunk";
@@ -42,8 +42,8 @@ const Compare = () => {
     isComparing: false,
   };
 
-  
-    
+
+
   const [selectedSubject, setSelectedSubject] = useState(initialState.selectedSubject);
   const [selectedRows, setSelectedRows] = useState(initialState.selectedRows);
   const [isComparing, setIsComparing] = useState(initialState.isComparing);
@@ -51,7 +51,7 @@ const Compare = () => {
   const [pageKey, setPageKey] = useState(0);
   const router = useRouter();
   const { classId } = router.query;
-  
+
   const resetCompareState = () => {
     setSelectedSubject(initialState.selectedSubject);
     setSelectedRows(initialState.selectedRows);
@@ -59,10 +59,10 @@ const Compare = () => {
     setCompareKey(Date.now());
   };
 
-  const [searchValue,setSearchValue] = useState("")
-  const [searchKeyWord,setSearchKeyWord] = useState("")
+  const [searchValue, setSearchValue] = useState("")
+  const [searchKeyWord, setSearchKeyWord] = useState("")
 
-  const handleKeyDown = (e)=>{
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       setSearchKeyWord(searchValue)
     }
@@ -70,25 +70,25 @@ const Compare = () => {
 
 
   const dispatch = useDispatch();
-  const { compareResults, compareLoading, compareError,loading,totalRecords,course } = useSelector((state) => state.compare);
+  const { compareResults, compareLoading, compareError, loading, totalRecords, course } = useSelector((state) => state.compare);
   const { accessToken } = useSelector(state => state.auth);
   // const { classes, totalRecords, loading } = useSelector((state) => state.analytics);
   const { courses } = useSelector((state) => state.data);
-  
+
   // useEffect(()=>{
   //   dispatch(fetchCompareByCourse({
   //     instructor_id:1,
   //     search:null
   //   }))
-    
+
   // },[])
 
 
   // useEffect(()=>{
-    
+
   //   console.log("course: ",course)
   // },[course])
-  
+
   useEffect(() => {
     const handleRouteChange = (url) => {
       if (!url.includes('/analytics/compare')) {
@@ -126,7 +126,6 @@ const Compare = () => {
     fontWeight: "700",
   };
 
-
   const userId = useMemo(() => {
     if (!accessToken) return null;
     try {
@@ -139,32 +138,29 @@ const Compare = () => {
 
   const [rows, setRows] = useState([]);
 
-
   useEffect(() => {
-    
-      setRows(course??[]);
-    
+
+    setRows(course ?? []);
+
   }, [course]);
 
 
   // const rows = useMemo(() => classes || [], [classes]);
 
-
-
   useEffect(() => {
     if (userId) {
-      dispatch(fetchCompareByCourse({ instructor_id: userId,search:searchKeyWord}));
+      dispatch(fetchCompareByCourse({ instructor_id: userId, search: searchKeyWord }));
     }
-  }, [dispatch, userId,searchKeyWord]);
+  }, [dispatch, userId, searchKeyWord]);
 
-  
-  const handleActions = (courseId)=>{
-    if(courseId)
-        router.push(`/analytics/compare/${courseId}`)
+
+  const handleActions = (courseId) => {
+    if (courseId)
+      router.push(`/analytics/compare/${courseId}`)
   }
 
 
-  
+
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       <PageHeader
@@ -174,11 +170,10 @@ const Compare = () => {
         variant="analytics"
         stats={[
           { label: "Tổng môn", value: totalRecords }
-        //   { label: "Môn học", value: courses?.length },
-        //   { label: "Đã chọn", value: selectedRows.length },
+          //   { label: "Môn học", value: courses?.length },
+          //   { label: "Đã chọn", value: selectedRows.length },
         ]}
       />
-
       <Paper
         elevation={0}
         sx={{
@@ -190,52 +185,45 @@ const Compare = () => {
         }}
       >
         <Grid container >
-         
-
-             <TextField
-          variant="outlined"
-          placeholder="Nhập từ khóa tìm kiếm"
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          size="small"
-          sx={{
-            flex: 1,
-            minWidth: 300,
-            '& .MuiOutlinedInput-root': {
-              bgcolor: 'white',
-              '&:hover fieldset': {
-                borderColor: '#3b82f6',
+          <TextField
+            variant="outlined"
+            placeholder="Nhập từ khóa tìm kiếm"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            size="small"
+            sx={{
+              flex: 1,
+              minWidth: 300,
+              '& .MuiOutlinedInput-root': {
+                bgcolor: 'white',
+                '&:hover fieldset': {
+                  borderColor: '#3b82f6',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#1e3a8a',
+                },
               },
-              '&.Mui-focused fieldset': {
-                borderColor: '#1e3a8a',
-              },
-            },
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={()=>{setSearchKeyWord(searchValue)}}
-                  sx={{
-                    color: '#1e3a8a',
-                    '&:hover': {
-                      bgcolor: 'rgba(30, 58, 138, 0.1)',
-                    },
-                  }}
-                >
-                  <Search />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-
-
-
-          </Grid>
-          
-        
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => { setSearchKeyWord(searchValue) }}
+                    sx={{
+                      color: '#1e3a8a',
+                      '&:hover': {
+                        bgcolor: 'rgba(30, 58, 138, 0.1)',
+                      },
+                    }}
+                  >
+                    <Search />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
       </Paper>
 
       {/* Table */}
@@ -255,8 +243,7 @@ const Compare = () => {
           <TableContainer
             component={Paper}
             style={{ maxHeight: "550px", overflow: "auto" }}
-            // onScroll={handleScroll}
-
+          // onScroll={handleScroll}
           >
             <Table stickyHeader>
               <TableHead>
@@ -265,7 +252,6 @@ const Compare = () => {
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >ID Môn</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Môn</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Loại Môn</TableCell>
-                  
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Chi tiết</TableCell>
                 </TableRow>
               </TableHead>
@@ -282,18 +268,15 @@ const Compare = () => {
                         },
                       }}
                     >
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{index+1}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{index + 1}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.courseCode}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.courseName}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.courseType}</TableCell>
-                    
-                     
-                      
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                         <VisibilityIcon
-                            color="primary"
-                            style={{ cursor: "pointer" }}
-                            onClick={() => handleActions(item.courseId)}
+                        <VisibilityIcon
+                          color="primary"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handleActions(item.courseId)}
                         />
                       </TableCell>
                     </TableRow>
@@ -302,8 +285,6 @@ const Compare = () => {
             </Table>
           </TableContainer>
         </TableWrapper>
-
-
       </Paper>
     </Box>
   );
