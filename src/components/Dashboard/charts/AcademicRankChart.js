@@ -1,8 +1,8 @@
-import { 
-  Box, 
-  Card, 
-  CardContent, 
-  Grid, 
+import {
+  Box,
+  Card,
+  CardContent,
+  Grid,
   Typography,
   Paper,
   Divider,
@@ -36,7 +36,7 @@ const CustomTooltip = ({ active, payload }) => {
         }}
       >
         <Typography variant="subtitle2" fontWeight="600" color="#1e293b">
-        Phân loại học lực: {data.name}
+          Phân loại học lực: {data.name}
         </Typography>
         <Divider sx={{ my: 1 }} />
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -95,10 +95,10 @@ export function AcademicRankChart() {
           </Box>
           <Box>
             <Typography variant="h6" fontWeight="700" color="#1e293b">
-            Phân loại học lực
+              Phân loại học lực
             </Typography>
             <Typography variant="body2" color="#64748b">
-            Phân bố xếp loại học lực của sinh viên theo phần trăm.
+              Phân bố xếp loại học lực của sinh viên theo phần trăm.
             </Typography>
           </Box>
         </Box>
@@ -140,10 +140,10 @@ export function AcademicRankChart() {
 
         {/* Legend */}
         <Grid item xs={12} lg={6}>
-          <Box sx={{ 
-            display: "flex", 
-            flexDirection: "column", 
-            gap: 2, 
+          <Box sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
             mt: { xs: 2, lg: 6 },
             height: "fit-content"
           }}>

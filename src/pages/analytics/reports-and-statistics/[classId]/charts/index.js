@@ -230,7 +230,7 @@ const StudentAnalytics = () => {
     };
 
     return (
-      <Box key={`${loType}-radar`} sx={{ mb: 2 }}>
+      <Box key={`${loType}-radar`} sx={{ mb: 15 }}>
         <h5 style={{
           textAlign: 'center',
           marginBottom: '15px',
@@ -250,137 +250,6 @@ const StudentAnalytics = () => {
             loType={loType}
           />
         </div>
-
-        {/* Enhanced Group Analysis */}
-        <Box sx={{ mt: 4 }}>
-          <h6 style={{ fontSize: '15px', marginBottom: '12px', color: '#2c3e50', fontWeight: 'bold' }}>
-            📈 Phân tích chi tiết theo nhóm học sinh:
-          </h6>
-
-          {chartData.radarChart.slice(0, 4).map((group, index) => {
-            const loAverages = group.loAverages || [];
-            let avgValue, strongLOs, weakLOs, consistentPerformance;
-
-            if (loType === 'finalExam') {
-              // For finalExam, use averageCompletion (percentage)
-              avgValue = loAverages.length > 0
-                ? loAverages.reduce((sum, lo) => sum + parseFloat(lo.averageCompletion), 0) / loAverages.length
-                : 0;
-              strongLOs = loAverages.filter(lo => parseFloat(lo.averageCompletion) >= 70);
-              weakLOs = loAverages.filter(lo => parseFloat(lo.averageCompletion) < 50);
-              consistentPerformance = loAverages.length > 0
-                ? Math.max(...loAverages.map(lo => parseFloat(lo.averageCompletion))) -
-                Math.min(...loAverages.map(lo => parseFloat(lo.averageCompletion)))
-                : 0;
-            } else {
-              // For assignmentQuiz, use averageScore (0-10 scale)
-              avgValue = loAverages.length > 0
-                ? loAverages.reduce((sum, lo) => sum + lo.averageScore, 0) / loAverages.length
-                : 0;
-              strongLOs = loAverages.filter(lo => lo.averageScore >= 7);
-              weakLOs = loAverages.filter(lo => lo.averageScore < 5);
-              consistentPerformance = loAverages.length > 0
-                ? Math.max(...loAverages.map(lo => lo.averageScore)) - Math.min(...loAverages.map(lo => lo.averageScore))
-                : 0;
-            }
-
-            return (
-              <Box key={index} sx={{
-                mb: 2,
-                p: 2,
-                backgroundColor: index % 2 === 0 ? '#f8f9fa' : '#ffffff',
-                borderRadius: 2,
-                border: '1px solid #dee2e6',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-              }}>
-                {/* Group Header */}
-                <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
-                  <strong style={{ fontSize: '14px', color: loType === 'finalExam' ? '#d32f2f' : '#1976d2' }}>
-                    👥 {group.groupName}
-                  </strong>
-                  <Box display="flex" gap={1}>
-                    <span style={{
-                      fontSize: '12px',
-                      padding: '2px 8px',
-                      borderRadius: '12px',
-                      backgroundColor: avgValue >= (loType === 'finalExam' ? 70 : 7) ? '#d4edda' :
-                        avgValue >= (loType === 'finalExam' ? 50 : 5) ? '#fff3cd' : '#f8d7da',
-                      color: avgValue >= (loType === 'finalExam' ? 70 : 7) ? '#155724' :
-                        avgValue >= (loType === 'finalExam' ? 50 : 5) ? '#856404' : '#721c24',
-                      fontWeight: 'bold'
-                    }}>
-                      TB: {avgValue.toFixed(1)}{loType === 'finalExam' ? '%' : ''}
-                    </span>
-                    <span style={{
-                      fontSize: '12px',
-                      padding: '2px 8px',
-                      borderRadius: '12px',
-                      backgroundColor: consistentPerformance <= (loType === 'finalExam' ? 20 : 2) ? '#d4edda' :
-                        consistentPerformance <= (loType === 'finalExam' ? 40 : 4) ? '#fff3cd' : '#f8d7da',
-                      color: consistentPerformance <= (loType === 'finalExam' ? 20 : 2) ? '#155724' :
-                        consistentPerformance <= (loType === 'finalExam' ? 40 : 4) ? '#856404' : '#721c24',
-                      fontWeight: 'bold'
-                    }}>
-                      {consistentPerformance <= (loType === 'finalExam' ? 20 : 2) ? 'Ổn định' :
-                        consistentPerformance <= (loType === 'finalExam' ? 40 : 4) ? 'Dao động' : 'Không đều'}
-                    </span>
-                  </Box>
-                </Box>
-
-                {/* Performance Details */}
-                <Box display="flex" gap={2} sx={{ mb: 1 }}>
-                  {/* Strengths */}
-                  <Box sx={{ flex: 1, p: 1.5, backgroundColor: '#d4edda', borderRadius: 1 }}>
-                    <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#155724', marginBottom: '6px' }}>
-                      🏆 Điểm mạnh:
-                    </div>
-                    {strongLOs.length > 0 ? (
-                      <div style={{ fontSize: '12px', color: '#155724' }}>
-                        {strongLOs.map(lo => {
-                          const value = loType === 'finalExam' ?
-                            `${lo.loCode} (${parseFloat(lo.averageCompletion).toFixed(1)}%)` :
-                            `${lo.loCode} (${lo.averageScore.toFixed(1)})`;
-                          return value;
-                        }).join(', ')}
-                        <div style={{ marginTop: '4px', fontSize: '11px', fontStyle: 'italic' }}>
-                          {strongLOs.length}/{loAverages.length} LO đạt mức tốt
-                        </div>
-                      </div>
-                    ) : (
-                      <div style={{ fontSize: '12px', color: '#6c757d', fontStyle: 'italic' }}>
-                        Chưa có LO nào đạt mức tốt ({loType === 'finalExam' ? '≥70%' : '≥7.0'})
-                      </div>
-                    )}
-                  </Box>
-
-                  {/* Weaknesses */}
-                  <Box sx={{ flex: 1, p: 1.5, backgroundColor: '#f8d7da', borderRadius: 1 }}>
-                    <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#721c24', marginBottom: '6px' }}>
-                      ⚠️ Cần cải thiện:
-                    </div>
-                    {weakLOs.length > 0 ? (
-                      <div style={{ fontSize: '12px', color: '#721c24' }}>
-                        {weakLOs.map(lo => {
-                          const value = loType === 'finalExam' ?
-                            `${lo.loCode} (${parseFloat(lo.averageCompletion).toFixed(1)}%)` :
-                            `${lo.loCode} (${lo.averageScore.toFixed(1)})`;
-                          return value;
-                        }).join(', ')}
-                        <div style={{ marginTop: '4px', fontSize: '11px', fontStyle: 'italic' }}>
-                          {weakLOs.length}/{loAverages.length} LO cần hỗ trợ thêm
-                        </div>
-                      </div>
-                    ) : (
-                      <div style={{ fontSize: '12px', color: '#6c757d', fontStyle: 'italic' }}>
-                        Không có LO nào dưới mức yêu cầu ({loType === 'finalExam' ? '<50%' : '<5.0'})
-                      </div>
-                    )}
-                  </Box>
-                </Box>
-              </Box>
-            );
-          })}
-        </Box>
       </Box>
     );
   };
@@ -396,7 +265,7 @@ const StudentAnalytics = () => {
         case 'assignmentQuiz':
           return '📊 Phân bố điểm theo LO - Bài Tập & Quiz';
         default:
-          return '📊 Phân bố theo Learning Objectives';
+          return '📊 Phân bố theo Mục tiêu học tập (Learning Outcome)';
       }
     };
 
@@ -686,7 +555,7 @@ const StudentAnalytics = () => {
           textAlign: "center",
           fontWeight: "bold"
         }}>
-          📋 Danh Sách Mục Tiêu Học Tập (Learning Objectives)
+          📋 Danh Sách Mục Tiêu Học Tập
         </h4>
 
         <Box sx={{
@@ -796,7 +665,7 @@ const StudentAnalytics = () => {
             boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
           }}
         >
-          🎯 Thống Kê Mục Tiêu Học Tập (Learning Objectives)
+          🎯 THỐNG KÊ MỤC TIÊU HỌC TẬP
         </h3>
 
         {/* Learning Objectives Info Table */}
@@ -908,7 +777,7 @@ const StudentAnalytics = () => {
             boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
           }}
         >
-          📊 Thống Kê Xếp Loại và Tỉ Lệ Đậu Rớt
+          📊 THỐNG KÊ TỔNG QUAN
         </h3>
         <Box
           display="grid"
@@ -944,7 +813,7 @@ const StudentAnalytics = () => {
             boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
           }}
         >
-          📊 Thống Kê Điểm Thành Phần
+          📊 THỐNG KÊ ĐIỂM THÀNH PHẦN
         </h3>
         <Box
           display="grid"
@@ -959,8 +828,6 @@ const StudentAnalytics = () => {
         >
           {selectedChartTypes.map((type) => {
             switch (type) {
-              case "pie":
-                return renderPieChart();
               case "column":
                 return renderBarChart();
               case "scatter":
@@ -976,7 +843,7 @@ const StudentAnalytics = () => {
 
   return (
     <Container>
-      <Header style={{ marginBottom: "10px"}}>
+      <Header style={{ marginBottom: "10px" }}>
         <Box display="flex" gap="10px">
           <TextField
             variant="outlined"
@@ -1078,14 +945,6 @@ const StudentAnalytics = () => {
           )}
         </Box>
       )}
-
-      {/* {isOpenAnalyticConfig && (
-        <AnalyticConfig
-          open={isOpenAnalyticConfig}
-          onClose={handleCloseConfig}
-          onApply={handleApplyChartConfig}
-        />
-      )} */}
     </Container>
   );
 };
