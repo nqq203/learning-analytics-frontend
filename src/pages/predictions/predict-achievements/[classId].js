@@ -21,6 +21,7 @@ import GradeList from "@/components/PredictionAchievements/GradeList";
 import SetupPredictModal from "@/components/PredictionAchievements/SetupPredictModal";
 import PredictResultModal from "@/components/PredictionAchievements/PredictResultModal";
 import { jwtDecode } from "jwt-decode";
+import BreadcrumbComponent from "@/components/Breadcrumb";
 
 export default function StudentListPage() {
   const router = useRouter();
@@ -89,11 +90,6 @@ export default function StudentListPage() {
     dispatch(fetchClassDetail({ instructorId: userId, classId }));
   }, [classId]);
 
-  // useEffect(() => {
-  //   console.log("stdeutn: ", studentsGrade);
-  //   console.log(classId);
-  // }, [studentsGrade, classId]);
-
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -149,13 +145,42 @@ export default function StudentListPage() {
     );
   };
 
+  const getBreadcrumbs = () => {
+    const breadcrumps = [
+      {
+        type: 'home',
+        label: 'Trang chủ',
+        path: '/',
+      }, 
+      {
+        type: 'prediction',
+        label: 'Dự đoán điểm số',
+        path: `/predictions/predict-achievements`
+      }
+    ];
+
+    console.log("DEBUG: class: ", _class);
+    if (_class?.className && _class?.courseName) {
+      breadcrumps.push({
+        type: 'students',
+        label: `${_class.courseName} - ${_class.className}`,
+      });
+    } else if (classId) {
+      breadcrumps.push({
+        type: 'students',
+        label: `Lớp ${classId}`,
+      });
+    }
+
+    return breadcrumps;
+  }
+
   return (
     <Box sx={{ 
       p: { xs: 2, md: 4 },
       background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
       minHeight: '100vh'
     }}>
-
       <Paper
         elevation={0}
         sx={{
@@ -186,6 +211,11 @@ export default function StudentListPage() {
          {/* {courseName || "Chưa có thông tin môn học"}*/} 
         </Typography>
       </Paper>
+
+      <BreadcrumbComponent 
+        breadcrumbs={getBreadcrumbs()}
+        variant="default"
+      />
 
       <Paper
         elevation={0}

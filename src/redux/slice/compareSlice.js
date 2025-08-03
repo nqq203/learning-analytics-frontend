@@ -13,7 +13,11 @@ const initialState = {
 const compareSlice = createSlice({
   name: 'compare',
   initialState,
-  reducers: {},
+  reducers: {
+    resetCompareResults: (state) => {
+      state.compareResults = null;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchCompareByClassesThunk.pending, (state) => {
@@ -74,4 +78,5 @@ const compareSlice = createSlice({
   },
 });
 
+export const { resetCompareResults } = compareSlice.actions;
 export default compareSlice.reducer;

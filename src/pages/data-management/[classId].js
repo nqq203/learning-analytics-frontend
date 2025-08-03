@@ -7,7 +7,9 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Typography,
+  Divider
 } from "@mui/material";
 import {
   ActionButton,
@@ -26,13 +28,13 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import EditExamModal from "@/components/StudentManagement/Update/EditExamModal";
 
 import SearchIcon from "@mui/icons-material/Search";
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, Fragment } from "react";
 import EditStudentModal from "@/components/StudentManagement/EditStudentModal";
 import AddStudentModal from "@/components/StudentManagement/AddStudentModal";
 import StudentTable from "@/components/ClassManagement/StudentTable";
 import { useDispatch, useSelector } from "react-redux";
 import ImportFileModal from "@/components/ClassManagement/ImportFileModal";
-import { deleteStudentFromClass, fetchAllFaculties, fetchAllMajors, fetchAllPrograms, fetchStudentDetail, fetchStudentList, processFilePartly, processStudentData, fetchAllExam, fetchExamDetail, createExam, deleteExam, updateExam, fetchAllStudent, createStudent, processLearningOutcome, updateStudent } from "@/redux/thunk/dataThunk";
+import { deleteStudentFromClass, fetchAllFaculties, fetchAllMajors, fetchAllPrograms, fetchStudentDetail, fetchStudentList, processFilePartly, processStudentData, fetchAllExam, fetchExamDetail, createExam, deleteExam, updateExam, fetchAllStudent, createStudent, processLearningOutcome, updateStudent, fetchClassDetail } from "@/redux/thunk/dataThunk";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
@@ -44,6 +46,7 @@ import Tab from "@mui/material/Tab";
 import styled from "styled-components";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DetailExamModal from "@/components/StudentManagement/DetailExam/DetailExamModal";
+import BreadcrumbComponent from "@/components/Breadcrumb";
 
 
 
@@ -82,7 +85,7 @@ const LearningOutComeTabButtons = styled.div`
 
 const InfoColumns = [
   { id: "identificationCode", label: "MSSV", align: "center" },
-  { id: "fullName", label: "Họ và tên", align: "center"},
+  { id: "fullName", label: "Họ và tên", align: "center" },
   { id: "email", label: "Email", align: "center" },
   { id: "programName", label: "Chương trình", align: "center" },
   { id: "facultyName", label: "Khoa", align: "center" },
@@ -228,26 +231,19 @@ export default function StudentDetailView({ onBack }) {
   const [MiniTab, setMiniTab] = useState(1);
   const [className, setClassName] = useState("21CLC05");
   const [subject, setSubject] = useState("Cơ sở dữ liệu");
-
   const [isAddModalOpen, setIsAddModalOpen] = useState(false); // Thêm sv
-
   const [isAddModalQuizOpen, setIsAddModalQuizOpen] = useState(false) //Thêm Quiz
   const [isAddModalAssignmentOpen, setIsAddModalAssignmentOpen] = useState(false) //Thêm Assignment
   const [isAddModalMidtermOpen, setIsAddModalMidtermOpen] = useState(false) //Thêm Midterm
   const [isAddModalFinalOpen, setIsAddModalFinalOpen] = useState(false) //Thêm Final
-
-
   const [selectedExam, setSelectedExam] = useState();
   const [ModeExam, setModeExam] = useState();
-
   const [isEditExamModal, setIsExamModal] = useState(false);
   const [EditExamType, setEditExamType] = useState("");
-
   const [isViewDetailExamModal, setIsViewDetailExamModal] = useState(false);
   const [ViewDetailExamType, setViewDetailExamType] = useState("");
 
   //EDIT EXAM OPTION
-
   const [openEditModal, setOpenEditModal] = useState(false); // Edit svs
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
@@ -263,15 +259,13 @@ export default function StudentDetailView({ onBack }) {
   const buttonRef = useRef(null);
 
   const handleClickAddQuiz = (event) => {
-
     dispatch(fetchAllStudent({
       classId,
       type: "information",
       page: 1,
       amount: totalInformation,
       search: ""
-    }
-    ))
+    }))
     setAnchorEl(event.currentTarget);
   };
 
@@ -280,15 +274,13 @@ export default function StudentDetailView({ onBack }) {
   };
 
   const handleSelectQuizType = (type) => {
-
     dispatch(fetchAllStudent({
       classId,
       type: "information",
       page: 1,
       amount: totalInformation,
       search: ""
-    }
-    ))
+    }))
 
     if (type == "Quiz") {
       setIsAddModalQuizOpen(true);
@@ -305,7 +297,6 @@ export default function StudentDetailView({ onBack }) {
 
     handleCloseMenu();
   };
-  //e Dropdown
 
   const userId = useMemo(() => {
     if (!accessToken) return null;
@@ -316,7 +307,28 @@ export default function StudentDetailView({ onBack }) {
       return null;
     }
   }, [accessToken]);
-  const { loading, totalGrade, totalInformation, studentsInformation, studentsGrade, hasMore, page, amount, faculties, programs, majors, student, assignments, finalExams, quizzes, activities, examInfo, allStudents, midtermExams } = useSelector(state => state.data);
+  const {
+    loading,
+    totalGrade,
+    totalInformation,
+    studentsInformation,
+    studentsGrade,
+    hasMore,
+    page,
+    amount,
+    faculties,
+    programs,
+    majors,
+    student,
+    assignments,
+    finalExams,
+    quizzes,
+    activities,
+    examInfo,
+    allStudents,
+    midtermExams,
+    _class,
+  } = useSelector(state => state.data);
   const [search, setSearch] = useState("");
   const [mssv, setMssv] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -346,7 +358,7 @@ export default function StudentDetailView({ onBack }) {
   //Tạo header  
 
   const mapKeyToLabel = (key) => {
-    if (key === "assignmentName" || key === "quizName" || key === "finalExamName" || key ==="midtermName") return "Tên bài";
+    if (key === "assignmentName" || key === "quizName" || key === "finalExamName" || key === "midtermName") return "Tên bài";
     if (key === "createdDate") return "Ngày tạo";
     if (key === "updatedDate") return "Ngày cập nhập";
     if (key === "identificationCode") return "MSSV";
@@ -380,13 +392,13 @@ export default function StudentDetailView({ onBack }) {
     }));
   }
 
-  
+
 
 
   const ColExamMidtermData = useMemo(() => {
-    
+
     if (midtermExams.length > 0) {
-      
+
       const headers = SetHeader(midtermExams);
       // Đưa "midtermName" lên đầu
       headers.sort((a, b) => {
@@ -395,7 +407,7 @@ export default function StudentDetailView({ onBack }) {
         return 0;
       });
       return headers;
-    
+
     };
 
     return [];
@@ -405,9 +417,6 @@ export default function StudentDetailView({ onBack }) {
 
   const ColExamFinalData = useMemo(() => {
     if (finalExams.length > 0) {
-
-      
-
       const headers = SetHeader(finalExams);
       // Đưa "midtermName" lên đầu
       headers.sort((a, b) => {
@@ -431,26 +440,22 @@ export default function StudentDetailView({ onBack }) {
 
 
   const ColExamQuizData = useMemo(() => {
-    
-    // if (quizzes.length > 0) return SetHeader(quizzes);
-
-
     const headers = SetHeader(quizzes);
-      // Đưa "midtermName" lên đầu
-      headers.sort((a, b) => {
-        if (a.id === "quizName") return -1;
-        if (b.id === "quizName") return 1;
-        return 0;
-      });
-      return headers;
+    // Đưa "midtermName" lên đầu
+    headers.sort((a, b) => {
+      if (a.id === "quizName") return -1;
+      if (b.id === "quizName") return 1;
+      return 0;
+    });
+    return headers;
 
 
     return [];
   }, [quizzes])
 
-  useEffect(()=>{
-    console.log("ColExamQuizData: ",ColExamQuizData)
-  },[ColExamFinalData])
+  useEffect(() => {
+    console.log("ColExamQuizData: ", ColExamQuizData)
+  }, [ColExamFinalData])
 
   const ColStudentsAssignments = useMemo(() => {
     return SetHeader(studentsAssignments);
@@ -467,12 +472,6 @@ export default function StudentDetailView({ onBack }) {
   const ColMidtermScores = useMemo(() => {
     return SetHeader(MidtermScores);
   }, [MidtermScores]);
-
-
-  //e Tạo header
-
-
-
 
   // trigger a fresh load with the current search term
   const handleSearch = () => {
@@ -507,18 +506,12 @@ export default function StudentDetailView({ onBack }) {
   //OPTION EXAM TABLE HERE
 
   const handleEditExamClick = (examId, type) => {
-    
     setIsExamModal(true);
     setEditExamType(type);
-
-
-
     dispatch(fetchExamDetail({
       quiz_id: examId,
       type: type
     }))
-
-
   }
 
   const handleDeleteExam = async (examId, mode) => {
@@ -530,7 +523,6 @@ export default function StudentDetailView({ onBack }) {
   const handleDeleteRequestExam = async () => {
     try {
       const response = await dispatch(deleteExam({ examId: selectedExam, type: ModeExam }));
-
 
       if (response?.type?.includes("fulfilled") && response.payload?.success) {
         toast.success(`Xóa thành công bài kiểm tra khỏi lớp`);
@@ -547,8 +539,6 @@ export default function StudentDetailView({ onBack }) {
   };
 
   const handleEditExam = async (examId, type, payload) => {
-
-
     try {
       const response = await dispatch(updateExam({ examId: examId, type: type, payload: payload }));
 
@@ -569,9 +559,6 @@ export default function StudentDetailView({ onBack }) {
   }
 
   const handleViewInformationExam = (examId, type) => {
-    
-    console.log(examId);
-    console.log(type);
     setIsViewDetailExamModal(true);
     setViewDetailExamType(type);
 
@@ -579,9 +566,6 @@ export default function StudentDetailView({ onBack }) {
       quiz_id: examId,
       type: type
     }))
-
-
-
   }
 
   const handleCreateExam = async (mode, examInfo) => {
@@ -604,24 +588,16 @@ export default function StudentDetailView({ onBack }) {
       }))
     }
   }
+
   //OPTION EXAM TABLE HERE
-
-  const handleUpdateStudent = async (studentId,payload) => {
-    
+  const handleUpdateStudent = async (studentId, payload) => {
     try {
-
-
       const response = await dispatch(updateStudent({ studentId: studentId, classId: classId, payload }));
-     
-
       if (response?.type?.includes("fulfilled") && response.payload?.success) {
         toast.success(`Sửa sinh viên thành công`);
-        
-        
         handleCloseEdit();
         dispatch(clearStudentList());
-        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page:1, amount, search }));
-
+        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: 1, amount, search }));
       } else {
         console.warn("Response bị rejected hoặc không success:", response);
         toast.error(`Sửa thất bại! Hãy thử lại sau`);
@@ -630,8 +606,6 @@ export default function StudentDetailView({ onBack }) {
       console.error("Lỗi trong handleDeleteRequestExam:", err);
       toast.error(`Sửa thất bại! Hãy thử lại sau`);
     }
-
-
   }
 
   useEffect(() => {
@@ -654,26 +628,20 @@ export default function StudentDetailView({ onBack }) {
           }
         })
       )
-
       if (response.payload.success === true) {
         toast.success(`Thêm thành công sinh viên ${newStudent.identificationCode} vào lớp`);
         dispatch(clearStudentList());
-        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page:1, amount, search }));
+        await dispatch(fetchStudentList({ classId: classId, type: showSummary ? "summary" : "information", page: 1, amount, search }));
         setIsAddModalOpen(false);
       } else {
         toast.error(`Mã sinh viên này đã tồn tại hoặc thêm thất bại!. Hãy thử lại sau`);
       }
-
     } catch {
       toast.error(`Mã sinh viên này đã tồn tại hoặc thêm thất bại! Hãy thử lại sau`);
     }
-    // setStudents((prev) => [...prev, newStudent]);
-    // setIsAddModalOpen(false);
   };
 
   const handleDeleteRequest = (studentId, identificationCode) => {
-    console.log("studentId: ", studentId)
-    console.log("identificationCode: ", identificationCode)
     setSelectedStudent(studentId);
     setMssv(identificationCode);
     setConfirmOpen(true);
@@ -761,11 +729,39 @@ export default function StudentDetailView({ onBack }) {
 
   }, [classId, showSummary]);
 
+  useEffect(() => {
+    dispatch(fetchClassDetail({ classId, instructorId: userId }));
+  }, [userId]);
+
+  const getBreadcrumbs = () => {
+    const breadcrumbs = [
+      {
+        label: 'Trang chủ',
+        type: 'home',
+        path: '/',
+      },
+      {
+        label: 'Quản lý dữ liệu',
+        type: 'data-management',
+        path: '/data-management',
+      }
+    ];
+
+    if (classId && _class?.className) {
+      breadcrumbs.push({
+        label: _class?.className || "Lớp học",
+        type: 'class',
+        path: `/data-management/${classId}`,
+      });
+    }
+
+    return breadcrumbs;
+  };
 
 
   return (
     <Container maxWidth={false} disableGutters>
-      <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+      <Header style={{ alignItems: 'center', gap: '16px', flexWrap: 'wrap', border: "none" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
           <TextField
             placeholder="Tìm kiếm"
@@ -849,45 +845,52 @@ export default function StudentDetailView({ onBack }) {
         </div>
       </Header>
 
+      <Divider sx={{ mb: 1 }} />
+
+      <BreadcrumbComponent
+        breadcrumbs={getBreadcrumbs()}
+        variant="default"
+      />
+
+      <Divider />
+
       <Box sx={{
-        p: 2,
+        // p: 2,
         width: "100%",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center", // tùy chỉnh nếu cần căn chỉnh dọc
       }}  >
-        <span style={{ fontSize: "20px", fontWeight: "700" }}
-        >
-          Số lượng sinh viên: {showSummary ? totalGrade : totalInformation} &nbsp;&nbsp;&nbsp;
-        </span>
-
         {(tab == 3 && MiniTab == 1) && (
           <FormControl style={{ width: "22.5%", minWidth: 250 }} size="small">
             <InputLabel id="academic-year-label">Chọn bài kiểm tra</InputLabel>
             <Select
               labelId="academic-year-label"
               label="Chọn khóa"
-            // onChange={(e) => handleChangeAcademicYear(e.target.value)}
             >
               <MenuItem value="">Tất cả</MenuItem>
-
             </Select>
           </FormControl>
         )}
-
-
       </Box>
 
       <LearningOutComeItemsContainer>
         <LearningOutComeTabButtons active={MiniTab === 1} onClick={() => { setMiniTab(1) }}>
           SINH VIÊN
         </LearningOutComeTabButtons>
-
-
         <LearningOutComeTabButtons active={MiniTab === 2} onClick={() => { setMiniTab(2) }}>
           BÀI KIỂM TRA
         </LearningOutComeTabButtons>
       </LearningOutComeItemsContainer>
+      {/* <Tabs
+        value={MiniTab}
+        onChange={(e, newValue) => setMiniTab(newValue)}
+        indicatorColor="primary"
+        textColor="primary"
+        sx={{ marginTop: 2 }}>
+        <Tab label="Sinh viên" />
+        <Tab label="Bài kiểm tra" />
+      </Tabs> */}
 
       {MiniTab === 1 && (
         <>
@@ -902,72 +905,69 @@ export default function StudentDetailView({ onBack }) {
             <Tab label="Tổng kết" onClick={() => setShowSummary(true)} />
           </Tabs>
 
+          <Box sx={{ pt: 2, mt: 1 }} style={{ display: "flex", gap: "10px" }}>
+            <Typography variant="h6" fontWeight={600} color="text.primary">
+              Số lượng sinh viên: {showSummary ? totalGrade : totalInformation} &nbsp;&nbsp;&nbsp;
+            </Typography>
+          </Box>
 
-          <div style={{ position: "relative", marginTop: 16 }}>
-            {tab === 0 && (
-              <Box position="relative">
-                <StudentTable
-                  filteredRows={studentsInformation}
-                  columns={InfoColumns}
-                  handleDelete={handleDeleteRequest}
-                  handleEdit={handleEditClick}
-                  onLoadMore={handleLoadMore}
-                  hasMore={hasMore}
-                />
+          {/* <div style={{ position: "relative" }}> */}
+          {tab === 0 && (
+            <Fragment>
+              <StudentTable
+                filteredRows={studentsInformation}
+                columns={InfoColumns}
+                handleDelete={handleDeleteRequest}
+                handleEdit={handleEditClick}
+                onLoadMore={handleLoadMore}
+                hasMore={hasMore}
+              />
 
-                {loading && (
-                  <Box
-                    position="absolute"
-                    top={0}
-                    left={0}
-                    width="100%"
-                    height="100%"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    bgcolor="rgba(255,255,255,0.6)"
-                    zIndex={10}
-                  >
-                    <CircularProgress size="50px" />
-                  </Box>
-                )}
-              </Box>
-            )
-            }
-
-            {tab === 1 && (
-              <Box position="relative">
-                <StudentTable
-                  filteredRows={studentsGrade}
-                  columns={GradeColumns}
-                  handleDelete={handleDeleteRequest}
-                  handleEdit={handleEditClick}
-                  onLoadMore={handleLoadMore}
-                  hasMore={hasMore}
-                />
-
-                {loading && (
-                  <Box
-                    position="absolute"
-                    top={0}
-                    left={0}
-                    width="100%"
-                    height="100%"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    bgcolor="rgba(255,255,255,0.6)"
-                    zIndex={10}
-                  >
-                    <CircularProgress size="50px" />
-                  </Box>
-                )}
-              </Box>
-            )
-            }
-
-
-          </div>
+              {loading && (
+                <Box
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  width="100%"
+                  height="100%"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  bgcolor="rgba(255,255,255,0.6)"
+                  zIndex={10}
+                >
+                  <CircularProgress size="50px" />
+                </Box>
+              )}
+            </Fragment>)}
+          {tab === 1 && (
+            <Fragment>
+              <StudentTable
+                filteredRows={studentsGrade}
+                columns={GradeColumns}
+                handleDelete={handleDeleteRequest}
+                handleEdit={handleEditClick}
+                onLoadMore={handleLoadMore}
+                hasMore={hasMore}
+              />
+              {loading && (
+                <Box
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  width="100%"
+                  height="100%"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  bgcolor="rgba(255,255,255,0.6)"
+                  zIndex={10}
+                >
+                  <CircularProgress size="50px" />
+                </Box>
+              )}
+            </Fragment>)}
+          {/* </div> */}
         </>
       )}
 
@@ -988,8 +988,7 @@ export default function StudentDetailView({ onBack }) {
           </Tabs>
 
 
-          <div style={{ position: "relative", marginTop: 16 }}>
-
+          <div style={{ position: "relative" }}>
             {secondTab === 0 && (
               <Box position="relative">
                 <ExamQuizTable

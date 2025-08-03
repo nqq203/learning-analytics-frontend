@@ -35,16 +35,11 @@ import {
 import { useRouter } from "next/router";
 import { jwtDecode } from "jwt-decode";
 import { fetchClassDetail } from "@/redux/thunk/dataThunk";
+import BreadcrumbComponent from "@/components/Breadcrumb";
 
 const StudentAnalytics = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [isOpenAnalyticConfig, setIsOpenAnalyticConfig] = useState(false);
-  // const [selectedChartTypes, setSelectedChartTypes] = useState([]);
-  // const [selectedOthers, setSelectedOthers] = useState([]);
-  // const [selectedGrades, setSelectedGrades] = useState([]);
-  // const [selectedLearningObjectives, setSelectedLearningObjectives] = useState([]);
-  const [pieChartData, setPieChartData] = useState(null);
   const { classId } = router.query;
   const [data, setData] = useState([]);
   const [className, setClassName] = useState("");
@@ -59,6 +54,48 @@ const StudentAnalytics = () => {
   const selectedOthers = ["classification", "passFail"]; // All other charts
   const selectedLearningObjectives = ["assignmentQuiz", "finalExam"];
   const [selectedGradeField, setSelectedGradeField] = useState(selectedGrades[0]);
+  const [breadcrumbs, setBreadcrumbs] = useState([]);
+
+  useEffect(() => {
+    const getBreadcrumbs = () => {
+      const baseBreadcrumbs = [
+        {
+          type: 'home',
+          label: 'Trang chủ',
+          path: '/'
+        },
+        {
+          type: 'analytics',
+          label: 'Thống kê & Báo cáo',
+          path: '/analytics/reports-and-statistics'
+        },
+      ];
+
+      if (classId) {
+        if (className && courseName) {
+          const classParams = new URLSearchParams({
+            className: className || '',
+            courseName: courseName || ''
+          });
+
+          baseBreadcrumbs.push({
+            type: 'students',
+            label: `${className} - ${courseName}`,
+            path: `/analytics/reports-and-statistics/${classId}?${classParams.toString()}`
+          });
+        }
+
+        // Current charts page
+        baseBreadcrumbs.push({
+          type: 'charts',
+          label: 'Biểu đồ phân tích'
+        });
+      }
+
+      return baseBreadcrumbs;
+    }
+    setBreadcrumbs(getBreadcrumbs());
+  }, [classId, _class, className, courseName]);
 
 
   const userId = useMemo(() => {
@@ -102,23 +139,6 @@ const StudentAnalytics = () => {
     }
   }, [classId, dispatch]);
 
-  // const handleOpenConfig = () => {
-  //   setIsOpenAnalyticConfig(true);
-  // };
-
-  // const handleCloseConfig = () => {
-  //   setIsOpenAnalyticConfig(false);
-  // };
-
-  // const handleApplyChartConfig = (selectedFields) => {
-  //   setSelectedChartTypes(selectedFields.chartTypes);
-  //   setSelectedGrades(selectedFields.grades);
-  //   setSelectedOthers(selectedFields.otherFields);
-  //   setSelectedLearningObjectives(selectedFields.learningObjectives);
-
-  //   setSelectedGradeField(selectedFields.grades[0]);
-  // };
-
   // Hàm tính toán phân bố điểm theo các khoảng: 0-4, 4-6, 6-8, 8-10
   const computeDistribution = (data, fieldName) => {
     const ranges = [
@@ -141,14 +161,6 @@ const StudentAnalytics = () => {
     });
     return ranges;
   };
-
-  // Khi người dùng chọn loại điểm trong dropdown filter, cập nhật pieChartData
-  // useEffect(() => {
-  //   if (selectedGradeField && data.length > 0) {
-  //     const distribution = computeDistribution(data, selectedGradeField);
-  //     setPieChartData(distribution);
-  //   }
-  // }, [selectedGradeField, data]);
 
   // Render pie chart
   const renderPieChart = () => {
@@ -964,7 +976,7 @@ const StudentAnalytics = () => {
 
   return (
     <Container>
-      <Header>
+      <Header style={{ marginBottom: "10px"}}>
         <Box display="flex" gap="10px">
           <TextField
             variant="outlined"
@@ -983,29 +995,6 @@ const StudentAnalytics = () => {
             disabled
           />
         </Box>
-        {/* <ButtonWrapper> */}
-        {/* <ActionButton
-            variant="contained"
-            sx={{
-              width: "50%",
-              fontWeight: 600,
-              fontSize: "15px",
-              py: 1.2,
-              textTransform: "none",
-              whiteSpace: "nowrap",
-              borderRadius: 1,
-              boxShadow: 2,
-              backgroundColor: "primary.main",
-              "&:hover": {
-                backgroundColor: "primary.dark",
-                boxShadow: 3,
-              },
-            }}
-            onClick={handleOpenConfig}
-          >
-            Cấu hình biểu đồ
-          </ActionButton> */}
-
         <ActionButton
           variant="outlined"
           sx={{
@@ -1036,6 +1025,12 @@ const StudentAnalytics = () => {
         </ActionButton>
         {/* </ButtonWrapper> */}
       </Header>
+
+      {/* Breadcrumbs */}
+      <BreadcrumbComponent
+        variant="default"
+        breadcrumbs={breadcrumbs}
+      />
 
       {/* Check if there's any data to display */}
       {(selectedGrades.length === 0 && selectedLearningObjectives.length === 0) ||

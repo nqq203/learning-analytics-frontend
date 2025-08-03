@@ -13,7 +13,7 @@ import {
   Paper,
   Divider,
 } from "@mui/material";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import dynamic from "next/dynamic";
 const PlotlyBoxPlot = dynamic(() => import("./PlotlyBoxPlot"), { ssr: false });
 import ShowChartIcon from "@mui/icons-material/ShowChart";
@@ -93,9 +93,16 @@ export function AvgScoreChart({
   data = [],
   selectedSubject = "",
   selectedYear = "",
+  subjects = [],
 }) {
   const theme = useTheme();
   const [scale, setScale] = useState(10);
+
+  const [chartData, setChartData] = useState({
+    boxPlotData: [],
+    xLabels: [],
+    isLoading: true,
+  })
 
   const isSubjectFilter = !!selectedSubject;
   const isYearFilter = !!selectedYear;
@@ -120,148 +127,157 @@ export function AvgScoreChart({
     return lines.join("<br>");
   };
 
-  let xLabels = [];
-  let boxPlotData = [];
-
-  if (allGrades && allGrades.length > 0) {
-    let filteredGrades = allGrades;
-
-    if (isSubjectFilter) {
-      filteredGrades = filteredGrades.filter((item) => {
-        return String(item.id) === String(selectedSubject);
-      });
-    }
-
-    const allYValues = [];
-    const allXLabels = [];
-
-    filteredGrades.forEach((item) => {
-      item.grades.forEach((grade) => {
-        allYValues.push(grade);
-        allXLabels.push(item.name);
-      });
-    });
-
-    boxPlotData = [
-      {
-        y: allYValues,
-        x: allXLabels,
-        type: "box",
-        boxpoints: "outliers",
-        marker: { size: 4, color: "#3b82f6" },
-        line: { width: 2, color: "#1d4ed8" },
-        boxmean: true,
-        hoverinfo: "y+name",
-        hovertemplate: "<b>%{x}</b><br>Điểm: %{y}<extra></extra>",
-      },
-    ];
-
-    if (filteredGrades.length === 0) {
-      filteredGrades = allGrades;
-
-      const allYValues = [];
-      const allXLabels = [];
-
-      filteredGrades.forEach((item) => {
-        item.grades.forEach((grade) => {
-          allYValues.push(grade);
-          allXLabels.push(item.name);
-        });
+  useEffect(() => {
+    const processChartData = () => {
+      console.log('🔄 Processing chart data...', {
+        allGradesLength: allGrades?.length,
+        dataLength: data?.length,
+        selectedSubject,
+        selectedYear
       });
 
-      boxPlotData = [
-        {
-          y: allYValues,
-          x: allXLabels,
+      let xLabels = [];
+      let boxPlotData = [];
+
+      if (allGrades && allGrades.length > 0) {
+        let filteredGrades = allGrades;
+
+        if (isSubjectFilter) {
+          filteredGrades = filteredGrades.filter((item) => {
+            return String(item.id) === String(selectedSubject);
+          });
+        }
+
+        if (filteredGrades.length > 0) {
+          const allYValues = [];
+          const allXLabels = [];
+
+          filteredGrades.forEach((item) => {
+            item.grades.forEach((grade) => {
+              allYValues.push(grade);
+              allXLabels.push(item.name);
+            });
+          });
+
+          boxPlotData = [
+            {
+              y: allYValues,
+              x: allXLabels,
+              type: "box",
+              boxpoints: "outliers",
+              marker: { size: 4, color: "#3b82f6" },
+              line: { width: 2, color: "#1d4ed8" },
+              boxmean: false,
+              hoverinfo: "y+name",
+              hovertemplate: "<b>%{x}</b><br>Điểm: %{y}<extra></extra>",
+            },
+          ];
+
+          xLabels = [...new Set(allXLabels)];
+        } else {
+          // If no subject filter matches, show all subjects
+          filteredGrades = allGrades;
+
+          const allYValues = [];
+          const allXLabels = [];
+
+          filteredGrades.forEach((item) => {
+            item.grades.forEach((grade) => {
+              allYValues.push(grade);
+              allXLabels.push(item.name);
+            });
+          });
+
+          boxPlotData = [
+            {
+              y: allYValues,
+              x: allXLabels,
+              type: "box",
+              boxpoints: "outliers",
+              marker: { size: 4, color: "#3b82f6" },
+              line: { width: 2, color: "#1d4ed8" },
+              boxmean: false,
+              hoverinfo: "y+name",
+              hovertemplate: "<b>%{x}</b><br>Điểm: %{y}<extra></extra>",
+            },
+          ];
+
+          xLabels = [...new Set(allXLabels)];
+        }
+      } else if (data && data.length > 0) {
+        // Use data prop when allGrades is not available
+        const baseBoxConfig = {
+          name: "Điểm TB",
           type: "box",
-          boxpoints: "outliers",
+          boxpoints: "all",
+          jitter: 0.5,
+          whiskerwidth: 0.2,
           marker: { size: 4, color: "#3b82f6" },
           line: { width: 2, color: "#1d4ed8" },
-          boxmean: true,
+          boxmean: false,
           hoverinfo: "y+name",
-          hovertemplate: "<b>%{x}</b><br>Điểm: %{y}<extra></extra>",
-        },
-      ];
-    }
+          hovertemplate: "<b>%{x}</b><br>Điểm TB: %{y}<extra></extra>",
+        };
 
-    xLabels = [...new Set(allXLabels)];
-  } else {
+        xLabels = data.map((d) => d.name);
+        boxPlotData = [
+          {
+            y: data.map((d) => d.value),
+            x: xLabels,
+            ...baseBoxConfig,
+          },
+        ];
+      }
+
+      // Update state
+      setChartData({
+        boxPlotData,
+        xLabels,
+        isLoading: false
+      });
+
+      console.log('✅ Chart data processed:', {
+        boxPlotDataLength: boxPlotData.length,
+        xLabelsLength: xLabels.length,
+        xLabels
+      });
+    };
+
+    // Process data when props change
+    processChartData();
+  }, [allGrades, data, selectedSubject, selectedYear, isSubjectFilter, isYearFilter]);
+
+
+  const chartTitle = useMemo(() => {
     if (isSubjectFilter && !isYearFilter) {
-      // Filter theo môn: trục hoành là lớp, show điểm trung bình các lớp của môn đó
-      xLabels = data.map((d) => d.name);
-      boxPlotData = [
-        {
-          y: data.map((d) => d.value),
-          x: xLabels,
-          name: "Điểm TB",
-          type: "box",
-          boxpoints: "all",
-          jitter: 0.5,
-          whiskerwidth: 0.2,
-          marker: { size: 4, color: "#3b82f6" },
-          line: { width: 2, color: "#1d4ed8" },
-          hoverinfo: "y+name",
-          hovertemplate: "<b>%{x}</b><br>Điểm TB: %{y}<extra></extra>",
-        },
-      ];
+      return "Phân bố điểm tổng kết theo môn";
     } else if (!isSubjectFilter && isYearFilter) {
-      // Filter theo khoá: trục hoành là môn, show điểm trung bình các môn theo khoá
-      xLabels = data.map((d) => d.name);
-      boxPlotData = [
-        {
-          y: data.map((d) => d.value),
-          x: xLabels,
-          name: "Điểm TB",
-          type: "box",
-          boxpoints: "all",
-          jitter: 0.5,
-          whiskerwidth: 0.2,
-          marker: { size: 4, color: "#3b82f6" },
-          line: { width: 2, color: "#1d4ed8" },
-          hoverinfo: "y+name",
-          hovertemplate: "<b>%{x}</b><br>Điểm TB: %{y}<extra></extra>",
-        },
-      ];
+      return "Phân bố điểm tổng kết theo niên khóa";
     } else if (isSubjectFilter && isYearFilter) {
-      // Filter cả 2: trục hoành là lớp, show điểm trung bình các lớp của môn đó, chỉ lấy các lớp thuộc khoá đã chọn
-      xLabels = data.map((d) => d.name);
-      boxPlotData = [
-        {
-          y: data.map((d) => d.value),
-          x: xLabels,
-          name: "Điểm TB",
-          type: "box",
-          boxpoints: "all",
-          jitter: 0.5,
-          whiskerwidth: 0.2,
-          marker: { size: 4, color: "#3b82f6" },
-          line: { width: 2, color: "#1d4ed8" },
-          hoverinfo: "y+name",
-          hovertemplate: "<b>%{x}</b><br>Điểm TB: %{y}<extra></extra>",
-        },
-      ];
+      return "Phân bố điểm tổng kết theo lớp và niên khóa";
     } else {
-      // Không filter: trục hoành là môn, show điểm trung bình các môn
-      xLabels = data.map((d) => d.name);
-      boxPlotData = [
-        {
-          y: data.map((d) => d.value),
-          x: xLabels,
-          name: "Điểm TB",
-          type: "box",
-          boxpoints: "all",
-          jitter: 0.5,
-          whiskerwidth: 0.2,
-          marker: { size: 4, color: "#3b82f6" },
-          line: { width: 2, color: "#1d4ed8" },
-          hoverinfo: "y+name",
-          hovertemplate: "<b>%{x}</b><br>Điểm TB: %{y}<extra></extra>",
-        },
-      ];
+      return "Phân bố điểm tổng kết theo môn";
     }
-  }
+  }, [isSubjectFilter, isYearFilter]);
 
-  if (!allGrades?.length && !data.length) {
+  const chartSubtitle = useMemo(() => {
+    const parts = [];
+    if (selectedSubject) {
+      const subjectName = subjects.filter(g => g.id === selectedSubject)
+      parts.push(`Môn: ${subjectName.map(s => s.name).join(", ")}`);
+    }
+    if (selectedYear) {
+      parts.push(`Khóa: ${selectedYear}`);
+    }
+    if (parts.length === 0) {
+      return "Hiển thị điểm tổng kết theo từng khóa, môn.";
+    }
+    return parts.join(" • ");
+  }, [selectedSubject, selectedYear, allGrades, data]);
+
+
+  // Show empty state
+  if (!chartData.boxPlotData.length && !allGrades?.length && !data?.length) {
     return (
       <Box sx={{ height: "100%" }}>
         <Box sx={{ mb: 3 }}>
@@ -282,10 +298,10 @@ export function AvgScoreChart({
             </Box>
             <Box>
               <Typography variant="h6" fontWeight="700" color="#1e293b">
-                Phân bố điểm tổng kết
+                {chartTitle}
               </Typography>
               <Typography variant="body2" color="#64748b">
-                Hiển thị điểm tổng kết theo từng khóa, môn.
+                Không có dữ liệu để hiển thị
               </Typography>
             </Box>
           </Box>
@@ -309,7 +325,7 @@ export function AvgScoreChart({
           <PlotlyBoxPlot
             data={[]}
             layout={{
-              title: "Phân bố điểm",
+              title: "",
               dragmode: false,
               hovermode: "closest",
               yaxis: {
@@ -393,13 +409,40 @@ export function AvgScoreChart({
           </Box>
           <Box>
             <Typography variant="h6" fontWeight="700" color="#1e293b">
-              Phân bố điểm tổng kết
+              {chartTitle}
             </Typography>
             <Typography variant="body2" color="#64748b">
-              Hiển thị điểm tổng kết theo từng khóa, môn.
+              {chartSubtitle}
             </Typography>
           </Box>
         </Box>
+
+        {/* 🔥 ADD FILTER STATUS */}
+        {(isSubjectFilter || isYearFilter) && (
+          <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            {isSubjectFilter && (
+              <Chip
+                label={`Môn được chọn`}
+                color="primary"
+                size="small"
+                variant="outlined"
+              />
+            )}
+            {isYearFilter && (
+              <Chip
+                label={`Khóa được chọn`}
+                color="secondary"
+                size="small"
+                variant="outlined"
+              />
+            )}
+            <Chip
+              label={`${chartData.xLabels.length} ${isSubjectFilter ? 'lớp' : 'môn'}`}
+              variant="outlined"
+              size="small"
+            />
+          </Box>
+        )}
       </Box>
 
       {/* Chart */}
@@ -419,9 +462,9 @@ export function AvgScoreChart({
           Điểm
         </Typography>
         <PlotlyBoxPlot
-          data={boxPlotData}
+          data={chartData.boxPlotData}
           layout={{
-            title: "Phân bố điểm",
+            title: "",
             dragmode: false,
             hovermode: "closest",
             yaxis: {
@@ -445,17 +488,22 @@ export function AvgScoreChart({
               titlefont: { size: 14, color: "#64748b" },
               showgrid: false,
               categoryorder: "array",
-              categoryarray: xLabels,
+              categoryarray: chartData.xLabels,
               fixedrange: true,
-              tickangle: 0,
+              tickangle: chartData.xLabels.some(label => label.length > 15) ? -45 : 0,
               tickmode: "array",
-              ticktext: xLabels.map((label) => createMultiLineLabel(label)),
-              tickvals: xLabels,
+              ticktext: chartData.xLabels.map((label) => createMultiLineLabel(label)),
+              tickvals: chartData.xLabels,
             },
             boxmode: "group",
             plot_bgcolor: "white",
             paper_bgcolor: "white",
-            margin: { t: 40, r: 30, l: 50, b: 100 },
+            margin: {
+              t: 40,
+              r: 30,
+              l: 50,
+              b: chartData.xLabels.some(label => label.length > 15) ? 120 : 100
+            },
             legend: { orientation: "h", y: -0.2 },
           }}
           config={{

@@ -208,13 +208,15 @@ const FraudDetection = () => {
     <Box sx={{ p: { xs: 2, md: 4 }, cursor: loading ? 'wait' : 'default' }}>
       <PageHeader
         title="Phát hiện bất thường"
-        subtitle="Phân tích và phát hiện hành vi bất thường trong bài kiểm tra"
+        subtitle="Phân tích và phát hiện hành vi bất thường trong bài kiểm tra (Lưu ý: Môn học cần chứa ít nhất 1 bài QUIZ để phân tích)"
         icon="fraud"
         variant="fraud"
         stats={[
           { label: "Tổng số lớp có dữ liệu", value: classes.length },
           { label: "Bài kiểm tra", value: Quiz.length },
         ]}
+        url={"/data-management"}
+        urlText="Thêm dữ liệu để phân tích"
       />
 
       <Paper

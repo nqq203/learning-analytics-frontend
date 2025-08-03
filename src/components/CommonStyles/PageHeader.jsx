@@ -8,15 +8,19 @@ import {
   Divider,
 } from '@mui/material';
 import { School, TrendingUp, Assessment, Group, Security } from '@mui/icons-material';
+import { useRouter } from 'next/router';
 
-const PageHeader = ({ 
-  title, 
-  subtitle, 
-  icon, 
-  stats, 
+const PageHeader = ({
+  title,
+  subtitle,
+  icon,
+  stats,
   actions,
-  variant = 'default' // 'default', 'analytics', 'management', 'prediction'
+  variant = 'default', // 'default', 'analytics', 'management', 'prediction'.
+  url = null,
+  urlText = '',
 }) => {
+  const router = useRouter();
   const getIconComponent = () => {
     switch (icon) {
       case 'analytics':
@@ -46,6 +50,12 @@ const PageHeader = ({
         return 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)';
     }
   };
+
+  const navigateTo = (url) => {
+    if (url) {
+      router.push(url);
+    }
+  }
 
   return (
     <Paper
@@ -114,6 +124,18 @@ const PageHeader = ({
               >
                 {subtitle}
               </Typography>
+              {url && <Typography
+                variant="h6"
+                sx={{
+                  opacity: 0.9,
+                  fontWeight: 300,
+                  mt: 0.5,
+                }}
+                onClick={() => navigateTo(url)}
+                style={{ cursor: 'pointer', color: 'white', textDecoration: 'underline' }}
+              >
+                {urlText}
+              </Typography>}
             </Box>
           </Box>
 

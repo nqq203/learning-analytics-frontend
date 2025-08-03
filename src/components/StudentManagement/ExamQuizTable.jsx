@@ -125,7 +125,7 @@ const ExamQuizTable = ({
   };
 
   return (
-    <TableWrapper>
+    <TableWrapper style={{ padding: 0 }}>
       <TableContainer
         component={Paper}
         className="TableContainer"

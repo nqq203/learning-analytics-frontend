@@ -33,7 +33,8 @@ import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk, fetchCompareByC
 import PageHeader from "@/components/CommonStyles/PageHeader";
 import { useRouter } from 'next/router';
 import { fetchAllCourses } from "@/redux/thunk/dataThunk";
-import { useNavigate } from "react-router-dom";
+import BreadcrumbComponent from "@/components/Breadcrumb";
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
 const Compare = () => {
   const initialState = {
@@ -41,8 +42,6 @@ const Compare = () => {
     selectedRows: [],
     isComparing: false,
   };
-
-
 
   const [selectedSubject, setSelectedSubject] = useState(initialState.selectedSubject);
   const [selectedRows, setSelectedRows] = useState(initialState.selectedRows);
@@ -68,26 +67,20 @@ const Compare = () => {
     }
   }
 
+  const getBreadcrumbs = () => {
+    const { pathname } = router;
+    if (pathname === "/analytics/compare") {
+      return [
+        { type: 'home', label: 'Trang chủ', path: '/' },
+        { type: 'analytics', label: 'So sánh môn học' } // Current page
+      ]
+    }
+  }
 
   const dispatch = useDispatch();
   const { compareResults, compareLoading, compareError, loading, totalRecords, course } = useSelector((state) => state.compare);
   const { accessToken } = useSelector(state => state.auth);
-  // const { classes, totalRecords, loading } = useSelector((state) => state.analytics);
   const { courses } = useSelector((state) => state.data);
-
-  // useEffect(()=>{
-  //   dispatch(fetchCompareByCourse({
-  //     instructor_id:1,
-  //     search:null
-  //   }))
-
-  // },[])
-
-
-  // useEffect(()=>{
-
-  //   console.log("course: ",course)
-  // },[course])
 
   useEffect(() => {
     const handleRouteChange = (url) => {
@@ -139,13 +132,8 @@ const Compare = () => {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-
     setRows(course ?? []);
-
   }, [course]);
-
-
-  // const rows = useMemo(() => classes || [], [classes]);
 
   useEffect(() => {
     if (userId) {
@@ -153,13 +141,10 @@ const Compare = () => {
     }
   }, [dispatch, userId, searchKeyWord]);
 
-
   const handleActions = (courseId) => {
     if (courseId)
       router.push(`/analytics/compare/${courseId}`)
   }
-
-
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
@@ -173,6 +158,12 @@ const Compare = () => {
           //   { label: "Môn học", value: courses?.length },
           //   { label: "Đã chọn", value: selectedRows.length },
         ]}
+      />
+
+      {/* Breadcrumbs */}
+      <BreadcrumbComponent 
+        variant="default"
+        breadcrumbs={getBreadcrumbs()}
       />
       <Paper
         elevation={0}
@@ -252,7 +243,7 @@ const Compare = () => {
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >ID Môn</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Môn</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Loại Môn</TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Chi tiết</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Danh sách lớp</TableCell>
                 </TableRow>
               </TableHead>
 
@@ -273,7 +264,7 @@ const Compare = () => {
                       <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.courseName}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.courseType}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                        <VisibilityIcon
+                        <FormatListBulletedIcon
                           color="primary"
                           style={{ cursor: "pointer" }}
                           onClick={() => handleActions(item.courseId)}

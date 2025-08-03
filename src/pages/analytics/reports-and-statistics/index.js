@@ -20,6 +20,7 @@ import PageHeader from "@/components/CommonStyles/PageHeader";
 import SearchFilters from "@/components/CommonStyles/SearchFilters";
 import SearchIcon from "@mui/icons-material/Search";
 import { fetchAllCourses } from "@/redux/thunk/dataThunk";
+import BreadcrumbComponent from "@/components/Breadcrumb";
 
 const ClassesList = () => {
   const { totalRecords, classes, loading } = useSelector(
@@ -210,6 +211,18 @@ const ClassesList = () => {
     },
   ];
 
+  const getCurrentBreadCrumbs = () => {
+    const { pathname } = router;
+    if (pathname === '/analytics/reports-and-statistics') {
+      return [
+        { type: 'home', label: 'Trang chủ', path: '/' },
+        { type: 'analytics', label: 'Thống kê & Báo cáo' } // Current page
+      ];
+    }
+
+    return [];
+  }
+
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       <PageHeader
@@ -221,6 +234,12 @@ const ClassesList = () => {
           { label: "Tổng lớp", value: totalRecords },
           { label: "Môn học", value: courses?.length },
         ]}
+      />
+
+      {/* Breadcrumb Navigation */}
+      <BreadcrumbComponent
+        breadcrumbs={getCurrentBreadCrumbs()}
+        variant="default"
       />
 
       <SearchFilters
