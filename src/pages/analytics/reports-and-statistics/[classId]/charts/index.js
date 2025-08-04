@@ -56,6 +56,10 @@ const StudentAnalytics = () => {
   const [selectedGradeField, setSelectedGradeField] = useState(selectedGrades[0]);
   const [breadcrumbs, setBreadcrumbs] = useState([]);
 
+  // State for selected LOs for LO bar chart (tách biệt assignmentQuiz/finalExam)
+  const [selectedLOAssignment, setSelectedLOAssignment] = useState("");
+  const [selectedLOFinal, setSelectedLOFinal] = useState("");
+
   useEffect(() => {
     const getBreadcrumbs = () => {
       const baseBreadcrumbs = [
@@ -234,7 +238,7 @@ const StudentAnalytics = () => {
         <h5 style={{
           textAlign: 'center',
           marginBottom: '15px',
-          color: loType === 'finalExam' ? '#d32f2f' : '#1976d2',
+          color: '#1976d2',
           fontSize: '16px',
           fontWeight: 'bold'
         }}>
@@ -254,287 +258,92 @@ const StudentAnalytics = () => {
     );
   };
 
+  // Màu custom cho các loại phân loại
+  const chartColorMap = {
+    gioi: '#3b82f6', // Giỏi
+    kha: '#10b981', // Khá
+    trungbinh: '#f59e0b', // Trung bình
+    yeu: '#ef4444', // Yếu
+    dau: '#10b981', // Đậu
+    rot: '#ef4444', // Rớt
+  };
+
   // Updated LO Histogram for both assignmentQuiz and finalExam
   const renderLOHistogram = (loType, chartData) => {
     if (!chartData) return null;
 
-    const getChartTitle = (loType) => {
-      switch (loType) {
-        case 'finalExam':
-          return '📊 Phân bố tỷ lệ hoàn thành theo LO - Kỳ Thi Cuối Kỳ';
-        case 'assignmentQuiz':
-          return '📊 Phân bố điểm theo LO - Bài Tập & Quiz';
-        default:
-          return '📊 Phân bố theo Mục tiêu học tập (Learning Outcome)';
+    // Get LO list from classInfo
+    const loList = (loData?.classInfo?.learningOutcomes || []).filter(lo => {
+      if (loType === 'assignmentQuiz') {
+        return chartData.histogram?.some(h => h.loCode === lo.loCode);
+      } else if (loType === 'finalExam') {
+        return chartData.histogram?.some(h => h.loCode === lo.loCode);
       }
+      return false;
+    });
+
+    const isAssignment = loType === 'assignmentQuiz';
+    const selectedLO = isAssignment ? selectedLOAssignment : selectedLOFinal;
+    const setSelectedLO = isAssignment ? setSelectedLOAssignment : setSelectedLOFinal;
+
+    // Default: chọn LO đầu tiên nếu chưa chọn
+    const currentLO = selectedLO || (loList[0]?.loCode || "");
+
+    // Lấy dữ liệu histogram cho LO đang chọn
+    const histogramData = chartData.histogram?.find(h => h.loCode === currentLO);
+
+    // Handler for LO selection
+    const handleLOChange = (e) => {
+      setSelectedLO(e.target.value);
     };
 
-    // Get histogram data
-    let histogramData = null;
-    if (chartData.histogram && Array.isArray(chartData.histogram)) {
-      histogramData = chartData.histogram;
-    } else {
-      console.log('No histogram data found for', loType);
-      return (
-        <Box sx={{ p: 2, textAlign: 'center', color: '#666' }}>
-          <p>Không có dữ liệu histogram cho {loType === 'finalExam' ? 'Final Exam' : 'Assignment/Quiz'}</p>
-        </Box>
-      );
-    }
-
     return (
-      <Box key={`${loType}-histogram`} sx={{ mb: 2 }}>
-        <h5 style={{
-          textAlign: 'center',
-          marginBottom: '15px',
-          color: loType === 'finalExam' ? '#d32f2f' : '#1976d2',
-          fontSize: '16px',
-          fontWeight: 'bold'
-        }}>
-          {getChartTitle(loType)}
-        </h5>
-
-        <Box display="grid"
-          gridTemplateColumns="repeat(auto-fit, minmax(500px, 1fr))"
-          gap={3}
-          sx={{ mb: 3 }}>
-          {histogramData.slice(0, 6).map((loData) => (
-            <Box key={loData.loCode} sx={{
-              position: 'relative',
-              p: 2,
-              border: `2px solid ${loType === 'finalExam' ? '#ffebee' : '#e3f2fd'}`,
-              borderRadius: 2,
-              backgroundColor: '#fafafa',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-              overflow: 'visible'           // cho phép nội dung con tràn ra nếu cần
-            }}>
-              <h6 style={{
-                textAlign: 'center',
-                fontSize: '14px',
-                margin: '0 0 10px 0',
-                fontWeight: 'bold',
-                color: loType === 'finalExam' ? '#d32f2f' : '#1976d2',
-                padding: '8px',
-                backgroundColor: loType === 'finalExam' ? '#ffebee' : '#e3f2fd',
-                borderRadius: '4px'
-              }}>
-                {loData.loCode} - {loData.loDescription || ''}
-                {loType === 'finalExam' && loData.weightInExam && (
-                  <div style={{ fontSize: '11px', marginTop: '4px' }}>
-                    Trọng số: {loData.weightInExam} ({((loData.weightInExam / 10) * 100).toFixed(0)}%)
-                  </div>
-                )}
-              </h6>
-
-              <Box sx={{ width: '100%' }}>
-                <HistogramChartAnalytics
-                  data={[]}
-                  selectedGrades={[]}
-                  isLOChart={true}
-                  loCode={loData.loCode}
-                  loData={loType === 'finalExam' ? loData.completionDistribution : loData.scoreDistribution}
-                  loType={loType}
-                />
-              </Box>
-
-              {/* Enhanced Statistics for each LO */}
-              <Box sx={{ mt: 1, p: 1.5, backgroundColor: '#ffffff', borderRadius: 1, border: '1px solid #e0e0e0' }}>
-                {(() => {
-                  let scoreDistribution = null;
-                  let isPercentage = loType === 'finalExam';
-
-                  if (loType === 'finalExam') {
-                    // For finalExam, use completionDistribution (already in percentage)
-                    if (loData.completionDistribution && Array.isArray(loData.completionDistribution)) {
-                      const completions = loData.completionDistribution;
-
-                      // Create ranges for percentage completion
-                      const ranges = [
-                        { min: 0, max: 25, range: "0-25%", label: "Yếu" },
-                        { min: 25, max: 50, range: "25-50%", label: "Trung bình yếu" },
-                        { min: 50, max: 75, range: "50-75%", label: "Trung bình" },
-                        { min: 75, max: 100, range: "75-100%", label: "Tốt" }
-                      ];
-
-                      scoreDistribution = ranges.map(range => ({
-                        min: range.min,
-                        max: range.max,
-                        range: range.range,
-                        label: range.label,
-                        count: completions.filter(completion => {
-                          const comp = parseFloat(completion);
-                          return comp >= range.min && (comp < range.max || (range.max === 100 && comp >= range.min));
-                        }).length
-                      }));
-                    }
-                  } else {
-                    // For assignmentQuiz, use scoreDistribution
-                    if (loData.scoreDistribution && Array.isArray(loData.scoreDistribution)) {
-                      const scores = loData.scoreDistribution;
-
-                      const ranges = [
-                        { min: 0, max: 4, range: "0-4", label: "Yếu" },
-                        { min: 4, max: 6, range: "4-6", label: "Trung bình" },
-                        { min: 6, max: 8, range: "6-8", label: "Khá" },
-                        { min: 8, max: 10, range: "8-10", label: "Tốt" }
-                      ];
-
-                      scoreDistribution = ranges.map(range => ({
-                        min: range.min,
-                        max: range.max,
-                        range: range.range,
-                        label: range.label,
-                        count: scores.filter(score => {
-                          const numScore = parseFloat(score);
-                          return numScore >= range.min && (numScore < range.max || (range.max === 10 && numScore === 10));
-                        }).length
-                      }));
-                    }
-                  }
-
-                  if (!scoreDistribution || !Array.isArray(scoreDistribution)) {
-                    return (
-                      <Box textAlign="center" sx={{ color: '#666' }}>
-                        <small>Không có dữ liệu thống kê cho {loData.loCode}</small>
-                      </Box>
-                    );
-                  }
-
-                  const total = scoreDistribution.reduce((sum, range) => sum + range.count, 0);
-
-                  // Calculate statistics based on type
-                  let avgValue, excellentCount, poorCount, passCount;
-
-                  if (loType === 'finalExam') {
-                    // For finalExam, calculate based on completion percentage
-                    const weightedSum = scoreDistribution.reduce((sum, range) => {
-                      const midPoint = (range.min + range.max) / 2;
-                      return sum + (midPoint * range.count);
-                    }, 0);
-                    avgValue = total > 0 ? weightedSum / total : 0;
-
-                    excellentCount = scoreDistribution
-                      .filter(range => range.min >= 75)
-                      .reduce((sum, range) => sum + range.count, 0);
-
-                    poorCount = scoreDistribution
-                      .filter(range => range.max <= 25)
-                      .reduce((sum, range) => sum + range.count, 0);
-
-                    passCount = scoreDistribution
-                      .filter(range => range.min >= 50)
-                      .reduce((sum, range) => sum + range.count, 0);
-                  } else {
-                    // For assignmentQuiz, use 0-10 scale
-                    const weightedSum = scoreDistribution.reduce((sum, range) => {
-                      const midPoint = (range.min + range.max) / 2;
-                      return sum + (midPoint * range.count);
-                    }, 0);
-                    avgValue = total > 0 ? weightedSum / total : 0;
-
-                    excellentCount = scoreDistribution
-                      .filter(range => range.min >= 8)
-                      .reduce((sum, range) => sum + range.count, 0);
-
-                    poorCount = scoreDistribution
-                      .filter(range => range.max <= 4)
-                      .reduce((sum, range) => sum + range.count, 0);
-
-                    passCount = scoreDistribution
-                      .filter(range => range.min >= 5)
-                      .reduce((sum, range) => sum + range.count, 0);
-                  }
-
-                  return (
-                    <>
-                      {/* Key Metrics */}
-                      <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
-                        <Box textAlign="center" sx={{ flex: 1 }}>
-                          <div style={{ fontSize: '11px', color: '#666' }}>
-                            {loType === 'finalExam' ? 'Hoàn thành TB' : 'Điểm TB'}
-                          </div>
-                          <div style={{
-                            fontSize: '14px',
-                            fontWeight: 'bold',
-                            color: avgValue >= (isPercentage ? 70 : 7) ? '#4caf50' :
-                              avgValue >= (isPercentage ? 50 : 5) ? '#ff9800' : '#f44336'
-                          }}>
-                            {avgValue.toFixed(1)}{isPercentage ? '%' : ''}
-                          </div>
-                        </Box>
-
-                        <Box textAlign="center" sx={{ flex: 1 }}>
-                          <div style={{ fontSize: '11px', color: '#666' }}>Tỷ lệ đạt</div>
-                          <div style={{
-                            fontSize: '14px',
-                            fontWeight: 'bold',
-                            color: (passCount / total) >= 0.8 ? '#4caf50' :
-                              (passCount / total) >= 0.6 ? '#ff9800' : '#f44336'
-                          }}>
-                            {total > 0 ? ((passCount / total) * 100).toFixed(0) : 0}%
-                          </div>
-                        </Box>
-
-                        <Box textAlign="center" sx={{ flex: 1 }}>
-                          <div style={{ fontSize: '11px', color: '#666' }}>Tổng SV</div>
-                          <div style={{ fontSize: '14px', fontWeight: 'bold', color: loType === 'finalExam' ? '#d32f2f' : '#1976d2' }}>
-                            {total}
-                          </div>
-                        </Box>
-                      </Box>
-
-                      {/* Distribution Summary */}
-                      <Box display="flex" gap={0.5} sx={{ mb: 1 }}>
-                        {scoreDistribution.map((range, index) => (
-                          <Box key={index} sx={{
-                            flex: 1,
-                            textAlign: 'center',
-                            p: 0.5,
-                            backgroundColor: index === 3 ? '#e8f5e8' :
-                              index === 2 ? '#fff3e0' :
-                                index === 1 ? '#fff8e1' : '#ffebee',
-                            borderRadius: 0.5
-                          }}>
-                            <div style={{
-                              fontSize: '10px',
-                              color: index === 3 ? '#2e7d32' :
-                                index === 2 ? '#f57c00' :
-                                  index === 1 ? '#ff9800' : '#d32f2f'
-                            }}>
-                              {range.label}
-                            </div>
-                            <div style={{
-                              fontSize: '12px',
-                              fontWeight: 'bold',
-                              color: index === 3 ? '#2e7d32' :
-                                index === 2 ? '#f57c00' :
-                                  index === 1 ? '#ff9800' : '#d32f2f'
-                            }}>
-                              {range.count}
-                            </div>
-                          </Box>
-                        ))}
-                      </Box>
-
-                      {/* Status indicator */}
-                      <Box textAlign="center" sx={{ mt: 1 }}>
-                        {(() => {
-                          const passRate = total > 0 ? (passCount / total) : 0;
-
-                          if (passRate >= 0.9) return <span style={{ fontSize: '11px', color: '#4caf50', fontWeight: 'bold' }}>🏆 Xuất sắc</span>;
-                          if (passRate >= 0.8) return <span style={{ fontSize: '11px', color: '#8bc34a', fontWeight: 'bold' }}>✅ Tốt</span>;
-                          if (passRate >= 0.7) return <span style={{ fontSize: '11px', color: '#ffc107', fontWeight: 'bold' }}>⚠️ Khá</span>;
-                          if (passRate >= 0.5) return <span style={{ fontSize: '11px', color: '#ff9800', fontWeight: 'bold' }}>📊 Trung bình</span>;
-                          return <span style={{ fontSize: '11px', color: '#f44336', fontWeight: 'bold' }}>🚨 Cần cải thiện</span>;
-                        })()}
-                      </Box>
-                    </>
-                  );
-                })()}
-              </Box>
-            </Box>
-          ))}
+      <Box key={`${loType}-histogram`} sx={{ mb: 2 }} style={{ position: 'relative', height: '92%' }}>
+        <Box display="flex" alignItems="center" sx={{ mb: 2, alignItems: 'center', justifyContent: 'center' }}>
+          <h5 style={{
+            textAlign: 'center',
+            marginBottom: 0,
+            color: '#1976d2',
+            fontSize: '16px',
+            fontWeight: 'bold'
+          }}>
+            {loType === 'finalExam' ? '📊 Phân bố hoàn thành theo LO - Kỳ Thi Cuối Kỳ' : '📊 Phân bố điểm theo LO - Bài Tập & Quiz'}
+          </h5>
         </Box>
+        {histogramData ? (
+          <>
+            <HistogramChartAnalytics
+              data={[]}
+              selectedGrades={[]}
+              isLOChart={true}
+              loCode={histogramData.loCode}
+              loData={loType === 'finalExam' ? histogramData.completionDistribution : histogramData.scoreDistribution}
+              loType={loType}
+              colorMap={chartColorMap}
+            />
+            <Box display="flex" justifyContent="center" sx={{ mt: 2 }} style={{ position: 'absolute', bottom: "-20px", left: 0, right: 0 }}>
+              <FormControl size="small" sx={{ minWidth: 220 }}>
+                <InputLabel id={`select-lo-label-${loType}`}>Chọn mục tiêu học tập</InputLabel>
+                <Select
+                  labelId={`select-lo-label-${loType}`}
+                  value={currentLO}
+                  onChange={handleLOChange}
+                  label="Chọn mục tiêu học tập"
+                >
+                  {loList.map((lo) => (
+                    <MenuItem key={lo.loCode} value={lo.loCode}>
+                      {lo.loCode} - {lo.loDescription}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          </>
+        ) : (
+          <Box sx={{ p: 2, textAlign: 'center', color: '#666' }}>
+            <p>Không có dữ liệu cho mục tiêu học tập này.</p>
+          </Box>
+        )}
       </Box>
     );
   };
@@ -658,7 +467,7 @@ const StudentAnalytics = () => {
             fontSize: "24px",
             marginBottom: "30px",
             padding: "15px",
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)",
             color: "white",
             borderRadius: "8px",
             textAlign: "center",
@@ -671,9 +480,8 @@ const StudentAnalytics = () => {
         {/* Learning Objectives Info Table */}
         {renderLOInfoTable()}
 
-        {/* Vertical layout for all LO types */}
+        {/* Horizontal layout for all LO types: Radar left, Histogram right */}
         <Box display="flex" flexDirection="column" gap={4}>
-
           {/* Assignment/Quiz Charts */}
           {selectedLearningObjectives.includes('assignmentQuiz') && loData.assignmentQuiz && (
             <Box sx={{
@@ -702,12 +510,14 @@ const StudentAnalytics = () => {
                 </span>
               </Box>
 
-              <Box display="flex" flexDirection="column" gap={4}>
-                {/* Radar Chart for Assignment/Quiz */}
-                {renderLORadarChart('assignmentQuiz', loData.assignmentQuiz)}
-
-                {/* Histogram for Assignment/Quiz */}
-                {renderLOHistogram('assignmentQuiz', loData.assignmentQuiz)}
+              {/* Flex row: Radar left, Histogram right */}
+              <Box display="flex" flexDirection="row" gap={4}>
+                <Box sx={{ flex: 1, minWidth: 0, maxWidth: '50%' }}>
+                  {renderLORadarChart('assignmentQuiz', loData.assignmentQuiz)}
+                </Box>
+                <Box sx={{ flex: 1, minWidth: 0, maxWidth: '50%' }}>
+                  {renderLOHistogram('assignmentQuiz', loData.assignmentQuiz)}
+                </Box>
               </Box>
             </Box>
           )}
@@ -716,36 +526,38 @@ const StudentAnalytics = () => {
           {selectedLearningObjectives.includes('finalExam') && loData.finalExam && (
             <Box sx={{
               p: 3,
-              border: '2px solid #d32f2f',
+              border: '2px solid #1976d2',
               borderRadius: 2,
               backgroundColor: '#fafafa'
             }}>
               <h4 style={{
                 fontSize: "20px",
                 marginBottom: "20px",
-                color: "#d32f2f",
+                color: "#1976d2",
                 textAlign: "center",
                 padding: "12px",
-                backgroundColor: "#ffebee",
+                backgroundColor: "#e3f2fd",
                 borderRadius: "8px",
-                borderLeft: "4px solid #d32f2f",
+                borderLeft: "4px solid #1976d2",
                 margin: "0 0 20px 0"
               }}>
                 📋 Kỳ Thi Cuối Kỳ (Final Exam)
               </h4>
 
-              <Box sx={{ mb: 3, p: 1.5, backgroundColor: '#fff3e0', borderRadius: 2, textAlign: 'center' }}>
-                <span style={{ fontSize: '14px', color: '#f57c00', fontStyle: 'italic', fontWeight: '500' }}>
+              <Box sx={{ mb: 3, p: 1.5, backgroundColor: '#e8f5e8', borderRadius: 2, textAlign: 'center' }}>
+                <span style={{ fontSize: '14px', color: '#2e7d32', fontStyle: 'italic', fontWeight: '500' }}>
                   ✨ Thang đo: 0-100% completion | Hiển thị: Radar Chart, Histogram
                 </span>
               </Box>
 
-              <Box display="flex" flexDirection="column" gap={4}>
-                {/* Radar Chart for Final Exam */}
-                {renderLORadarChart('finalExam', loData.finalExam)}
-
-                {/* Histogram for Final Exam */}
-                {renderLOHistogram('finalExam', loData.finalExam)}
+              {/* Flex row: Radar left, Histogram right */}
+              <Box display="flex" flexDirection="row" gap={4}>
+                <Box sx={{ flex: 1, minWidth: 0, maxWidth: '50%' }}>
+                  {renderLORadarChart('finalExam', loData.finalExam)}
+                </Box>
+                <Box sx={{ flex: 1, minWidth: 0, maxWidth: '50%' }}>
+                  {renderLOHistogram('finalExam', loData.finalExam)}
+                </Box>
               </Box>
             </Box>
           )}
@@ -770,7 +582,7 @@ const StudentAnalytics = () => {
             fontSize: "24px",
             marginBottom: "30px",
             padding: "15px",
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)",
             color: "white",
             borderRadius: "8px",
             textAlign: "center",
@@ -790,8 +602,8 @@ const StudentAnalytics = () => {
             backgroundColor: '#fafafa'
           }}
         >
-          <ClassificationPieChart data={data} />
-          <PassFailPieChart data={data} />
+          <ClassificationPieChart data={data} colorMap={chartColorMap} />
+          <PassFailPieChart data={data} colorMap={chartColorMap} />
         </Box>
       </Box>
     );
@@ -806,7 +618,7 @@ const StudentAnalytics = () => {
             fontSize: "24px",
             marginBottom: "30px",
             padding: "15px",
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)",
             color: "white",
             borderRadius: "8px",
             textAlign: "center",

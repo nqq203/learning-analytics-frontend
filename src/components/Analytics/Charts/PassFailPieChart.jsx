@@ -31,7 +31,7 @@ const PassFailPieChart = ({ data }) => {
   }, [data]);
 
   // Màu sắc cho 2 phân khúc (đậu, rớt)
-  const colors = ["#0088FE", "#FF8042"];
+  const colors = ["#10b981", "#ef4444"];
 
   return (
     <Box

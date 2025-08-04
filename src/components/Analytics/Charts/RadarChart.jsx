@@ -22,7 +22,7 @@ const colorPalette = [
   "#8884d8",
   "#82ca9d",
   "#ffc658",
-  "#8dd1e1",
+  "#ef4444",
   "#ff7300",
   "#d0ed57",
   "#a4de6c",

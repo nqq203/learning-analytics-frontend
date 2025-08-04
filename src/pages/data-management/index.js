@@ -813,7 +813,7 @@ export default function MainClassManagement() {
           types={importTypes}
           sampleLinks={[
             "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565819/Course_Data_huy9kj.xlsx",
-            "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565819/All_f7u4fd.xlsx",
+            "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1754335318/All_fuztbv.xlsx",
           ]}
           onImport={handleImport}
         /> : null}

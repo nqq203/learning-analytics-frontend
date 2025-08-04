@@ -1137,7 +1137,7 @@ export default function StudentDetailView({ onBack }) {
             "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565819/Assignment_aw1cn2.xlsx",
             "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565819/Final_Exam_jvqjg3.xlsx",
             "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565820/Midterm_vpp8v5.xlsx",
-            "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565819/Learning_Outcome_j3g05r.xlsx",
+            "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1754335318/Learning_Outcome_sd3rfs.xlsx",
           ]}
           onImport={handleImport}
         />}
