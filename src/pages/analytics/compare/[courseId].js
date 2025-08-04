@@ -176,7 +176,6 @@ const Compare = () => {
 
   const handleCompareClick = async () => {
     const selectedItems = rows.filter(row => selectedRows.includes(row.no));
-    console.log("AFTER selectedItems: ", selectedItems)
 
     if (selectedItems.length < 2) {
       alert("Cần chọn ít nhất 2 lớp để so sánh.");
@@ -203,7 +202,6 @@ const Compare = () => {
   };
 
   useEffect(() => {
-    // console.log(compareResults)
     if (compareResults && !compareLoading && !compareError) {
       setIsComparing(true);
     } else if (compareError) {
@@ -249,7 +247,6 @@ const Compare = () => {
 
 
   if (isComparing && compareResults && compareResults.data) {
-    // console.log(compareResults.data)
     return (
       <CompareResult
         key={compareKey}

@@ -121,7 +121,6 @@ export default function FilterBoard() {
         if (invalidFilter) {
             toast.warning("Có điều kiện bị trống! Vui lòng chọn đầy đủ Math, Field và Value.");
         } else {
-            console.log("Applied Filters:", filters);
             toast.success("Bộ lọc đã được áp dụng! Kiểm tra console để xem kết quả.");
         }
     };

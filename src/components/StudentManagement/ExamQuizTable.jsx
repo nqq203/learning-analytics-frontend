@@ -65,8 +65,6 @@ const ExamQuizTable = ({
   }, [onLoadMore]);
 
   const handleDetail = (row)=>{
-    console.log("row: ",row)
-    // console.log("type: ",type)
     if(type==="Quiz"){
       handleViewInformation(row.quizId,"quiz");
     }

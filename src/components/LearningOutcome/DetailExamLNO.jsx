@@ -189,7 +189,6 @@ export default function DetailExamLNO({
         data.push({ subject: x, Score: assignmentQuiz.radar[x], fullMark: 10 })
 
       }
-      console.log(data)
       return data;
     }
     return []

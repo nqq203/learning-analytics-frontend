@@ -39,11 +39,9 @@ const RadarChartAnalytics = ({
   loData = null,
   loType = "",
 }) => {
-  console.log('🎯 RadarChart Debug:', { isLOChart, loData, loType });
 
   // Handle LO Chart data differently
   if (isLOChart && loData) {
-    console.log('📊 Processing LO Radar Data:', loData);
 
     // Validate loData
     if (!Array.isArray(loData) || loData.length === 0) {
@@ -65,8 +63,6 @@ const RadarChartAnalytics = ({
         return [];
       })
     )];
-
-    console.log('📋 All LO Codes:', allLoCodes);
 
     if (allLoCodes.length === 0) {
       return (
@@ -96,8 +92,6 @@ const RadarChartAnalytics = ({
 
       transformedData.push(dataPoint);
     });
-
-    console.log('✅ Transformed Data:', transformedData);
 
     // Determine domain based on loType
     const domain = loType === 'finalExam' ? [0, 100] : [0, 10];

@@ -55,8 +55,6 @@ const StudentContainerLNO = () => {
         path: '/analytics/learning-outcome',
       }
     ];
-    console.log("Decoded Class Name:", decodedClassName);
-    console.log("Decoded Course Name:", decodedCourseName);
     if (decodedClassName && decodedCourseName) {
       breadcrumbs.push({
         type: 'students',
@@ -139,7 +137,6 @@ const StudentContainerLNO = () => {
   }, [studentsOverview]);
 
   useEffect(() => {
-    console.log(`Chuyển sang Students ${studentID}`);
     if (studentID !== "") {
       router.push(`/analytics/learning-outcome/student/${classID}/${studentID}`);
     }

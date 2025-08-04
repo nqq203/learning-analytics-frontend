@@ -8,7 +8,6 @@ export const register = createAsyncThunk(
     "auth/register", 
     async (data, { rejectWithValue }) => {
         try {
-            // console.log(data);
             const response = await authApi.register(data);
             return response.data;
         } catch (error) {
@@ -21,7 +20,6 @@ export const login = createAsyncThunk(
     "auth/login",
     async (data, { rejectWithValue }) => {
         try {
-            // console.log(data);
             const response = await authApi.login(data);
             return response.data;
         } catch (error) {

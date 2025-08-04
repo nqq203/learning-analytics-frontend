@@ -19,7 +19,7 @@ const HistogramChartAnalytics = ({
   loData = null,
   loType = ""
 }) => {
-  console.log('🔍 Histogram Debug:', { isLOChart, loCode, loType, loData });
+  // console.log('🔍 Histogram Debug:', { isLOChart, loCode, loType, loData });
 
   // Handle LO Chart data differently
   if (isLOChart && loData) {

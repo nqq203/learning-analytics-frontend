@@ -453,10 +453,6 @@ export default function StudentDetailView({ onBack }) {
     return [];
   }, [quizzes])
 
-  useEffect(() => {
-    console.log("ColExamQuizData: ", ColExamQuizData)
-  }, [ColExamFinalData])
-
   const ColStudentsAssignments = useMemo(() => {
     return SetHeader(studentsAssignments);
   }, [studentsAssignments]);
@@ -497,7 +493,6 @@ export default function StudentDetailView({ onBack }) {
   };
 
   const handleEditClick = (student) => {
-    console.log("studentId: ", student)
     setSelectedStudent(student);
     setOpenEditModal(true);
   };
@@ -671,7 +666,6 @@ export default function StudentDetailView({ onBack }) {
   const importTypes = ["Thông tin sinh viên", "Tổng kết", "Quiz", "Bài tập", "Cuối kỳ", "Giữa kỳ", "Mục tiêu học tập"];
   const handleImport = async (type, file) => {
     let response;
-    console.log(type);
     if (type === "Thông tin sinh viên") {
       response = await dispatch(processStudentData({ instructorId: userId, classId: classId, file }));
     } else if (type === "Tổng kết") {

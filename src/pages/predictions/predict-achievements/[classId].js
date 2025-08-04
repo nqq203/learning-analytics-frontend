@@ -159,7 +159,6 @@ export default function StudentListPage() {
       }
     ];
 
-    console.log("DEBUG: class: ", _class);
     if (_class?.className && _class?.courseName) {
       breadcrumps.push({
         type: 'students',

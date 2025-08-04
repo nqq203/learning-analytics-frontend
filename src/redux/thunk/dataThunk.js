@@ -359,7 +359,6 @@ export const createStudent = createAsyncThunk(
     "data/createStudent",
     async (data, { rejectWithValue }) => {
         try {
-            // console.log("data: ",data)
             const response = await dataApi.createStudent(data);
             return response.data;
         } catch (err) {
@@ -466,11 +465,8 @@ export const deleteExam = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try {
             const response = await dataApi.deleteExam(data);
-            // console.log("Response original data: ", response.data)
-            // console.log("Response original response: ", response)
             return response.data;
         } catch (err) {
-            // console.log("payload: ",payload);
             const payload = err.response?.data ?? err;
             return rejectWithValue(handleDataApiError(payload));
         }

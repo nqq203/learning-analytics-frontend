@@ -120,7 +120,7 @@ const BreadcrumbComponent = ({
     >
       {breadcrumbs.map((crumb, index) => {
         const isLast = index === breadcrumbs.length - 1;
-        console.log(crumb);
+        // // console.log(crumb);
         return isLast ? (
           <Typography
             key={index}

@@ -34,7 +34,7 @@ export const PieChartAnalytics = ({
   };
 
   const handleGradeFieldChange = (e) => {
-    console.log(e.target.value);
+    // // console.log(e.target.value);
     setSelectedGradeField(e.target.value);
   };
 
@@ -54,7 +54,7 @@ export const PieChartAnalytics = ({
 
   // Hàm chuẩn hóa label để so sánh
   function normalizeLabel(label) {
-    console.log('🔍 normalizeLabel:', label);
+    // // console.log('🔍 normalizeLabel:', label);
     if (!label) return '';
     return label.toString().trim().toLowerCase();
   }
@@ -84,9 +84,9 @@ export const PieChartAnalytics = ({
           label={!isLOChart}
         >
           {pieChartData.map((entry, index) => {
-            console.log("entry: ", entry);
+            // // console.log("entry: ", entry);
             const normLabel = normalizeLabel(entry.label);
-            console.log(normLabel);
+            // console.log(normLabel);
             // Luôn lấy đúng màu theo label, fallback nếu không khớp
             return (
               <Cell

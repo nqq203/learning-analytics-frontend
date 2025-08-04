@@ -6,7 +6,6 @@ export const fetchSummaryThunk = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await dashboardApi.fetchSummary(data);
-      console.log("📥 API response:", response.data); 
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

@@ -69,7 +69,6 @@ export default function EditStudentModal({
   const handleSave = () => {
     if (!changed) return;
     const payload = {};
-    // console.log(formData)
 
     // Chỉ kiểm tra MSSV (identificationCode) là bắt buộc
     if (!formData["identificationCode"] || formData["identificationCode"].toString().trim() === "") {

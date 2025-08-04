@@ -77,7 +77,6 @@ export default function StudentAnalytics() {
     if (!accessToken) return null;
     try {
       const { sub } = jwtDecode(accessToken);
-      console.log(sub);
       return sub;
     } catch {
       return null;

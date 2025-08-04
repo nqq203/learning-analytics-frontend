@@ -129,13 +129,6 @@ export function AvgScoreChart({
 
   useEffect(() => {
     const processChartData = () => {
-      console.log('🔄 Processing chart data...', {
-        allGradesLength: allGrades?.length,
-        dataLength: data?.length,
-        selectedSubject,
-        selectedYear
-      });
-
       let xLabels = [];
       let boxPlotData = [];
 

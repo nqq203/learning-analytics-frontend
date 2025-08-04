@@ -191,7 +191,6 @@ const StudentAnalytics = () => {
     let currentPieChartData = null;
     try {
       currentPieChartData = computeDistribution(data, selectedGradeField);
-      console.log('Direct computation result:', currentPieChartData);
     } catch (error) {
       console.error('Error in direct computation:', error);
       return null;
