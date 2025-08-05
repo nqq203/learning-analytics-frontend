@@ -152,11 +152,9 @@ export default function MainClassManagement() {
     const [importFile,setImportFile] = useState(false);
 
     const handleDelete = (id)=>{
-        // console.log("DELETE: ",id)
+
     }
     const handleEdit = (id) =>{
-        // console.log("EDIT: ",id)
-
         setModalUpdate(true)
         setClassEdit(id)
 

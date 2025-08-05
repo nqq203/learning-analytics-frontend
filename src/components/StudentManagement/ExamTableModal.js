@@ -78,7 +78,6 @@ const ExamTableModal = ({
       scores: scores[student.MSSV] || {},
     }));
 
-    // console.log("Kết quả:", result);
     alert("Dữ liệu đã được lưu! Xem console log để kiểm tra.");
   };
 

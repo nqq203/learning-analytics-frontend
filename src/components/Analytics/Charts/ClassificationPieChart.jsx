@@ -16,8 +16,23 @@ const ClassificationPieChart = ({ data }) => {
     }));
   }, [data]);
 
-  // Màu sắc cho các phân khúc (nếu có nhiều xếp loại thì bạn có thể mở rộng thêm)
-  const colors = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
+  // Mapping màu sắc đúng ý nghĩa
+  const colorMap = {
+    'xuất sắc': '#8884d8', // tím
+    'giỏi': '#3b82f6',    // xanh dương
+    'khá': '#10b981',     // xanh lá
+    'trung bình': '#f59e0b', // vàng
+    'yếu': '#ef4444',     // đỏ
+    'không xác định': '#bdbdbd', // xám cho trường hợp không xác định
+  };
+  const labelOrder = ['xuất sắc', 'giỏi', 'khá', 'trung bình', 'yếu', 'không xác định'];
+  const defaultColors = labelOrder.map(label => colorMap[label]);
+
+  // Chuẩn hóa label
+  function normalizeLabel(label) {
+    if (!label) return '';
+    return label.toString().normalize('NFC').replace(/\s+/g, ' ').trim().toLowerCase();
+  }
 
   return (
     <Box boxShadow={3} p={2} display="flex" flexDirection="column" alignItems="center" gap="20px">
@@ -35,12 +50,24 @@ const ClassificationPieChart = ({ data }) => {
           fill="#8884d8"
           label
         >
-          {classificationData.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-          ))}
+          {classificationData.map((entry, index) => {
+            const normLabel = normalizeLabel(entry.name);
+            return (
+              <Cell key={`cell-${index}`} fill={colorMap[normLabel] || defaultColors[index % defaultColors.length]} />
+            );
+          })}
         </Pie>
         <Tooltip />
-        <Legend />
+        <Legend
+          payload={labelOrder
+            .filter(label => classificationData.some(d => normalizeLabel(d.name) === label))
+            .map(label => ({
+              value: label.charAt(0).toUpperCase() + label.slice(1).replace('binh', 'Bình'),
+              type: 'circle',
+              color: colorMap[label]
+            }))
+          }
+        />
       </PieChart>
 
       {/* Phần hiển thị tổng số sinh viên với dấu chấm như legend */}

@@ -25,16 +25,28 @@ import {
 import { Search, FilterList, Clear } from "@mui/icons-material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { TableWrapper } from "@/components/Analytics/Styles/Styles";
-
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
-
-import { fetchCompareByCourse } from "@/redux/thunk/compareThunk";
-
+import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
+import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk, fetchCompareByClassNew, fetchCompareByCourse } from "@/redux/thunk/compareThunk";
 import PageHeader from "@/components/CommonStyles/PageHeader";
-import { useRouter } from "next/router";
+import { useRouter } from 'next/router';
+import { fetchAllCourses } from "@/redux/thunk/dataThunk";
+import BreadcrumbComponent from "@/components/Breadcrumb";
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
 const Compare = () => {
+  const initialState = {
+    selectedSubject: "",
+    selectedRows: [],
+    isComparing: false,
+  };
+
+  const [selectedSubject, setSelectedSubject] = useState(initialState.selectedSubject);
+  const [selectedRows, setSelectedRows] = useState(initialState.selectedRows);
+  const [isComparing, setIsComparing] = useState(initialState.isComparing);
+  const [compareKey, setCompareKey] = useState(Date.now());
+  const [pageKey, setPageKey] = useState(0);
   const router = useRouter();
 
   const [searchValue, setSearchValue] = useState("");
@@ -44,14 +56,50 @@ const Compare = () => {
     if (e.key === "Enter") {
       setSearchKeyWord(searchValue);
     }
-  };
+  }
+
+  const getBreadcrumbs = () => {
+    const { pathname } = router;
+    if (pathname === "/analytics/compare") {
+      return [
+        { type: 'home', label: 'Trang chủ', path: '/' },
+        { type: 'analytics', label: 'So sánh môn học' } // Current page
+      ]
+    }
+  }
 
   const dispatch = useDispatch();
-  const { loading, totalRecords, course } = useSelector(
-    (state) => state.compare
-  );
-  const { accessToken } = useSelector((state) => state.auth);
+  const { compareResults, compareLoading, compareError, loading, totalRecords, course } = useSelector((state) => state.compare);
+  const { accessToken } = useSelector(state => state.auth);
   const { courses } = useSelector((state) => state.data);
+
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      if (!url.includes('/analytics/compare')) {
+        resetCompareState();
+      }
+    };
+    router.events.on('routeChangeStart', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChange);
+    };
+  }, [router]);
+
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      if (url.includes('/analytics/compare')) {
+        resetCompareState();
+      }
+    };
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router]);
+
+  useEffect(() => {
+    resetCompareState();
+  }, []);
 
   const cellStyle = {
     fontSize: "16px",
@@ -87,7 +135,8 @@ const Compare = () => {
   }, [dispatch, userId, searchKeyWord]);
 
   const handleActions = (courseId) => {
-    if (courseId) router.push(`/analytics/compare/${courseId}`);
+    if (courseId)
+      router.push(`/analytics/compare/${courseId}`)
   };
 
   return (
@@ -98,6 +147,12 @@ const Compare = () => {
         icon="analytics"
         variant="analytics"
         stats={[{ label: "Tổng môn", value: totalRecords }]}
+      />
+
+      {/* Breadcrumbs */}
+      <BreadcrumbComponent 
+        variant="default"
+        breadcrumbs={getBreadcrumbs()}
       />
       <Paper
         elevation={0}
@@ -174,63 +229,40 @@ const Compare = () => {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    STT
-                  </TableCell>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    ID Môn
-                  </TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }}>
-                    Môn
-                  </TableCell>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    Loại Môn
-                  </TableCell>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    Chi tiết
-                  </TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >STT</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >ID Môn</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Môn</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Loại Môn</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Danh sách lớp</TableCell>
                 </TableRow>
               </TableHead>
 
               <TableBody>
-                {rows.map((item, index) => (
-                  <TableRow
-                    key={item.no}
-                    sx={{
-                      "&:hover": {
-                        bgcolor: "rgba(30, 58, 138, 0.04)",
-                      },
-                    }}
-                  >
-                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                      {index + 1}
-                    </TableCell>
-                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                      {item.courseCode}
-                    </TableCell>
-                    <TableCell style={{ ...cellStyle, textAlign: "left" }}>
-                      {item.courseName}
-                    </TableCell>
-                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                      {item.courseType}
-                    </TableCell>
-                    <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                      <VisibilityIcon
-                        color="primary"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => handleActions(item.courseId)}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {rows
+                  .filter(item => selectedSubject === "" || item.courseName === selectedSubject)
+                  .map((item, index) => (
+                    <TableRow
+                      key={item.no}
+                      sx={{
+                        '&:hover': {
+                          bgcolor: 'rgba(30, 58, 138, 0.04)',
+                        },
+                      }}
+                    >
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{index + 1}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.courseCode}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.courseName}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.courseType}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>
+                        <FormatListBulletedIcon
+                          color="primary"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handleActions(item.courseId)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+
               </TableBody>
             </Table>
           </TableContainer>

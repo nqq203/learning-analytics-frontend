@@ -19,7 +19,7 @@ import {
   Paper,
   Chip,
 } from "@mui/material";
-
+import { Container } from "@/components/Analytics/Styles/Styles";
 import { TableWrapper } from "@/components/Analytics/Styles/Styles";
 import CompareResult from "./compareResult/CompareResult";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,6 +35,7 @@ import { clearCompareResults } from "@/redux/slice/compareSlice";
 import PageHeader from "@/components/CommonStyles/PageHeader";
 import { useRouter } from "next/router";
 import { fetchAllCourses } from "@/redux/thunk/dataThunk";
+import BreadcrumbComponent from "@/components/Breadcrumb";
 
 const Compare = () => {
   const initialState = {
@@ -42,11 +43,9 @@ const Compare = () => {
     selectedRows: [],
     isComparing: false,
   };
-
   const dispatch = useDispatch();
   const router = useRouter();
   const { courseId } = router.query;
-
   const [selectedSubject, setSelectedSubject] = useState(
     initialState.selectedSubject
   );
@@ -55,14 +54,10 @@ const Compare = () => {
   const [compareKey, setCompareKey] = useState(Date.now());
   const [pageKey, setPageKey] = useState(0);
   const [page, setPage] = useState(1);
-
-  const resetCompareState = useCallback(() => {
-    setSelectedSubject(initialState.selectedSubject);
-    setSelectedRows(initialState.selectedRows);
-    setIsComparing(initialState.isComparing);
-    setCompareKey(Date.now());
-    dispatch(clearCompareResults());
-  }, [dispatch]);
+  const [courseInformation, setCourseInformation] = useState({
+    courseName: null,
+    courseCode: null,
+  })
   const {
     compareResults,
     compareLoading,
@@ -72,35 +67,53 @@ const Compare = () => {
     totalRecords,
   } = useSelector((state) => state.compare);
   const { accessToken } = useSelector((state) => state.auth);
-  // const { classes, totalRecords, loading } = useSelector((state) => state.analytics);
   const { courses } = useSelector((state) => state.data);
-
-  // useEffect(()=>{
-  //   dispatch(fetchCompareByClassNew({
-  //     instructor_id:1,
-  //     page:1,
-  //     amount:10,
-  //     courseId:classId
-  //   }))
-
-  // },[])
-
-  // useEffect(()=>{
-
-  //   console.log("classesNew: ",classesNew)
-  // },[classesNew])
+  
+  const resetCompareState = () => {
+    setSelectedSubject(initialState.selectedSubject);
+    setSelectedRows(initialState.selectedRows);
+    setIsComparing(false);
+    setCompareKey(Date.now());
+    dispatch(clearCompareResults());
+  }, [dispatch]);
 
   useEffect(() => {
-    const handleRouteChange = (url) => {
-      if (!url.includes("/analytics/compare")) {
-        resetCompareState();
+    if (classesNew.length > 0) {
+      setCourseInformation({
+        courseName: classesNew[0].courseName,
+        courseCode: classesNew[0].courseCode,
+      });
+    }
+  }, [courseId, classesNew]);
+
+  const getBreadcrumbs = () => {
+    const breadcrumbs = [
+      {
+        type: 'home',
+        label: 'Trang chủ',
+        path: '/',
+      },
+      {
+        type: 'analytics',
+        label: 'So sánh môn học',
+        path: '/analytics/compare',
       }
-    };
-    router.events.on("routeChangeStart", handleRouteChange);
-    return () => {
-      router.events.off("routeChangeStart", handleRouteChange);
-    };
-  }, [router, resetCompareState]);
+    ];
+
+    if (courseInformation.courseCode && courseInformation.courseName) {
+      breadcrumbs.push({
+        type: 'students',
+        label: `${courseInformation.courseCode} - ${courseInformation.courseName}`,
+      });
+    } else if (courseId) {
+      breadcrumbs.push({
+        type: 'students',
+        label: `Khoá học: ${courseId}`,
+      });
+    }
+
+    return breadcrumbs;
+  }
 
   useEffect(() => {
     const handleRouteChange = (url) => {
@@ -175,7 +188,6 @@ const Compare = () => {
 
   const handleCompareClick = async () => {
     const selectedItems = rows.filter((row) => selectedRows.includes(row.no));
-    console.log("AFTER selectedItems: ", selectedItems);
 
     if (selectedItems.length < 2) {
       alert("Cần chọn ít nhất 2 lớp để so sánh.");
@@ -198,7 +210,6 @@ const Compare = () => {
   }, [resetCompareState]);
 
   useEffect(() => {
-    // console.log(compareResults)
     if (compareResults && !compareLoading && !compareError) {
       setIsComparing(true);
     } else if (compareError) {
@@ -254,7 +265,7 @@ const Compare = () => {
     dispatch(fetchAllCourses({ instructorId: userId }));
   }, [userId]);
 
-  if (isComparing && compareResults?.data) {
+  if (isComparing && compareResults && compareResults.data) {
     return (
       <CompareResult
         key={compareKey}
@@ -266,7 +277,7 @@ const Compare = () => {
   }
 
   return (
-    <Box sx={{ p: { xs: 2, md: 4 } }}>
+    <Container>
       <Paper
         elevation={0}
         sx={{
@@ -298,12 +309,18 @@ const Compare = () => {
         </Typography>
       </Paper>
 
+      {/* Breadcrumbs */}
+      <BreadcrumbComponent
+        variant="default"
+        breadcrumbs={getBreadcrumbs()}
+      />
+
       <Paper
         elevation={0}
         sx={{
           p: 3,
-          mb: 3,
-          border: "1px solid #e5e7eb",
+          mb: 2,
+          border: '1px solid #e5e7eb',
           borderRadius: 2,
           background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
         }}
@@ -311,15 +328,12 @@ const Compare = () => {
         <Grid container spacing={1} alignItems="center">
           <Grid item xs={12} md={9}>
             {/* {selectedRows.length > 0 && ( */}
-            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
-                {selectedRows.length > 0
-                  ? "Đã chọn:"
-                  : "Chưa chọn lớp để so sánh"}
+                {selectedRows.length > 0 ? "Đã chọn:" : "Chưa chọn lớp để so sánh"}
               </Typography>
-
               {selectedRows.map((rowNo) => {
-                const item = rows.find((r) => r.no === rowNo);
+                const item = rows.find(r => r.no === rowNo);
                 return item ? (
                   <Chip
                     key={rowNo}
@@ -335,6 +349,7 @@ const Compare = () => {
               })}
             </Box>
             {/* )} */}
+
           </Grid>
           <Grid
             item
@@ -427,7 +442,6 @@ const Compare = () => {
                   </TableCell>
                 </TableRow>
               </TableHead>
-
               <TableBody>
                 {rows
                   .filter(
@@ -506,7 +520,7 @@ const Compare = () => {
           </TableContainer>
         </TableWrapper>
       </Paper>
-    </Box>
+    </Container>
   );
 };
 

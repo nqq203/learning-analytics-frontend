@@ -143,7 +143,6 @@ const rows = [
 export default function ClassManagement() {
   const router = useRouter();
   const handleViewClass = (id) => {
-    // console.log(id);
     router.push(`/data-management/class-management/${id}`)
   };
 

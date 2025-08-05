@@ -8,11 +8,11 @@ import {
   Cell,
 } from 'recharts';
 
-export const PieChartAnalytics = ({ 
-  pieChartData, 
-  selectedGrades = [], 
-  selectedGradeField = "", 
-  setSelectedGradeField = () => {},
+export const PieChartAnalytics = ({
+  pieChartData,
+  selectedGrades = [],
+  selectedGradeField = "",
+  setSelectedGradeField = () => { },
   isLOChart = false,
   loCode = ""
 }) => {
@@ -34,17 +34,37 @@ export const PieChartAnalytics = ({
   };
 
   const handleGradeFieldChange = (e) => {
-    console.log(e.target.value);
+    // // console.log(e.target.value);
     setSelectedGradeField(e.target.value);
   };
 
   if (!pieChartData) return null;
+
+  // Mapping màu sắc đúng ý nghĩa
+  const colorMap = {
+    'Xuất Sắc': '#a259e6', // tím
+    'Giỏi': '#3b82f6',    // xanh dương
+    'Khá': '#10b981',     // xanh lá
+    'Trung Bình': '#f59e0b', // vàng
+    'Yếu': '#ef4444',     // đỏ
+  };
+  const labelOrder = ['Xuất Sắc', 'Giỏi', 'Khá', 'Trung Bình', 'Yếu'];
+  const colors = ["#a259e6", "#3b82f6", "#10b981", "#f59e0b", "#ef4444"];
+  const defaultColors = labelOrder.map(label => colorMap[label]);
+
+  // Hàm chuẩn hóa label để so sánh
+  function normalizeLabel(label) {
+    // // console.log('🔍 normalizeLabel:', label);
+    if (!label) return '';
+    return label.toString().trim().toLowerCase();
+  }
+
   return (
     <Box boxShadow={isLOChart ? 0 : 3} p={isLOChart ? 0 : 2} display="flex" flexDirection="column" alignItems="center" gap={isLOChart ? "10px" : "20px"}>
       {/* Header trong Box chứa PieChart, có tiêu đề và dropdown filter */}
       {!isLOChart && (
         <h3 style={{ margin: 0 }}>
-          {isLOChart 
+          {isLOChart
             ? `Tỷ lệ đạt/trượt - ${loCode}`
             : `(Biểu đồ tròn) Phân bố điểm theo ${formatFieldNameForFilter(selectedGradeField)}`
           }
@@ -63,15 +83,30 @@ export const PieChartAnalytics = ({
           fill="#8884d8"
           label={!isLOChart}
         >
-          {pieChartData.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={['#0088FE', '#00C49F', '#FFBB28', '#FF8042'][index % 4]}
-            />
-          ))}
+          {pieChartData.map((entry, index) => {
+            // // console.log("entry: ", entry);
+            const normLabel = normalizeLabel(entry.label);
+            // console.log(normLabel);
+            // Luôn lấy đúng màu theo label, fallback nếu không khớp
+            return (
+              <Cell
+                key={`cell-${index}`}
+                fill={colorMap[normLabel] || colors[index % colors.length]}
+              />
+            );
+          })}
         </Pie>
         <Tooltip />
-        <Legend />
+        <Legend
+          payload={labelOrder
+            .filter(label => pieChartData.some(d => normalizeLabel(d.label) === label))
+            .map(label => ({
+              value: label.charAt(0).toUpperCase() + label.slice(1).replace('binh', 'Bình'),
+              type: 'circle',
+              color: colorMap[label]
+            }))
+          }
+        />
       </PieChart>
       {!isLOChart && selectedGrades && selectedGrades.length > 0 && (
         <FormControl variant="outlined" size="small" style={{ width: "200px" }}>

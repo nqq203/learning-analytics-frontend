@@ -19,7 +19,7 @@ const HistogramChartAnalytics = ({
   loData = null,
   loType = ""
 }) => {
-  console.log('🔍 Histogram Debug:', { isLOChart, loCode, loType, loData });
+  // console.log('🔍 Histogram Debug:', { isLOChart, loCode, loType, loData });
 
   // Handle LO Chart data differently
   if (isLOChart && loData) {
@@ -107,24 +107,23 @@ const HistogramChartAnalytics = ({
     };
 
     const getBarColor = () => {
-      return loType === 'finalExam' ? "#d32f2f" : "#1976d2";
+      return loType === 'finalExam' ? "#82ca9d" : "#1976d2";
     };
 
     return (
       <Box
-        borderRadius={2}
-        boxShadow={1}
+        boxShadow={2}
         p={2}
         display="flex"
         flexDirection="column"
         alignItems="center"
         gap="20px"
-        sx={{ width: '100%' }}
+        sx={{ width: '100%', height: '100%' }}
       >
         <h3 style={{
           margin: 0,
           fontSize: '16px',
-          color: getBarColor()
+          color: "black",
         }}>
           {getChartTitle()}
         </h3>
@@ -134,8 +133,8 @@ const HistogramChartAnalytics = ({
           <div>📊 Loại: {loType} | Thang đo: {isPercentage ? '0-100%' : '0-10'} | Tổng: {loData.length} sinh viên</div>
         </Box>
 
-        <Box sx={{ width: '100%', height: 300 }}>
-          <ResponsiveContainer width="100%" height="100%">
+        <Box sx={{ width: '100%', height: 400 }}>
+          <ResponsiveContainer width="100%" heig>
             <BarChart
               data={chartData}
               margin={{ top: 40, right: 30, left: 20, bottom: 60 }}  // tăng bottom để nhãn X đủ chỗ
@@ -233,7 +232,7 @@ const HistogramChartAnalytics = ({
 
       {/* Biểu đồ Bar hiển thị phân bố số lượng sinh viên theo các khoảng điểm */}
       <Box sx={{ width: '100%' }}>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={400}>
           <BarChart
             data={distributionData}
             margin={{ top: 40, right: 30, left: 20, bottom: 60 }} // match với LO

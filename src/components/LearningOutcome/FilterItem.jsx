@@ -64,27 +64,27 @@ const FilterItemClearBtn = styled.button`
 `
 
 
-export default function FilterItem({ category, onFilterChange, onClearFilter }){
-    
-    const [math,setMath] = useState("");
-    const [field,setField] = useState("");
+export default function FilterItem({ category, onFilterChange, onClearFilter }) {
+
+    const [math, setMath] = useState("");
+    const [field, setField] = useState("");
     const [value, setValue] = useState([]);
 
 
-    const deleteValue = (item) =>{
+    const deleteValue = (item) => {
         setValue((prev) => {
-            
+
             if (prev.includes(item)) {
 
-                    onFilterChange({ math, field, value:prev.filter((val) => val !== item) });
+                onFilterChange({ math, field, value: prev.filter((val) => val !== item) });
                 return prev.filter((val) => val !== item);
             }
         }
-        )    
-        
+        )
+
     }
 
-    const fieldOption = (category_filter) =>{
+    const fieldOption = (category_filter) => {
 
         const field_class = [
             {
@@ -118,60 +118,48 @@ export default function FilterItem({ category, onFilterChange, onClearFilter }){
                 "label": "Lớp"
             }
         ]
-        return category =="Class"? field_class:field_subject
-        
+        return category == "Class" ? field_class : field_subject
+
     }
 
-    const handleChangeMath = (event)=>{
-        const newMath=event.target.value;
+    const handleChangeMath = (event) => {
+        const newMath = event.target.value;
         setMath(event.target.value);
         onFilterChange({ math: newMath, field, value });
     }
 
-    const handleChangeField = (event) =>{
+    const handleChangeField = (event) => {
         const newField = event.target.value;
         setField(event.target.value);
-        onFilterChange({ math, field:newField, value });
-        
+        onFilterChange({ math, field: newField, value });
+
     }
 
-    const handleChangeValue = (event)=>{
+    const handleChangeValue = (event) => {
         const selectedValue = event.target.value;
 
         setValue((prev) => {
-            
-        if (prev.includes(selectedValue)) {
-            
-            onFilterChange({ math, field, value:prev });
-            return prev;
-            //return prev.filter((val) => val !== selectedValue);
-        }
-        
-        onFilterChange({ math, field, value:[...prev, selectedValue] });
-        return [...prev, selectedValue];
+
+            if (prev.includes(selectedValue)) {
+
+                onFilterChange({ math, field, value: prev });
+                return prev;
+                //return prev.filter((val) => val !== selectedValue);
+            }
+
+            onFilterChange({ math, field, value: [...prev, selectedValue] });
+            return [...prev, selectedValue];
         });
-        
-        
-        
+
+
+
     }
-    
-    const ClearThisFilter = ()=>{
+
+    const ClearThisFilter = () => {
         onClearFilter();
-
-
     }
-    // useEffect(() => {
-    //     console.log("value mới: ", value);
-    //   }, [value]);
 
-
-    // useEffect(() => {
-    //     console.log("field mới: ", field);
-    //   }, [field]);
-    
-
-
-    return(
+    return (
         <>
             <FilterItemContainer>
 
@@ -193,9 +181,9 @@ export default function FilterItem({ category, onFilterChange, onClearFilter }){
                 </FilterInput>
 
 
-                { field!=""?
-                    <FilterInput  onChange={handleChangeValue}>
-                    <option value="" disable selected hidden>Chọn giá trị</option>
+                {field != "" ?
+                    <FilterInput onChange={handleChangeValue}>
+                        <option value="" disable selected hidden>Chọn giá trị</option>
                         <option value="ClassName">ClassName</option>
                         <option value="ClassOf">ClassOf</option>
                         <option value="Program">Program</option>
@@ -205,23 +193,23 @@ export default function FilterItem({ category, onFilterChange, onClearFilter }){
                     : <></>
                 }
 
-                
-                    
-                    {value.map((item, index) => (
-                       
-                        <FilterItemButton onClick={()=>deleteValue(item)}>
-                            {item} 
 
-                            <IoMdCloseCircleOutline id="FilterItemButtonDelete" style={{ width: "28px", height: "23px" }}/>
-                                
-                        </FilterItemButton>
-                        
-                    ))}
-                
-                <FilterItemClearBtn onClick={()=>ClearThisFilter()}>
-                    <IoMdCloseCircleOutline style={{ width: "35px", height: "30px"  }} ></IoMdCloseCircleOutline>
+
+                {value.map((item, index) => (
+
+                    <FilterItemButton onClick={() => deleteValue(item)}>
+                        {item}
+
+                        <IoMdCloseCircleOutline id="FilterItemButtonDelete" style={{ width: "28px", height: "23px" }} />
+
+                    </FilterItemButton>
+
+                ))}
+
+                <FilterItemClearBtn onClick={() => ClearThisFilter()}>
+                    <IoMdCloseCircleOutline style={{ width: "35px", height: "30px" }} ></IoMdCloseCircleOutline>
                 </FilterItemClearBtn>
-                
+
             </FilterItemContainer>
         </>
     )

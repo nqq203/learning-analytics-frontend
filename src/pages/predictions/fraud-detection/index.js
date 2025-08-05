@@ -149,9 +149,7 @@ const FraudDetection = () => {
 
   const handleChosingQuiz = (QuizIdChosen) => {
     if (QuizIdChosen === 'import') {
-      // console.log("HELLO")
       fileInputRef.current.click();
-
     }
     else {
       SetDisabledThreehold(false);
@@ -178,7 +176,6 @@ const FraudDetection = () => {
 
   const handleFileChange = async (e) => {
     // setLoading(true);
-    // console.log("FILE CHANGE")
     const file = e.target.files[0];
 
     if (file) {
@@ -196,7 +193,6 @@ const FraudDetection = () => {
 
   const handleDetect = async () => {
     // setLoading(true);
-    // console.log(`Handle Detect: ${userId} ${quizSelect} ${minTime} ${maxTime}`)
 
     await dispatch(fetchFraudDetect({ userId, quiz_id: quizSelect, min_threshold: minTime, max_threshold: maxTime }));
 
@@ -208,13 +204,15 @@ const FraudDetection = () => {
     <Box sx={{ p: { xs: 2, md: 4 }, cursor: loading ? 'wait' : 'default' }}>
       <PageHeader
         title="Phát hiện bất thường"
-        subtitle="Phân tích và phát hiện hành vi bất thường trong bài kiểm tra"
+        subtitle="Phân tích và phát hiện hành vi bất thường trong bài kiểm tra (Lưu ý: Môn học cần chứa ít nhất 1 bài QUIZ để phân tích)"
         icon="fraud"
         variant="fraud"
         stats={[
           { label: "Tổng số lớp có dữ liệu", value: classes.length },
           { label: "Bài kiểm tra", value: Quiz.length },
         ]}
+        url={"/data-management"}
+        urlText="Thêm dữ liệu để phân tích"
       />
 
       <Paper
@@ -344,35 +342,35 @@ const FraudDetection = () => {
           )}
         </Box>
       </Paper>
-        <Dialog1
-          openDialog1={openDialog1}
-          handleCloseDialog1={handleCloseDialog1}
-          handleOpenDialog3={handleOpenDialog3}
-          handleOpenDialog2={handleOpenDialog2}
-          hasThreeHold={hasThreeHold}
-        ></Dialog1>
-        {/* Dialog 2: Hiển thị ngưỡng mặc định */}
-        <Dialog2
-          openDialog2={openDialog2}
-          handleCloseDialog2={handleCloseDialog2}
-          hasThreeHold={hasThreeHold}
-          SetMaxTime={SetMaxTime}
-          SetMinTime={SetMinTime}
-          setHasThreeHold={setHasThreeHold}
-        >
-        </Dialog2>
-        {/* Dialog 3: THIẾT LẬP NGƯỠNG */}
-        <Dialog3
-          openDialog3={openDialog3}
-          handleCloseDialog3={handleCloseDialog3}
-          SetMinTime={SetMinTime}
-          SetMaxTime={SetMaxTime}
-          setHasThreeHold={setHasThreeHold}
-          minTime={minTime}
-          maxTime={maxTime}
-        ></Dialog3>
-      </Box>
-    );
+      <Dialog1
+        openDialog1={openDialog1}
+        handleCloseDialog1={handleCloseDialog1}
+        handleOpenDialog3={handleOpenDialog3}
+        handleOpenDialog2={handleOpenDialog2}
+        hasThreeHold={hasThreeHold}
+      ></Dialog1>
+      {/* Dialog 2: Hiển thị ngưỡng mặc định */}
+      <Dialog2
+        openDialog2={openDialog2}
+        handleCloseDialog2={handleCloseDialog2}
+        hasThreeHold={hasThreeHold}
+        SetMaxTime={SetMaxTime}
+        SetMinTime={SetMinTime}
+        setHasThreeHold={setHasThreeHold}
+      >
+      </Dialog2>
+      {/* Dialog 3: THIẾT LẬP NGƯỠNG */}
+      <Dialog3
+        openDialog3={openDialog3}
+        handleCloseDialog3={handleCloseDialog3}
+        SetMinTime={SetMinTime}
+        SetMaxTime={SetMaxTime}
+        setHasThreeHold={setHasThreeHold}
+        minTime={minTime}
+        maxTime={maxTime}
+      ></Dialog3>
+    </Box>
+  );
 };
 
 export default FraudDetection;

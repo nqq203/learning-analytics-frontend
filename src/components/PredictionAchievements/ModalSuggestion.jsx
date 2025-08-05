@@ -149,7 +149,6 @@ const ModalSuggestion = ({ open, onClose,studentID,setModal,student }) => {
   const router= useRouter();
   const [student_1,setStudent] = useState([])
   useEffect(()=>{
-    // console.log(student)
     setStudent({
       "ID":"4","MSSV":"21125435","Name": "Nguyễn Văn C","Class":"21CLC10","Subject":"Cơ sở dữ liệu nâng cao","ClassOf":"2021","PredictAchivement":"E (Yếu)","PredictTarget":" C (Khá)"
     })

@@ -65,8 +65,6 @@ const ExamQuizTable = ({
   }, [onLoadMore]);
 
   const handleDetail = (row)=>{
-    console.log("row: ",row)
-    // console.log("type: ",type)
     if(type==="Quiz"){
       handleViewInformation(row.quizId,"quiz");
     }
@@ -125,7 +123,7 @@ const ExamQuizTable = ({
   };
 
   return (
-    <TableWrapper>
+    <TableWrapper style={{ padding: 0 }}>
       <TableContainer
         component={Paper}
         className="TableContainer"

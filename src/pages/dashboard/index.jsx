@@ -46,6 +46,7 @@ export default function DashboardPage() {
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const { courses, academicYears } = useSelector((state) => state.data);
+  const { subjects } = useSelector((state) => state.dashboard);
 
   const { accessToken } = useSelector((state) => state.auth);
   const userId = useMemo(() => {
@@ -349,6 +350,7 @@ export default function DashboardPage() {
                 allGrades={allGrades}
                 selectedSubject={selectedSubject}
                 selectedYear={selectedYear}
+                subjects={subjects}
               />
             </Paper>
           </Grid>

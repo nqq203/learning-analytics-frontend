@@ -72,8 +72,6 @@ export default function AddQuizModal({ open, onClose, onSave, mode, students, ha
         quizData: quizData,
       };
 
-      // console.log("Kết quả:", result);
-
       handleCreateExam("quiz", result)
       onClose();
     }
@@ -122,7 +120,6 @@ export default function AddQuizModal({ open, onClose, onSave, mode, students, ha
       onClose();
     }
     else if (mode == "Giữa Kỳ") {
-      console.log("studentInfo: ", studentInfo)
       const midtermData = studentInfo.map((student) => {
         const studentScores = scores[student.studentId] || {};
         const questionsList = questions.map((q, index) => {
@@ -164,7 +161,6 @@ export default function AddQuizModal({ open, onClose, onSave, mode, students, ha
 
 
 
-      // console.log("Kết quả:", result);
 
       handleCreateExam("midterm_exam", result)
       onClose();

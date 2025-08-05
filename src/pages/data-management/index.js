@@ -31,6 +31,7 @@ import ConfirmDialog from "@/components/ClassManagement/ConfirmDialog";
 import DetailModal from "@/components/ClassManagement/DetailModal";
 import PageHeader from "@/components/CommonStyles/PageHeader";
 import SearchFilters from "@/components/CommonStyles/SearchFilters";
+import BreadcrumbComponent from "@/components/Breadcrumb";
 
 export default function MainClassManagement() {
   const router = useRouter();
@@ -86,7 +87,7 @@ export default function MainClassManagement() {
     }
     if (response.payload.success === true) {
       toast.success("Tạo dữ liệu Lớp/Khóa học thành công");
-      dispatch(clearClassList()); 
+      dispatch(clearClassList());
       dispatch(fetchClassList({ instructorId: userId, page: 1, amount, search, academicYear: chosenAcademicYear, semester: chosenSemester }));
       await dispatch(fetchAllFaculties({ instructorId: userId }));
       await dispatch(fetchAllMajors({ instructorId: userId }));
@@ -558,6 +559,26 @@ export default function MainClassManagement() {
     },
   ];
 
+  const getBreadcrumbs = () => {
+    const { pathname } = router;
+    if (pathname === "/data-management") {
+      return [
+        {
+          label: "Trang chủ",
+          type: "home",
+          path: "/"
+        },
+        {
+          label: "Quản lý dữ liệu",
+          type: "data-management",
+          path: "/data-management",
+        },
+      ];
+    }
+
+    return [];
+  };
+
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       <PageHeader
@@ -604,6 +625,11 @@ export default function MainClassManagement() {
             </Button>
           </>
         }
+      />
+
+      <BreadcrumbComponent 
+        breadcrumbs={getBreadcrumbs()}
+        variant="default"
       />
 
       <SearchFilters
@@ -787,7 +813,7 @@ export default function MainClassManagement() {
           types={importTypes}
           sampleLinks={[
             "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565819/Course_Data_huy9kj.xlsx",
-            "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1752565819/All_f7u4fd.xlsx",
+            "https://res.cloudinary.com/dhvnmhqlb/raw/upload/v1754335318/All_fuztbv.xlsx",
           ]}
           onImport={handleImport}
         /> : null}
