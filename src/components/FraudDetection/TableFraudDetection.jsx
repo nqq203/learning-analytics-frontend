@@ -52,8 +52,8 @@ export function TableFraudDetection({ data }) {
                   <TableCell>{row.studentName}</TableCell>
                   <TableCell>{row.score}</TableCell>
                   <TableCell>{row.duration}</TableCell>
-                  <TableCell>{row.deviationHigh}</TableCell>
-                  <TableCell>{row.deviationLow}</TableCell>
+                  <TableCell>{row.deviationHigh === '00m00s' ? '--' : row.deviationHigh}</TableCell>
+                  <TableCell>{row.deviationLow === '00m00s' ? '--' : row.deviationLow}</TableCell>
                   <TableCell>{row.reason}</TableCell>
                 </TableRow>
               ))}
