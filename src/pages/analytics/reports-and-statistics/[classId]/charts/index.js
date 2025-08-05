@@ -50,7 +50,7 @@ const StudentAnalytics = () => {
   const chartsRef = useRef();
 
   const selectedChartTypes = ["pie", "column", "scatter", "radar"]; // All chart types
-  const selectedGrades = ["midtermGrade", "finalGrade", "practiceGrade", "projectGrade", "totalGrade"]; // All grade types
+  const selectedGrades = ["assignmentQuizGrade", "midtermGrade", "practiceGrade", "projectGrade", "finalGrade",  "totalGrade"]; // All grade types
   const selectedOthers = ["classification", "passFail"]; // All other charts
   const selectedLearningObjectives = ["assignmentQuiz", "finalExam"];
   const [selectedGradeField, setSelectedGradeField] = useState(selectedGrades[0]);
