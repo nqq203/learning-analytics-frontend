@@ -663,7 +663,7 @@ export default function StudentDetailView({ onBack }) {
     }
   }
 
-  const importTypes = ["Thông tin sinh viên", "Tổng kết", "Quiz", "Bài tập", "Cuối kỳ", "Giữa kỳ", "Mục tiêu học tập"];
+  const importTypes = ["Thông tin sinh viên", "Tổng kết", "Quiz", "Bài tập", "Cuối kỳ", "Giữa kỳ", "Chuẩn đầu ra môn học"];
   const handleImport = async (type, file) => {
     let response;
     if (type === "Thông tin sinh viên") {
@@ -678,7 +678,7 @@ export default function StudentDetailView({ onBack }) {
       response = await dispatch(processFilePartly({ instructorId: userId, file, classId: classId, activityType: "final_exam", replace: true }));
     } else if (type === "Giữa kỳ") {
       response = await dispatch(processFilePartly({ instructorId: userId, file, classId: classId, activityType: "midterm_exam", replace: true }));
-    } else if (type == "Mục tiêu học tập") {
+    } else if (type == "Chuẩn đầu ra môn học") {
       response = await dispatch(processLearningOutcome({ instructorId: userId, file, classId: classId }));
     } else {
       response = await dispatch(processFilePartly({ instructorId: userId, file, classId: classId, activityType: "final_exam", replace: true }));
