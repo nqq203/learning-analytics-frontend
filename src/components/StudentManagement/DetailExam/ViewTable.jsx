@@ -24,6 +24,11 @@ import { useEffect, useMemo, useState, useRef } from "react";
 
 
 export default function ViewTable({ QuizName, ExamData, type }) {
+  // Tìm số câu hỏi tối đa để đảm bảo tất cả cột được hiển thị đúng
+  const maxQuestions = useMemo(() => {
+    if (!ExamData || ExamData.length === 0) return 0;
+    return Math.max(...ExamData.map(student => student?.questions?.length || 0));
+  }, [ExamData]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -56,7 +61,7 @@ export default function ViewTable({ QuizName, ExamData, type }) {
                   <>
                     {type === "quiz" && (<TableCell style={{ fontWeight: "bold", fontSize: "12px" }} >Thời gian làm bài</TableCell>)}
 
-                    {ExamData[0]?.questions?.map((q, index) => (
+                    {Array.from({ length: maxQuestions }, (_, index) => (
                       <TableCell key={index} style={{ fontWeight: "bold", fontSize: "12px" }}>
                         Câu {index + 1}
                       </TableCell>
@@ -81,12 +86,14 @@ export default function ViewTable({ QuizName, ExamData, type }) {
                     <>
                       {type === "quiz" && (<TableCell style={{ fontSize: "11px" }} >{student.duration}</TableCell>)}
 
-
-                      {student?.questions?.map((scoreInfo, index) => (
-                        <TableCell key={index} style={{ fontSize: "11px" }} >
-                          {scoreInfo.score}
-                        </TableCell>
-                      ))}
+                      {Array.from({ length: maxQuestions }, (_, index) => {
+                        const questionScore = student?.questions?.find(q => q.questionNumber === index + 1)?.score;
+                        return (
+                          <TableCell key={index} style={{ fontSize: "11px" }} >
+                            {questionScore !== undefined ? questionScore : "--"}
+                          </TableCell>
+                        );
+                      })}
                     </>
                   )
                 }

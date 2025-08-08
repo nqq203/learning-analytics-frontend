@@ -19,21 +19,20 @@ import { Close } from "@mui/icons-material";
 
 import ViewTable from "./ViewTable";
 
-export default function DetailExamModal({ open, onClose,mode,StudentData,ExamData }) {
-  const ExamName = useMemo(()=>{
-    if(mode=="quiz")              return ExamData.quizName;
-      else if(mode=="assignment")   return ExamData.assignmentName;
-        else if(mode=="final_exam")   return ExamData.finalExamName;
-          else if(mode=="midterm_exam")   return ExamData.midtermExamName;
-    
-  },[ExamData])
+export default function DetailExamModal({ open, onClose, mode, StudentData, ExamData }) {
+  const ExamName = useMemo(() => {
+    if (mode == "quiz") return ExamData.quizName;
+    else if (mode == "assignment") return ExamData.assignmentName;
+    else if (mode == "final_exam") return ExamData.finalExamName;
+    else if (mode == "midterm_exam") return ExamData.midtermExamName;
+
+  }, [ExamData])
 
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xl" fullWidth>
       <DialogTitle
         sx={{
-          
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -41,7 +40,7 @@ export default function DetailExamModal({ open, onClose,mode,StudentData,ExamDat
         }}
       >
         <Typography variant="h6" sx={{ fontWeight: "medium" }}>
-          Xem chi tiết bài {mode} 
+          Xem chi tiết bài {mode}
         </Typography>
         <IconButton onClick={onClose} aria-label="close">
           <Close />
@@ -51,11 +50,11 @@ export default function DetailExamModal({ open, onClose,mode,StudentData,ExamDat
       <Divider />
 
       <DialogContent sx={{ p: 3 }}>
-        
-           <div style={{paddingInline:"16px"}}>
-                  <ViewTable QuizName={ExamName} ExamData={StudentData} type={mode}></ViewTable>
-            </div>
-            
+
+        <div style={{ paddingInline: "16px" }}>
+          <ViewTable QuizName={ExamName} ExamData={StudentData} type={mode}></ViewTable>
+        </div>
+
         <Box
           sx={{
             display: "flex",
@@ -67,7 +66,7 @@ export default function DetailExamModal({ open, onClose,mode,StudentData,ExamDat
           <Button variant="outlined" onClick={onClose} sx={{ width: "100%" }}>
             ĐÓNG
           </Button>
-          
+
         </Box>
       </DialogContent>
     </Dialog>
