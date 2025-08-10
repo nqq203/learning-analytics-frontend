@@ -32,7 +32,6 @@ const dashboardSlice = createSlice({
       })
       .addCase(fetchSummaryThunk.fulfilled, (state, action) => {
         state.loading = false;
-        // console.log("Payload from fetchSummaryThunk:", action.payload);
         const {
           academicRankData,
           avgScoreChart,

@@ -28,6 +28,7 @@ import {
   fetchStudentsDetails,
 } from "@/redux/thunk/analyticsThunk";
 import { useDispatch, useSelector } from "react-redux";
+import BreadcrumbComponent from "@/components/Breadcrumb";
 
 const StudentsList = () => {
   const router = useRouter();
@@ -42,6 +43,8 @@ const StudentsList = () => {
   const [classInfo, setClassInfo] = useState({ className: "", subjectName: "" });
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
+  const [decodedClassName, setDecodedClassName] = useState("");
+  const [decodedCourseName, setDecodedCourseName] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -166,6 +169,43 @@ const StudentsList = () => {
       ).toFixed(2)
       : 0;
 
+  // GET DECODED CLASS AND COURSE NAMES
+  useEffect(() => {
+    if (className)
+      setDecodedClassName(decodeURIComponent(className));
+    if (courseName)
+      setDecodedCourseName(decodeURIComponent(courseName));
+  }, [className, courseName]);
+
+  const getBreadcrumbs = () => {
+    const breadcrumbs = [
+      {
+        type: 'home',
+        label: 'Trang chủ',
+        path: '/',
+      },
+      {
+        type: 'analytics',
+        label: 'Thống kê & Báo cáo',
+        path: '/analytics/reports-and-statistics',
+      }
+    ];
+
+    if (decodedClassName && decodedCourseName) {
+      breadcrumbs.push({
+        type: 'students',
+        label: `${decodedClassName} - ${decodedCourseName}` // Current page
+      });
+    } else if (classId) {
+      breadcrumbs.push({
+        type: 'students',
+        label: `Lớp ${classId}` // Fallback
+      });
+    }
+
+    return breadcrumbs;
+  };
+
   return (
     <Container>
       <Paper
@@ -199,7 +239,7 @@ const StudentsList = () => {
         </Typography>
       </Paper>
 
-      <Header style={{ alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+      <Header style={{ alignItems: "center", gap: "16px", flexWrap: "wrap", marginBottom: "10px" }}>
         <div
           style={{
             display: "flex",
@@ -268,14 +308,28 @@ const StudentsList = () => {
         </div>
       </Header>
 
-      <BodyWrapper>
-        <InformationWrapper>
-          <InformationItem>Số lượng sinh viên: {studentCount}</InformationItem>
+      {/* Breadcrumbs */}
+      <BreadcrumbComponent
+        breadcrumbs={getBreadcrumbs()}
+        variant="default"
+      />
+
+      <Paper
+        elevation={0}
+        sx={{
+          border: '1px solid #e5e7eb',
+          borderRadius: 2,
+        }}
+      >
+        <Box sx={{ p: 3, pb: 0 }} style={{ display: "flex", gap: "10px" }}>
+          <Typography variant="h6" fontWeight={600} color="text.primary">
+            Số lượng sinh viên: {studentCount}
+          </Typography>
           {averageGrade > 0 &&
-            <InformationItem>
+            <Typography variant="h6" fontWeight={600} color="text.primary">
               Điểm trung bình: {buttonVariant === "outlined" ? averageGrade : "-"}
-            </InformationItem>}
-        </InformationWrapper>
+            </Typography>}
+        </Box>
         <Box position="relative">
           <NonInfiniteAnalyticsTable
             filteredRows={sortedRows.map((row) => ({
@@ -313,7 +367,7 @@ const StudentsList = () => {
             </Box>
           )}
         </Box>
-      </BodyWrapper>
+      </Paper>
     </Container>
   );
 };

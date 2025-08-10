@@ -72,7 +72,6 @@ export default function EditExamModal({ open, onClose, mode, StudentData, ExamDa
         quizData: quizData,
       };
 
-      console.log("Kết quả:", result);
       handleUpdateExam(ExamData.quizId, mode, result)
 
     }

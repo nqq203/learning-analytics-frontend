@@ -31,6 +31,7 @@ class Mydocument extends Document {
         return <Html lang='en'>
             <Head>
                 <link rel="icon" href="/images/logo.png" sizes='any' />
+                <title>Learning Analytics</title>
             </Head>
             <body>
                 <Main />

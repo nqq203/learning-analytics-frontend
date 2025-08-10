@@ -22,7 +22,7 @@ const colorPalette = [
   "#8884d8",
   "#82ca9d",
   "#ffc658",
-  "#8dd1e1",
+  "#ef4444",
   "#ff7300",
   "#d0ed57",
   "#a4de6c",
@@ -39,11 +39,9 @@ const RadarChartAnalytics = ({
   loData = null,
   loType = "",
 }) => {
-  console.log('🎯 RadarChart Debug:', { isLOChart, loData, loType });
 
   // Handle LO Chart data differently
   if (isLOChart && loData) {
-    console.log('📊 Processing LO Radar Data:', loData);
 
     // Validate loData
     if (!Array.isArray(loData) || loData.length === 0) {
@@ -65,8 +63,6 @@ const RadarChartAnalytics = ({
         return [];
       })
     )];
-
-    console.log('📋 All LO Codes:', allLoCodes);
 
     if (allLoCodes.length === 0) {
       return (
@@ -96,8 +92,6 @@ const RadarChartAnalytics = ({
 
       transformedData.push(dataPoint);
     });
-
-    console.log('✅ Transformed Data:', transformedData);
 
     // Determine domain based on loType
     const domain = loType === 'finalExam' ? [0, 100] : [0, 10];
@@ -132,6 +126,7 @@ const RadarChartAnalytics = ({
           width={600}
           height={400}
           data={transformedData}
+          style={{ top: "-40px" }}
         >
           <PolarGrid />
           <PolarAngleAxis
@@ -151,7 +146,15 @@ const RadarChartAnalytics = ({
             ]}
             labelFormatter={(label) => `LO: ${label}`}
           />
-          <Legend />
+          <Legend
+            wrapperStyle={{
+              bottom: '-50px',
+              position: 'absolute !important',
+              left: '50%',
+              // transform: 'translateX(-50%)',
+              zIndex: 1000
+            }}
+          />
 
           {loData.map((group, index) => (
             <Radar

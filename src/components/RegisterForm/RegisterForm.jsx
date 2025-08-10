@@ -112,7 +112,6 @@ export default function RegisterForm() {
 
         try {
             const res = await dispatch(register({ fullName: name, email, password, role }));
-            console.log(res);
             if (res.payload.success) {
                 toast.success(res.payload.message);
                 router.replace("/login");

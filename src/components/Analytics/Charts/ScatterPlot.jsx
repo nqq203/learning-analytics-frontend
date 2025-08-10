@@ -11,10 +11,11 @@ import {
 } from "recharts";
 
 const labelMap = {
+  assignmentQuizGrade: "Điểm bài tập/Quiz",
   midtermGrade: "Điểm giữa kỳ",
-  finalGrade: "Điểm cuối kỳ",
   projectGrade: "Điểm đồ án",
   practiceGrade: "Điểm thực hành",
+  finalGrade: "Điểm cuối kỳ",
   totalGrade: "Điểm tổng",
 };
 
@@ -76,7 +77,7 @@ const ScatterChartAnalytics = ({ data, selectedGrades }) => {
         <Scatter
           name="Sinh viên"
           data={scatterData}
-          fill="#8884d8"
+          fill="#1976d2"
         />
       </ScatterChart>
       <Box display="flex" flexDirection="row" gap="20px" >

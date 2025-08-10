@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Card,
   CardContent,
@@ -19,22 +19,16 @@ import {
   Paper,
   Chip,
 } from "@mui/material";
-
+import { Container } from "@/components/Analytics/Styles/Styles";
 import { TableWrapper } from "@/components/Analytics/Styles/Styles";
 import CompareResult from "./compareResult/CompareResult";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
-import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
-import {
-  fetchCompareByClassesThunk,
-  fetchCompareByCohortsThunk,
-  fetchCompareByClassNew,
-  fetchCompareByCourse,
-} from "@/redux/thunk/compareThunk";
-import { clearCompareResults } from "@/redux/slice/compareSlice";
-import PageHeader from "@/components/CommonStyles/PageHeader";
-import { useRouter } from "next/router";
+import { fetchCompareByClassesThunk, fetchCompareByClassNew } from "@/redux/thunk/compareThunk";
+import { useRouter } from 'next/router';
 import { fetchAllCourses } from "@/redux/thunk/dataThunk";
+import BreadcrumbComponent from "@/components/Breadcrumb";
+import { resetCompareResults } from "@/redux/slice/compareSlice";
 
 const Compare = () => {
   const initialState = {
@@ -43,86 +37,95 @@ const Compare = () => {
     isComparing: false,
   };
 
-  const dispatch = useDispatch();
-  const router = useRouter();
-  const { courseId } = router.query;
-
-  const [selectedSubject, setSelectedSubject] = useState(
-    initialState.selectedSubject
-  );
+  const [selectedSubject, setSelectedSubject] = useState(initialState.selectedSubject);
   const [selectedRows, setSelectedRows] = useState(initialState.selectedRows);
   const [isComparing, setIsComparing] = useState(initialState.isComparing);
   const [compareKey, setCompareKey] = useState(Date.now());
   const [pageKey, setPageKey] = useState(0);
-  const [page, setPage] = useState(1);
+  const router = useRouter();
+  const { courseId } = router.query;
+  const [courseInformation, setCourseInformation] = useState({
+    courseName: null,
+    courseCode: null,
+  })
 
-  const resetCompareState = useCallback(() => {
+  const resetCompareState = () => {
     setSelectedSubject(initialState.selectedSubject);
     setSelectedRows(initialState.selectedRows);
-    setIsComparing(initialState.isComparing);
+    setIsComparing(false);
     setCompareKey(Date.now());
-    dispatch(clearCompareResults());
-  }, [dispatch]);
-  const {
-    compareResults,
-    compareLoading,
-    compareError,
-    classesNew,
-    loading,
-    totalRecords,
-  } = useSelector((state) => state.compare);
-  const { accessToken } = useSelector((state) => state.auth);
-  // const { classes, totalRecords, loading } = useSelector((state) => state.analytics);
+  };
+  const [page, setPage] = useState(1);
+  const dispatch = useDispatch();
+  const { compareResults, compareLoading, compareError, classesNew, loading, totalRecords } = useSelector((state) => state.compare);
+  const { accessToken } = useSelector(state => state.auth);
   const { courses } = useSelector((state) => state.data);
 
-  // useEffect(()=>{
-  //   dispatch(fetchCompareByClassNew({
-  //     instructor_id:1,
-  //     page:1,
-  //     amount:10,
-  //     courseId:classId
-  //   }))
-
-  // },[])
-
-  // useEffect(()=>{
-
-  //   console.log("classesNew: ",classesNew)
-  // },[classesNew])
-
   useEffect(() => {
-    const handleRouteChange = (url) => {
-      if (!url.includes("/analytics/compare")) {
-        resetCompareState();
-      }
-    };
-    router.events.on("routeChangeStart", handleRouteChange);
-    return () => {
-      router.events.off("routeChangeStart", handleRouteChange);
-    };
-  }, [router, resetCompareState]);
-
-  useEffect(() => {
-    const handleRouteChange = (url) => {
-      if (url.includes("/analytics/compare")) {
-        resetCompareState();
-      }
-    };
-    router.events.on("routeChangeComplete", handleRouteChange);
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
-    };
-  }, [router, resetCompareState]);
-
-  useEffect(() => {
-    if (courseId) {
-      resetCompareState();
+    if (classesNew.length > 0) {
+      setCourseInformation({
+        courseName: classesNew[0].courseName,
+        courseCode: classesNew[0].courseCode,
+      });
     }
-  }, [courseId, resetCompareState]);
+  }, [courseId, classesNew]);
+
+  const getBreadcrumbs = () => {
+    const breadcrumbs = [
+      {
+        type: 'home',
+        label: 'Trang chủ',
+        path: '/',
+      },
+      {
+        type: 'analytics',
+        label: 'So sánh môn học',
+        path: '/analytics/compare',
+      }
+    ];
+
+    if (courseInformation.courseCode && courseInformation.courseName) {
+      breadcrumbs.push({
+        type: 'students',
+        label: `${courseInformation.courseCode} - ${courseInformation.courseName}`,
+      });
+    } else if (courseId) {
+      breadcrumbs.push({
+        type: 'students',
+        label: `Khoá học: ${courseId}`,
+      });
+    }
+
+    return breadcrumbs;
+  }
+
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      if (!url.includes('/analytics/compare')) {
+        resetCompareState();
+      }
+    };
+    router.events.on('routeChangeStart', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChange);
+    };
+  }, [router]);
+
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      if (url.includes('/analytics/compare')) {
+        resetCompareState();
+      }
+    };
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router]);
 
   useEffect(() => {
     resetCompareState();
-  }, [resetCompareState]);
+  }, []);
 
   const cellStyle = {
     fontSize: "16px",
@@ -161,21 +164,18 @@ const Compare = () => {
   };
 
   const handleSelectRow = (rowNo) => {
-    const selectedItem = rows.find((r) => r.no === rowNo);
+    const selectedItem = rows.find(r => r.no === rowNo);
     if (!selectedItem) return;
 
     setSelectedRows((prev) =>
-      prev.includes(rowNo)
-        ? prev.filter((no) => no !== rowNo)
-        : [...prev, rowNo]
+      prev.includes(rowNo) ? prev.filter((no) => no !== rowNo) : [...prev, rowNo]
     );
   };
 
   const isCompareEnabled = () => selectedRows.length >= 2;
 
   const handleCompareClick = async () => {
-    const selectedItems = rows.filter((row) => selectedRows.includes(row.no));
-    console.log("AFTER selectedItems: ", selectedItems);
+    const selectedItems = rows.filter(row => selectedRows.includes(row.no));
 
     if (selectedItems.length < 2) {
       alert("Cần chọn ít nhất 2 lớp để so sánh.");
@@ -183,7 +183,7 @@ const Compare = () => {
     }
 
     try {
-      const classIds = selectedItems.map((row) => String(row.classId));
+      const classIds = selectedItems.map(row => String(row.classId));
       const payload = { class_ids: classIds };
       await dispatch(fetchCompareByClassesThunk(payload));
       setCompareKey(Date.now());
@@ -193,12 +193,15 @@ const Compare = () => {
     }
   };
 
-  const handleBack = useCallback(() => {
+  useEffect(() => {
+    dispatch(resetCompareResults());
+  }, [userId]);
+
+  const handleBack = () => {
     resetCompareState();
-  }, [resetCompareState]);
+  };
 
   useEffect(() => {
-    // console.log(compareResults)
     if (compareResults && !compareLoading && !compareError) {
       setIsComparing(true);
     } else if (compareError) {
@@ -209,22 +212,9 @@ const Compare = () => {
 
   useEffect(() => {
     if (userId) {
-      dispatch(
-        fetchCompareByClassNew({
-          instructor_id: userId,
-          page: page,
-          amount: 10,
-          courseId: courseId,
-        })
-      );
+      dispatch(fetchCompareByClassNew({ instructor_id: userId, page: page, amount: 10, courseId: courseId }));
     }
   }, [dispatch, userId, page]);
-
-  useEffect(() => {
-    if (page > 1) {
-      resetCompareState();
-    }
-  }, [page, resetCompareState]);
 
   const handleLoadMore = () => {
     if (!loading && rows.length < totalRecords) {
@@ -244,6 +234,7 @@ const Compare = () => {
     }
   };
 
+
   useEffect(() => {
     if (!loading) {
       setIsFetching(false);
@@ -254,7 +245,8 @@ const Compare = () => {
     dispatch(fetchAllCourses({ instructorId: userId }));
   }, [userId]);
 
-  if (isComparing && compareResults?.data) {
+
+  if (isComparing && compareResults && compareResults.data) {
     return (
       <CompareResult
         key={compareKey}
@@ -266,7 +258,7 @@ const Compare = () => {
   }
 
   return (
-    <Box sx={{ p: { xs: 2, md: 4 } }}>
+    <Container>
       <Paper
         elevation={0}
         sx={{
@@ -298,36 +290,39 @@ const Compare = () => {
         </Typography>
       </Paper>
 
+      {/* Breadcrumbs */}
+      <BreadcrumbComponent
+        variant="default"
+        breadcrumbs={getBreadcrumbs()}
+      />
+
       <Paper
         elevation={0}
         sx={{
           p: 3,
-          mb: 3,
-          border: "1px solid #e5e7eb",
+          mb: 2,
+          border: '1px solid #e5e7eb',
           borderRadius: 2,
-          background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
         }}
       >
         <Grid container spacing={1} alignItems="center">
           <Grid item xs={12} md={9}>
             {/* {selectedRows.length > 0 && ( */}
-            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
-                {selectedRows.length > 0
-                  ? "Đã chọn:"
-                  : "Chưa chọn lớp để so sánh"}
+                {selectedRows.length > 0 ? "Đã chọn:" : "Chưa chọn lớp để so sánh"}
               </Typography>
-
               {selectedRows.map((rowNo) => {
-                const item = rows.find((r) => r.no === rowNo);
+                const item = rows.find(r => r.no === rowNo);
                 return item ? (
                   <Chip
                     key={rowNo}
                     label={`${item.className} (${item.courseName})`}
                     size="small"
                     sx={{
-                      bgcolor: "#e0e7ff",
-                      color: "#3730a3",
+                      bgcolor: '#e0e7ff',
+                      color: '#3730a3',
                       fontWeight: 500,
                     }}
                   />
@@ -335,16 +330,9 @@ const Compare = () => {
               })}
             </Box>
             {/* )} */}
+
           </Grid>
-          <Grid
-            item
-            xs={12}
-            md={3}
-            sx={{
-              display: "flex",
-              justifyContent: { xs: "center", md: "flex-end" },
-            }}
-          >
+          <Grid item xs={12} md={3} sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' } }}>
             <Button
               fullWidth={false}
               variant="contained"
@@ -352,12 +340,12 @@ const Compare = () => {
               onClick={handleCompareClick}
               sx={{
                 minWidth: 160,
-                bgcolor: "#1e3a8a",
-                "&:hover": {
-                  bgcolor: "#1e40af",
+                bgcolor: '#1e3a8a',
+                '&:hover': {
+                  bgcolor: '#1e40af',
                 },
-                "&:disabled": {
-                  bgcolor: "#9ca3af",
+                '&:disabled': {
+                  bgcolor: '#9ca3af',
                 },
               }}
             >
@@ -371,7 +359,7 @@ const Compare = () => {
       <Paper
         elevation={0}
         sx={{
-          border: "1px solid #e5e7eb",
+          border: '1px solid #e5e7eb',
           borderRadius: 2,
         }}
       >
@@ -385,100 +373,46 @@ const Compare = () => {
             component={Paper}
             style={{ maxHeight: "550px", overflow: "auto" }}
             onScroll={handleScroll}
+
           >
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    STT
-                  </TableCell>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    ID Lớp
-                  </TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }}>
-                    Môn
-                  </TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }}>
-                    Lớp
-                  </TableCell>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    Khóa
-                  </TableCell>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    Số sinh viên
-                  </TableCell>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    Tỷ lệ đậu (%)
-                  </TableCell>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    Chọn
-                  </TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >STT</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >ID Lớp</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Môn</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Lớp</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Khóa</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Số sinh viên</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Tỷ lệ đậu (%)</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Chọn</TableCell>
                 </TableRow>
               </TableHead>
-
               <TableBody>
                 {rows
-                  .filter(
-                    (item) =>
-                      selectedSubject === "" ||
-                      item.courseName === selectedSubject
-                  )
+                  .filter(item => selectedSubject === "" || item.courseName === selectedSubject)
                   .map((item, index) => (
                     <TableRow
                       key={item.no}
                       sx={{
-                        "&:hover": {
-                          bgcolor: "rgba(30, 58, 138, 0.04)",
+                        '&:hover': {
+                          bgcolor: 'rgba(30, 58, 138, 0.04)',
                         },
                       }}
                     >
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                        {item.no}
-                      </TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                        {item.classId}
-                      </TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "left" }}>
-                        {item.courseName}
-                      </TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "left" }}>
-                        {item.className}
-                      </TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                        {item.academicYear}
-                      </TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                        {item.totalStudents}
-                      </TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.no}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.classId}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.courseName}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.className}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.academicYear}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.totalStudents}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>
                         <Chip
                           label={`${item.passRate}%`}
                           size="small"
                           sx={{
-                            bgcolor:
-                              item.passRate >= 80
-                                ? "#dcfce7"
-                                : item.passRate >= 60
-                                ? "#fef3c7"
-                                : "#fee2e2",
-                            color:
-                              item.passRate >= 80
-                                ? "#166534"
-                                : item.passRate >= 60
-                                ? "#92400e"
-                                : "#991b1b",
+                            bgcolor: item.passRate >= 80 ? '#dcfce7' : item.passRate >= 60 ? '#fef3c7' : '#fee2e2',
+                            color: item.passRate >= 80 ? '#166534' : item.passRate >= 60 ? '#92400e' : '#991b1b',
                             fontWeight: 600,
                           }}
                         />
@@ -486,16 +420,13 @@ const Compare = () => {
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>
                         <input
                           type="checkbox"
-                          disabled={
-                            selectedRows.length > 6 &&
-                            !selectedRows.includes(item.no)
-                          }
+                          disabled={selectedRows.length > 6 && !selectedRows.includes(item.no)}
                           checked={selectedRows.includes(item.no)}
                           onChange={() => handleSelectRow(item.no)}
                           style={{
-                            width: "18px",
-                            height: "18px",
-                            accentColor: "#1e3a8a",
+                            width: '18px',
+                            height: '18px',
+                            accentColor: '#1e3a8a',
                           }}
                         />
                       </TableCell>
@@ -506,7 +437,7 @@ const Compare = () => {
           </TableContainer>
         </TableWrapper>
       </Paper>
-    </Box>
+    </Container>
   );
 };
 

@@ -29,13 +29,6 @@ const UpdateExamTable = ({
   onClose,
   examData
 }) => {
-    // useEffect(()=>{
-    //   console.log("examData: ",examData)
-    //   console.log("studentInfo: ",studentInfo)
-
-    // },[studentInfo,examData])
-
-   
     const [scores, setScores] = useState({});
     const [questions, setQuestions] = useState([]);
     const [times, setTimes] = useState({});

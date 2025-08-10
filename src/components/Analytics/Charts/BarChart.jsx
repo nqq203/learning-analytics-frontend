@@ -12,6 +12,7 @@ import {
 
 const labelMap = {
   midtermGrade: "Điểm giữa kỳ",
+  assignmentQuizGrade: "Điểm bài tập/Quiz",
   finalGrade: "Điểm cuối kỳ",
   projectGrade: "Điểm đồ án",
   practiceGrade: "Điểm thực hành",
@@ -62,7 +63,12 @@ const BarChartAnalytics = ({
   }
 
   const gradeFields = useMemo(() => {
-    return selectedGrades.map((field) => ({
+    // Ensure assignmentQuizGrade is always included if not present
+    const fieldsToInclude = selectedGrades.includes('assignmentQuizGrade') 
+      ? selectedGrades 
+      : [...selectedGrades, 'assignmentQuizGrade'];
+    
+    return fieldsToInclude.map((field) => ({
       key: field,
       label: labelMap[field] || field,
     }));
@@ -78,6 +84,7 @@ const BarChartAnalytics = ({
     finalGrade: "#82ca9d",
     projectGrade: "#ffc658",
     practiceGrade: "#d0ed57",
+    assignmentQuizGrade: "#1976d2",
     totalGrade: "#a4de6c",
   };
 

@@ -16,6 +16,7 @@ import { jwtDecode } from "jwt-decode";
 import PageHeader from "@/components/CommonStyles/PageHeader";
 import SearchFilters from "@/components/CommonStyles/SearchFilters";
 import { fetchAllCourses } from "@/redux/thunk/dataThunk";
+import BreadcrumbComponent from "@/components/Breadcrumb";
 
 
 
@@ -54,6 +55,16 @@ const LearningOutcome = () => {
       return null;
     }
   }, [accessToken]);
+
+  const getBreadcrumbs = () => {
+    const { pathname } = router;
+    if (pathname === "/analytics/learning-outcome") {
+      return [
+        { type: 'home', label: 'Trang chủ', path: '/' },
+        { type: 'analytics', label: 'Kết quả học tập' } // Current page
+      ]
+    }
+  }
 
   const fetchClasses = async () => {
     // setIsLoading(true);
@@ -180,6 +191,12 @@ const LearningOutcome = () => {
           { label: "Năm học", value: academicYear.length },
           { label: "Kỳ học", value: semester.length },
         ]}
+      />
+
+      {/* Breadcrumbs Navigation */}
+      <BreadcrumbComponent
+        breadcrumbs={getBreadcrumbs()}
+        variant="default"
       />
 
       <SearchFilters

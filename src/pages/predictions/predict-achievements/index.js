@@ -25,6 +25,7 @@ import ClassViewTable from '@/components/PredictionAchievements/ClassList';
 import { Divider } from '@mui/material';
 import PageHeader from '@/components/CommonStyles/PageHeader';
 import SearchFilters from '@/components/CommonStyles/SearchFilters';
+import BreadcrumbComponent from '@/components/Breadcrumb';
 
 export default function PredictArchievement() {
   const dispatch = useDispatch();
@@ -129,6 +130,18 @@ export default function PredictArchievement() {
     });
   }, [classList]);
 
+  const getBreadcrumbs = () => {
+    const { pathname } = router;
+    if (pathname === "/predictions/predict-achievements") {
+      return [
+        { type: 'home', label: 'Trang chủ', path: '/' },
+        { type: 'prediction', label: 'Dự đoán điểm số', path: '/predictions/predict-achievements'  } // Current page
+      ]
+    }
+
+    return [];
+  }
+
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       <PageHeader
@@ -142,6 +155,11 @@ export default function PredictArchievement() {
           { label: "Khóa học", value: academicYears.length },
           { label: "Kỳ học", value: semesters.length },
         ]}
+      />
+
+      <BreadcrumbComponent 
+        breadcrumbs={getBreadcrumbs()}
+        variant="default"
       />
 
       <SearchFilters

@@ -178,7 +178,6 @@ export default function StudentDetailView({ onBack }) {
     );
     setOpenEditModal(false);
     setSelectedStudent(null);
-    // console.log("Student saved:", updatedStudent);
   };
 
   const handleDeleteStudent = (studentId) => {
