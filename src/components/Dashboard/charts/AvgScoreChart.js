@@ -12,12 +12,14 @@ import {
   useTheme,
   Paper,
   Divider,
+  Tooltip,
 } from "@mui/material";
 import { useState, useMemo, useEffect } from "react";
 import dynamic from "next/dynamic";
 const PlotlyBoxPlot = dynamic(() => import("./PlotlyBoxPlot"), { ssr: false });
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import { Help, QuestionAnswer } from "@mui/icons-material";
 
 const CustomYAxisLabel = ({ x, y, payload }) => {
   if (payload && payload.value === 10) {
@@ -148,7 +150,7 @@ export function AvgScoreChart({
           filteredGrades.forEach((item) => {
             item.grades.forEach((grade) => {
               allYValues.push(grade);
-              allXLabels.push(item.name);
+              allXLabels.push(`${item.name} (${item.id})`);
             });
           });
 
@@ -166,7 +168,7 @@ export function AvgScoreChart({
             },
           ];
 
-          xLabels = [...new Set(allXLabels)];
+          xLabels = allXLabels;
         } else {
           // If no subject filter matches, show all subjects
           filteredGrades = allGrades;
@@ -177,7 +179,7 @@ export function AvgScoreChart({
           filteredGrades.forEach((item) => {
             item.grades.forEach((grade) => {
               allYValues.push(grade);
-              allXLabels.push(item.name);
+              allXLabels.push(`${item.name} (${item.id})`);
             });
           });
 
@@ -195,7 +197,7 @@ export function AvgScoreChart({
             },
           ];
 
-          xLabels = [...new Set(allXLabels)];
+          xLabels = allXLabels;
         }
       } else if (data && data.length > 0) {
         // Use data prop when allGrades is not available
@@ -222,7 +224,6 @@ export function AvgScoreChart({
         ];
       }
 
-      // Update state
       setChartData({
         boxPlotData,
         xLabels,
@@ -236,20 +237,19 @@ export function AvgScoreChart({
       });
     };
 
-    // Process data when props change
     processChartData();
   }, [allGrades, data, selectedSubject, selectedYear, isSubjectFilter, isYearFilter]);
 
 
   const chartTitle = useMemo(() => {
     if (isSubjectFilter && !isYearFilter) {
-      return "Phân bố điểm tổng kết theo môn";
+      return "Phân bố điểm tổng kết theo môn/lớp";
     } else if (!isSubjectFilter && isYearFilter) {
       return "Phân bố điểm tổng kết theo niên khóa";
     } else if (isSubjectFilter && isYearFilter) {
       return "Phân bố điểm tổng kết theo lớp và niên khóa";
     } else {
-      return "Phân bố điểm tổng kết theo môn";
+      return "Phân bố điểm tổng kết theo môn/lớp";
     }
   }, [isSubjectFilter, isYearFilter]);
 
@@ -263,7 +263,7 @@ export function AvgScoreChart({
       parts.push(`Khóa: ${selectedYear}`);
     }
     if (parts.length === 0) {
-      return "Hiển thị điểm tổng kết theo từng khóa, môn.";
+      return "Hiển thị điểm tổng kết theo từng khóa, môn, lớp.";
     }
     return parts.join(" • ");
   }, [selectedSubject, selectedYear, allGrades, data]);
@@ -342,7 +342,7 @@ export function AvgScoreChart({
                 titlefont: { size: 14, color: "#64748b" },
                 showgrid: false,
                 categoryorder: "array",
-                categoryarray: [],
+                categoryarray: chartData.xLabels,
                 fixedrange: true,
                 tickangle: 0,
                 tickmode: "array",
@@ -401,41 +401,21 @@ export function AvgScoreChart({
             <ShowChartIcon />
           </Box>
           <Box>
-            <Typography variant="h6" fontWeight="700" color="#1e293b">
-              {chartTitle}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography variant="h6" fontWeight="700" color="#1e293b">
+                {chartTitle}
+              </Typography>
+              <Tooltip title="hi chart nay dung de lam" arrow>
+                <Help />
+              </Tooltip>
+            </Box>
+          
             <Typography variant="body2" color="#64748b">
               {chartSubtitle}
             </Typography>
           </Box>
         </Box>
 
-        {/* 🔥 ADD FILTER STATUS */}
-        {(isSubjectFilter || isYearFilter) && (
-          <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-            {isSubjectFilter && (
-              <Chip
-                label={`Môn được chọn`}
-                color="primary"
-                size="small"
-                variant="outlined"
-              />
-            )}
-            {isYearFilter && (
-              <Chip
-                label={`Khóa được chọn`}
-                color="secondary"
-                size="small"
-                variant="outlined"
-              />
-            )}
-            <Chip
-              label={`${chartData.xLabels.length} ${isSubjectFilter ? 'lớp' : 'môn'}`}
-              variant="outlined"
-              size="small"
-            />
-          </Box>
-        )}
       </Box>
 
       {/* Chart */}
@@ -483,7 +463,8 @@ export function AvgScoreChart({
               categoryorder: "array",
               categoryarray: chartData.xLabels,
               fixedrange: true,
-              tickangle: chartData.xLabels.some(label => label.length > 15) ? -45 : 0,
+              // tickangle: chartData.xLabels.some(label => label.length > 15) ? -45 : 0,
+              tickangle: 0,
               tickmode: "array",
               ticktext: chartData.xLabels.map((label) => createMultiLineLabel(label)),
               tickvals: chartData.xLabels,

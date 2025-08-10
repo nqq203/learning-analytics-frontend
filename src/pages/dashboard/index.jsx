@@ -290,7 +290,7 @@ export default function DashboardPage() {
 
       {/*Stats Cards */}
       {cardsData && (
-        <Box sx={{ mb: 5 }}>
+        <Box sx={{ mb: 3 }}>
           <Box sx={{ mb: 3 }}>
             <Typography
               variant="h5"
@@ -326,8 +326,30 @@ export default function DashboardPage() {
       )}
 
       {/* Charts */}
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 3 }}>
         {/* Top charts */}
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3,
+                border: "1px solid #e2e8f0",
+                borderRadius: 3,
+                background: "white",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                  transform: "translateY(-2px)",
+                },
+              }}
+            >
+              <AcademicRankChart data={academicRankData} />
+            </Paper>
+          </Grid>
+        </Grid>
+
+        {/* Bottom chart */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
           <Grid item xs={12} lg={6}>
             <Paper
@@ -370,29 +392,7 @@ export default function DashboardPage() {
                 },
               }}
             >
-              <RiskStudentChart data={passFailData} />
-            </Paper>
-          </Grid>
-        </Grid>
-
-        {/* Bottom chart */}
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                border: "1px solid #e2e8f0",
-                borderRadius: 3,
-                background: "white",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-                  transform: "translateY(-2px)",
-                },
-              }}
-            >
-              <AcademicRankChart data={academicRankData} />
+              <RiskStudentChart data={passFailData} selectedSubject={selectedSubject} selectedYear={selectedYear} />
             </Paper>
           </Grid>
         </Grid>
