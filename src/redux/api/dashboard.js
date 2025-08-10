@@ -32,24 +32,16 @@ const handleDashboardApiError = (error) => {
 const dashboardApi = {
   fetchStatsCards: () => axios.get(`${API_URL}/dashboard/cards`),
   fetchSummary: ({ instructorId, courseId, academicYear }) => {
-    if (courseId && academicYear) {
-      return axios.get(
-        `${API_URL}/dashboard/summary?instructor_id=${instructorId}&course_id=${courseId}&academic_year=${academicYear}`
-      );
+    let url = `${API_URL}/dashboard/summary?instructor_id=${instructorId}`;
+    
+    if (courseId) {
+      url += `&course_id=${courseId}`;
     }
-    else if (courseId) {
-      return axios.get(
-        `${API_URL}/dashboard/summary?instructor_id=${instructorId}&course_id=${courseId}`
-      );
-    } else if (academicYear) {
-      return axios.get(
-        `${API_URL}/dashboard/summary?instructor_id=${instructorId}&academic_year=${academicYear}`
-      );
-    } else {
-      return axios.get(
-        `${API_URL}/dashboard/summary?instructor_id=${instructorId}`
-      );
+    if (academicYear) {
+      url += `&academic_year=${academicYear}`;
     }
+    url += '&include_details=true&include_class_info=true';
+    return axios.get(url);
   },
   fetchAvgScoreChart: () => axios.get(`${API_URL}/dashboard/avg_score_chart`),
   fetchAcademicRankData: () =>

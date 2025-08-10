@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Card,
   CardContent,
@@ -15,25 +15,20 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TextField,
-  InputAdornment,
-  IconButton,
   TableRow,
   Paper,
   Chip,
 } from "@mui/material";
-import { Search, FilterList, Clear } from "@mui/icons-material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Container } from "@/components/Analytics/Styles/Styles";
 import { TableWrapper } from "@/components/Analytics/Styles/Styles";
+import CompareResult from "./compareResult/CompareResult";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
-import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
-import { fetchCompareByClassesThunk, fetchCompareByCohortsThunk, fetchCompareByClassNew, fetchCompareByCourse } from "@/redux/thunk/compareThunk";
-import PageHeader from "@/components/CommonStyles/PageHeader";
+import { fetchCompareByClassesThunk, fetchCompareByClassNew } from "@/redux/thunk/compareThunk";
 import { useRouter } from 'next/router';
 import { fetchAllCourses } from "@/redux/thunk/dataThunk";
 import BreadcrumbComponent from "@/components/Breadcrumb";
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import { resetCompareResults } from "@/redux/slice/compareSlice";
 
 const Compare = () => {
   const initialState = {
@@ -48,30 +43,61 @@ const Compare = () => {
   const [compareKey, setCompareKey] = useState(Date.now());
   const [pageKey, setPageKey] = useState(0);
   const router = useRouter();
+  const { courseId } = router.query;
+  const [courseInformation, setCourseInformation] = useState({
+    courseName: null,
+    courseCode: null,
+  })
 
-  const [searchValue, setSearchValue] = useState("");
-  const [searchKeyWord, setSearchKeyWord] = useState("");
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      setSearchKeyWord(searchValue);
-    }
-  }
-
-  const getBreadcrumbs = () => {
-    const { pathname } = router;
-    if (pathname === "/analytics/compare") {
-      return [
-        { type: 'home', label: 'Trang chủ', path: '/' },
-        { type: 'analytics', label: 'So sánh môn học' } // Current page
-      ]
-    }
-  }
-
+  const resetCompareState = () => {
+    setSelectedSubject(initialState.selectedSubject);
+    setSelectedRows(initialState.selectedRows);
+    setIsComparing(false);
+    setCompareKey(Date.now());
+  };
+  const [page, setPage] = useState(1);
   const dispatch = useDispatch();
-  const { compareResults, compareLoading, compareError, loading, totalRecords, course } = useSelector((state) => state.compare);
+  const { compareResults, compareLoading, compareError, classesNew, loading, totalRecords } = useSelector((state) => state.compare);
   const { accessToken } = useSelector(state => state.auth);
   const { courses } = useSelector((state) => state.data);
+
+  useEffect(() => {
+    if (classesNew.length > 0) {
+      setCourseInformation({
+        courseName: classesNew[0].courseName,
+        courseCode: classesNew[0].courseCode,
+      });
+    }
+  }, [courseId, classesNew]);
+
+  const getBreadcrumbs = () => {
+    const breadcrumbs = [
+      {
+        type: 'home',
+        label: 'Trang chủ',
+        path: '/',
+      },
+      {
+        type: 'analytics',
+        label: 'So sánh môn học',
+        path: '/analytics/compare',
+      }
+    ];
+
+    if (courseInformation.courseCode && courseInformation.courseName) {
+      breadcrumbs.push({
+        type: 'students',
+        label: `${courseInformation.courseCode} - ${courseInformation.courseName}`,
+      });
+    } else if (courseId) {
+      breadcrumbs.push({
+        type: 'students',
+        label: `Khoá học: ${courseId}`,
+      });
+    }
+
+    return breadcrumbs;
+  }
 
   useEffect(() => {
     const handleRouteChange = (url) => {
@@ -123,88 +149,209 @@ const Compare = () => {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    setRows(course ?? []);
-  }, [course]);
+    if (page === 1) {
+      setRows(classesNew);
+    } else {
+      setRows((prev) => [...prev, ...classesNew]);
+    }
+  }, [classesNew]);
+
+  // const rows = useMemo(() => classes || [], [classes]);
+
+  const handleSubjectChange = (e) => {
+    setSelectedSubject(e.target.value);
+    setSelectedRows([]);
+  };
+
+  const handleSelectRow = (rowNo) => {
+    const selectedItem = rows.find(r => r.no === rowNo);
+    if (!selectedItem) return;
+
+    setSelectedRows((prev) =>
+      prev.includes(rowNo) ? prev.filter((no) => no !== rowNo) : [...prev, rowNo]
+    );
+  };
+
+  const isCompareEnabled = () => selectedRows.length >= 2;
+
+  const handleCompareClick = async () => {
+    const selectedItems = rows.filter(row => selectedRows.includes(row.no));
+
+    if (selectedItems.length < 2) {
+      alert("Cần chọn ít nhất 2 lớp để so sánh.");
+      return;
+    }
+
+    try {
+      const classIds = selectedItems.map(row => String(row.classId));
+      const payload = { class_ids: classIds };
+      await dispatch(fetchCompareByClassesThunk(payload));
+      setCompareKey(Date.now());
+      setIsComparing(true);
+    } catch (error) {
+      console.error("Lỗi khi gửi yêu cầu so sánh:", error);
+    }
+  };
+
+  useEffect(() => {
+    dispatch(resetCompareResults());
+  }, [userId]);
+
+  const handleBack = () => {
+    resetCompareState();
+  };
+
+  useEffect(() => {
+    if (compareResults && !compareLoading && !compareError) {
+      setIsComparing(true);
+    } else if (compareError) {
+      console.error("Lỗi khi so sánh:", compareError);
+      alert("Đã xảy ra lỗi khi so sánh: " + (compareError.message || ""));
+    }
+  }, [compareResults, compareLoading, compareError]);
 
   useEffect(() => {
     if (userId) {
-      dispatch(
-        fetchCompareByCourse({ instructor_id: userId, search: searchKeyWord })
-      );
+      dispatch(fetchCompareByClassNew({ instructor_id: userId, page: page, amount: 10, courseId: courseId }));
     }
-  }, [dispatch, userId, searchKeyWord]);
+  }, [dispatch, userId, page]);
 
-  const handleActions = (courseId) => {
-    if (courseId)
-      router.push(`/analytics/compare/${courseId}`)
+  const handleLoadMore = () => {
+    if (!loading && rows.length < totalRecords) {
+      setPage((prev) => prev + 1);
+    }
   };
 
-  return (
-    <Box sx={{ p: { xs: 2, md: 4 } }}>
-      <PageHeader
-        title="Thống kê môn"
-        subtitle="So sánh hiệu quả học tập của môn giữa các lớp và khóa học"
-        icon="analytics"
-        variant="analytics"
-        stats={[{ label: "Tổng môn", value: totalRecords }]}
+  const [isFetching, setIsFetching] = useState(false);
+
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
+
+    if (isAtBottom && !isFetching && !loading) {
+      setIsFetching(true);
+      handleLoadMore();
+    }
+  };
+
+
+  useEffect(() => {
+    if (!loading) {
+      setIsFetching(false);
+    }
+  }, [classesNew, loading]);
+
+  useEffect(() => {
+    dispatch(fetchAllCourses({ instructorId: userId }));
+  }, [userId]);
+
+
+  if (isComparing && compareResults && compareResults.data) {
+    return (
+      <CompareResult
+        key={compareKey}
+        data={compareResults.data}
+        mode="class"
+        onBack={handleBack}
       />
+    );
+  }
+
+  return (
+    <Container>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 2,
+          mb: 2,
+          background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+          border: "1px solid #e2e8f0",
+          borderRadius: "8px",
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            color: "#1e3a8a",
+            fontWeight: 600,
+            mb: 1,
+          }}
+        >
+          {classesNew[0]?.courseCode ?? "Đang tải..."}
+        </Typography>
+        <Typography
+          variant="body1"
+          sx={{
+            color: "#64748b",
+            fontWeight: 500,
+          }}
+        >
+          {classesNew[0]?.courseName ?? "Đang tải..."}
+        </Typography>
+      </Paper>
 
       {/* Breadcrumbs */}
-      <BreadcrumbComponent 
+      <BreadcrumbComponent
         variant="default"
         breadcrumbs={getBreadcrumbs()}
       />
+
       <Paper
         elevation={0}
         sx={{
           p: 3,
-          mb: 3,
-          border: "1px solid #e5e7eb",
+          mb: 2,
+          border: '1px solid #e5e7eb',
           borderRadius: 2,
-          background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
         }}
       >
-        <Grid container>
-          <TextField
-            variant="outlined"
-            placeholder="Nhập từ khóa tìm kiếm"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            size="small"
-            sx={{
-              flex: 1,
-              minWidth: 300,
-              "& .MuiOutlinedInput-root": {
-                bgcolor: "white",
-                "&:hover fieldset": {
-                  borderColor: "#3b82f6",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#1e3a8a",
-                },
-              },
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => {
-                      setSearchKeyWord(searchValue);
-                    }}
+        <Grid container spacing={1} alignItems="center">
+          <Grid item xs={12} md={9}>
+            {/* {selectedRows.length > 0 && ( */}
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
+                {selectedRows.length > 0 ? "Đã chọn:" : "Chưa chọn lớp để so sánh"}
+              </Typography>
+              {selectedRows.map((rowNo) => {
+                const item = rows.find(r => r.no === rowNo);
+                return item ? (
+                  <Chip
+                    key={rowNo}
+                    label={`${item.className} (${item.courseName})`}
+                    size="small"
                     sx={{
-                      color: "#1e3a8a",
-                      "&:hover": {
-                        bgcolor: "rgba(30, 58, 138, 0.1)",
-                      },
+                      bgcolor: '#e0e7ff',
+                      color: '#3730a3',
+                      fontWeight: 500,
                     }}
-                  >
-                    <Search />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
+                  />
+                ) : null;
+              })}
+            </Box>
+            {/* )} */}
+
+          </Grid>
+          <Grid item xs={12} md={3} sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' } }}>
+            <Button
+              fullWidth={false}
+              variant="contained"
+              disabled={!isCompareEnabled()}
+              onClick={handleCompareClick}
+              sx={{
+                minWidth: 160,
+                bgcolor: '#1e3a8a',
+                '&:hover': {
+                  bgcolor: '#1e40af',
+                },
+                '&:disabled': {
+                  bgcolor: '#9ca3af',
+                },
+              }}
+            >
+              So sánh ({selectedRows.length})
+            </Button>
+          </Grid>
         </Grid>
       </Paper>
 
@@ -212,7 +359,7 @@ const Compare = () => {
       <Paper
         elevation={0}
         sx={{
-          border: "1px solid #e5e7eb",
+          border: '1px solid #e5e7eb',
           borderRadius: 2,
         }}
       >
@@ -225,18 +372,22 @@ const Compare = () => {
           <TableContainer
             component={Paper}
             style={{ maxHeight: "550px", overflow: "auto" }}
+            onScroll={handleScroll}
+
           >
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
                   <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >STT</TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >ID Môn</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >ID Lớp</TableCell>
                   <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Môn</TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Loại Môn</TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Danh sách lớp</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Lớp</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Khóa</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Số sinh viên</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Tỷ lệ đậu (%)</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Chọn</TableCell>
                 </TableRow>
               </TableHead>
-
               <TableBody>
                 {rows
                   .filter(item => selectedSubject === "" || item.courseName === selectedSubject)
@@ -249,26 +400,44 @@ const Compare = () => {
                         },
                       }}
                     >
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{index + 1}</TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.courseCode}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.no}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.classId}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.courseName}</TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.courseType}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.className}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.academicYear}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.totalStudents}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                        <FormatListBulletedIcon
-                          color="primary"
-                          style={{ cursor: "pointer" }}
-                          onClick={() => handleActions(item.courseId)}
+                        <Chip
+                          label={`${item.passRate}%`}
+                          size="small"
+                          sx={{
+                            bgcolor: item.passRate >= 80 ? '#dcfce7' : item.passRate >= 60 ? '#fef3c7' : '#fee2e2',
+                            color: item.passRate >= 80 ? '#166534' : item.passRate >= 60 ? '#92400e' : '#991b1b',
+                            fontWeight: 600,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>
+                        <input
+                          type="checkbox"
+                          disabled={selectedRows.length > 6 && !selectedRows.includes(item.no)}
+                          checked={selectedRows.includes(item.no)}
+                          onChange={() => handleSelectRow(item.no)}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            accentColor: '#1e3a8a',
+                          }}
                         />
                       </TableCell>
                     </TableRow>
                   ))}
-
               </TableBody>
             </Table>
           </TableContainer>
         </TableWrapper>
       </Paper>
-    </Box>
+    </Container>
   );
 };
 
