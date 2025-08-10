@@ -126,6 +126,7 @@ const RadarChartAnalytics = ({
           width={600}
           height={400}
           data={transformedData}
+          style={{ top: "-40px" }}
         >
           <PolarGrid />
           <PolarAngleAxis
@@ -145,7 +146,15 @@ const RadarChartAnalytics = ({
             ]}
             labelFormatter={(label) => `LO: ${label}`}
           />
-          <Legend />
+          <Legend
+            wrapperStyle={{
+              bottom: '-50px',
+              position: 'absolute !important',
+              left: '50%',
+              // transform: 'translateX(-50%)',
+              zIndex: 1000
+            }}
+          />
 
           {loData.map((group, index) => (
             <Radar

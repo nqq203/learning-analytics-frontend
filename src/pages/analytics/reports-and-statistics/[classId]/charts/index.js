@@ -50,7 +50,7 @@ const StudentAnalytics = () => {
   const chartsRef = useRef();
 
   const selectedChartTypes = ["pie", "column", "scatter", "radar"]; // All chart types
-  const selectedGrades = ["midtermGrade", "finalGrade", "practiceGrade", "projectGrade", "totalGrade"]; // All grade types
+  const selectedGrades = ["assignmentQuizGrade", "midtermGrade", "practiceGrade", "projectGrade", "finalGrade",  "totalGrade"]; // All grade types
   const selectedOthers = ["classification", "passFail"]; // All other charts
   const selectedLearningObjectives = ["assignmentQuiz", "finalExam"];
   const [selectedGradeField, setSelectedGradeField] = useState(selectedGrades[0]);
@@ -322,12 +322,12 @@ const StudentAnalytics = () => {
             />
             <Box display="flex" justifyContent="center" sx={{ mt: 2 }} style={{ position: 'absolute', bottom: "-20px", left: 0, right: 0 }}>
               <FormControl size="small" sx={{ minWidth: 220 }}>
-                <InputLabel id={`select-lo-label-${loType}`}>Chọn mục tiêu học tập</InputLabel>
+                <InputLabel id={`select-lo-label-${loType}`}>Chọn chuẩn đầu ra</InputLabel>
                 <Select
                   labelId={`select-lo-label-${loType}`}
                   value={currentLO}
                   onChange={handleLOChange}
-                  label="Chọn mục tiêu học tập"
+                  label="Chọn chuẩn đầu ra"
                 >
                   {loList.map((lo) => (
                     <MenuItem key={lo.loCode} value={lo.loCode}>
@@ -340,7 +340,7 @@ const StudentAnalytics = () => {
           </>
         ) : (
           <Box sx={{ p: 2, textAlign: 'center', color: '#666' }}>
-            <p>Không có dữ liệu cho mục tiêu học tập này.</p>
+            <p>Không có dữ liệu cho chuẩn đầu ra này.</p>
           </Box>
         )}
       </Box>
@@ -363,7 +363,7 @@ const StudentAnalytics = () => {
           textAlign: "center",
           fontWeight: "bold"
         }}>
-          📋 Danh Sách Mục Tiêu Học Tập
+          📋 Danh Sách Các Chuẩn Đầu Ra
         </h4>
 
         <Box sx={{
@@ -447,7 +447,7 @@ const StudentAnalytics = () => {
         {/* Summary Info */}
         <Box sx={{ mt: 2, p: 2, backgroundColor: '#e3f2fd', borderRadius: 1, textAlign: 'center' }}>
           <span style={{ fontSize: '14px', color: '#1976d2', fontWeight: 'bold' }}>
-            📊 Tổng cộng: {learningOutcomes.length} Mục tiêu học tập |
+            📊 Tổng cộng: {learningOutcomes.length} Chuẩn đầu ra |
             📚 Môn học: {learningOutcomes[0]?.courseName} ({learningOutcomes[0]?.courseCode})
           </span>
         </Box>
@@ -473,7 +473,7 @@ const StudentAnalytics = () => {
             boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
           }}
         >
-          🎯 THỐNG KÊ MỤC TIÊU HỌC TẬP
+          🎯 THỐNG KÊ THEO CHUẨN ĐẦU RA
         </h3>
 
         {/* Learning Objectives Info Table */}
@@ -565,7 +565,7 @@ const StudentAnalytics = () => {
         {learningObjectivesLoading && (
           <Box display="flex" justifyContent="center" alignItems="center" p={4}>
             <CircularProgress />
-            <Box ml={2}>Đang tải dữ liệu Mục tiêu học tập...</Box>
+            <Box ml={2}>Đang tải dữ liệu về cắc Chuẩn đầu ra...</Box>
           </Box>
         )}
       </Box>
@@ -723,9 +723,9 @@ const StudentAnalytics = () => {
           <h3>Chưa có dữ liệu hiển thị, vui lòng cấu hình để tiếp tục</h3>
           <div style={{ textAlign: 'center', marginTop: '16px' }}>
             <p><strong>📊 Thống kê điểm số:</strong> Cần chọn loại điểm và loại biểu đồ</p>
-            <p><strong>🎯 Mục tiêu học tập:</strong> Chọn Bài tập/Quiz để xem phân tích chi tiết</p>
+            <p><strong>🎯 Chuẩn đầu ra:</strong> Chọn Bài tập/Quiz để xem phân tích chi tiết</p>
             <p style={{ fontSize: '14px', color: '#666', marginTop: '12px' }}>
-              * Mục tiêu học tập sẽ tự động hiển thị tất cả biểu đồ phù hợp
+              * Chuẩn đầu ra sẽ tự động hiển thị tất cả biểu đồ phù hợp
             </p>
           </div>
         </Box>

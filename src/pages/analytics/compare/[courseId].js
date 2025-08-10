@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Card,
   CardContent,
@@ -24,18 +24,11 @@ import { TableWrapper } from "@/components/Analytics/Styles/Styles";
 import CompareResult from "./compareResult/CompareResult";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
-import { fetchClassesByLecturer } from "@/redux/thunk/analyticsThunk";
-import {
-  fetchCompareByClassesThunk,
-  fetchCompareByCohortsThunk,
-  fetchCompareByClassNew,
-  fetchCompareByCourse,
-} from "@/redux/thunk/compareThunk";
-import { clearCompareResults } from "@/redux/slice/compareSlice";
-import PageHeader from "@/components/CommonStyles/PageHeader";
-import { useRouter } from "next/router";
+import { fetchCompareByClassesThunk, fetchCompareByClassNew } from "@/redux/thunk/compareThunk";
+import { useRouter } from 'next/router';
 import { fetchAllCourses } from "@/redux/thunk/dataThunk";
 import BreadcrumbComponent from "@/components/Breadcrumb";
+import { resetCompareResults } from "@/redux/slice/compareSlice";
 
 const Compare = () => {
   const initialState = {
@@ -43,39 +36,30 @@ const Compare = () => {
     selectedRows: [],
     isComparing: false,
   };
-  const dispatch = useDispatch();
-  const router = useRouter();
-  const { courseId } = router.query;
-  const [selectedSubject, setSelectedSubject] = useState(
-    initialState.selectedSubject
-  );
+
+  const [selectedSubject, setSelectedSubject] = useState(initialState.selectedSubject);
   const [selectedRows, setSelectedRows] = useState(initialState.selectedRows);
   const [isComparing, setIsComparing] = useState(initialState.isComparing);
   const [compareKey, setCompareKey] = useState(Date.now());
   const [pageKey, setPageKey] = useState(0);
-  const [page, setPage] = useState(1);
+  const router = useRouter();
+  const { courseId } = router.query;
   const [courseInformation, setCourseInformation] = useState({
     courseName: null,
     courseCode: null,
   })
-  const {
-    compareResults,
-    compareLoading,
-    compareError,
-    classesNew,
-    loading,
-    totalRecords,
-  } = useSelector((state) => state.compare);
-  const { accessToken } = useSelector((state) => state.auth);
-  const { courses } = useSelector((state) => state.data);
-  
+
   const resetCompareState = () => {
     setSelectedSubject(initialState.selectedSubject);
     setSelectedRows(initialState.selectedRows);
     setIsComparing(false);
     setCompareKey(Date.now());
-    dispatch(clearCompareResults());
-  }, [dispatch]);
+  };
+  const [page, setPage] = useState(1);
+  const dispatch = useDispatch();
+  const { compareResults, compareLoading, compareError, classesNew, loading, totalRecords } = useSelector((state) => state.compare);
+  const { accessToken } = useSelector(state => state.auth);
+  const { courses } = useSelector((state) => state.data);
 
   useEffect(() => {
     if (classesNew.length > 0) {
@@ -117,25 +101,31 @@ const Compare = () => {
 
   useEffect(() => {
     const handleRouteChange = (url) => {
-      if (url.includes("/analytics/compare")) {
+      if (!url.includes('/analytics/compare')) {
         resetCompareState();
       }
     };
-    router.events.on("routeChangeComplete", handleRouteChange);
+    router.events.on('routeChangeStart', handleRouteChange);
     return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
+      router.events.off('routeChangeStart', handleRouteChange);
     };
-  }, [router, resetCompareState]);
+  }, [router]);
 
   useEffect(() => {
-    if (courseId) {
-      resetCompareState();
-    }
-  }, [courseId, resetCompareState]);
+    const handleRouteChange = (url) => {
+      if (url.includes('/analytics/compare')) {
+        resetCompareState();
+      }
+    };
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router]);
 
   useEffect(() => {
     resetCompareState();
-  }, [resetCompareState]);
+  }, []);
 
   const cellStyle = {
     fontSize: "16px",
@@ -174,20 +164,18 @@ const Compare = () => {
   };
 
   const handleSelectRow = (rowNo) => {
-    const selectedItem = rows.find((r) => r.no === rowNo);
+    const selectedItem = rows.find(r => r.no === rowNo);
     if (!selectedItem) return;
 
     setSelectedRows((prev) =>
-      prev.includes(rowNo)
-        ? prev.filter((no) => no !== rowNo)
-        : [...prev, rowNo]
+      prev.includes(rowNo) ? prev.filter((no) => no !== rowNo) : [...prev, rowNo]
     );
   };
 
   const isCompareEnabled = () => selectedRows.length >= 2;
 
   const handleCompareClick = async () => {
-    const selectedItems = rows.filter((row) => selectedRows.includes(row.no));
+    const selectedItems = rows.filter(row => selectedRows.includes(row.no));
 
     if (selectedItems.length < 2) {
       alert("Cần chọn ít nhất 2 lớp để so sánh.");
@@ -195,7 +183,7 @@ const Compare = () => {
     }
 
     try {
-      const classIds = selectedItems.map((row) => String(row.classId));
+      const classIds = selectedItems.map(row => String(row.classId));
       const payload = { class_ids: classIds };
       await dispatch(fetchCompareByClassesThunk(payload));
       setCompareKey(Date.now());
@@ -205,9 +193,13 @@ const Compare = () => {
     }
   };
 
-  const handleBack = useCallback(() => {
+  useEffect(() => {
+    dispatch(resetCompareResults());
+  }, [userId]);
+
+  const handleBack = () => {
     resetCompareState();
-  }, [resetCompareState]);
+  };
 
   useEffect(() => {
     if (compareResults && !compareLoading && !compareError) {
@@ -220,22 +212,9 @@ const Compare = () => {
 
   useEffect(() => {
     if (userId) {
-      dispatch(
-        fetchCompareByClassNew({
-          instructor_id: userId,
-          page: page,
-          amount: 10,
-          courseId: courseId,
-        })
-      );
+      dispatch(fetchCompareByClassNew({ instructor_id: userId, page: page, amount: 10, courseId: courseId }));
     }
   }, [dispatch, userId, page]);
-
-  useEffect(() => {
-    if (page > 1) {
-      resetCompareState();
-    }
-  }, [page, resetCompareState]);
 
   const handleLoadMore = () => {
     if (!loading && rows.length < totalRecords) {
@@ -255,6 +234,7 @@ const Compare = () => {
     }
   };
 
+
   useEffect(() => {
     if (!loading) {
       setIsFetching(false);
@@ -264,6 +244,7 @@ const Compare = () => {
   useEffect(() => {
     dispatch(fetchAllCourses({ instructorId: userId }));
   }, [userId]);
+
 
   if (isComparing && compareResults && compareResults.data) {
     return (
@@ -322,7 +303,7 @@ const Compare = () => {
           mb: 2,
           border: '1px solid #e5e7eb',
           borderRadius: 2,
-          background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
         }}
       >
         <Grid container spacing={1} alignItems="center">
@@ -340,8 +321,8 @@ const Compare = () => {
                     label={`${item.className} (${item.courseName})`}
                     size="small"
                     sx={{
-                      bgcolor: "#e0e7ff",
-                      color: "#3730a3",
+                      bgcolor: '#e0e7ff',
+                      color: '#3730a3',
                       fontWeight: 500,
                     }}
                   />
@@ -351,15 +332,7 @@ const Compare = () => {
             {/* )} */}
 
           </Grid>
-          <Grid
-            item
-            xs={12}
-            md={3}
-            sx={{
-              display: "flex",
-              justifyContent: { xs: "center", md: "flex-end" },
-            }}
-          >
+          <Grid item xs={12} md={3} sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' } }}>
             <Button
               fullWidth={false}
               variant="contained"
@@ -367,12 +340,12 @@ const Compare = () => {
               onClick={handleCompareClick}
               sx={{
                 minWidth: 160,
-                bgcolor: "#1e3a8a",
-                "&:hover": {
-                  bgcolor: "#1e40af",
+                bgcolor: '#1e3a8a',
+                '&:hover': {
+                  bgcolor: '#1e40af',
                 },
-                "&:disabled": {
-                  bgcolor: "#9ca3af",
+                '&:disabled': {
+                  bgcolor: '#9ca3af',
                 },
               }}
             >
@@ -386,7 +359,7 @@ const Compare = () => {
       <Paper
         elevation={0}
         sx={{
-          border: "1px solid #e5e7eb",
+          border: '1px solid #e5e7eb',
           borderRadius: 2,
         }}
       >
@@ -400,99 +373,46 @@ const Compare = () => {
             component={Paper}
             style={{ maxHeight: "550px", overflow: "auto" }}
             onScroll={handleScroll}
+
           >
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    STT
-                  </TableCell>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    ID Lớp
-                  </TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }}>
-                    Môn
-                  </TableCell>
-                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }}>
-                    Lớp
-                  </TableCell>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    Khóa
-                  </TableCell>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    Số sinh viên
-                  </TableCell>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    Tỷ lệ đậu (%)
-                  </TableCell>
-                  <TableCell
-                    style={{ ...headerCellStyle, textAlign: "center" }}
-                  >
-                    Chọn
-                  </TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >STT</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >ID Lớp</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Môn</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "left" }} >Lớp</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }} >Khóa</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Số sinh viên</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Tỷ lệ đậu (%)</TableCell>
+                  <TableCell style={{ ...headerCellStyle, textAlign: "center" }}>Chọn</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows
-                  .filter(
-                    (item) =>
-                      selectedSubject === "" ||
-                      item.courseName === selectedSubject
-                  )
+                  .filter(item => selectedSubject === "" || item.courseName === selectedSubject)
                   .map((item, index) => (
                     <TableRow
                       key={item.no}
                       sx={{
-                        "&:hover": {
-                          bgcolor: "rgba(30, 58, 138, 0.04)",
+                        '&:hover': {
+                          bgcolor: 'rgba(30, 58, 138, 0.04)',
                         },
                       }}
                     >
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                        {item.no}
-                      </TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                        {item.classId}
-                      </TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "left" }}>
-                        {item.courseName}
-                      </TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "left" }}>
-                        {item.className}
-                      </TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                        {item.academicYear}
-                      </TableCell>
-                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>
-                        {item.totalStudents}
-                      </TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.no}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }} >{item.classId}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.courseName}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "left" }}>{item.className}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.academicYear}</TableCell>
+                      <TableCell style={{ ...cellStyle, textAlign: "center" }}>{item.totalStudents}</TableCell>
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>
                         <Chip
                           label={`${item.passRate}%`}
                           size="small"
                           sx={{
-                            bgcolor:
-                              item.passRate >= 80
-                                ? "#dcfce7"
-                                : item.passRate >= 60
-                                ? "#fef3c7"
-                                : "#fee2e2",
-                            color:
-                              item.passRate >= 80
-                                ? "#166534"
-                                : item.passRate >= 60
-                                ? "#92400e"
-                                : "#991b1b",
+                            bgcolor: item.passRate >= 80 ? '#dcfce7' : item.passRate >= 60 ? '#fef3c7' : '#fee2e2',
+                            color: item.passRate >= 80 ? '#166534' : item.passRate >= 60 ? '#92400e' : '#991b1b',
                             fontWeight: 600,
                           }}
                         />
@@ -500,16 +420,13 @@ const Compare = () => {
                       <TableCell style={{ ...cellStyle, textAlign: "center" }}>
                         <input
                           type="checkbox"
-                          disabled={
-                            selectedRows.length > 6 &&
-                            !selectedRows.includes(item.no)
-                          }
+                          disabled={selectedRows.length > 6 && !selectedRows.includes(item.no)}
                           checked={selectedRows.includes(item.no)}
                           onChange={() => handleSelectRow(item.no)}
                           style={{
-                            width: "18px",
-                            height: "18px",
-                            accentColor: "#1e3a8a",
+                            width: '18px',
+                            height: '18px',
+                            accentColor: '#1e3a8a',
                           }}
                         />
                       </TableCell>
