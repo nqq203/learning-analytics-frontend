@@ -146,9 +146,7 @@ export function RiskStudentChart({ data = [], selectedSubject, selectedYear }) {
         })
       : defaultData;
 
-  const maxDataValue = Math.max(
-    ...formattedData.map((d) => Math.max(d.atRisk, d.students))
-  );
+  const maxDataValue = Math.max(...formattedData.map((d) => Math.max(d.atRisk, d.students)));
   const maxValue = Math.max(10, Math.ceil(maxDataValue / 10) * 10);
 
   const chartWidth = useMemo(() => {
