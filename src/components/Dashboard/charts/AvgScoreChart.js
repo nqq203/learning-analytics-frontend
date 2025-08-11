@@ -480,93 +480,117 @@ export function AvgScoreChart({
       </Box>
 
       {/* Chart */}
-      <Box sx={{ height: 350, mb: 3, position: "relative" }}>
-        <Typography
-          variant="subtitle2"
-          sx={{
-            position: "absolute",
-            top: 2,
-            left: 15,
-            fontSize: 12,
-            color: "#64748b",
-            zIndex: 1,
-            fontWeight: "bold",
-          }}
+      <Box
+        sx={{
+          overflowX: "auto",
+          width: "100%",
+          scrollbarWidth: "thin",
+          scrollbarColor: "#cbd5e1 #f1f5f9",
+          "&::-webkit-scrollbar": {
+            height: "4px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "#f1f5f9",
+            borderRadius: "4px",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "#cbd5e1",
+            borderRadius: "4px",
+          },
+          "&::-webkit-scrollbar-thumb:hover": {
+            background: "#94a3b8",
+          },
+        }}
+      >
+        <Box
+          sx={{ height: 350, mb: 3, position: "relative", minWidth: "750px" }}
         >
-          Điểm
-        </Typography>
-        <PlotlyBoxPlot
-          data={chartData.boxPlotData}
-          layout={{
-            title: "",
-            dragmode: false,
-            hovermode: "closest",
-            yaxis: {
-              title: {
-                text: "",
-                font: { size: 14, color: "#64748b", weight: "bold" },
-                standoff: 0,
-                y: 1.05,
+          <Typography
+            variant="subtitle2"
+            sx={{
+              position: "absolute",
+              top: 2,
+              left: 15,
+              fontSize: 12,
+              color: "#64748b",
+              zIndex: 1,
+              fontWeight: "bold",
+            }}
+          >
+            Điểm
+          </Typography>
+          <PlotlyBoxPlot
+            data={chartData.boxPlotData}
+            layout={{
+              title: "",
+              dragmode: false,
+              hovermode: "closest",
+              yaxis: {
+                title: {
+                  text: "",
+                  font: { size: 14, color: "#64748b", weight: "bold" },
+                  standoff: 0,
+                  y: 1.05,
+                },
+                range: [0, 10],
+                dtick: 1,
+                zeroline: false,
+                gridcolor: "#e2e8f0",
+                tickfont: { color: "#64748b", size: 12 },
+                titlefont: { size: 14, color: "#64748b" },
+                fixedrange: true,
               },
-              range: [0, 10],
-              dtick: 1,
-              zeroline: false,
-              gridcolor: "#e2e8f0",
-              tickfont: { color: "#64748b", size: 12 },
-              titlefont: { size: 14, color: "#64748b" },
-              fixedrange: true,
-            },
-            xaxis: {
-              title: isSubjectFilter ? "Lớp" : "Môn",
-              tickfont: { color: "#64748b", size: 10 },
-              titlefont: { size: 14, color: "#64748b" },
-              showgrid: false,
-              categoryorder: "array",
-              categoryarray: chartData.xLabels,
-              fixedrange: true,
-              // tickangle: chartData.xLabels.some(label => label.length > 15) ? -45 : 0,
-              tickangle: 0,
-              tickmode: "array",
-              ticktext: chartData.xLabels.map((label) =>
-                createMultiLineLabel(label)
-              ),
-              tickvals: chartData.xLabels,
-            },
-            boxmode: "group",
-            plot_bgcolor: "white",
-            paper_bgcolor: "white",
-            margin: {
-              t: 40,
-              r: 30,
-              l: 50,
-              b: chartData.xLabels.some((label) => label.length > 15)
-                ? 120
-                : 100,
-            },
-            legend: { orientation: "h", y: -0.2 },
-          }}
-          config={{
-            responsive: true,
-            displayModeBar: false,
-            modeBarButtonsToRemove: [
-              "zoom",
-              "pan",
-              "select",
-              "lasso2d",
-              "resetScale2d",
-            ],
-            scrollZoom: false,
-            displaylogo: false,
-            toImageButtonOptions: {
-              format: "png",
-              filename: "chart",
-              height: 500,
-              width: 700,
-              scale: 1,
-            },
-          }}
-          style={{ width: "100%", height: "100%" }}
-        />
+              xaxis: {
+                title: isSubjectFilter ? "Lớp" : "Môn",
+                tickfont: { color: "#64748b", size: 10 },
+                titlefont: { size: 14, color: "#64748b" },
+                showgrid: false,
+                categoryorder: "array",
+                categoryarray: chartData.xLabels,
+                fixedrange: true,
+                tickangle: 0,
+                tickmode: "array",
+                ticktext: chartData.xLabels.map((label) =>
+                  createMultiLineLabel(label)
+                ),
+                tickvals: chartData.xLabels,
+              },
+              boxmode: "group",
+              plot_bgcolor: "white",
+              paper_bgcolor: "white",
+              margin: {
+                t: 40,
+                r: 30,
+                l: 50,
+                b: chartData.xLabels.some((label) => label.length > 15)
+                  ? 120
+                  : 100,
+              },
+              legend: { orientation: "h", y: -0.2 },
+            }}
+            config={{
+              responsive: true,
+              displayModeBar: false,
+              modeBarButtonsToRemove: [
+                "zoom",
+                "pan",
+                "select",
+                "lasso2d",
+                "resetScale2d",
+              ],
+              scrollZoom: false,
+              displaylogo: false,
+              toImageButtonOptions: {
+                format: "png",
+                filename: "chart",
+                height: 500,
+                width: 700,
+                scale: 1,
+              },
+            }}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </Box>
       </Box>
     </Box>
   );
