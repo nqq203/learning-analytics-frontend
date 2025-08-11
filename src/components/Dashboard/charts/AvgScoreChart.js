@@ -19,7 +19,12 @@ import dynamic from "next/dynamic";
 const PlotlyBoxPlot = dynamic(() => import("./PlotlyBoxPlot"), { ssr: false });
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import { Help, QuestionAnswer } from "@mui/icons-material";
+import {
+  Help,
+  InfoOutlined,
+  LightbulbOutlined,
+  QuestionAnswer,
+} from "@mui/icons-material";
 
 const CustomYAxisLabel = ({ x, y, payload }) => {
   if (payload && payload.value === 10) {
@@ -104,7 +109,7 @@ export function AvgScoreChart({
     boxPlotData: [],
     xLabels: [],
     isLoading: true,
-  })
+  });
 
   const isSubjectFilter = !!selectedSubject;
   const isYearFilter = !!selectedYear;
@@ -227,19 +232,19 @@ export function AvgScoreChart({
       setChartData({
         boxPlotData,
         xLabels,
-        isLoading: false
-      });
-
-      console.log('✅ Chart data processed:', {
-        boxPlotDataLength: boxPlotData.length,
-        xLabelsLength: xLabels.length,
-        xLabels
+        isLoading: false,
       });
     };
 
     processChartData();
-  }, [allGrades, data, selectedSubject, selectedYear, isSubjectFilter, isYearFilter]);
-
+  }, [
+    allGrades,
+    data,
+    selectedSubject,
+    selectedYear,
+    isSubjectFilter,
+    isYearFilter,
+  ]);
 
   const chartTitle = useMemo(() => {
     if (isSubjectFilter && !isYearFilter) {
@@ -256,8 +261,8 @@ export function AvgScoreChart({
   const chartSubtitle = useMemo(() => {
     const parts = [];
     if (selectedSubject) {
-      const subjectName = subjects.filter(g => g.id === selectedSubject)
-      parts.push(`Môn: ${subjectName.map(s => s.name).join(", ")}`);
+      const subjectName = subjects.filter((g) => g.id === selectedSubject);
+      parts.push(`Môn: ${subjectName.map((s) => s.name).join(", ")}`);
     }
     if (selectedYear) {
       parts.push(`Khóa: ${selectedYear}`);
@@ -268,8 +273,6 @@ export function AvgScoreChart({
     return parts.join(" • ");
   }, [selectedSubject, selectedYear, allGrades, data]);
 
-
-  // Show empty state
   if (!chartData.boxPlotData.length && !allGrades?.length && !data?.length) {
     return (
       <Box sx={{ height: "100%" }}>
@@ -385,123 +388,209 @@ export function AvgScoreChart({
   return (
     <Box sx={{ height: "100%" }}>
       <Box sx={{ mb: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Box
             sx={{
-              width: 40,
-              height: 40,
-              borderRadius: 2,
-              background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+              width: 32,
+              height: 32,
+              borderRadius: "8px",
+              backgroundColor: "#dbeafe",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "white",
             }}
           >
-            <ShowChartIcon />
+            <ShowChartIcon sx={{ color: "#1d4ed8" }} />
           </Box>
+
           <Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Typography variant="h6" fontWeight="700" color="#1e293b">
                 {chartTitle}
               </Typography>
-              <Tooltip title="hi chart nay dung de lam" arrow>
-                <Help />
+
+              <Tooltip
+                arrow
+                title={
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight={600}>
+                      Hướng dẫn đọc & ý nghĩa biểu đồ Phân bố điểm tổng kết
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Cách đọc:</strong>
+                      <br />
+                      • Mỗi hộp (box) biểu thị khoảng điểm từ Q1 (25%) đến Q3
+                      (75%) của môn/lớp.
+                      <br />• Đường nằm ngang trong hộp là điểm trung vị (
+                      <em>median</em>).
+                      <br />
+                      • “Râu” thể hiện điểm nhỏ nhất và lớn nhất không phải
+                      ngoại lệ.
+                      <br />• Các chấm rời bên ngoài là ngoại lệ (
+                      <em>outliers</em>) – điểm bất thường quá thấp hoặc quá
+                      cao.
+                      <br />
+                      • Trục X: tên môn học (kèm số lượng sinh viên tham gia).
+                      <br />
+                      • Trục Y: thang điểm (0–10).
+                      <br />
+                      <br />
+                      <strong>Ý nghĩa trong dữ liệu này:</strong>
+                      <br />
+                      • Giúp so sánh phân bố điểm tổng kết giữa các môn/lớp.
+                      <br />
+                      • Xác định môn/lớp có mức điểm ổn định hay dao động lớn.
+                      <br />
+                      • Phát hiện môn/lớp có nhiều điểm bất thường (quá thấp
+                      hoặc quá cao so với nhóm).
+                      <br />• Hỗ trợ giảng viên nhận diện môn/lớp cần xem xét
+                      lại phương pháp giảng dạy hoặc đánh giá.
+                    </Typography>
+                  </Box>
+                }
+                componentsProps={{
+                  tooltip: {
+                    sx: {
+                      backgroundColor: "#fff9db",
+                      color: "#1e293b",
+                      border: "1px solid #e2e8f0",
+                      maxWidth: 400,
+                    },
+                  },
+                }}
+              >
+                <LightbulbOutlined
+                  sx={{
+                    bgcolor: "#efb15aff",
+                    borderRadius: "50%",
+                    p: "2px",
+                    fontSize: 20,
+                    color: "#ffffff",
+                    cursor: "pointer",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                  }}
+                />
               </Tooltip>
             </Box>
-          
-            <Typography variant="body2" color="#64748b">
-              {chartSubtitle}
+            <Typography variant="body2" color="#64748b" sx={{ mt: 0.5 }}>
+              So sánh điểm tổng kết giữa các môn/lớp.
             </Typography>
           </Box>
         </Box>
-
       </Box>
 
       {/* Chart */}
-      <Box sx={{ height: 350, mb: 3, position: "relative" }}>
-        <Typography
-          variant="subtitle2"
-          sx={{
-            position: "absolute",
-            top: 2,
-            left: 15,
-            fontSize: 12,
-            color: "#64748b",
-            zIndex: 1,
-            fontWeight: "bold",
-          }}
+      <Box
+        sx={{
+          overflowX: "auto",
+          width: "100%",
+          scrollbarWidth: "thin",
+          scrollbarColor: "#cbd5e1 #f1f5f9",
+          "&::-webkit-scrollbar": {
+            height: "4px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "#f1f5f9",
+            borderRadius: "4px",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "#cbd5e1",
+            borderRadius: "4px",
+          },
+          "&::-webkit-scrollbar-thumb:hover": {
+            background: "#94a3b8",
+          },
+        }}
+      >
+        <Box
+          sx={{ height: 350, mb: 3, position: "relative", minWidth: "750px" }}
         >
-          Điểm
-        </Typography>
-        <PlotlyBoxPlot
-          data={chartData.boxPlotData}
-          layout={{
-            title: "",
-            dragmode: false,
-            hovermode: "closest",
-            yaxis: {
-              title: {
-                text: "",
-                font: { size: 14, color: "#64748b", weight: "bold" },
-                standoff: 0,
-                y: 1.05,
+          <Typography
+            variant="subtitle2"
+            sx={{
+              position: "absolute",
+              top: 2,
+              left: 15,
+              fontSize: 12,
+              color: "#64748b",
+              zIndex: 1,
+              fontWeight: "bold",
+            }}
+          >
+            Điểm
+          </Typography>
+          <PlotlyBoxPlot
+            data={chartData.boxPlotData}
+            layout={{
+              title: "",
+              dragmode: false,
+              hovermode: "closest",
+              yaxis: {
+                title: {
+                  text: "",
+                  font: { size: 14, color: "#64748b", weight: "bold" },
+                  standoff: 0,
+                  y: 1.05,
+                },
+                range: [0, 10],
+                dtick: 1,
+                zeroline: false,
+                gridcolor: "#e2e8f0",
+                tickfont: { color: "#64748b", size: 12 },
+                titlefont: { size: 14, color: "#64748b" },
+                fixedrange: true,
               },
-              range: [0, 10],
-              dtick: 1,
-              zeroline: false,
-              gridcolor: "#e2e8f0",
-              tickfont: { color: "#64748b", size: 12 },
-              titlefont: { size: 14, color: "#64748b" },
-              fixedrange: true,
-            },
-            xaxis: {
-              title: isSubjectFilter ? "Lớp" : "Môn",
-              tickfont: { color: "#64748b", size: 10 },
-              titlefont: { size: 14, color: "#64748b" },
-              showgrid: false,
-              categoryorder: "array",
-              categoryarray: chartData.xLabels,
-              fixedrange: true,
-              // tickangle: chartData.xLabels.some(label => label.length > 15) ? -45 : 0,
-              tickangle: 0,
-              tickmode: "array",
-              ticktext: chartData.xLabels.map((label) => createMultiLineLabel(label)),
-              tickvals: chartData.xLabels,
-            },
-            boxmode: "group",
-            plot_bgcolor: "white",
-            paper_bgcolor: "white",
-            margin: {
-              t: 40,
-              r: 30,
-              l: 50,
-              b: chartData.xLabels.some(label => label.length > 15) ? 120 : 100
-            },
-            legend: { orientation: "h", y: -0.2 },
-          }}
-          config={{
-            responsive: true,
-            displayModeBar: false,
-            modeBarButtonsToRemove: [
-              "zoom",
-              "pan",
-              "select",
-              "lasso2d",
-              "resetScale2d",
-            ],
-            scrollZoom: false,
-            displaylogo: false,
-            toImageButtonOptions: {
-              format: "png",
-              filename: "chart",
-              height: 500,
-              width: 700,
-              scale: 1,
-            },
-          }}
-          style={{ width: "100%", height: "100%" }}
-        />
+              xaxis: {
+                title: isSubjectFilter ? "Lớp" : "Môn",
+                tickfont: { color: "#64748b", size: 10 },
+                titlefont: { size: 14, color: "#64748b" },
+                showgrid: false,
+                categoryorder: "array",
+                categoryarray: chartData.xLabels,
+                fixedrange: true,
+                tickangle: 0,
+                tickmode: "array",
+                ticktext: chartData.xLabels.map((label) =>
+                  createMultiLineLabel(label)
+                ),
+                tickvals: chartData.xLabels,
+              },
+              boxmode: "group",
+              plot_bgcolor: "white",
+              paper_bgcolor: "white",
+              margin: {
+                t: 40,
+                r: 30,
+                l: 50,
+                b: chartData.xLabels.some((label) => label.length > 15)
+                  ? 120
+                  : 100,
+              },
+              legend: { orientation: "h", y: -0.2 },
+            }}
+            config={{
+              responsive: true,
+              displayModeBar: false,
+              modeBarButtonsToRemove: [
+                "zoom",
+                "pan",
+                "select",
+                "lasso2d",
+                "resetScale2d",
+              ],
+              scrollZoom: false,
+              displaylogo: false,
+              toImageButtonOptions: {
+                format: "png",
+                filename: "chart",
+                height: 500,
+                width: 700,
+                scale: 1,
+              },
+            }}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </Box>
       </Box>
     </Box>
   );
