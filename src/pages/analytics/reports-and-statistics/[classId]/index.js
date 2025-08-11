@@ -36,8 +36,12 @@ const StudentsList = () => {
   const { classId, className, courseName } = router.query;
   const [search, setSearch] = useState("");
   const [sortOption, setSortOption] = useState("studentId");
-  const [buttonVariant, setButtonVariant] = useState("contained");
-  const [buttonContent, setButtonContent] = useState("Chi tiết");
+  // const [buttonVariant, setButtonVariant] = useState("contained");
+  // const [buttonContent, setButtonContent] = useState("Chi tiết");
+
+  const [buttonVariant, setButtonVariant] = useState("outlined");
+  const [buttonContent, setButtonContent] = useState("Tổng quan");
+
   const [rows, setRows] = useState([]);
   const [columns, setColumns] = useState([]);
   const [classInfo, setClassInfo] = useState({ className: "", subjectName: "" });
@@ -98,7 +102,6 @@ const StudentsList = () => {
     fetchData();
   }, [buttonVariant, classId, dispatch]);
 
-  // Set class info from URL parameters
   useEffect(() => {
     if (className || courseName) {
       setClassInfo({
@@ -169,7 +172,6 @@ const StudentsList = () => {
       ).toFixed(2)
       : 0;
 
-  // GET DECODED CLASS AND COURSE NAMES
   useEffect(() => {
     if (className)
       setDecodedClassName(decodeURIComponent(className));
