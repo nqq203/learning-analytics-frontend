@@ -17,7 +17,6 @@ import {
   CartesianGrid,
   ResponsiveContainer,
   Tooltip as Recharts_tooltip,
-
 } from "recharts";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import WarningIcon from "@mui/icons-material/Warning";
@@ -149,7 +148,9 @@ export function RiskStudentChart({ data = [], selectedSubject, selectedYear, ins
       })
       : defaultData;
 
-  const maxDataValue = Math.max(...formattedData.map((d) => Math.max(d.atRisk, d.students)));
+  const maxDataValue = Math.max(
+    ...formattedData.map((d) => Math.max(d.atRisk, d.students))
+  );
   const maxValue = Math.max(10, Math.ceil(maxDataValue / 10) * 10);
 
   const chartWidth = useMemo(() => {
@@ -217,6 +218,15 @@ export function RiskStudentChart({ data = [], selectedSubject, selectedYear, ins
                       lượng sinh viên có khả năng đạt.
                       <br />• Cột <span style={{ color: "#EA4335" }}>đỏ</span>:
                       số lượng sinh viên có nguy cơ rớt.
+                      <br />• <strong>Quy ước:</strong>{" "}
+                      <span style={{ color: "#EA4335", fontWeight: 600 }}>
+                        Rớt môn
+                      </span>{" "}
+                      nếu điểm {"<"} 5,{" "}
+                      <span style={{ color: "#34A853", fontWeight: 600 }}>
+                        Qua môn
+                      </span>{" "}
+                      nếu điểm {">="} 5.
                       <br />
                       • Trục X: tên môn/lớp.
                       <br />
