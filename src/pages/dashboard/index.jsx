@@ -392,7 +392,7 @@ export default function DashboardPage() {
                 },
               }}
             >
-              <RiskStudentChart data={passFailData} selectedSubject={selectedSubject} selectedYear={selectedYear} />
+              <RiskStudentChart data={passFailData} selectedSubject={selectedSubject} selectedYear={selectedYear} instructorId={userId}/>
             </Paper>
           </Grid>
         </Grid>

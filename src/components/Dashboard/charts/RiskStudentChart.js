@@ -24,6 +24,8 @@ import WarningIcon from "@mui/icons-material/Warning";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useState, useCallback, useMemo } from "react";
 import { LightbulbOutlined } from "@mui/icons-material";
+import { useDispatch } from "react-redux";
+import { fetchClassDetail } from "@/redux/thunk/dataThunk";
 
 const CustomXAxisTick = ({ x, y, payload, width = 120 }) => {
   if (!payload?.value) return null;
@@ -116,34 +118,35 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export function RiskStudentChart({ data = [], selectedSubject, selectedYear }) {
+export function RiskStudentChart({ data = [], selectedSubject, selectedYear, instructorId }) {
   const theme = useTheme();
   const [errorMessage, setErrorMessage] = useState("");
+  const dispatch = useDispatch();
 
   const defaultData = [{ name: "Không có dữ liệu", atRisk: 0, students: 0 }];
 
   const formattedData =
     Array.isArray(data) && data.length > 0
       ? data.map((item, index) => {
-          const classId = item.classId || item.class_id || item.id;
-          const courseId = item.courseId || item.course_id;
-          return {
-            name:
-              item.name ||
-              item.courseName ||
-              item.subjectName ||
-              `Môn học ${index + 1}`,
-            atRisk: Number(
-              item.failedStudents || item.atRisk || item.failed || 0
-            ),
-            students: Number(
-              item.passedStudents || item.students || item.passed || 0
-            ),
-            classId,
-            courseId,
-            originalData: item,
-          };
-        })
+        const classId = item.classId || item.class_id || item.id;
+        const courseId = item.courseId || item.course_id;
+        return {
+          name:
+            item.name ||
+            item.courseName ||
+            item.subjectName ||
+            `Môn học ${index + 1}`,
+          atRisk: Number(
+            item.failedStudents || item.atRisk || item.failed || 0
+          ),
+          students: Number(
+            item.passedStudents || item.students || item.passed || 0
+          ),
+          classId,
+          courseId,
+          originalData: item,
+        };
+      })
       : defaultData;
 
   const maxDataValue = Math.max(...formattedData.map((d) => Math.max(d.atRisk, d.students)));
@@ -158,10 +161,19 @@ export function RiskStudentChart({ data = [], selectedSubject, selectedYear }) {
 
   const handleBarGroupClick = useCallback((dataEntry) => {
     const classId = dataEntry?.classId || dataEntry?.class_id || dataEntry?.id;
-    if (classId) {
-      window.open(`/analytics/reports-and-statistics/${classId}?`, "_blank");
-    }
-  }, []);
+    const navigate = async () => {
+      const response = await dispatch(fetchClassDetail({ classId, instructorId }));
+      console.log(response);
+      const _class = response.payload.data;
+      if (classId && instructorId && _class?.className && _class?.courseName) {
+        window.open(`/analytics/reports-and-statistics/${classId}?className=${_class?.className}&courseName=${_class?.courseName}`, "_blank");
+      } else {
+        window.open(`/analytics/reports-and-statistics/${classId}?`, "_blank");
+      }
+    };
+    navigate();
+
+  }, [dispatch, instructorId]);
 
   return (
     <Box sx={{ height: "100%" }}>
@@ -276,10 +288,10 @@ export function RiskStudentChart({ data = [], selectedSubject, selectedYear }) {
           sx={{
             overflowX: "auto",
             width: "100%",
-            scrollbarWidth: "thin", 
-            scrollbarColor: "#cbd5e1 #f1f5f9", 
+            scrollbarWidth: "thin",
+            scrollbarColor: "#cbd5e1 #f1f5f9",
             "&::-webkit-scrollbar": {
-              height: "4px", 
+              height: "4px",
             },
             "&::-webkit-scrollbar-track": {
               background: "#f1f5f9",
