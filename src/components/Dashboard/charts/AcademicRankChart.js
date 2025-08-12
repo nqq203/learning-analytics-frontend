@@ -14,7 +14,7 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
-  Tooltip as RechartsTooltip
+  Tooltip as RechartsTooltip,
 } from "recharts";
 import { useSelector } from "react-redux";
 import DonutLargeRoundedIcon from "@mui/icons-material/DonutLargeRounded";
@@ -116,22 +116,25 @@ export function AcademicRankChart() {
                       • Biểu đồ hình tròn thể hiện tỷ lệ phần trăm sinh viên ở
                       từng mức học lực.
                       <br />
-                      • Mỗi màu tương ứng với một mức học lực:
+                      • Mỗi màu tương ứng với một mức học lực (theo thang điểm
+                      10):
                       <br />
                       &nbsp;&nbsp;•{" "}
                       <span style={{ color: "#4285F4" }}>Xanh dương</span> –
-                      Giỏi
+                      Giỏi (8 đến 10)
                       <br />
                       &nbsp;&nbsp;•{" "}
-                      <span style={{ color: "#34A853" }}>Xanh lá</span> – Khá
+                      <span style={{ color: "#34A853" }}>Xanh lá</span> – Khá (7
+                      đến &lt; 8)
                       <br />
                       &nbsp;&nbsp;•{" "}
                       <span style={{ color: "#FBBC05" }}>Cam</span> – Trung bình
+                      (5 đến &lt; 7)
                       <br />
                       &nbsp;&nbsp;• <span style={{ color: "#EA4335" }}>
                         Đỏ
                       </span>{" "}
-                      – Yếu
+                      – Yếu (&lt; 5)
                       <br />• Con số bên cạnh tên mức học lực là{" "}
                       <strong>số lượng sinh viên</strong> và{" "}
                       <strong>tỷ lệ %</strong> của tổng số.
