@@ -204,7 +204,7 @@ const FraudDetection = () => {
     <Box sx={{ p: { xs: 2, md: 4 }, cursor: loading ? 'wait' : 'default' }}>
       <PageHeader
         title="Phát hiện bất thường"
-        subtitle="Phân tích và phát hiện hành vi bất thường trong bài kiểm tra (Lưu ý: Môn học cần chứa ít nhất 1 bài QUIZ để phân tích)"
+        subtitle="Phân tích và phát hiện hành vi bất thường trong bài kiểm tra"
         icon="fraud"
         variant="fraud"
         stats={[
