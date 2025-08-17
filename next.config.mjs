@@ -5,7 +5,7 @@ const nextConfig = {
         return [
             {
                 source: '/api/:path*',
-                destination: 'https://la-app.onrender.com/api/:path*', // Backend thật
+                destination: '', // Backend thật
             },
         ];
     },
